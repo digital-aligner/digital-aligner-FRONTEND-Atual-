@@ -1,0 +1,313 @@
+import 'dart:convert';
+
+import 'package:digital_aligner_app/providers/auth_provider.dart';
+import 'package:digital_aligner_app/providers/relatorio_provider.dart';
+import 'package:digital_aligner_app/screens/editar_relatorio_screen.dart';
+import 'package:digital_aligner_app/screens/pedido_view_screen.dart';
+
+import 'package:digital_aligner_app/screens/view_relatorio_screen.dart';
+
+
+import '../../providers/pedidos_list_provider.dart';
+
+import 'package:draggable_scrollbar/draggable_scrollbar.dart';
+
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:provider/provider.dart';
+
+import 'package:flutter/material.dart';
+
+import 'package:native_pdf_view/native_pdf_view.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+class MeusPedidosList extends StatefulWidget {
+  @override
+  _MeusPedidosListState createState() => _MeusPedidosListState();
+}
+
+class _MeusPedidosListState extends State<MeusPedidosList> {
+  PedidosListProvider _pedidosListStore;
+  RelatorioProvider _relatorioStore;
+  AuthProvider _authStore;
+
+  List<dynamic> pedList;
+  PdfController pdfController;
+  // ----- For flutter web scroll -------
+  ScrollController _scrollController = ScrollController();
+  // ---- For flutter web scroll end ---
+
+  static ValueKey key = ValueKey('key_0');
+  static ValueKey key1 = ValueKey('key_1');
+
+  //Set the urls to file on disk (local storage) to be retrieved by
+  //html file in web folder
+  Future<void> _setModelosUrlToStorage(String _mSupUrl, String _mInfUrl) async {
+    //Save token in device (web or mobile)
+    final prefs = await SharedPreferences.getInstance();
+
+    final modelosData = json.encode({
+      'modelo_superior': _mSupUrl,
+      'modelo_inferior': _mInfUrl,
+    });
+    prefs.setString('modelos_3d_url', modelosData);
+  }
+
+  String _isoBirthDateToLocal(String isoDateString) {
+    DateTime _dateTime = DateTime.parse(isoDateString).toLocal();
+    String _formatedDate = DateFormat('dd/MM/yyyy').format(_dateTime);
+
+    return _formatedDate;
+  }
+
+  Widget _relatorioUi(List<dynamic> data, String codPedido) {
+    return Column(
+      children: <Widget>[
+        Text(
+          'RELATÓRIO DO PEDIDO: ' + codPedido,
+          style: TextStyle(
+            fontSize: 35,
+            //fontFamily: 'BigNoodleTitling',
+            color: Colors.grey,
+          ),
+        ),
+        Divider(thickness: 1),
+        //RELATÓRIO PREVIEW (PDF)
+        const SizedBox(
+          height: 50,
+        ),
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ViewRelatorioScreen(
+                  relatorioUrl: data[0]['relatorio_pdf'][0]['relatorio1'],
+                ),
+              ),
+            );
+          },
+          icon: const Icon(Icons.image),
+          label: const Text('Visualizar relatório'),
+        ),
+        const SizedBox(
+          height: 50,
+        ),
+        ElevatedButton.icon(
+          onPressed: () async {
+            await launch(data[0]['relatorio_pdf'][0]['relatorio1']);
+          },
+          icon: const Icon(Icons.download_done_rounded),
+          label: const Text('Baixar relatório em PDF'),
+        ),
+        const SizedBox(
+          height: 50,
+        ),
+        ElevatedButton.icon(
+          onPressed: () async {
+            await launch(data[0]['relatorio_ppt'][0]['relatorio1']);
+          },
+          icon: const Icon(Icons.download_done_rounded),
+          label: const Text('Baixar relatório em PPT'),
+        ),
+        const SizedBox(
+          height: 50,
+        ),
+        ElevatedButton.icon(
+          onPressed: () async {
+            await launch(data[0]['visualizador_3d']);
+          },
+          icon: const Icon(Icons.link),
+          label: const Text('Link do visualizador 3d'),
+        ),
+      ],
+    );
+  }
+
+  String _isoDateTimeToLocal(String isoDateString) {
+    DateTime _dateTime = DateTime.parse(isoDateString).toLocal();
+    String _formatedDate = DateFormat('dd/MM/yyyy - kk:mm').format(_dateTime);
+
+    return _formatedDate;
+  }
+
+  Future<dynamic> _visualizarRelatorioDialog(
+    BuildContext ctx,
+    double _sWidth,
+    double _sHeight,
+    List<dynamic> data,
+    String codPedido,
+    int index,
+  ) {
+    return showDialog(
+      context: ctx,
+      builder: (BuildContext ctx2) {
+        return AlertDialog(
+          title: Container(
+            width: _sWidth - 20,
+            height: _sHeight - 200,
+            child: DraggableScrollbar.rrect(
+              backgroundColor: Colors.black12,
+              alwaysVisibleScrollThumb: true,
+              controller: _scrollController,
+              child: ListView.builder(
+                controller: _scrollController,
+                itemCount: 1,
+                itemExtent: null,
+                itemBuilder: (context, index2) {
+                  return _relatorioUi(data, codPedido);
+                },
+              ),
+            ),
+          ),
+          actions: [
+            FlatButton(
+              child: Text("Editar Relatorio"),
+              onPressed: () {
+                //To pop popup before pushing route
+                Navigator.of(ctx2).pop();
+                Navigator.of(ctx2).pushNamed(
+                  EditarRelatorioScreen.routeName,
+                  arguments: {
+                    'pedidoId': pedList[index]['id'],
+                    'pacienteId': pedList[index]['paciente']['id'],
+                    'relatorioData': data[0],
+                  },
+                ).then((didUpdate) {
+                  if (didUpdate == 'true') {
+                    //_pedidosListStore.clearCadastros();
+
+                    //_pedidosListStore.setNotify();
+                    // Scaffold.of(ctx).showSnackBar(
+                    //  SbMessages.cadastroAtualizado,
+                    // );
+                    Navigator.of(ctx2).pop();
+                  }
+                });
+              },
+            ),
+            //FlatButton(
+            //  child: Text("Excluir Pedido"),
+            //  onPressed: () {
+            //    Navigator.of(context).pop();
+            //    _deletePedidoDialog(ctx, index);
+            //  },
+            //),
+            FlatButton(
+              child: Text("Fechar"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _listItem(int index) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  _isoDateTimeToLocal(
+                    pedList[index]['created_at'],
+                  ),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  '${pedList[index]['codigo_pedido']}',
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  '${pedList[index]['paciente']['nome_paciente']}',
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  '${pedList[index]['status_pedido']['status']}',
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    //final Map args = ModalRoute.of(context).settings.arguments;
+
+    _pedidosListStore = Provider.of<PedidosListProvider>(context);
+    _authStore = Provider.of<AuthProvider>(context);
+    _relatorioStore = Provider.of<RelatorioProvider>(context, listen: false);
+
+    pedList = _pedidosListStore.getPedidosList();
+
+    if (pedList == null) {
+      return Container(
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: const Text('Aguarde..'),
+        ),
+      );
+    }
+
+    if (pedList[0].containsKey('error')) {
+      return Container(
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: const Text('Aguarde..'),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: pedList.length,
+      itemBuilder: (ctx, index) {
+        return Container(
+          margin: EdgeInsets.all(2),
+          height: 80,
+          child: Card(
+            shadowColor: Colors.grey,
+            margin: EdgeInsets.all(0),
+            color: (index % 2 == 0)
+                ? Colors.white
+                : Colors.black12.withOpacity(0.04),
+            elevation: 0.5,
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: ListTile(
+                    onTap: () {
+                      Navigator.of(context).pushNamed(
+                        PedidoViewScreen.routeName,
+                        arguments: {'index': index},
+                      );
+                    },
+                    title: _listItem(index),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
