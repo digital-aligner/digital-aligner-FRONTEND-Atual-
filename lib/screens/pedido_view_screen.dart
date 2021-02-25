@@ -33,6 +33,9 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
   List<dynamic> pedList;
   List<dynamic> relatorioData;
 
+  String _modeloSupLink;
+  String _modeloInfLink;
+
   int index;
 
   bool relatorioFirstFetch = true;
@@ -3619,7 +3622,11 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
             ),
           ],
         ),
-        ModelViewer(),
+        ModelViewer(
+          modeloSupLink: _modeloSupLink,
+          modeloInfLink: _modeloInfLink,
+        ),
+
         //Fotografias
         Container(
           height: 100,
@@ -4083,6 +4090,9 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
       pedList[index]['modelo_superior']['modelo_superior'],
       pedList[index]['modelo_inferior']['modelo_inferior'],
     );
+    //Setting modelos links to global var for download btn
+    _modeloSupLink = pedList[index]['modelo_superior']['modelo_superior'];
+    _modeloInfLink = pedList[index]['modelo_inferior']['modelo_inferior'];
 
     return Scaffold(
       appBar: SecondaryAppbar(),

@@ -2,10 +2,16 @@ import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:easy_web_view/easy_web_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'login_screen.dart';
 
 class ModelViewer extends StatefulWidget {
+  final String modeloSupLink;
+  final String modeloInfLink;
+
+  ModelViewer({this.modeloSupLink, this.modeloInfLink});
+
   @override
   _ModelViewerState createState() => _ModelViewerState();
 }
@@ -45,6 +51,13 @@ class _ModelViewerState extends State<ModelViewer>
                 height: 500,
               ),
             ),
+            ElevatedButton.icon(
+              onPressed: () async {
+                await launch(widget.modeloSupLink);
+              },
+              icon: const Icon(Icons.download_done_rounded),
+              label: const Text('Baixar'),
+            ),
           ],
         ),
       ),
@@ -69,6 +82,13 @@ class _ModelViewerState extends State<ModelViewer>
                 width: 2000,
                 height: 500,
               ),
+            ),
+            ElevatedButton.icon(
+              onPressed: () async {
+                await launch(widget.modeloInfLink);
+              },
+              icon: const Icon(Icons.download_done_rounded),
+              label: const Text('Baixar'),
             ),
           ],
         ),

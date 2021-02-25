@@ -87,7 +87,7 @@ class _VerticalState extends State<Vertical> {
     );
   }
 
-  Widget _sobremordidaProfunda(var _novoPedStore) {
+  Widget _sobremordidaProfunda(PedidoProvider _novoPedStore) {
     return Column(
       children: <Widget>[
         //Texto: SOBREMORDIDA PROFUNDA
@@ -227,6 +227,7 @@ class _VerticalState extends State<Vertical> {
                               Row(
                                 children: [
                                   Radio(
+                                    toggleable: true,
                                     activeColor: Colors.blue,
                                     groupValue: _novoPedStore
                                         .getSbmpRadioValue('_idaSup'),
@@ -255,7 +256,7 @@ class _VerticalState extends State<Vertical> {
                                     children: [
                                       Container(
                                         height: 35,
-                                        width: 50,
+                                        width: 75,
                                         child: TextFormField(
                                           onChanged: (value) {
                                             _novoPedStore.setIdaSup(value);
@@ -272,7 +273,7 @@ class _VerticalState extends State<Vertical> {
                                             }
                                             return null;
                                           },
-                                          maxLength: 4,
+                                          maxLength: 5,
                                           controller: _cIntDentAntSup,
                                           keyboardType: TextInputType.number,
                                           inputFormatters: <TextInputFormatter>[
@@ -313,6 +314,7 @@ class _VerticalState extends State<Vertical> {
                               Row(
                                 children: [
                                   Radio(
+                                    toggleable: true,
                                     activeColor: Colors.blue,
                                     groupValue: _novoPedStore
                                         .getSbmpRadioValue('_edpSup'),
@@ -341,7 +343,7 @@ class _VerticalState extends State<Vertical> {
                                     children: [
                                       Container(
                                         height: 35,
-                                        width: 50,
+                                        width: 75,
                                         child: TextFormField(
                                           onChanged: (value) {
                                             _novoPedStore.setEdpSup(value);
@@ -358,7 +360,7 @@ class _VerticalState extends State<Vertical> {
                                             }
                                             return null;
                                           },
-                                          maxLength: 4,
+                                          maxLength: 5,
                                           controller: _cExtrDentPostSup,
                                           keyboardType: TextInputType.number,
                                           inputFormatters: <TextInputFormatter>[
@@ -405,6 +407,7 @@ class _VerticalState extends State<Vertical> {
                               Row(
                                 children: [
                                   Radio(
+                                    toggleable: true,
                                     activeColor: Colors.blue,
                                     groupValue: _novoPedStore
                                         .getSbmpRadioValue('_idaInf'),
@@ -433,7 +436,7 @@ class _VerticalState extends State<Vertical> {
                                     children: [
                                       Container(
                                         height: 35,
-                                        width: 50,
+                                        width: 75,
                                         child: TextFormField(
                                           onChanged: (value) {
                                             _novoPedStore.setIdaInf(value);
@@ -450,7 +453,7 @@ class _VerticalState extends State<Vertical> {
                                             }
                                             return null;
                                           },
-                                          maxLength: 4,
+                                          maxLength: 5,
                                           controller: _cIntDentAntInf,
                                           keyboardType: TextInputType.number,
                                           inputFormatters: <TextInputFormatter>[
@@ -491,6 +494,7 @@ class _VerticalState extends State<Vertical> {
                               Row(
                                 children: [
                                   Radio(
+                                    toggleable: true,
                                     activeColor: Colors.blue,
                                     groupValue: _novoPedStore
                                         .getSbmpRadioValue('_edpInf'),
@@ -519,7 +523,7 @@ class _VerticalState extends State<Vertical> {
                                     children: [
                                       Container(
                                         height: 35,
-                                        width: 50,
+                                        width: 75,
                                         child: TextFormField(
                                           onChanged: (value) {
                                             _novoPedStore.setEdpInf(value);
@@ -536,7 +540,7 @@ class _VerticalState extends State<Vertical> {
                                             }
                                             return null;
                                           },
-                                          maxLength: 4,
+                                          maxLength: 5,
                                           controller: _cExtrDentPostInf,
                                           keyboardType: TextInputType.number,
                                           inputFormatters: <TextInputFormatter>[
@@ -669,7 +673,7 @@ class _VerticalState extends State<Vertical> {
     );
   }
 
-  Widget _mordidaAbertaAnterior(var _novoPedStore) {
+  Widget _mordidaAbertaAnterior(PedidoProvider _novoPedStore) {
     return Column(
       children: <Widget>[
         //Texto: MORDIDA ABERTA ANTERIOR
@@ -812,6 +816,7 @@ class _VerticalState extends State<Vertical> {
                                 Row(
                                   children: [
                                     Radio(
+                                      toggleable: true,
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getMaaRadioValue('_maaEdaSup'),
@@ -840,7 +845,7 @@ class _VerticalState extends State<Vertical> {
                                       children: [
                                         Container(
                                           height: 35,
-                                          width: 50,
+                                          width: 75,
                                           child: TextFormField(
                                             onChanged: (value) {
                                               _novoPedStore.setMaaEdaSup(value);
@@ -857,7 +862,7 @@ class _VerticalState extends State<Vertical> {
                                               }
                                               return null;
                                             },
-                                            maxLength: 4,
+                                            maxLength: 5,
                                             controller: _cMaaExtDentAntSup,
                                             keyboardType: TextInputType.number,
                                             inputFormatters: <
@@ -899,6 +904,7 @@ class _VerticalState extends State<Vertical> {
                                 Row(
                                   children: [
                                     Radio(
+                                      toggleable: true,
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getMaaRadioValue('_maaIdpSup'),
@@ -927,7 +933,7 @@ class _VerticalState extends State<Vertical> {
                                       children: [
                                         Container(
                                           height: 35,
-                                          width: 50,
+                                          width: 75,
                                           child: TextFormField(
                                             onChanged: (value) {
                                               _novoPedStore.setMaaIdpSup(value);
@@ -944,7 +950,7 @@ class _VerticalState extends State<Vertical> {
                                               }
                                               return null;
                                             },
-                                            maxLength: 4,
+                                            maxLength: 5,
                                             controller: _cMaaIntrDentPostSup,
                                             keyboardType: TextInputType.number,
                                             inputFormatters: <
@@ -960,7 +966,7 @@ class _VerticalState extends State<Vertical> {
                                             ),
                                           ),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 15,
                                         )
                                       ],
@@ -992,6 +998,7 @@ class _VerticalState extends State<Vertical> {
                                 Row(
                                   children: [
                                     Radio(
+                                      toggleable: true,
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getMaaRadioValue('_maaEdaInf'),
@@ -1020,7 +1027,7 @@ class _VerticalState extends State<Vertical> {
                                       children: [
                                         Container(
                                           height: 35,
-                                          width: 50,
+                                          width: 75,
                                           child: TextFormField(
                                             onChanged: (value) {
                                               _novoPedStore.setMaaEdaInf(value);
@@ -1037,7 +1044,7 @@ class _VerticalState extends State<Vertical> {
                                               }
                                               return null;
                                             },
-                                            maxLength: 4,
+                                            maxLength: 5,
                                             controller: _cMaaExtDentAntInf,
                                             keyboardType: TextInputType.number,
                                             inputFormatters: <
@@ -1079,6 +1086,7 @@ class _VerticalState extends State<Vertical> {
                                 Row(
                                   children: [
                                     Radio(
+                                      toggleable: true,
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getMaaRadioValue('_maaIdpInf'),
@@ -1107,7 +1115,7 @@ class _VerticalState extends State<Vertical> {
                                       children: [
                                         Container(
                                           height: 35,
-                                          width: 50,
+                                          width: 75,
                                           child: TextFormField(
                                             onChanged: (value) {
                                               _novoPedStore.setMaaIdpInf(value);
@@ -1124,7 +1132,7 @@ class _VerticalState extends State<Vertical> {
                                               }
                                               return null;
                                             },
-                                            maxLength: 4,
+                                            maxLength: 5,
                                             controller: _cMaaIntrDentPostInf,
                                             keyboardType: TextInputType.number,
                                             inputFormatters: <
@@ -1140,7 +1148,7 @@ class _VerticalState extends State<Vertical> {
                                             ),
                                           ),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 15,
                                         )
                                       ],

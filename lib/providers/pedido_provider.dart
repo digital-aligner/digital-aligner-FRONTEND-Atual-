@@ -1103,28 +1103,60 @@ class PedidoProvider with ChangeNotifier {
   void setSbmpRadio(int value, String radName) {
     switch (radName) {
       case '_idaSup':
-        _idaSup = value;
-        _idaSupState = true;
-        notifyListeners();
-        print(_idaSup);
+        if (value == null) {
+          _idaSup = 0;
+          _idaSupMm = '';
+          _idaSupState = false;
+          notifyListeners();
+          print(_idaSup);
+        } else {
+          _idaSup = value;
+          _idaSupState = true;
+          notifyListeners();
+          print(_idaSup);
+        }
         break;
       case '_idaInf':
-        _idaInf = value;
-        _idaInfState = true;
-        notifyListeners();
-        print(_idaInf);
+        if (value == null) {
+          _idaInf = 0;
+          _idaInfMm = '';
+          _idaInfState = false;
+          notifyListeners();
+          print(_idaInf);
+        } else {
+          _idaInf = value;
+          _idaInfState = true;
+          notifyListeners();
+          print(_idaInf);
+        }
         break;
       case '_edpSup':
-        _edpSup = value;
-        _edpSupState = true;
-        notifyListeners();
-        print(_edpSup);
+        if (value == null) {
+          _edpSup = 0;
+          _edpSupMm = '';
+          _edpSupState = false;
+          notifyListeners();
+          print(_edpSup);
+        } else {
+          _edpSup = value;
+          _edpSupState = true;
+          notifyListeners();
+          print(_edpSup);
+        }
         break;
       case '_edpInf':
-        _edpInf = value;
-        _edpInfState = true;
-        notifyListeners();
-        print(_edpInf);
+        if (value == null) {
+          _edpInf = 0;
+          _edpInfMm = '';
+          _edpInfState = false;
+          notifyListeners();
+          print(_edpInf);
+        } else {
+          _edpInf = value;
+          _edpInfState = true;
+          notifyListeners();
+          print(_edpInf);
+        }
         break;
       default:
         return null;
@@ -1253,28 +1285,60 @@ class PedidoProvider with ChangeNotifier {
   void setMaaRadio(int value, String radName) {
     switch (radName) {
       case '_maaIdpSup':
-        _maaIdpSup = value;
-        _maaIdpSupState = true;
-        notifyListeners();
-        print(_maaIdpSup);
+        if (value == null) {
+          _maaIdpSup = 0;
+          _maaIdpSupMm = '';
+          _maaIdpSupState = false;
+          notifyListeners();
+          print(_maaIdpSup);
+        } else {
+          _maaIdpSup = value;
+          _maaIdpSupState = true;
+          notifyListeners();
+          print(_maaIdpSup);
+        }
         break;
       case '_maaIdpInf':
-        _maaIdpInf = value;
-        _maaIdpInfState = true;
-        notifyListeners();
-        print(_maaIdpInf);
+        if (value == null) {
+          _maaIdpInf = 0;
+          _maaIdpInfMm = '';
+          _maaIdpInfState = false;
+          notifyListeners();
+          print(_maaIdpInf);
+        } else {
+          _maaIdpInf = value;
+          _maaIdpInfState = true;
+          notifyListeners();
+          print(_maaIdpInf);
+        }
         break;
       case '_maaEdaSup':
-        _maaEdaSup = value;
-        _maaEdaSupState = true;
-        notifyListeners();
-        print(_maaEdaSup);
+        if (value == null) {
+          _maaEdaSup = 0;
+          _maaEdaSupMm = '';
+          _maaEdaSupState = false;
+          notifyListeners();
+          print(_maaEdaSup);
+        } else {
+          _maaEdaSup = value;
+          _maaEdaSupState = true;
+          notifyListeners();
+          print(_maaEdaSup);
+        }
         break;
       case '_maaEdaInf':
-        _maaEdaInf = value;
-        _maaEdaInfState = true;
-        notifyListeners();
-        print(_maaEdaInf);
+        if (value == null) {
+          _maaEdaInf = 0;
+          _maaEdaInfMm = '';
+          _maaEdaInfState = false;
+          notifyListeners();
+          print(_maaEdaInf);
+        } else {
+          _maaEdaInf = value;
+          _maaEdaInfState = true;
+          notifyListeners();
+          print(_maaEdaInf);
+        }
         break;
       default:
         return null;
@@ -1485,6 +1549,9 @@ class PedidoProvider with ChangeNotifier {
   int _lmSupDireita = 0;
   int _lmSupEsquerda = 0;
 
+  //New value for changes to functionality 25/02/21
+  int _lmSupNovo = 0;
+
   // number values in mm
   String _lmSupDireitaMm = '';
   String _lmSupEsquerdaMm = '';
@@ -1553,6 +1620,11 @@ class PedidoProvider with ChangeNotifier {
   }
 
   int getLmSupRadioValue(String radName) {
+    if (radName == null) {
+      return _lmSupNovo;
+    }
+    return null;
+    /*
     switch (radName) {
       case '_lmSupDireita':
         return _lmSupDireita;
@@ -1560,7 +1632,7 @@ class PedidoProvider with ChangeNotifier {
         return _lmSupEsquerda;
       default:
         return null;
-    }
+    }*/
   }
 
   int getLinhaMediaSupRadio() {
@@ -3481,6 +3553,10 @@ class PedidoProvider with ChangeNotifier {
       _edpSupState = false;
       _edpInfState = false;
     } else {
+      if (ped['sobremordida_profunda']['status_correcao']['id'] == 2) {
+        _verticalSMP = 2;
+        _sobremordidaState = true;
+      }
       if (ped['sobremordida_profunda']['intrusao_dentes_anteriores_sup']
           .isNotEmpty) {
         _verticalSMP = 2;
@@ -3539,6 +3615,10 @@ class PedidoProvider with ChangeNotifier {
       _maaEdaSupState = false;
       _maaEdaInfState = false;
     } else {
+      if (ped['mordida_aberta_anterior']['status_correcao']['id'] == 2) {
+        _verticalMaa = 2;
+        _mordidaAbertaAntState = true;
+      }
       if (ped['mordida_aberta_anterior']['extrusao_dentes_anteriores_sup']
           .isNotEmpty) {
         _verticalMaa = 2;
@@ -3620,6 +3700,10 @@ class PedidoProvider with ChangeNotifier {
       _lmSupDireitaState = false;
       _lmSupEsquerdaState = false;
     } else {
+      if (ped['linha_media_superior']['status_correcao']['id'] == 2) {
+        _linhaMediaSup = 2;
+        _linhaMediaSupState = true;
+      }
       if (ped['linha_media_superior']['mover_direita'].isNotEmpty) {
         _linhaMediaSup = 2;
         _linhaMediaSupState = true;
@@ -3644,6 +3728,10 @@ class PedidoProvider with ChangeNotifier {
       _lmInfDireitaState = false;
       _lmInfEsquerdaState = false;
     } else {
+      if (ped['linha_media_inferior']['status_correcao']['id'] == 2) {
+        _linhaMediaInf = 2;
+        _linhaMediaInfState = true;
+      }
       if (ped['linha_media_inferior']['mover_direita'].isNotEmpty) {
         _linhaMediaInf = 2;
         _linhaMediaInfState = true;
