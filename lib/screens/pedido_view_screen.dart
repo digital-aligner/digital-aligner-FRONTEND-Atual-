@@ -3663,6 +3663,13 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
           child: _mapRadiografiasUrlToUi(pedList[index]['radiografias']),
         ),
         const SizedBox(height: 50),
+        ElevatedButton.icon(
+          onPressed: () async {
+            _downloadAll();
+          },
+          icon: const Icon(Icons.download_done_rounded),
+          label: const Text('Baixar Tudo'),
+        ),
       ],
     );
   }
@@ -4049,6 +4056,53 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _downloadAll() async {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 3),
+        content: Row(children: [
+          const Text('Baixando tudo...'),
+          CircularProgressIndicator(
+            valueColor: new AlwaysStoppedAnimation<Color>(
+              Colors.blue,
+            ),
+          ),
+        ]),
+      ),
+    );
+    //Download all photos
+
+    await pedList[index]['fotografias'].forEach((key, foto) async {
+      if (foto.contains('http')) {
+        launch(foto);
+      }
+    });
+
+    //Download all radiografias
+    await pedList[index]['radiografias'].forEach((key, foto) async {
+      if (foto.contains('http')) {
+        launch(foto);
+      }
+    });
+
+    //Download modelo superior
+
+    if (pedList[index]['modelo_superior']['modelo_superior'].contains('http')) {
+      await Future.delayed(Duration(seconds: 1), () async {
+        await launch(pedList[index]['modelo_superior']['modelo_superior']);
+      });
+    }
+
+    //Download modelo inferior
+
+    if (pedList[index]['modelo_inferior']['modelo_inferior'].contains('http')) {
+      await Future.delayed(Duration(seconds: 1), () async {
+        await launch(pedList[index]['modelo_inferior']['modelo_inferior']);
+      });
+    }
   }
 
   @override
