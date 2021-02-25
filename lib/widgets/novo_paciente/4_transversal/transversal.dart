@@ -834,7 +834,7 @@ class _TransversalState extends State<Transversal> {
     );
   }
 
-  Widget _linhaMediaInf(var _novoPedStore) {
+  Widget _linhaMediaInf(PedidoProvider _novoPedStore) {
     return Card(
       elevation: 5,
       child: Column(
@@ -854,7 +854,7 @@ class _TransversalState extends State<Transversal> {
                 },
                 value: 1,
               ),
-              Text('Manter'),
+              const Text('Manter'),
               Radio(
                 activeColor: Colors.blue,
                 groupValue: _novoPedStore.getLinhaMediaInfRadio(),
@@ -902,8 +902,8 @@ class _TransversalState extends State<Transversal> {
                               children: [
                                 Radio(
                                   activeColor: Colors.blue,
-                                  groupValue: _novoPedStore
-                                      .getLmInfRadioValue('_lmInfDireita'),
+                                  groupValue:
+                                      _novoPedStore.getLmInfRadioValue(null),
                                   onChanged: (value) {
                                     _removeFocus(context);
                                     if (_novoPedStore.getLinhaMediaInfState()) {
@@ -927,7 +927,7 @@ class _TransversalState extends State<Transversal> {
                                   children: [
                                     Container(
                                       height: 35,
-                                      width: 50,
+                                      width: 75,
                                       child: TextFormField(
                                         onChanged: (value) {
                                           _novoPedStore
@@ -947,7 +947,7 @@ class _TransversalState extends State<Transversal> {
                                           }
                                           return null;
                                         },
-                                        maxLength: 3,
+                                        maxLength: 5,
                                         controller: _cLmInfDireita,
                                         keyboardType: TextInputType.number,
                                         inputFormatters: <TextInputFormatter>[
@@ -962,7 +962,7 @@ class _TransversalState extends State<Transversal> {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 15,
                                     )
                                   ],
@@ -989,8 +989,8 @@ class _TransversalState extends State<Transversal> {
                               children: [
                                 Radio(
                                   activeColor: Colors.blue,
-                                  groupValue: _novoPedStore
-                                      .getLmInfRadioValue('_lmInfEsquerda'),
+                                  groupValue:
+                                      _novoPedStore.getLmInfRadioValue(null),
                                   onChanged: (value) {
                                     _removeFocus(context);
                                     if (_novoPedStore.getLinhaMediaInfState()) {
@@ -1000,7 +1000,7 @@ class _TransversalState extends State<Transversal> {
                                       );
                                     }
                                   },
-                                  value: 1,
+                                  value: 2,
                                 ),
                                 Text(
                                   'mover para a esquerda - Qts mm? ',
@@ -1014,7 +1014,7 @@ class _TransversalState extends State<Transversal> {
                                   children: [
                                     Container(
                                       height: 35,
-                                      width: 50,
+                                      width: 75,
                                       child: TextFormField(
                                         onChanged: (value) {
                                           _novoPedStore
@@ -1034,7 +1034,7 @@ class _TransversalState extends State<Transversal> {
                                           }
                                           return null;
                                         },
-                                        maxLength: 3,
+                                        maxLength: 5,
                                         controller: _cLmInfEsquerda,
                                         keyboardType: TextInputType.number,
                                         inputFormatters: <TextInputFormatter>[
@@ -1049,7 +1049,7 @@ class _TransversalState extends State<Transversal> {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 15,
                                     )
                                   ],

@@ -1,3 +1,6 @@
+import 'package:digital_aligner_app/dados/models/pedido/pedido.dart';
+import 'package:flutter/services.dart';
+
 import '../../../providers/pedido_provider.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +12,17 @@ class Sagital extends StatefulWidget {
 }
 
 class _SagitalState extends State<Sagital> {
+  final _controllerLocalRecElastAlinh = TextEditingController();
+  final _controllerLocalRecAlinhBotao = TextEditingController();
+  final _controllerLocalAlivioAlinhador = TextEditingController();
+  @override
+  void dispose() {
+    _controllerLocalRecElastAlinh.dispose();
+    _controllerLocalRecAlinhBotao.dispose();
+    _controllerLocalAlivioAlinhador.dispose();
+    super.dispose();
+  }
+
   //For use to remove any text focus when clicking on radio.
   void _removeFocus(var context) {
     FocusScopeNode currentFocus = FocusScope.of(context);
@@ -20,6 +34,12 @@ class _SagitalState extends State<Sagital> {
   @override
   Widget build(BuildContext context) {
     final _novoPedStore = Provider.of<PedidoProvider>(context);
+
+    //loading provider values to controller
+    _controllerLocalRecElastAlinh.text = _novoPedStore.getLocalRecElastAlinh();
+    _controllerLocalRecAlinhBotao.text = _novoPedStore.getLocalRecAlinhBotao();
+    _controllerLocalAlivioAlinhador.text =
+        _novoPedStore.getLocalAlivioAlinhador();
 
     return Container(
       width: double.infinity,
@@ -1053,7 +1073,7 @@ class _SagitalState extends State<Sagital> {
     );
   }
 
-  Widget _opcionais(var _novoPedStore) {
+  Widget _opcionais(PedidoProvider _novoPedStore) {
     return Column(
       children: [
         Row(
@@ -1085,11 +1105,61 @@ class _SagitalState extends State<Sagital> {
         ),
         CheckboxListTile(
           controlAffinity: ListTileControlAffinity.leading,
-          title:
-              Text('Recorte para elástico no alinhador (especificar o local)'),
+          title: Row(
+            children: [
+              const Text(
+                'Recorte para elástico no alinhador (especificar o local)',
+              ),
+              const SizedBox(
+                width: 15,
+              ),
+              Container(
+                height: 35,
+                width: 75,
+                child: TextFormField(
+                  onChanged: (value) {
+                    if (!_novoPedStore.getSgOpRecorteElastico()) {
+                      _novoPedStore.setLocalRecElastAlinh('');
+                    } else {
+                      _novoPedStore.setLocalRecElastAlinh(value);
+                    }
+                  },
+                  textAlign: TextAlign.center,
+                  onSaved: (String value) {
+                    //sc.usernameCpf = value;
+                  },
+                  enabled: _novoPedStore.getSgOpRecorteElastico(),
+                  validator: (value) {
+                    if (value.length < 0) {
+                      return 'Não valido.';
+                    }
+                    return null;
+                  },
+                  maxLength: 5,
+                  controller: _controllerLocalRecElastAlinh,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                  ],
+                  decoration: const InputDecoration(
+                    //To hide cpf length num
+                    counterText: '',
+                    //labelText: 'Quantos mm?',
+                    // border: const OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              )
+            ],
+          ),
           value: _novoPedStore.getSgOpRecorteElastico(),
           onChanged: (value) {
             _removeFocus(context);
+            if (!value) {
+              _novoPedStore.setLocalRecElastAlinh('');
+            }
             _novoPedStore.setSgOpRecorteElastico(value);
           },
           activeColor: Colors.black12,
@@ -1097,10 +1167,61 @@ class _SagitalState extends State<Sagital> {
         ),
         CheckboxListTile(
           controlAffinity: ListTileControlAffinity.leading,
-          title: Text('Recorte no alinhador para botão (especificar o local)'),
+          title: Row(
+            children: [
+              const Text(
+                'Recorte no alinhador para botão (especificar o local)',
+              ),
+              const SizedBox(
+                width: 15,
+              ),
+              Container(
+                height: 35,
+                width: 75,
+                child: TextFormField(
+                  onChanged: (value) {
+                    if (!_novoPedStore.getSgOpRecorteAlinhador()) {
+                      _novoPedStore.setLocalRecAlinhBotao('');
+                    } else {
+                      _novoPedStore.setLocalRecAlinhBotao(value);
+                    }
+                  },
+                  textAlign: TextAlign.center,
+                  onSaved: (String value) {
+                    //sc.usernameCpf = value;
+                  },
+                  enabled: _novoPedStore.getSgOpRecorteAlinhador(),
+                  validator: (value) {
+                    if (value.length < 0) {
+                      return 'Não valido.';
+                    }
+                    return null;
+                  },
+                  maxLength: 5,
+                  controller: _controllerLocalRecAlinhBotao,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                  ],
+                  decoration: const InputDecoration(
+                    //To hide cpf length num
+                    counterText: '',
+                    //labelText: 'Quantos mm?',
+                    // border: const OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              )
+            ],
+          ),
           value: _novoPedStore.getSgOpRecorteAlinhador(),
           onChanged: (value) {
             _removeFocus(context);
+            if (!value) {
+              _novoPedStore.setLocalRecAlinhBotao('');
+            }
             _novoPedStore.setSgOpRecorteAlinhador(value);
           },
           activeColor: Colors.black12,
@@ -1108,11 +1229,61 @@ class _SagitalState extends State<Sagital> {
         ),
         CheckboxListTile(
           controlAffinity: ListTileControlAffinity.leading,
-          title: Text(
-              'Alívio no alinhador para braço de força (especificar o dente)'),
+          title: Row(
+            children: [
+              const Text(
+                'Alívio no alinhador para braço de força (especificar o dente)',
+              ),
+              const SizedBox(
+                width: 15,
+              ),
+              Container(
+                height: 35,
+                width: 75,
+                child: TextFormField(
+                  onChanged: (value) {
+                    if (!_novoPedStore.getSgOpAlivioAlinhador()) {
+                      _novoPedStore.setLocalAlivioAlinhador('');
+                    } else {
+                      _novoPedStore.setLocalAlivioAlinhador(value);
+                    }
+                  },
+                  textAlign: TextAlign.center,
+                  onSaved: (String value) {
+                    //sc.usernameCpf = value;
+                  },
+                  enabled: _novoPedStore.getSgOpAlivioAlinhador(),
+                  validator: (value) {
+                    if (value.length < 0) {
+                      return 'Não valido.';
+                    }
+                    return null;
+                  },
+                  maxLength: 5,
+                  controller: _controllerLocalAlivioAlinhador,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                  ],
+                  decoration: const InputDecoration(
+                    //To hide cpf length num
+                    counterText: '',
+                    //labelText: 'Quantos mm?',
+                    // border: const OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              )
+            ],
+          ),
           value: _novoPedStore.getSgOpAlivioAlinhador(),
           onChanged: (value) {
             _removeFocus(context);
+            if (!value) {
+              _novoPedStore.setLocalAlivioAlinhador('');
+            }
             _novoPedStore.setSgOpAlivioAlinhador(value);
           },
           activeColor: Colors.black12,

@@ -26,7 +26,7 @@ dependencies:
   provider: ^4.3.2+2
   http: ^0.12.2
   shared_preferences: ^0.5.12+4
-  intl: ^0.16.1  
+  intl: ^0.17.0  
   flutter_localizations:
     sdk: flutter
   datetime_picker_formfield: ^1.0.0
@@ -50,6 +50,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+#dependency_overrides:
+#  extended_image: 1.5.0-dev
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

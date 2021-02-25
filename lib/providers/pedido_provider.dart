@@ -169,6 +169,9 @@ class PedidoProvider with ChangeNotifier {
         recorteElasticoAlinhador: _sgOpRecorteElastico,
         recorteAlinhadorBotao: _sgOpRecorteAlinhador,
         alivioAlinhadorBracoForca: _sgOpAlivioAlinhador,
+        localRecElastAlinh: _localRecElastAlinh,
+        localRecAlinhBotao: _localRecAlinhBotao,
+        localAlivioAlinhador: _localAlivioAlinhador,
       ),
       sobremordidaProfunda: SobremordidaProfunda(
         id: null,
@@ -936,6 +939,34 @@ class PedidoProvider with ChangeNotifier {
   bool _sgOpRecorteAlinhador = false;
   bool _sgOpAlivioAlinhador = false;
 
+  String _localRecElastAlinh = '';
+  String _localRecAlinhBotao = '';
+  String _localAlivioAlinhador = '';
+
+  String getLocalRecElastAlinh() {
+    return _localRecElastAlinh;
+  }
+
+  String getLocalRecAlinhBotao() {
+    return _localRecAlinhBotao;
+  }
+
+  String getLocalAlivioAlinhador() {
+    return _localAlivioAlinhador;
+  }
+
+  void setLocalRecElastAlinh(String value) {
+    _localRecElastAlinh = value;
+  }
+
+  void setLocalRecAlinhBotao(String value) {
+    _localRecAlinhBotao = value;
+  }
+
+  void setLocalAlivioAlinhador(String value) {
+    _localAlivioAlinhador = value;
+  }
+
   bool getSgOpAceitoDesgastes() {
     return _sgOpAceitoDesgastes;
   }
@@ -1603,14 +1634,27 @@ class PedidoProvider with ChangeNotifier {
   void setLmSupRadio(int value, String radName) {
     switch (radName) {
       case '_lmSupDireita':
-        _lmSupDireita = value;
+        //For updated functionality 25/02/21
+        //_lmSupDireita = value;
+        _lmSupNovo = value;
         _lmSupDireitaState = true;
+        //block the other side
+        _lmSupEsquerdaState = false;
+        // remove its value
+        _lmSupEsquerdaMm = '';
+
         notifyListeners();
         print(_lmSupDireita);
         break;
       case '_lmSupEsquerda':
-        _lmSupEsquerda = value;
+        //For updated functionality 25/02/21
+        //_lmSupEsquerda = value;
+        _lmSupNovo = value;
         _lmSupEsquerdaState = true;
+        //block the other side
+        _lmSupDireitaState = false;
+        //remove its value
+        _lmSupDireitaMm = '';
         notifyListeners();
         print(_lmSupEsquerda);
         break;
@@ -1650,9 +1694,9 @@ class PedidoProvider with ChangeNotifier {
       _linhaMediaSupState = false;
       _lmSupDireitaState = false;
       _lmSupEsquerdaState = false;
-      _lmSupDireita = 0;
-      _lmSupEsquerda = 0;
-
+      //_lmSupDireita = 0;
+      //_lmSupEsquerda = 0;
+      _lmSupNovo = 0;
       _lmSupDireitaMm = '';
       _lmSupEsquerdaMm = '';
     } else {
@@ -1672,6 +1716,9 @@ class PedidoProvider with ChangeNotifier {
   bool _lmInfEsquerdaState = false;
   int _lmInfDireita = 0;
   int _lmInfEsquerda = 0;
+
+  //New value for changes to functionality 25/02/21
+  int _lmInfNovo = 0;
 
 // number values in mm
   String _lmInfDireitaMm = '';
@@ -1724,14 +1771,30 @@ class PedidoProvider with ChangeNotifier {
   void setLmInfRadio(int value, String radName) {
     switch (radName) {
       case '_lmInfDireita':
-        _lmInfDireita = value;
+        //For updated functionality 25/02/21
+        //_lmInfDireita = value;
+        _lmInfNovo = value;
         _lmInfDireitaState = true;
+
+        //block the other side
+        _lmInfEsquerdaState = false;
+        // remove its value
+        _lmInfEsquerdaMm = '';
+
         notifyListeners();
         print(_lmInfDireita);
         break;
       case '_lmInfEsquerda':
-        _lmInfEsquerda = value;
+        //For updated functionality 25/02/21
+        _lmInfNovo = value;
+        //_lmInfEsquerda = value;
         _lmInfEsquerdaState = true;
+
+        //block the other side
+        _lmInfDireitaState = false;
+        //remove its value
+        _lmInfDireitaMm = '';
+
         notifyListeners();
         print(_lmInfEsquerda);
         break;
@@ -1741,6 +1804,11 @@ class PedidoProvider with ChangeNotifier {
   }
 
   int getLmInfRadioValue(String radName) {
+    if (radName == null) {
+      return _lmInfNovo;
+    }
+    return null;
+    /*
     switch (radName) {
       case '_lmInfDireita':
         return _lmInfDireita;
@@ -1748,7 +1816,7 @@ class PedidoProvider with ChangeNotifier {
         return _lmInfEsquerda;
       default:
         return null;
-    }
+    }*/
   }
 
   int getLinhaMediaInfRadio() {
@@ -1766,9 +1834,10 @@ class PedidoProvider with ChangeNotifier {
       _linhaMediaInfState = false;
       _lmInfDireitaState = false;
       _lmInfEsquerdaState = false;
-      _lmInfDireita = 0;
-      _lmInfEsquerda = 0;
-
+      //_lmInfDireita = 0;
+      //_lmInfEsquerda = 0;
+      // update functionality 25/02/21
+      _lmInfNovo = 0;
       _lmInfDireitaMm = '';
       _lmInfEsquerdaMm = '';
     } else {

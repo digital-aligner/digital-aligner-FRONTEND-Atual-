@@ -4,6 +4,9 @@ class SagitalOpcionais {
   bool recorteElasticoAlinhador;
   bool recorteAlinhadorBotao;
   bool alivioAlinhadorBracoForca;
+  String localRecElastAlinh;
+  String localRecAlinhBotao;
+  String localAlivioAlinhador;
 
   SagitalOpcionais({
     this.id,
@@ -11,6 +14,9 @@ class SagitalOpcionais {
     this.recorteElasticoAlinhador,
     this.recorteAlinhadorBotao,
     this.alivioAlinhadorBracoForca,
+    this.localRecElastAlinh,
+    this.localRecAlinhBotao,
+    this.localAlivioAlinhador,
   });
 
   factory SagitalOpcionais.fromJson(Map<String, dynamic> data) {
@@ -20,6 +26,9 @@ class SagitalOpcionais {
       recorteElasticoAlinhador: data['recorte_elastico_alinhador'],
       recorteAlinhadorBotao: data['recorte_alinhador_botao'],
       alivioAlinhadorBracoForca: data['alivio_alinhador_braco_forca'],
+      localRecElastAlinh: data['local_rec_elast_alinh'],
+      localRecAlinhBotao: data['local_rec_alinh_botao'],
+      localAlivioAlinhador: data['local_alivio_alinhador'],
     );
   }
 
@@ -30,6 +39,9 @@ class SagitalOpcionais {
       'recorte_elastico_alinhador': recorteElasticoAlinhador,
       'recorte_alinhador_botao': recorteAlinhadorBotao,
       'alivio_alinhador_braco_forca': alivioAlinhadorBracoForca,
+      'local_rec_elast_alinh': localRecElastAlinh,
+      'local_rec_alinh_botao': localRecAlinhBotao,
+      'local_alivio_alinhador': localAlivioAlinhador,
     };
   }
 }
