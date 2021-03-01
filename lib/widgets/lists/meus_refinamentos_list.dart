@@ -106,6 +106,7 @@ class _MeusRefinamentosListState extends State<MeusRefinamentosList> {
                 ),
               ),
               actions: [
+                /*
                 TextButton(
                   child: Text("Editar Relatorio"),
                   onPressed: () {
@@ -123,7 +124,7 @@ class _MeusRefinamentosListState extends State<MeusRefinamentosList> {
                           () => _pedidosListStore.clearPedidosAndUpdate());
                     });
                   },
-                ),
+                ), */
                 TextButton(
                   child: Text("Fechar"),
                   onPressed: () {

@@ -259,6 +259,34 @@ class CadastroProvider with ChangeNotifier {
     }
   }
 
+  Future<dynamic> sendCadistaState(int id, bool value) async {
+    String url = RotasUrl.rotaCadastro + id.toString();
+
+    Map<String, String> requestHeaders = {
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $_token',
+    };
+
+    try {
+      final response = await http.put(
+        url,
+        headers: requestHeaders,
+        body: json.encode(
+          {
+            'is_cadista': value,
+          },
+        ),
+      );
+      Map responseData = json.decode(response.body);
+
+      clearCadastrosAndUpdate();
+      return responseData;
+    } catch (error) {
+      print('Error! Status code: ' + error.toString());
+    }
+  }
+
   Future<dynamic> enviarCadastro() async {
     var _response =
         await http.put(RotasUrl.rotaCadastro + _selectedCad.id.toString(),

@@ -106,6 +106,7 @@ class _MeusPedidosListState extends State<MeusPedidosList> {
                 ),
               ),
               actions: [
+                /*
                 TextButton(
                   child: Text("Editar Relatorio"),
                   onPressed: () {
@@ -123,7 +124,7 @@ class _MeusPedidosListState extends State<MeusPedidosList> {
                           () => _pedidosListStore.clearPedidosAndUpdate());
                     });
                   },
-                ),
+                ),*/
                 TextButton(
                   child: Text("Fechar"),
                   onPressed: () {
@@ -219,6 +220,9 @@ class _MeusPedidosListState extends State<MeusPedidosList> {
   }
 
   String _isoDateTimeToLocal(String isoDateString) {
+    if (isoDateString == null || isoDateString == '') {
+      return '';
+    }
     DateTime _dateTime = DateTime.parse(isoDateString).toLocal();
     String _formatedDate = DateFormat('dd/MM/yyyy - kk:mm').format(_dateTime);
 

@@ -18,7 +18,6 @@ import 'package:provider/provider.dart';
 
 import 'package:flutter/material.dart';
 //import 'dart:html' as html;
-import 'package:dio/dio.dart';
 
 class PedidoListGerenciar extends StatefulWidget {
   @override
@@ -27,7 +26,7 @@ class PedidoListGerenciar extends StatefulWidget {
 
 class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
   PedidosListProvider _pedidosListStore;
-  Dio dio = Dio();
+
   AuthProvider _authStore;
 
   List<dynamic> pedList;

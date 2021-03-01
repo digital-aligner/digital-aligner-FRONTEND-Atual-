@@ -252,7 +252,7 @@ class _MeusPedidosState extends State<MeusPedidos> {
                                   ConnectionState.done) {
                                 if (snapshot.data == null) {
                                   return Container(
-                                    child: Text(
+                                    child: const Text(
                                         'Erro ao se connectar. Verifique sua conexão ou tente novamente mais tarde.'),
                                   );
                                 } else if (snapshot.data[0]

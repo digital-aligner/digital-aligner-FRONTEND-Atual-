@@ -35,6 +35,7 @@ class RotasUrl {
   static const rotaModeloSuperiorList = rotaBase + 'modelo-superior-list/';
   static const rotaModeloInferiorList = rotaBase + 'modelo-inferior-list/';
   static const rotaModeloCompactadoList = rotaBase + 'modelo-compactados-list/';
+  static const rotaModeloNemoList = rotaBase + 'modelo-nemo-list/';
   static const rotaMeuRelatorio = rotaBase + 'meu-relatorio/';
   static const rotaCriarRelatorio = rotaBase + 'criar-relatorio/';
   static const rotaAtualizarRelatorio = rotaBase + 'atualizar-relatorio/';
@@ -47,6 +48,7 @@ class RotasUrl {
   static const rotaDeleteModeloSup = rotaBase + 'upload/files/';
   static const rotaDeleteModeloInf = rotaBase + 'upload/files/';
   static const rotaDeletecompactUpload = rotaBase + 'upload/files/';
+  static const rotaDeleteNemoUpload = rotaBase + 'upload/files/';
   static const rotaDeleteRelatorioUpload = rotaBase + 'upload/files/';
   //Delete routes
   static const rotaDeletePedido = rotaBase + 'deletar-pedido/';

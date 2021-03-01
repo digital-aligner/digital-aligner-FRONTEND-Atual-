@@ -24,6 +24,7 @@ import 'package:digital_aligner_app/dados/models/pedido/linha_media_inferior.dar
 import 'package:digital_aligner_app/dados/models/pedido/linha_media_superior.dart';
 import 'package:digital_aligner_app/dados/models/pedido/modelo_compactado.dart';
 import 'package:digital_aligner_app/dados/models/pedido/modelo_inferior.dart';
+import 'package:digital_aligner_app/dados/models/pedido/modelo_nemo.dart';
 import 'package:digital_aligner_app/dados/models/pedido/modelo_superior.dart';
 import 'package:digital_aligner_app/dados/models/pedido/mordida_aberta_anterior.dart';
 import 'package:digital_aligner_app/dados/models/pedido/mordida_cruzada_posterior.dart';
@@ -37,6 +38,7 @@ import 'package:digital_aligner_app/dados/models/pedido/vertical_sobremordida_op
 import 'package:digital_aligner_app/widgets/file_uploads/compactado_model.dart';
 import 'package:digital_aligner_app/widgets/file_uploads/modelo_inferior.dart';
 import 'package:digital_aligner_app/widgets/file_uploads/modelo_superior.dart';
+import 'package:digital_aligner_app/widgets/file_uploads/nemo_model.dart';
 import 'package:digital_aligner_app/widgets/file_uploads/radiografia_model.dart';
 
 import '../dados/models/pedido/relacao_canino.dart';
@@ -63,6 +65,7 @@ class PedidoProvider with ChangeNotifier {
   ModeloSuperior _modeloSuperior = ModeloSuperior();
   ModeloInferior _modeloInferior = ModeloInferior();
   ModeloCompactado _modeloCompactado = ModeloCompactado();
+  ModeloNemo _modeloNemo = ModeloNemo();
 
   Paciente _paciente;
 
@@ -85,6 +88,7 @@ class PedidoProvider with ChangeNotifier {
   Map<String, dynamic> _modeloSuperiorMap = Map<String, dynamic>();
   Map<String, dynamic> _modeloInferiorMap = Map<String, dynamic>();
   Map<String, dynamic> _modeloCompactadoMap = Map<String, dynamic>();
+  Map<String, dynamic> _modeloNemoMap = Map<String, dynamic>();
 
   //For async update on photo widget
   Map<String, dynamic> getTheMap() {
@@ -447,6 +451,7 @@ class PedidoProvider with ChangeNotifier {
       modeloSuperior: _modeloSuperior,
       modeloInferior: _modeloInferior,
       modeloCompactado: _modeloCompactado,
+      modeloNemo: _modeloNemo,
       statusPedido: _statusId,
       termosDeUso: _termos,
       taxaPlanejamento: true,
@@ -664,6 +669,27 @@ class PedidoProvider with ChangeNotifier {
     }
     // Convert new map to modeloComp object
     _modeloCompactado = ModeloCompactado.fromJson(_modeloCompactadoMap);
+  }
+
+  void setModeloNemoList(List<NemoModel> list) {
+    _modeloNemoMap = ModeloNemo().toJson();
+    //If list recieved is null, remove any items left in provider
+    if (list == null) {
+      _modeloNemo = ModeloNemo();
+      return;
+    }
+    //Map modelocompactList to modelocompact object
+    for (var i = 1; i <= list.length; i++) {
+      String _modeloNemoName = 'modelo_nemo';
+      String _modeloNemoId = 'modelo_nemo_id';
+
+      //modeloNemo1 through 1 (store url)
+      _modeloNemoMap[_modeloNemoName] = list[i - 1].imageUrl;
+      //modeloNemo1 through modeloNemo1Id1 (store id)
+      _modeloNemoMap[_modeloNemoId] = list[i - 1].id;
+    }
+    // Convert new map to modeloComp object
+    _modeloNemo = ModeloNemo.fromJson(_modeloNemoMap);
   }
 
   // 1 - DADOS INICIAIS ---------------------------
@@ -3541,6 +3567,9 @@ class PedidoProvider with ChangeNotifier {
     //Link modelos (atualização)
     _linkModelos = ped['link_modelos'];
 
+    //Set paciente id (for updating history in backend)
+    _pacienteId = ped['paciente']['id'];
+
     // 1 - DADOS INICIAIS ---------------------------
     _nomeDoPaciente = ped['paciente']['nome_paciente'];
     _dataNascimento = ped['paciente']['data_nascimento'];
@@ -4309,6 +4338,10 @@ class PedidoProvider with ChangeNotifier {
     _sgOpRecorteElastico = false;
     _sgOpRecorteAlinhador = false;
     _sgOpAlivioAlinhador = false;
+
+    _localRecElastAlinh = '';
+    _localRecAlinhBotao = '';
+    _localAlivioAlinhador = '';
 
     // 3 - VERTICAL ---------------------------
 

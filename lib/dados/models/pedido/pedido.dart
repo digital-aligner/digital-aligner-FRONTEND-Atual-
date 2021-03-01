@@ -3,6 +3,7 @@ import 'package:digital_aligner_app/dados/models/pedido/endereco_usuario.dart';
 import 'package:digital_aligner_app/dados/models/pedido/extracao_terceiros_molares.dart';
 import 'package:digital_aligner_app/dados/models/pedido/linha_media_inferior.dart';
 import 'package:digital_aligner_app/dados/models/pedido/linha_media_superior.dart';
+import 'package:digital_aligner_app/dados/models/pedido/modelo_nemo.dart';
 import 'package:digital_aligner_app/dados/models/pedido/mordida_aberta_anterior.dart';
 import 'package:digital_aligner_app/dados/models/pedido/mordida_cruzada_posterior.dart';
 import 'package:digital_aligner_app/dados/models/pedido/radiografias.dart';
@@ -36,6 +37,7 @@ class Pedido {
   ModeloSuperior modeloSuperior;
   ModeloInferior modeloInferior;
   ModeloCompactado modeloCompactado;
+  ModeloNemo modeloNemo;
   MordidaAbertaAnterior mordidaAbertaAnterior;
   MordidaCruzadaPosterior mordidaCruzadaPosterior;
   LinhaMediaSuperior linhaMediaSuperior;
@@ -89,6 +91,7 @@ class Pedido {
     this.modeloSuperior,
     this.modeloInferior,
     this.modeloCompactado,
+    this.modeloNemo,
     this.statusPedido,
     this.termosDeUso,
     this.taxaPlanejamento,
@@ -148,6 +151,7 @@ class Pedido {
       modeloSuperior: ModeloSuperior.fromJson(data['modelo_superior']),
       modeloInferior: ModeloInferior.fromJson(data['modelo_inferior']),
       modeloCompactado: ModeloCompactado.fromJson(data['modelo_compactado']),
+      modeloNemo: ModeloNemo.fromJson(data['modelo_nemo']),
       statusPedido: data['status_pedido'],
       termosDeUso: data['termos_de_uso'],
       taxaPlanejamento: data['taxa_planejamento'],
@@ -190,6 +194,7 @@ class Pedido {
       'modelo_superior': modeloSuperior.toJson(),
       'modelo_inferior': modeloInferior.toJson(),
       'modelo_compactado': modeloCompactado.toJson(),
+      'modelo_nemo': modeloNemo.toJson(),
       'status_pedido': statusPedido,
       'termos_de_uso': termosDeUso,
       'taxa_planejamento': taxaPlanejamento,

@@ -5,6 +5,7 @@ import 'package:digital_aligner_app/screens/meus_pacientes.dart';
 import 'package:digital_aligner_app/widgets/file_uploads/compactado_upload.dart';
 import 'package:digital_aligner_app/widgets/file_uploads/modelo_inferior_upload.dart';
 import 'package:digital_aligner_app/widgets/file_uploads/modelo_superior_upload.dart';
+import 'package:digital_aligner_app/widgets/file_uploads/nemo_upload.dart';
 import 'package:digital_aligner_app/widgets/file_uploads/radiografia_upload.dart';
 import 'package:digital_aligner_app/widgets/novo_paciente/6_endereco/editar_endereco_entrega.dart';
 import 'package:digital_aligner_app/widgets/novo_paciente/7_termos/termos.dart';
@@ -91,6 +92,7 @@ class _PedidoFormState extends State<PedidoForm> {
       _novoPedStore.setToken(_authStore.token);
       _novoPedStore.setPedidoId(widget.pedidoId);
       _novoPedStore.setPedido(widget.pedidoDados);
+
       _initialSetup = false;
     } else {
       if (_initialSetup) {
@@ -374,6 +376,15 @@ class _PedidoFormState extends State<PedidoForm> {
                     ),
                   ),
                 ),
+                const SizedBox(
+                  height: 50,
+                  child: const Divider(
+                    thickness: 2,
+                  ),
+                ),
+                //MODELO NEMO
+                const SizedBox(height: 40),
+                _modeloNemo(),
                 const SizedBox(
                   height: 50,
                   child: const Divider(
@@ -687,6 +698,30 @@ class _PedidoFormState extends State<PedidoForm> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _modeloNemo() {
+    return Column(
+      children: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Modelo Nemo',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        NemoUpload(
+          isEdit: widget.isEditarPedido,
+          pedidoDados: widget.pedidoDados,
+        ),
+      ],
     );
   }
 

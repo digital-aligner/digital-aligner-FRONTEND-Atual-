@@ -4073,8 +4073,7 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
         ]),
       ),
     );
-    //Download all photos
-
+    //Download all photoss
     await pedList[index]['fotografias'].forEach((key, foto) async {
       if (foto.contains('http')) {
         launch(foto);
@@ -4089,15 +4088,12 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
     });
 
     //Download modelo superior
-
     if (pedList[index]['modelo_superior']['modelo_superior'].contains('http')) {
       await Future.delayed(Duration(seconds: 1), () async {
         await launch(pedList[index]['modelo_superior']['modelo_superior']);
       });
     }
-
     //Download modelo inferior
-
     if (pedList[index]['modelo_inferior']['modelo_inferior'].contains('http')) {
       await Future.delayed(Duration(seconds: 1), () async {
         await launch(pedList[index]['modelo_inferior']['modelo_inferior']);

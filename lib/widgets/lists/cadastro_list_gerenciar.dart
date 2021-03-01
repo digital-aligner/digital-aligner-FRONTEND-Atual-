@@ -440,6 +440,49 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                 ),
               ),
               actions: [
+                Container(
+                  width: 220,
+                  height: 50,
+                  child: SwitchListTile(
+                      activeColor: Colors.blue,
+                      title: const Text('Cadista?'),
+                      value: cadList[index]['is_cadista'],
+                      onChanged: (bool value) {
+                        cadastroStore
+                            .sendCadistaState(cadList[index]['id'], value)
+                            .then((data) {
+                          if (!data.containsKey('error')) {
+                            ScaffoldMessenger.of(context)
+                                .removeCurrentSnackBar();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 8),
+                                content: value
+                                    ? const Text(
+                                        'Acesso de cadista liberado!',
+                                      )
+                                    : const Text(
+                                        'Acesso de cadista removido!',
+                                      ),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context)
+                                .removeCurrentSnackBar();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 8),
+                                content: Text('Algo deu errado'),
+                              ),
+                            );
+                          }
+                        });
+                      },
+                      secondary: const Icon(
+                        Icons.engineering,
+                      )),
+                ),
+                const SizedBox(width: 130),
                 TextButton(
                   child: const Text("Aprovar"),
                   onPressed: () {
@@ -464,7 +507,6 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                         );
                       }
                     });
-                    Navigator.of(ctx).pop();
                   },
                 ),
                 TextButton(
