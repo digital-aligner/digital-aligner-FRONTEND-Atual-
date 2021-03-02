@@ -62,6 +62,7 @@ class Pedido {
   EnderecoUsuario enderecoUsuario;
   int paciente;
   String linkModelos;
+  int cadistaResponsavel;
 
   Pedido({
     this.id,
@@ -102,6 +103,7 @@ class Pedido {
     this.enderecoUsuario,
     this.paciente,
     this.linkModelos,
+    this.cadistaResponsavel,
   });
 
   factory Pedido.fromJson(Map<String, dynamic> data) {
@@ -162,6 +164,7 @@ class Pedido {
       enderecoUsuario: EnderecoUsuario.fromJson(data['endereco_usuario']),
       paciente: data['paciente'],
       linkModelos: data['link_modelos'],
+      cadistaResponsavel: data['cadista_responsavel'],
     );
   }
 
@@ -205,6 +208,7 @@ class Pedido {
       'endereco_usuario': enderecoUsuario.toJson(),
       'paciente': paciente,
       'link_modelos': linkModelos,
+      'cadista_responsavel': cadistaResponsavel,
     };
   }
 }

@@ -81,6 +81,13 @@ class PedidoProvider with ChangeNotifier {
     _pedidoId = value;
   }
 
+  //Obs: can send null to server. Don't need to inicial value.
+  int _cadistaResponsavel;
+
+  void setCadistaResponsavelId(int value) {
+    _cadistaResponsavel = value;
+  }
+
   String _token;
 
   Map<String, dynamic> _fotografiasMap = Map<String, dynamic>();
@@ -462,6 +469,7 @@ class PedidoProvider with ChangeNotifier {
       usersPermissionsUser: _usersPermissionsUser,
       paciente: _pacienteId,
       linkModelos: _linkModelos,
+      cadistaResponsavel: _cadistaResponsavel,
     );
   }
 
@@ -3564,6 +3572,13 @@ class PedidoProvider with ChangeNotifier {
 
   // SETTING FIELDS (FOR UPDATE SCREEN)
   void setPedido(Map ped) {
+    //Set cadista
+    //Obs: If the user hasn't selected a cadista previously, will be null.
+    //Needs to be verified.
+    if (ped['cadista_responsavel'] != null) {
+      _cadistaResponsavel = ped['cadista_responsavel']['id'];
+    }
+
     //Link modelos (atualização)
     _linkModelos = ped['link_modelos'];
 
@@ -4305,6 +4320,7 @@ class PedidoProvider with ChangeNotifier {
 
   //CLEAR FULL FORM (STILL CODING)
   void clearAll() {
+    _cadistaResponsavel = null;
     _linkModelos = null;
     // 1 - DADOS INICIAIS ---------------------------
     _nomeDoPaciente = null;

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:digital_aligner_app/dados/scrollbarWidgetConfig.dart';
 import 'package:digital_aligner_app/providers/pedidos_list_provider.dart';
 import 'package:digital_aligner_app/providers/s3_delete_provider.dart';
@@ -11,7 +13,9 @@ import 'package:digital_aligner_app/widgets/novo_paciente/6_endereco/editar_ende
 import 'package:digital_aligner_app/widgets/novo_paciente/7_termos/termos.dart';
 import 'package:digital_aligner_app/widgets/novo_paciente/8_status_pedido/status_pedido.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 
+import '../../rotas_url.dart';
 import '../../widgets/novo_paciente/5_problemas_individuais/problemas_individuais.dart';
 
 import '../file_uploads/photo_upload.dart';
@@ -27,6 +31,8 @@ import './2_sagital/sagital.dart';
 import './3_vertical/vertical.dart';
 import './4_transversal/transversal.dart';
 import '6_endereco/endereco_entrega.dart';
+
+import 'package:http/http.dart' as http;
 
 class PedidoForm extends StatefulWidget {
   final int pedidoId;
@@ -58,10 +64,58 @@ class PedidoForm extends StatefulWidget {
 }
 
 class _PedidoFormState extends State<PedidoForm> {
+  AuthProvider _authStore;
+
   final _formKey = GlobalKey<FormState>();
   bool _initialSetup = true;
   S3DeleteProvider _s3deleteStore;
   bool _sendingPedido = false;
+
+  //For nemo dropdown
+  List<dynamic> _cadistas;
+
+  String _formatCpf(String cpf) {
+    String _formatedCpf = cpf.substring(0, 3) +
+        '.' +
+        cpf.substring(3, 6) +
+        '.' +
+        cpf.substring(6, 9) +
+        '-' +
+        cpf.substring(9, 11);
+    return _formatedCpf;
+  }
+
+  String _getCpfFromSelectedValue(String value) {
+    String onlyCpf = value.substring(value.indexOf('|') + 1, value.length);
+    String removeCpfSpace = onlyCpf.replaceAll(' ', '');
+    String removeCpfDots = removeCpfSpace.replaceAll('.', '');
+    String removeCpfDash = removeCpfDots.replaceAll('-', '');
+
+    return removeCpfDash;
+  }
+
+  Future<List<dynamic>> fetchCadistas() async {
+    //Fetch cadistas if last fetch was with error
+    if (_cadistas != null && !_cadistas[0].containsKey('error')) {
+      return _cadistas;
+    }
+    Map<String, String> requestHeaders = {
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${_authStore.token}',
+    };
+
+    try {
+      final response = await http.get(
+        RotasUrl.rotaCadistas,
+        headers: requestHeaders,
+      );
+      _cadistas = json.decode(response.body);
+    } catch (error) {
+      print(error.toString());
+    }
+    return _cadistas;
+  }
 
   // ----- For flutter web scroll -------
   ScrollController _scrollController = ScrollController();
@@ -73,7 +127,7 @@ class _PedidoFormState extends State<PedidoForm> {
     _formList.add(_pedidoFormUi1);
     _formList.add(_pedidoFormUi2);
 
-    AuthProvider _authStore = Provider.of<AuthProvider>(context);
+    _authStore = Provider.of<AuthProvider>(context);
     PedidoProvider _novoPedStore = Provider.of<PedidoProvider>(context);
     _s3deleteStore = Provider.of<S3DeleteProvider>(
       context,
@@ -384,6 +438,84 @@ class _PedidoFormState extends State<PedidoForm> {
                 ),
                 //MODELO NEMO
                 const SizedBox(height: 40),
+                DropdownSearch<String>(
+                  errorBuilder: (context, searchEntry, exception) {
+                    return Center(child: const Text('Algum erro ocorreu.'));
+                  },
+                  emptyBuilder: (context, searchEntry) {
+                    return Center(child: const Text('Nada'));
+                  },
+                  loadingBuilder: (context, searchEntry) {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        valueColor: new AlwaysStoppedAnimation<Color>(
+                          Colors.blue,
+                        ),
+                      ),
+                    );
+                  },
+                  onFind: (_) async {
+                    await fetchCadistas();
+                    //Error handling
+                    if (_cadistas[0].containsKey('error')) {
+                      if (_cadistas[0]['statusCode'] != 404) {
+                        //Will go to errorBuilder
+                        throw Error();
+                      } else {
+                        //Will go to emptyBuilder
+                        return null;
+                      }
+                    }
+                    List<String> _cadUi = [];
+                    for (var _cadista in _cadistas) {
+                      _cadUi.add(
+                        _cadista['nome'] +
+                            ' ' +
+                            _cadista['sobrenome'] +
+                            ' | ' +
+                            _formatCpf(_cadista['username']),
+                      );
+                    }
+                    return _cadUi;
+                  },
+                  dropdownSearchDecoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                  ),
+                  maxHeight: 350,
+                  mode: Mode.MENU,
+                  showSearchBox: true,
+                  showSelectedItem: true,
+                  //items: _enderecoUiList,
+                  //label: 'UF: *',
+                  //hint: 'UF: *',
+                  popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
+                  onChanged: (value) {
+                    int selectedValueId = 0;
+                    String _selectedCpf = _getCpfFromSelectedValue(value);
+                    //Match with list of cadistas cpf
+                    for (var _cadista in _cadistas) {
+                      if (_cadista['username'] == _selectedCpf) {
+                        selectedValueId = _cadista['id'];
+                      }
+                    }
+                    //Setting the value in the pedido provider for update on backend
+                    _novoPedStore.setCadistaResponsavelId(selectedValueId);
+                  },
+                  selectedItem:
+                      widget.pedidoDados['cadista_responsavel'] == null
+                          ? 'selecione um cadista'
+                          : widget.pedidoDados['cadista_responsavel']['nome'] +
+                              ' ' +
+                              widget.pedidoDados['cadista_responsavel']
+                                  ['sobrenome'] +
+                              ' | ' +
+                              _formatCpf(
+                                widget.pedidoDados['cadista_responsavel']
+                                    ['username'],
+                              ),
+                ),
+                const SizedBox(height: 10),
                 _modeloNemo(),
                 const SizedBox(
                   height: 50,
