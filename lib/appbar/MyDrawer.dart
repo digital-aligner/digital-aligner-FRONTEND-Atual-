@@ -3,6 +3,7 @@ import 'package:digital_aligner_app/providers/pedidos_list_provider.dart';
 import 'package:digital_aligner_app/providers/relatorio_provider.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pedido.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_permissoes.dart';
+import 'package:digital_aligner_app/screens/meus_setups.dart';
 import 'package:digital_aligner_app/screens/novo_paciente.dart';
 import 'package:digital_aligner_app/screens/perfil.dart';
 
@@ -61,7 +62,7 @@ class _MyDrawerState extends State<MyDrawer> {
                 }
               },
             ),
-            authStore.role == 'Administrador'
+            authStore.role == 'Administrador' || authStore.role == 'Gerente'
                 ? Column(
                     children: [
                       Divider(),
@@ -106,6 +107,15 @@ class _MyDrawerState extends State<MyDrawer> {
                                 Navigator.of(context).pushReplacementNamed(
                                     GerenciarPedidos.routeName);
                               }
+                            } else if (selectedValue == 'Meus Setups') {
+                              Route route = ModalRoute.of(context);
+                              final routeName = route.settings.name;
+
+                              if (routeName != null &&
+                                  routeName != '/meus-setups') {
+                                Navigator.of(context)
+                                    .pushReplacementNamed(MeusSetups.routeName);
+                              }
                             }
                           },
                           itemBuilder: (_) => [
@@ -131,14 +141,25 @@ class _MyDrawerState extends State<MyDrawer> {
                             ),
                             PopupMenuItem(
                               child: const Text(
-                                'Gerenciar Permissões',
+                                'Meus Setups',
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontFamily: 'BigNoodleTitling',
                                 ),
                               ),
-                              value: 'Gerenciar Permissões',
+                              value: 'Meus Setups',
                             ),
+                            if (authStore.role == 'Administrador')
+                              PopupMenuItem(
+                                child: const Text(
+                                  'Gerenciar Permissões',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontFamily: 'BigNoodleTitling',
+                                  ),
+                                ),
+                                value: 'Gerenciar Permissões',
+                              ),
                           ],
                         ),
                       ),

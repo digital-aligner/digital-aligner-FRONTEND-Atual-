@@ -437,92 +437,94 @@ class _PedidoFormState extends State<PedidoForm> {
                   ),
                 ),
                 //MODELO NEMO
-                const SizedBox(height: 40),
-                DropdownSearch<String>(
-                  errorBuilder: (context, searchEntry, exception) {
-                    return Center(child: const Text('Algum erro ocorreu.'));
-                  },
-                  emptyBuilder: (context, searchEntry) {
-                    return Center(child: const Text('Nada'));
-                  },
-                  loadingBuilder: (context, searchEntry) {
-                    return Center(
-                      child: CircularProgressIndicator(
-                        valueColor: new AlwaysStoppedAnimation<Color>(
-                          Colors.blue,
+                if (widget.isEditarPedido) const SizedBox(height: 40),
+                if (widget.isEditarPedido)
+                  DropdownSearch<String>(
+                    errorBuilder: (context, searchEntry, exception) {
+                      return Center(child: const Text('Algum erro ocorreu.'));
+                    },
+                    emptyBuilder: (context, searchEntry) {
+                      return Center(child: const Text('Nada'));
+                    },
+                    loadingBuilder: (context, searchEntry) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                            Colors.blue,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  onFind: (_) async {
-                    await fetchCadistas();
-                    //Error handling
-                    if (_cadistas[0].containsKey('error')) {
-                      if (_cadistas[0]['statusCode'] != 404) {
-                        //Will go to errorBuilder
-                        throw Error();
-                      } else {
-                        //Will go to emptyBuilder
-                        return null;
-                      }
-                    }
-                    List<String> _cadUi = [];
-                    for (var _cadista in _cadistas) {
-                      _cadUi.add(
-                        _cadista['nome'] +
-                            ' ' +
-                            _cadista['sobrenome'] +
-                            ' | ' +
-                            _formatCpf(_cadista['username']),
                       );
-                    }
-                    return _cadUi;
-                  },
-                  dropdownSearchDecoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                  ),
-                  maxHeight: 350,
-                  mode: Mode.MENU,
-                  showSearchBox: true,
-                  showSelectedItem: true,
-                  //items: _enderecoUiList,
-                  //label: 'UF: *',
-                  //hint: 'UF: *',
-                  popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
-                  onChanged: (value) {
-                    int selectedValueId = 0;
-                    String _selectedCpf = _getCpfFromSelectedValue(value);
-                    //Match with list of cadistas cpf
-                    for (var _cadista in _cadistas) {
-                      if (_cadista['username'] == _selectedCpf) {
-                        selectedValueId = _cadista['id'];
+                    },
+                    onFind: (_) async {
+                      await fetchCadistas();
+                      //Error handling
+                      if (_cadistas[0].containsKey('error')) {
+                        if (_cadistas[0]['statusCode'] != 404) {
+                          //Will go to errorBuilder
+                          throw Error();
+                        } else {
+                          //Will go to emptyBuilder
+                          return null;
+                        }
                       }
-                    }
-                    //Setting the value in the pedido provider for update on backend
-                    _novoPedStore.setCadistaResponsavelId(selectedValueId);
-                  },
-                  selectedItem:
-                      widget.pedidoDados['cadista_responsavel'] == null
-                          ? 'selecione um cadista'
-                          : widget.pedidoDados['cadista_responsavel']['nome'] +
+                      List<String> _cadUi = [];
+                      for (var _cadista in _cadistas) {
+                        _cadUi.add(
+                          _cadista['nome'] +
                               ' ' +
-                              widget.pedidoDados['cadista_responsavel']
-                                  ['sobrenome'] +
+                              _cadista['sobrenome'] +
                               ' | ' +
-                              _formatCpf(
-                                widget.pedidoDados['cadista_responsavel']
-                                    ['username'],
-                              ),
-                ),
-                const SizedBox(height: 10),
-                _modeloNemo(),
-                const SizedBox(
-                  height: 50,
-                  child: const Divider(
-                    thickness: 2,
+                              _formatCpf(_cadista['username']),
+                        );
+                      }
+                      return _cadUi;
+                    },
+                    dropdownSearchDecoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                    ),
+                    maxHeight: 350,
+                    mode: Mode.MENU,
+                    showSearchBox: true,
+                    showSelectedItem: true,
+                    //items: _enderecoUiList,
+                    //label: 'UF: *',
+                    //hint: 'UF: *',
+                    popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
+                    onChanged: (value) {
+                      int selectedValueId = 0;
+                      String _selectedCpf = _getCpfFromSelectedValue(value);
+                      //Match with list of cadistas cpf
+                      for (var _cadista in _cadistas) {
+                        if (_cadista['username'] == _selectedCpf) {
+                          selectedValueId = _cadista['id'];
+                        }
+                      }
+                      //Setting the value in the pedido provider for update on backend
+                      _novoPedStore.setCadistaResponsavelId(selectedValueId);
+                    },
+                    selectedItem: widget.pedidoDados['cadista_responsavel'] ==
+                            null
+                        ? 'selecione um cadista'
+                        : widget.pedidoDados['cadista_responsavel']['nome'] +
+                            ' ' +
+                            widget.pedidoDados['cadista_responsavel']
+                                ['sobrenome'] +
+                            ' | ' +
+                            _formatCpf(
+                              widget.pedidoDados['cadista_responsavel']
+                                  ['username'],
+                            ),
                   ),
-                ),
+                if (widget.isEditarPedido) const SizedBox(height: 10),
+                if (widget.isEditarPedido) _modeloNemo(),
+                if (widget.isEditarPedido)
+                  const SizedBox(
+                    height: 50,
+                    child: const Divider(
+                      thickness: 2,
+                    ),
+                  ),
                 //Text: Endereço Entrega
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -536,7 +538,7 @@ class _PedidoFormState extends State<PedidoForm> {
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

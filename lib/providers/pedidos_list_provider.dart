@@ -124,6 +124,31 @@ class PedidosListProvider with ChangeNotifier {
     }
   }
 
+  Future<List<dynamic>> fetchMeusSetups(int id) async {
+    Map<String, String> requestHeaders = {
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $_token',
+    };
+
+    try {
+      final response = await http.get(
+        RotasUrl.rotaMeusSetups +
+            '?userId=' +
+            id.toString() +
+            '&queryString=' +
+            _queryString,
+        headers: requestHeaders,
+      );
+      _pedidos = json.decode(response.body);
+
+      return _pedidos;
+    } catch (error) {
+      print(error);
+      return error;
+    }
+  }
+
   Future<List<dynamic>> fetchMeusRefinamentos(int id) async {
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',

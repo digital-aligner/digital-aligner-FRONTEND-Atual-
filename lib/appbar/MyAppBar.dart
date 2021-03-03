@@ -3,6 +3,7 @@ import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/providers/pedidos_list_provider.dart';
 import 'package:digital_aligner_app/providers/relatorio_provider.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pedido.dart';
+import 'package:digital_aligner_app/screens/meus_setups.dart';
 import 'package:digital_aligner_app/screens/novo_paciente.dart';
 import 'package:digital_aligner_app/screens/perfil.dart';
 
@@ -144,7 +145,6 @@ class _MyAppBarState extends State<MyAppBar> {
               ),
               tooltip: 'Mostrar mais!',
               onSelected: (selectedValue) {
-                print(selectedValue);
                 if (selectedValue == 'Gerenciar Cadastros') {
                   Route route = ModalRoute.of(context);
                   final routeName = route.settings.name;
@@ -158,7 +158,6 @@ class _MyAppBarState extends State<MyAppBar> {
                   final routeName = route.settings.name;
                   if (routeName != null &&
                       routeName != '/gerenciar-permissoes') {
-                    print('im here!');
                     Navigator.of(context)
                         .pushReplacementNamed(GerenciarPermissoes.routeName);
                   }
@@ -169,6 +168,14 @@ class _MyAppBarState extends State<MyAppBar> {
                   if (routeName != null && routeName != '/gerenciar-pedidos') {
                     Navigator.of(context)
                         .pushReplacementNamed(GerenciarPedidos.routeName);
+                  }
+                } else if (selectedValue == 'Meus Setups') {
+                  Route route = ModalRoute.of(context);
+                  final routeName = route.settings.name;
+
+                  if (routeName != null && routeName != '/meus-setups') {
+                    Navigator.of(context)
+                        .pushReplacementNamed(MeusSetups.routeName);
                   }
                 }
               },
@@ -192,6 +199,16 @@ class _MyAppBarState extends State<MyAppBar> {
                     ),
                   ),
                   value: 'Gerenciar Cadastros',
+                ),
+                PopupMenuItem(
+                  child: const Text(
+                    'Meus Setups',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontFamily: 'BigNoodleTitling',
+                    ),
+                  ),
+                  value: 'Meus Setups',
                 ),
                 if (role == 'Administrador')
                   PopupMenuItem(

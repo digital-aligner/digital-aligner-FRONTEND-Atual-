@@ -28,6 +28,7 @@ class RotasUrl {
   static const rotaMeusPacientes = rotaBase + 'meus-pacientes/';
   static const rotaMeuHistorico = rotaBase + 'meu-historico/';
   static const rotaMeusPedidos = rotaBase + 'meus-pedidos/';
+  static const rotaMeusSetups = rotaBase + 'meus-setups/';
   static const rotaMeusRefinamentos = rotaBase + 'meus-refinamentos/';
   static const rotaPdfsList = rotaBase + 'pdfs-list/';
   static const rotaPptsList = rotaBase + 'ppts-list';
