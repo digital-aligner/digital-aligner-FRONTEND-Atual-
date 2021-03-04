@@ -61,7 +61,8 @@ class _StatusPedidoState extends State<StatusPedido> {
                               //_novoPedStore.setCurrentStatus(value);
                               //print(value);
                             },
-                            selectedItem: _status);
+                            selectedItem:
+                                _status == null ? 'Selecione' : _status);
                       } else {
                         return CircularProgressIndicator(
                           backgroundColor: Colors.blue,

@@ -139,16 +139,6 @@ class _MyDrawerState extends State<MyDrawer> {
                               ),
                               value: 'Gerenciar Cadastros',
                             ),
-                            PopupMenuItem(
-                              child: const Text(
-                                'Meus Setups',
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: 'BigNoodleTitling',
-                                ),
-                              ),
-                              value: 'Meus Setups',
-                            ),
                             if (authStore.role == 'Administrador')
                               PopupMenuItem(
                                 child: const Text(
@@ -160,6 +150,16 @@ class _MyDrawerState extends State<MyDrawer> {
                                 ),
                                 value: 'Gerenciar Permissões',
                               ),
+                            PopupMenuItem(
+                              child: const Text(
+                                'Meus Setups',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: 'BigNoodleTitling',
+                                ),
+                              ),
+                              value: 'Meus Setups',
+                            ),
                           ],
                         ),
                       ),

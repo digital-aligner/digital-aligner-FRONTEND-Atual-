@@ -43,6 +43,7 @@ class _NovoPacienteState extends State<NovoPaciente> {
           isEditarPedido: false,
           isNovoPedido: false,
           isNovoRefinamento: false,
+          blockUi: false,
         ),
       ),
     );

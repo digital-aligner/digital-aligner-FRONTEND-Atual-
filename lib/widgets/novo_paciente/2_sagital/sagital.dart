@@ -7,6 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Sagital extends StatefulWidget {
+  final bool blockUi;
+
+  Sagital({this.blockUi});
+
   @override
   _SagitalState createState() => _SagitalState();
 }
@@ -52,11 +56,11 @@ class _SagitalState extends State<Sagital> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           _relacaoMolar(_novoPedStore),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           _relacaoCanino(_novoPedStore),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           _opcionais(_novoPedStore),
         ],
       ),
@@ -156,26 +160,32 @@ class _SagitalState extends State<Sagital> {
                                     activeColor: Colors.blue,
                                     groupValue:
                                         _novoPedStore.getRmRadioValue('_rmLd'),
-                                    onChanged: (value) {
-                                      _removeFocus(context);
-                                      _novoPedStore.setRmRadio(value, '_rmLd');
-                                      _novoPedStore.manageRmLadoDireito();
-                                    },
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            _novoPedStore.setRmRadio(
+                                                value, '_rmLd');
+                                            _novoPedStore.manageRmLadoDireito();
+                                          },
                                     value: 1,
                                   ),
-                                  Text('Manter'),
+                                  const Text('Manter'),
                                   Radio(
                                     activeColor: Colors.blue,
                                     groupValue:
                                         _novoPedStore.getRmRadioValue('_rmLd'),
-                                    onChanged: (value) {
-                                      _removeFocus(context);
-                                      _novoPedStore.setRmRadio(value, '_rmLd');
-                                      _novoPedStore.manageRmLadoDireito();
-                                    },
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            _novoPedStore.setRmRadio(
+                                                value, '_rmLd');
+                                            _novoPedStore.manageRmLadoDireito();
+                                          },
                                     value: 2,
                                   ),
-                                  Text('Corrigir'),
+                                  const Text('Corrigir'),
                                 ],
                               ),
                             ],
@@ -193,7 +203,7 @@ class _SagitalState extends State<Sagital> {
                         children: [
                           Column(
                             children: [
-                              Text(
+                              const Text(
                                 'Lado esquerdo',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
@@ -203,26 +213,34 @@ class _SagitalState extends State<Sagital> {
                                     activeColor: Colors.blue,
                                     groupValue:
                                         _novoPedStore.getRmRadioValue('_rmLe'),
-                                    onChanged: (value) {
-                                      _removeFocus(context);
-                                      _novoPedStore.setRmRadio(value, '_rmLe');
-                                      _novoPedStore.manageRmLadoEsquerdo();
-                                    },
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            _novoPedStore.setRmRadio(
+                                                value, '_rmLe');
+                                            _novoPedStore
+                                                .manageRmLadoEsquerdo();
+                                          },
                                     value: 1,
                                   ),
-                                  Text('Manter'),
+                                  const Text('Manter'),
                                   Radio(
                                     activeColor: Colors.blue,
                                     groupValue:
                                         _novoPedStore.getRmRadioValue('_rmLe'),
-                                    onChanged: (value) {
-                                      _removeFocus(context);
-                                      _novoPedStore.setRmRadio(value, '_rmLe');
-                                      _novoPedStore.manageRmLadoEsquerdo();
-                                    },
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            _novoPedStore.setRmRadio(
+                                                value, '_rmLe');
+                                            _novoPedStore
+                                                .manageRmLadoEsquerdo();
+                                          },
                                     value: 2,
                                   ),
-                                  Text('Corrigir'),
+                                  const Text('Corrigir'),
                                 ],
                               ),
                             ],
@@ -262,15 +280,17 @@ class _SagitalState extends State<Sagital> {
                                     activeColor: Colors.blue,
                                     groupValue:
                                         _novoPedStore.getRmRadioValue('_rmSd'),
-                                    onChanged: (value) {
-                                      _removeFocus(context);
-                                      if (_novoPedStore.getRmLdState()) {
-                                        _novoPedStore.setRmRadio(
-                                          value,
-                                          '_rmSd',
-                                        );
-                                      }
-                                    },
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            if (_novoPedStore.getRmLdState()) {
+                                              _novoPedStore.setRmRadio(
+                                                value,
+                                                '_rmSd',
+                                              );
+                                            }
+                                          },
                                     value: 1,
                                   ),
                                   Text(
@@ -285,15 +305,17 @@ class _SagitalState extends State<Sagital> {
                                     activeColor: Colors.blue,
                                     groupValue:
                                         _novoPedStore.getRmRadioValue('_rmSd'),
-                                    onChanged: (value) {
-                                      _removeFocus(context);
-                                      if (_novoPedStore.getRmLdState()) {
-                                        _novoPedStore.setRmRadio(
-                                          value,
-                                          '_rmSd',
-                                        );
-                                      }
-                                    },
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            if (_novoPedStore.getRmLdState()) {
+                                              _novoPedStore.setRmRadio(
+                                                value,
+                                                '_rmSd',
+                                              );
+                                            }
+                                          },
                                     value: 2,
                                   ),
                                   Text(
@@ -336,15 +358,17 @@ class _SagitalState extends State<Sagital> {
                                     activeColor: Colors.blue,
                                     groupValue:
                                         _novoPedStore.getRmRadioValue('_rmSe'),
-                                    onChanged: (value) {
-                                      _removeFocus(context);
-                                      if (_novoPedStore.getRmLeState()) {
-                                        _novoPedStore.setRmRadio(
-                                          value,
-                                          '_rmSe',
-                                        );
-                                      }
-                                    },
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            if (_novoPedStore.getRmLeState()) {
+                                              _novoPedStore.setRmRadio(
+                                                value,
+                                                '_rmSe',
+                                              );
+                                            }
+                                          },
                                     value: 1,
                                   ),
                                   Text(
@@ -416,15 +440,17 @@ class _SagitalState extends State<Sagital> {
                                     activeColor: Colors.blue,
                                     groupValue:
                                         _novoPedStore.getRmRadioValue('_rmId'),
-                                    onChanged: (value) {
-                                      _removeFocus(context);
-                                      if (_novoPedStore.getRmLdState()) {
-                                        _novoPedStore.setRmRadio(
-                                          value,
-                                          '_rmId',
-                                        );
-                                      }
-                                    },
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            if (_novoPedStore.getRmLdState()) {
+                                              _novoPedStore.setRmRadio(
+                                                value,
+                                                '_rmId',
+                                              );
+                                            }
+                                          },
                                     value: 1,
                                   ),
                                   Text(
@@ -439,15 +465,17 @@ class _SagitalState extends State<Sagital> {
                                     activeColor: Colors.blue,
                                     groupValue:
                                         _novoPedStore.getRmRadioValue('_rmId'),
-                                    onChanged: (value) {
-                                      _removeFocus(context);
-                                      if (_novoPedStore.getRmLdState()) {
-                                        _novoPedStore.setRmRadio(
-                                          value,
-                                          '_rmId',
-                                        );
-                                      }
-                                    },
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            if (_novoPedStore.getRmLdState()) {
+                                              _novoPedStore.setRmRadio(
+                                                value,
+                                                '_rmId',
+                                              );
+                                            }
+                                          },
                                     value: 2,
                                   ),
                                   Text(
@@ -490,15 +518,17 @@ class _SagitalState extends State<Sagital> {
                                     activeColor: Colors.blue,
                                     groupValue:
                                         _novoPedStore.getRmRadioValue('_rmIe'),
-                                    onChanged: (value) {
-                                      _removeFocus(context);
-                                      if (_novoPedStore.getRmLeState()) {
-                                        _novoPedStore.setRmRadio(
-                                          value,
-                                          '_rmIe',
-                                        );
-                                      }
-                                    },
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            if (_novoPedStore.getRmLeState()) {
+                                              _novoPedStore.setRmRadio(
+                                                value,
+                                                '_rmIe',
+                                              );
+                                            }
+                                          },
                                     value: 1,
                                   ),
                                   Text(
@@ -513,15 +543,17 @@ class _SagitalState extends State<Sagital> {
                                     activeColor: Colors.blue,
                                     groupValue:
                                         _novoPedStore.getRmRadioValue('_rmIe'),
-                                    onChanged: (value) {
-                                      _removeFocus(context);
-                                      if (_novoPedStore.getRmLeState()) {
-                                        _novoPedStore.setRmRadio(
-                                          value,
-                                          '_rmIe',
-                                        );
-                                      }
-                                    },
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            if (_novoPedStore.getRmLeState()) {
+                                              _novoPedStore.setRmRadio(
+                                                value,
+                                                '_rmIe',
+                                              );
+                                            }
+                                          },
                                     value: 2,
                                   ),
                                   Text(
@@ -548,6 +580,7 @@ class _SagitalState extends State<Sagital> {
         const SizedBox(height: 20),
         Container(
           child: TextFormField(
+            enabled: !widget.blockUi,
             maxLength: 2000,
             maxLines: 15,
             initialValue: _novoPedStore.getRmOutro(),
@@ -571,11 +604,11 @@ class _SagitalState extends State<Sagital> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'RELAÇÃO CANINO:',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            Text(
+            const Text(
               '*',
               style: TextStyle(
                 color: Colors.red,
@@ -649,7 +682,7 @@ class _SagitalState extends State<Sagital> {
                           children: [
                             Column(
                               children: [
-                                Text(
+                                const Text(
                                   'Lado direito',
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
@@ -659,28 +692,34 @@ class _SagitalState extends State<Sagital> {
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getRcRadioValue('_rcLd'),
-                                      onChanged: (value) {
-                                        _removeFocus(context);
-                                        _novoPedStore.setRcRadio(
-                                            value, '_rcLd');
-                                        _novoPedStore.manageRcLadoDireito();
-                                      },
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              _novoPedStore.setRcRadio(
+                                                  value, '_rcLd');
+                                              _novoPedStore
+                                                  .manageRcLadoDireito();
+                                            },
                                       value: 1,
                                     ),
-                                    Text('Manter'),
+                                    const Text('Manter'),
                                     Radio(
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getRcRadioValue('_rcLd'),
-                                      onChanged: (value) {
-                                        _removeFocus(context);
-                                        _novoPedStore.setRcRadio(
-                                            value, '_rcLd');
-                                        _novoPedStore.manageRcLadoDireito();
-                                      },
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              _novoPedStore.setRcRadio(
+                                                  value, '_rcLd');
+                                              _novoPedStore
+                                                  .manageRcLadoDireito();
+                                            },
                                       value: 2,
                                     ),
-                                    Text('Corrigir'),
+                                    const Text('Corrigir'),
                                   ],
                                 ),
                               ],
@@ -698,7 +737,7 @@ class _SagitalState extends State<Sagital> {
                           children: [
                             Column(
                               children: [
-                                Text(
+                                const Text(
                                   'Lado esquerdo',
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
@@ -708,28 +747,34 @@ class _SagitalState extends State<Sagital> {
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getRcRadioValue('_rcLe'),
-                                      onChanged: (value) {
-                                        _removeFocus(context);
-                                        _novoPedStore.setRcRadio(
-                                            value, '_rcLe');
-                                        _novoPedStore.manageRcLadoEsquerdo();
-                                      },
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              _novoPedStore.setRcRadio(
+                                                  value, '_rcLe');
+                                              _novoPedStore
+                                                  .manageRcLadoEsquerdo();
+                                            },
                                       value: 1,
                                     ),
-                                    Text('Manter'),
+                                    const Text('Manter'),
                                     Radio(
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getRcRadioValue('_rcLe'),
-                                      onChanged: (value) {
-                                        _removeFocus(context);
-                                        _novoPedStore.setRcRadio(
-                                            value, '_rcLe');
-                                        _novoPedStore.manageRcLadoEsquerdo();
-                                      },
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              _novoPedStore.setRcRadio(
+                                                  value, '_rcLe');
+                                              _novoPedStore
+                                                  .manageRcLadoEsquerdo();
+                                            },
                                       value: 2,
                                     ),
-                                    Text('Corrigir'),
+                                    const Text('Corrigir'),
                                   ],
                                 ),
                               ],
@@ -741,7 +786,7 @@ class _SagitalState extends State<Sagital> {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               //Superior direito, superior esquerdo
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -769,15 +814,18 @@ class _SagitalState extends State<Sagital> {
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getRcRadioValue('_rcSd'),
-                                      onChanged: (value) {
-                                        _removeFocus(context);
-                                        if (_novoPedStore.getRcLdState()) {
-                                          _novoPedStore.setRcRadio(
-                                            value,
-                                            '_rcSd',
-                                          );
-                                        }
-                                      },
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              if (_novoPedStore
+                                                  .getRcLdState()) {
+                                                _novoPedStore.setRcRadio(
+                                                  value,
+                                                  '_rcSd',
+                                                );
+                                              }
+                                            },
                                       value: 1,
                                     ),
                                     Text(
@@ -792,15 +840,18 @@ class _SagitalState extends State<Sagital> {
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getRcRadioValue('_rcSd'),
-                                      onChanged: (value) {
-                                        _removeFocus(context);
-                                        if (_novoPedStore.getRcLdState()) {
-                                          _novoPedStore.setRcRadio(
-                                            value,
-                                            '_rcSd',
-                                          );
-                                        }
-                                      },
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              if (_novoPedStore
+                                                  .getRcLdState()) {
+                                                _novoPedStore.setRcRadio(
+                                                  value,
+                                                  '_rcSd',
+                                                );
+                                              }
+                                            },
                                       value: 2,
                                     ),
                                     Text(
@@ -843,15 +894,18 @@ class _SagitalState extends State<Sagital> {
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getRcRadioValue('_rcSe'),
-                                      onChanged: (value) {
-                                        _removeFocus(context);
-                                        if (_novoPedStore.getRcLeState()) {
-                                          _novoPedStore.setRcRadio(
-                                            value,
-                                            '_rcSe',
-                                          );
-                                        }
-                                      },
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              if (_novoPedStore
+                                                  .getRcLeState()) {
+                                                _novoPedStore.setRcRadio(
+                                                  value,
+                                                  '_rcSe',
+                                                );
+                                              }
+                                            },
                                       value: 1,
                                     ),
                                     Text(
@@ -866,15 +920,18 @@ class _SagitalState extends State<Sagital> {
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getRcRadioValue('_rcSe'),
-                                      onChanged: (value) {
-                                        _removeFocus(context);
-                                        if (_novoPedStore.getRcLeState()) {
-                                          _novoPedStore.setRcRadio(
-                                            value,
-                                            '_rcSe',
-                                          );
-                                        }
-                                      },
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              if (_novoPedStore
+                                                  .getRcLeState()) {
+                                                _novoPedStore.setRcRadio(
+                                                  value,
+                                                  '_rcSe',
+                                                );
+                                              }
+                                            },
                                       value: 2,
                                     ),
                                     Text(
@@ -923,15 +980,18 @@ class _SagitalState extends State<Sagital> {
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getRcRadioValue('_rcId'),
-                                      onChanged: (value) {
-                                        _removeFocus(context);
-                                        if (_novoPedStore.getRcLdState()) {
-                                          _novoPedStore.setRcRadio(
-                                            value,
-                                            '_rcId',
-                                          );
-                                        }
-                                      },
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              if (_novoPedStore
+                                                  .getRcLdState()) {
+                                                _novoPedStore.setRcRadio(
+                                                  value,
+                                                  '_rcId',
+                                                );
+                                              }
+                                            },
                                       value: 1,
                                     ),
                                     Text(
@@ -946,15 +1006,18 @@ class _SagitalState extends State<Sagital> {
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getRcRadioValue('_rcId'),
-                                      onChanged: (value) {
-                                        _removeFocus(context);
-                                        if (_novoPedStore.getRcLdState()) {
-                                          _novoPedStore.setRcRadio(
-                                            value,
-                                            '_rcId',
-                                          );
-                                        }
-                                      },
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              if (_novoPedStore
+                                                  .getRcLdState()) {
+                                                _novoPedStore.setRcRadio(
+                                                  value,
+                                                  '_rcId',
+                                                );
+                                              }
+                                            },
                                       value: 2,
                                     ),
                                     Text(
@@ -997,15 +1060,18 @@ class _SagitalState extends State<Sagital> {
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getRcRadioValue('_rcIe'),
-                                      onChanged: (value) {
-                                        _removeFocus(context);
-                                        if (_novoPedStore.getRcLeState()) {
-                                          _novoPedStore.setRcRadio(
-                                            value,
-                                            '_rcIe',
-                                          );
-                                        }
-                                      },
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              if (_novoPedStore
+                                                  .getRcLeState()) {
+                                                _novoPedStore.setRcRadio(
+                                                  value,
+                                                  '_rcIe',
+                                                );
+                                              }
+                                            },
                                       value: 1,
                                     ),
                                     Text(
@@ -1020,15 +1086,18 @@ class _SagitalState extends State<Sagital> {
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getRcRadioValue('_rcIe'),
-                                      onChanged: (value) {
-                                        _removeFocus(context);
-                                        if (_novoPedStore.getRcLeState()) {
-                                          _novoPedStore.setRcRadio(
-                                            value,
-                                            '_rcIe',
-                                          );
-                                        }
-                                      },
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              if (_novoPedStore
+                                                  .getRcLeState()) {
+                                                _novoPedStore.setRcRadio(
+                                                  value,
+                                                  '_rcIe',
+                                                );
+                                              }
+                                            },
                                       value: 2,
                                     ),
                                     Text(
@@ -1057,6 +1126,7 @@ class _SagitalState extends State<Sagital> {
         //Outros
         Container(
           child: TextFormField(
+            enabled: !widget.blockUi,
             maxLength: 2000,
             maxLines: 15,
             initialValue: _novoPedStore.getRcOutro(),
@@ -1079,11 +1149,11 @@ class _SagitalState extends State<Sagital> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'OPCIONAIS:',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            Text(
+            const Text(
               '*',
               style: TextStyle(
                 color: Colors.red,
@@ -1094,12 +1164,14 @@ class _SagitalState extends State<Sagital> {
         ),
         CheckboxListTile(
           controlAffinity: ListTileControlAffinity.leading,
-          title: Text('Aceito desgastes interproximais (DIP)'),
+          title: const Text('Aceito desgastes interproximais (DIP)'),
           value: _novoPedStore.getSgOpAceitoDesgastes(),
-          onChanged: (value) {
-            _removeFocus(context);
-            _novoPedStore.setSgOpAceitoDesgastes(value);
-          },
+          onChanged: widget.blockUi
+              ? null
+              : (value) {
+                  _removeFocus(context);
+                  _novoPedStore.setSgOpAceitoDesgastes(value);
+                },
           activeColor: Colors.black12,
           checkColor: Colors.blue,
         ),
@@ -1128,7 +1200,9 @@ class _SagitalState extends State<Sagital> {
                   onSaved: (String value) {
                     //sc.usernameCpf = value;
                   },
-                  enabled: _novoPedStore.getSgOpRecorteElastico(),
+                  enabled: widget.blockUi
+                      ? !widget.blockUi
+                      : _novoPedStore.getSgOpRecorteElastico(),
                   validator: (value) {
                     if (value.length < 0) {
                       return 'Não valido.';
@@ -1155,13 +1229,15 @@ class _SagitalState extends State<Sagital> {
             ],
           ),
           value: _novoPedStore.getSgOpRecorteElastico(),
-          onChanged: (value) {
-            _removeFocus(context);
-            if (!value) {
-              _novoPedStore.setLocalRecElastAlinh('');
-            }
-            _novoPedStore.setSgOpRecorteElastico(value);
-          },
+          onChanged: widget.blockUi
+              ? null
+              : (value) {
+                  _removeFocus(context);
+                  if (!value) {
+                    _novoPedStore.setLocalRecElastAlinh('');
+                  }
+                  _novoPedStore.setSgOpRecorteElastico(value);
+                },
           activeColor: Colors.black12,
           checkColor: Colors.blue,
         ),
@@ -1190,7 +1266,9 @@ class _SagitalState extends State<Sagital> {
                   onSaved: (String value) {
                     //sc.usernameCpf = value;
                   },
-                  enabled: _novoPedStore.getSgOpRecorteAlinhador(),
+                  enabled: widget.blockUi
+                      ? !widget.blockUi
+                      : _novoPedStore.getSgOpRecorteAlinhador(),
                   validator: (value) {
                     if (value.length < 0) {
                       return 'Não valido.';
@@ -1217,13 +1295,15 @@ class _SagitalState extends State<Sagital> {
             ],
           ),
           value: _novoPedStore.getSgOpRecorteAlinhador(),
-          onChanged: (value) {
-            _removeFocus(context);
-            if (!value) {
-              _novoPedStore.setLocalRecAlinhBotao('');
-            }
-            _novoPedStore.setSgOpRecorteAlinhador(value);
-          },
+          onChanged: widget.blockUi
+              ? null
+              : (value) {
+                  _removeFocus(context);
+                  if (!value) {
+                    _novoPedStore.setLocalRecAlinhBotao('');
+                  }
+                  _novoPedStore.setSgOpRecorteAlinhador(value);
+                },
           activeColor: Colors.black12,
           checkColor: Colors.blue,
         ),
@@ -1252,7 +1332,9 @@ class _SagitalState extends State<Sagital> {
                   onSaved: (String value) {
                     //sc.usernameCpf = value;
                   },
-                  enabled: _novoPedStore.getSgOpAlivioAlinhador(),
+                  enabled: widget.blockUi
+                      ? !widget.blockUi
+                      : _novoPedStore.getSgOpAlivioAlinhador(),
                   validator: (value) {
                     if (value.length < 0) {
                       return 'Não valido.';
@@ -1279,13 +1361,15 @@ class _SagitalState extends State<Sagital> {
             ],
           ),
           value: _novoPedStore.getSgOpAlivioAlinhador(),
-          onChanged: (value) {
-            _removeFocus(context);
-            if (!value) {
-              _novoPedStore.setLocalAlivioAlinhador('');
-            }
-            _novoPedStore.setSgOpAlivioAlinhador(value);
-          },
+          onChanged: widget.blockUi
+              ? null
+              : (value) {
+                  _removeFocus(context);
+                  if (!value) {
+                    _novoPedStore.setLocalAlivioAlinhador('');
+                  }
+                  _novoPedStore.setSgOpAlivioAlinhador(value);
+                },
           activeColor: Colors.black12,
           checkColor: Colors.blue,
         ),

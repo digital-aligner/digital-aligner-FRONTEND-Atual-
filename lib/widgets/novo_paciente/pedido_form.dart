@@ -45,6 +45,7 @@ class PedidoForm extends StatefulWidget {
   final String pedidoHeader;
   final Map pedidoDados;
   final Map pacienteDados;
+  final bool blockUi;
 
   PedidoForm({
     this.pedidoId,
@@ -57,6 +58,7 @@ class PedidoForm extends StatefulWidget {
     this.pedidoHeader,
     this.pedidoDados,
     this.pacienteDados,
+    @required this.blockUi,
   });
 
   @override
@@ -65,7 +67,7 @@ class PedidoForm extends StatefulWidget {
 
 class _PedidoFormState extends State<PedidoForm> {
   AuthProvider _authStore;
-
+  PedidoProvider _novoPedStore;
   final _formKey = GlobalKey<FormState>();
   bool _initialSetup = true;
   S3DeleteProvider _s3deleteStore;
@@ -122,13 +124,14 @@ class _PedidoFormState extends State<PedidoForm> {
   // ---- For flutter web scroll end ---
 
   List<Function> _formList = [];
+
   @override
   Widget build(BuildContext context) {
     _formList.add(_pedidoFormUi1);
     _formList.add(_pedidoFormUi2);
 
     _authStore = Provider.of<AuthProvider>(context);
-    PedidoProvider _novoPedStore = Provider.of<PedidoProvider>(context);
+    _novoPedStore = Provider.of<PedidoProvider>(context);
     _s3deleteStore = Provider.of<S3DeleteProvider>(
       context,
       listen: false,
@@ -237,7 +240,7 @@ class _PedidoFormState extends State<PedidoForm> {
                     style: Theme.of(context).textTheme.headline1,
                   ),
                 ),
-                SizedBox(height: 80),
+                const SizedBox(height: 80),
                 DadosIniciais(
                   isNovoPedidoOrRefinamento:
                       widget.isNovoPedido != null && widget.isNovoPedido ||
@@ -245,7 +248,9 @@ class _PedidoFormState extends State<PedidoForm> {
                                   widget.isNovoRefinamento
                           ? true
                           : false,
+                  isEditarPedido: widget.isEditarPedido,
                   pacienteDados: widget.pacienteDados,
+                  blockUi: widget.blockUi,
                 ),
                 const SizedBox(
                   height: 50,
@@ -253,14 +258,18 @@ class _PedidoFormState extends State<PedidoForm> {
                     thickness: 2,
                   ),
                 ),
-                Sagital(),
+                Sagital(
+                  blockUi: widget.blockUi,
+                ),
                 const SizedBox(
                   height: 50,
                   child: const Divider(
                     thickness: 2,
                   ),
                 ),
-                Vertical(),
+                Vertical(
+                  blockUi: widget.blockUi,
+                ),
                 const SizedBox(
                   height: 50,
                   child: const Divider(

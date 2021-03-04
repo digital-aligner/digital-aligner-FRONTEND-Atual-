@@ -7,10 +7,15 @@ import '../../../providers/pedido_provider.dart';
 
 class DadosIniciais extends StatefulWidget {
   final bool isNovoPedidoOrRefinamento;
+  final bool isEditarPedido;
   final Map pacienteDados;
+  final bool blockUi;
+
   DadosIniciais({
     this.isNovoPedidoOrRefinamento,
     this.pacienteDados,
+    this.isEditarPedido,
+    @required this.blockUi,
   });
   @override
   _DadosIniciaisState createState() => _DadosIniciaisState();
@@ -25,6 +30,8 @@ class _DadosIniciaisState extends State<DadosIniciais>
 
   FocusNode _dateFocusNode = FocusNode();
 
+  PedidoProvider _novoPedStore;
+
   //For use to remove any text focus when clicking on radio.
   void _removeFocus(var context) {
     FocusScopeNode currentFocus = FocusScope.of(context);
@@ -37,8 +44,7 @@ class _DadosIniciaisState extends State<DadosIniciais>
   Widget build(BuildContext context) {
     //For the "wantToKeepAlive" mixin
     super.build(context);
-
-    PedidoProvider _novoPedStore = Provider.of<PedidoProvider>(context);
+    _novoPedStore = Provider.of<PedidoProvider>(context);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -54,6 +60,7 @@ class _DadosIniciaisState extends State<DadosIniciais>
                     height: 80,
                     child: TextFormField(
                       maxLength: 255,
+                      enabled: !widget.isEditarPedido,
                       validator: (String value) {
                         return value.isEmpty ? 'Campo vazio!' : null;
                       },
@@ -110,6 +117,7 @@ class _DadosIniciaisState extends State<DadosIniciais>
             Container(
               height: 80,
               child: DateTimeField(
+                enabled: !widget.isEditarPedido,
                 maxLength: 255,
                 validator: (DateTime value) {
                   return value == null ? 'Campo vazio!' : null;
@@ -261,10 +269,12 @@ class _DadosIniciaisState extends State<DadosIniciais>
                     activeColor: Colors.blue,
                     groupValue:
                         _novoPedStore.getTratarRadioValue('_tratarRadio'),
-                    onChanged: (value) {
-                      _removeFocus(context);
-                      _novoPedStore.setTratarRadio(1, '_tratarRadio');
-                    },
+                    onChanged: widget.blockUi
+                        ? null
+                        : (value) {
+                            _removeFocus(context);
+                            _novoPedStore.setTratarRadio(1, '_tratarRadio');
+                          },
                     value: 1,
                   ),
                   const Text('Ambos os arcos'),
@@ -277,10 +287,12 @@ class _DadosIniciaisState extends State<DadosIniciais>
                     activeColor: Colors.blue,
                     groupValue:
                         _novoPedStore.getTratarRadioValue('_tratarRadio'),
-                    onChanged: (value) {
-                      _removeFocus(context);
-                      _novoPedStore.setTratarRadio(2, '_tratarRadio');
-                    },
+                    onChanged: widget.blockUi
+                        ? null
+                        : (value) {
+                            _removeFocus(context);
+                            _novoPedStore.setTratarRadio(2, '_tratarRadio');
+                          },
                     value: 2,
                   ),
                   const Text('Apenas o Superior'),
@@ -293,10 +305,12 @@ class _DadosIniciaisState extends State<DadosIniciais>
                     activeColor: Colors.blue,
                     groupValue:
                         _novoPedStore.getTratarRadioValue('_tratarRadio'),
-                    onChanged: (value) {
-                      _removeFocus(context);
-                      _novoPedStore.setTratarRadio(3, '_tratarRadio');
-                    },
+                    onChanged: widget.blockUi
+                        ? null
+                        : (value) {
+                            _removeFocus(context);
+                            _novoPedStore.setTratarRadio(3, '_tratarRadio');
+                          },
                     value: 3,
                   ),
                   const Text('Apenas o Inferior'),
@@ -308,6 +322,7 @@ class _DadosIniciaisState extends State<DadosIniciais>
           const SizedBox(height: 40),
           Container(
             child: TextFormField(
+              enabled: !widget.blockUi,
               initialValue: _novoPedStore.getDiPrincipalQueixa(),
               maxLength: 2000,
               maxLines: 15,

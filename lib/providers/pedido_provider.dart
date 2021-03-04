@@ -3485,10 +3485,14 @@ class PedidoProvider with ChangeNotifier {
   List<String> _stringDataList;
   // Always begins with true (will run only once)
   bool _didFetchStatusPedido = false;
-
+  /*
   // Selected status is always "id 2: aguardando relatório" for new Pedidos.
   String _currentStatus = 'Em Analíse';
   int _statusId;
+  */
+  //New status is empty value
+  String _currentStatus = '';
+  int _statusId = 0;
 
   bool isStatusListEmpty() {
     if (_statusPedido != null) {
@@ -3568,6 +3572,17 @@ class PedidoProvider with ChangeNotifier {
 
   String getOrientacoesEsp() {
     return _orientacoesEsp;
+  }
+
+  bool _blockUi = true;
+
+  void setBlockUi(bool value) {
+    _blockUi = value;
+    notifyListeners();
+  }
+
+  bool getBlockUiState() {
+    return _blockUi;
   }
 
   // SETTING FIELDS (FOR UPDATE SCREEN)
@@ -3653,6 +3668,11 @@ class PedidoProvider with ChangeNotifier {
     _sgOpRecorteAlinhador = ped['sagital_opcionais']['recorte_alinhador_botao'];
     _sgOpAlivioAlinhador =
         ped['sagital_opcionais']['alivio_alinhador_braco_forca'];
+
+    _localRecElastAlinh = ped['sagital_opcionais']['local_rec_elast_alinh'];
+
+    _localRecAlinhBotao = ped['sagital_opcionais']['local_rec_alinh_botao'];
+    _localAlivioAlinhador = ped['sagital_opcionais']['local_alivio_alinhador'];
 
     // 3 - VERTICAL ---------------------------
 

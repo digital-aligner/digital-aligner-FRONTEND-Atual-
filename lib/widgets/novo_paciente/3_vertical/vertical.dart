@@ -6,6 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Vertical extends StatefulWidget {
+  final bool blockUi;
+
+  Vertical({this.blockUi});
+
   @override
   _VerticalState createState() => _VerticalState();
 }
@@ -94,11 +98,11 @@ class _VerticalState extends State<Vertical> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'SOBREMORDIDA PROFUNDA:',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            Text(
+            const Text(
               '*',
               style: TextStyle(
                 color: Colors.red,
@@ -165,22 +169,26 @@ class _VerticalState extends State<Vertical> {
                 Radio(
                   activeColor: Colors.blue,
                   groupValue: _novoPedStore.getVerticalSbmpRadio(),
-                  onChanged: (value) {
-                    _removeFocus(context);
-                    _novoPedStore.setVerticalSbmpRadio(value);
-                    _novoPedStore.manageFormSbmp();
-                  },
+                  onChanged: widget.blockUi
+                      ? null
+                      : (value) {
+                          _removeFocus(context);
+                          _novoPedStore.setVerticalSbmpRadio(value);
+                          _novoPedStore.manageFormSbmp();
+                        },
                   value: 1,
                 ),
                 Text('Manter'),
                 Radio(
                   activeColor: Colors.blue,
                   groupValue: _novoPedStore.getVerticalSbmpRadio(),
-                  onChanged: (value) {
-                    _removeFocus(context);
-                    _novoPedStore.setVerticalSbmpRadio(value);
-                    _novoPedStore.manageFormSbmp();
-                  },
+                  onChanged: widget.blockUi
+                      ? null
+                      : (value) {
+                          _removeFocus(context);
+                          _novoPedStore.setVerticalSbmpRadio(value);
+                          _novoPedStore.manageFormSbmp();
+                        },
                   value: 2,
                 ),
                 Text('Corrigir'),
@@ -231,16 +239,18 @@ class _VerticalState extends State<Vertical> {
                                     activeColor: Colors.blue,
                                     groupValue: _novoPedStore
                                         .getSbmpRadioValue('_idaSup'),
-                                    onChanged: (value) {
-                                      _removeFocus(context);
-                                      if (_novoPedStore
-                                          .getSobremordidaState()) {
-                                        _novoPedStore.setSbmpRadio(
-                                          value,
-                                          '_idaSup',
-                                        );
-                                      }
-                                    },
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            if (_novoPedStore
+                                                .getSobremordidaState()) {
+                                              _novoPedStore.setSbmpRadio(
+                                                value,
+                                                '_idaSup',
+                                              );
+                                            }
+                                          },
                                     value: 1,
                                   ),
                                   Text(
@@ -265,8 +275,9 @@ class _VerticalState extends State<Vertical> {
                                           onSaved: (String value) {
                                             //sc.usernameCpf = value;
                                           },
-                                          enabled:
-                                              _novoPedStore.getIdaSupState(),
+                                          enabled: widget.blockUi
+                                              ? !widget.blockUi
+                                              : _novoPedStore.getIdaSupState(),
                                           validator: (value) {
                                             if (value.length < 0) {
                                               return 'Não valido.';
@@ -288,7 +299,7 @@ class _VerticalState extends State<Vertical> {
                                           ),
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 15,
                                       )
                                     ],
@@ -318,16 +329,18 @@ class _VerticalState extends State<Vertical> {
                                     activeColor: Colors.blue,
                                     groupValue: _novoPedStore
                                         .getSbmpRadioValue('_edpSup'),
-                                    onChanged: (value) {
-                                      _removeFocus(context);
-                                      if (_novoPedStore
-                                          .getSobremordidaState()) {
-                                        _novoPedStore.setSbmpRadio(
-                                          value,
-                                          '_edpSup',
-                                        );
-                                      }
-                                    },
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            if (_novoPedStore
+                                                .getSobremordidaState()) {
+                                              _novoPedStore.setSbmpRadio(
+                                                value,
+                                                '_edpSup',
+                                              );
+                                            }
+                                          },
                                     value: 1,
                                   ),
                                   Text(
@@ -352,8 +365,9 @@ class _VerticalState extends State<Vertical> {
                                           onSaved: (String value) {
                                             //sc.usernameCpf = value;
                                           },
-                                          enabled:
-                                              _novoPedStore.getEdpSupState(),
+                                          enabled: widget.blockUi
+                                              ? !widget.blockUi
+                                              : _novoPedStore.getEdpSupState(),
                                           validator: (value) {
                                             if (value.length < 0) {
                                               return 'Não valido.';
@@ -411,16 +425,18 @@ class _VerticalState extends State<Vertical> {
                                     activeColor: Colors.blue,
                                     groupValue: _novoPedStore
                                         .getSbmpRadioValue('_idaInf'),
-                                    onChanged: (value) {
-                                      _removeFocus(context);
-                                      if (_novoPedStore
-                                          .getSobremordidaState()) {
-                                        _novoPedStore.setSbmpRadio(
-                                          value,
-                                          '_idaInf',
-                                        );
-                                      }
-                                    },
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            if (_novoPedStore
+                                                .getSobremordidaState()) {
+                                              _novoPedStore.setSbmpRadio(
+                                                value,
+                                                '_idaInf',
+                                              );
+                                            }
+                                          },
                                     value: 1,
                                   ),
                                   Text(
@@ -445,8 +461,9 @@ class _VerticalState extends State<Vertical> {
                                           onSaved: (String value) {
                                             //sc.usernameCpf = value;
                                           },
-                                          enabled:
-                                              _novoPedStore.getIdaInfState(),
+                                          enabled: widget.blockUi
+                                              ? !widget.blockUi
+                                              : _novoPedStore.getIdaInfState(),
                                           validator: (value) {
                                             if (value.length < 0) {
                                               return 'Não valido.';
@@ -498,16 +515,18 @@ class _VerticalState extends State<Vertical> {
                                     activeColor: Colors.blue,
                                     groupValue: _novoPedStore
                                         .getSbmpRadioValue('_edpInf'),
-                                    onChanged: (value) {
-                                      _removeFocus(context);
-                                      if (_novoPedStore
-                                          .getSobremordidaState()) {
-                                        _novoPedStore.setSbmpRadio(
-                                          value,
-                                          '_edpInf',
-                                        );
-                                      }
-                                    },
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            if (_novoPedStore
+                                                .getSobremordidaState()) {
+                                              _novoPedStore.setSbmpRadio(
+                                                value,
+                                                '_edpInf',
+                                              );
+                                            }
+                                          },
                                     value: 1,
                                   ),
                                   Text(
@@ -532,8 +551,9 @@ class _VerticalState extends State<Vertical> {
                                           onSaved: (String value) {
                                             //sc.usernameCpf = value;
                                           },
-                                          enabled:
-                                              _novoPedStore.getEdpInfState(),
+                                          enabled: widget.blockUi
+                                              ? !widget.blockUi
+                                              : _novoPedStore.getEdpInfState(),
                                           validator: (value) {
                                             if (value.length < 0) {
                                               return 'Não valido.';
@@ -555,7 +575,7 @@ class _VerticalState extends State<Vertical> {
                                           ),
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 15,
                                       )
                                     ],
@@ -603,11 +623,13 @@ class _VerticalState extends State<Vertical> {
           title: Text(
               'Batentes de mordida para dentes anteriores no alinhador, para desoclusão de dentes posteriores:'),
           value: _novoPedStore.getSpBatentesMordida(),
-          onChanged: (value) {
-            _removeFocus(context);
-            _novoPedStore.setSpBatentesMordida(value);
-            _novoPedStore.manageOpcSbrMordProfState();
-          },
+          onChanged: widget.blockUi
+              ? null
+              : (value) {
+                  _removeFocus(context);
+                  _novoPedStore.setSpBatentesMordida(value);
+                  _novoPedStore.manageOpcSbrMordProfState();
+                },
           activeColor: Colors.black12,
           checkColor: Colors.blue,
         ),
@@ -622,12 +644,14 @@ class _VerticalState extends State<Vertical> {
             ),
           ),
           value: _novoPedStore.getSpLingualIncisivo(),
-          onChanged: (value) {
-            _removeFocus(context);
-            if (_novoPedStore.getSpBatentesMordida()) {
-              _novoPedStore.setSpLingualIncisivo(value);
-            }
-          },
+          onChanged: widget.blockUi
+              ? null
+              : (value) {
+                  _removeFocus(context);
+                  if (_novoPedStore.getSpBatentesMordida()) {
+                    _novoPedStore.setSpLingualIncisivo(value);
+                  }
+                },
           activeColor: Colors.black12,
           checkColor: Colors.blue,
         ),
@@ -642,19 +666,23 @@ class _VerticalState extends State<Vertical> {
             ),
           ),
           value: _novoPedStore.getSpLingualCanino(),
-          onChanged: (value) {
-            _removeFocus(context);
-            if (_novoPedStore.getSpBatentesMordida()) {
-              _novoPedStore.setSpLingualCanino(value);
-            }
-          },
+          onChanged: widget.blockUi
+              ? null
+              : (value) {
+                  _removeFocus(context);
+                  if (_novoPedStore.getSpBatentesMordida()) {
+                    _novoPedStore.setSpLingualCanino(value);
+                  }
+                },
           activeColor: Colors.black12,
           checkColor: Colors.blue,
         ),
         const SizedBox(height: 40),
         Container(
           child: TextFormField(
-            enabled: _novoPedStore.getSpBatentesMordida(),
+            enabled: widget.blockUi
+                ? !widget.blockUi
+                : _novoPedStore.getSpBatentesMordida(),
             maxLength: 2000,
             maxLines: 15,
             controller: _cSpOutros,

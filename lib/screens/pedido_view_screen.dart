@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
 import 'package:digital_aligner_app/dados/scrollbarWidgetConfig.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
+import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/providers/pedidos_list_provider.dart';
 import 'package:digital_aligner_app/rotas_url.dart';
 import 'package:digital_aligner_app/screens/editar_relatorio_screen.dart';
@@ -11,6 +12,7 @@ import 'package:digital_aligner_app/screens/login_screen.dart';
 import 'package:digital_aligner_app/screens/model_viewer.dart';
 import 'package:digital_aligner_app/screens/view_images_screen.dart';
 import 'package:digital_aligner_app/screens/view_relatorio_screen.dart';
+
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -29,6 +31,7 @@ class PedidoViewScreen extends StatefulWidget {
 
 class _PedidoViewScreenState extends State<PedidoViewScreen> {
   PedidosListProvider _pedidosListStore;
+
   AuthProvider _authStore;
   List<dynamic> pedList;
   List<dynamic> relatorioData;
@@ -248,6 +251,31 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
     return '';
   }
 
+  /*
+  Widget _pedidoUi(
+    List<dynamic> pedList,
+    int index,
+    double _sWidth,
+    double _sHeight,
+  ) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      child: PedidoForm(
+        pedidoHeader: pedList[index]['codigo_pedido'],
+        pedidoId: pedList[index]['id'],
+        userId: pedList[index]['users_permissions_user']['id'],
+        enderecoId: pedList[index]['endereco_usuario']['id'],
+        isEditarPedido: true,
+        isNovoPedido: false,
+        isNovoPaciente: false,
+        pedidoDados: pedList[index],
+        isNovoRefinamento: false,
+      ),
+    );
+  }
+  */
+  /*
   Widget _pedidoUi(
     List<dynamic> pedList,
     int index,
@@ -3673,6 +3701,66 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
       ],
     );
   }
+  */
+
+  Widget _pedidoUi(
+    List<dynamic> pedList,
+    int index,
+    double _sWidth,
+    double _sHeight,
+  ) {
+    return Column(
+      children: [
+        ModelViewer(
+          modeloSupLink: _modeloSupLink,
+          modeloInfLink: _modeloInfLink,
+        ),
+        //Fotografias
+        Container(
+          height: 100,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: const Text(
+              ' Fotografias: ',
+              style: const TextStyle(
+                fontSize: 16,
+                //fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        Container(
+          child: _mapFotografiasUrlToUi(pedList[index]['fotografias']),
+        ),
+        //Radiografias
+        Container(
+          height: 100,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              ' Radiografias: ',
+              style: TextStyle(
+                fontSize: 16,
+                //fontWeight: FontWeight.bold,
+                //color: Colors.black12.withOpacity(0.04),
+              ),
+            ),
+          ),
+        ),
+        Container(
+          child: _mapRadiografiasUrlToUi(pedList[index]['radiografias']),
+        ),
+        const SizedBox(height: 50),
+        ElevatedButton.icon(
+          onPressed: () async {
+            _downloadAll();
+          },
+          icon: const Icon(Icons.download_done_rounded),
+          label: const Text('Baixar Tudo'),
+        ),
+      ],
+    );
+  }
 
   Future<dynamic> _deletePedidoDialog(BuildContext ctx, int index) async {
     return showDialog(
@@ -3901,67 +3989,67 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
   ) {
     if (data[0].containsKey('error')) {
       if (_authStore.role == 'Credenciado') {
-        return TextButton(
-          child: const Text(
-            'Relatório não finalizado',
-            style: const TextStyle(
-              color: Colors.blue,
+        return Container(
+          width: 300,
+          child: ElevatedButton(
+            child: const Text(
+              'RELATÓRIO NÃO FINALIZADO',
             ),
+            onPressed: () {},
           ),
-          onPressed: () {},
         );
       }
-      return TextButton(
-        child: const Text(
-          'Gerar Relatório',
-          style: const TextStyle(
-            color: Colors.blue,
+      return Container(
+        width: 300,
+        child: ElevatedButton(
+          child: const Text(
+            'GERAR RELATÓRIO',
           ),
+          onPressed: () {
+            Navigator.of(context).pushNamed(
+              GerarRelatorioScreen.routeName,
+              arguments: {
+                'pedidoId': pedList[index]['id'],
+                'pacienteId': pedList[index]['paciente']['id']
+              },
+            ).then((didUpdate) {
+              Navigator.pop(context);
+              Future.delayed(Duration(milliseconds: 800),
+                  () => _pedidosListStore.clearPedidosAndUpdate());
+            });
+          },
         ),
-        onPressed: () {
-          Navigator.of(context).pushNamed(
-            GerarRelatorioScreen.routeName,
-            arguments: {
-              'pedidoId': pedList[index]['id'],
-              'pacienteId': pedList[index]['paciente']['id']
-            },
-          ).then((didUpdate) {
-            Navigator.pop(context);
-            Future.delayed(Duration(milliseconds: 800),
-                () => _pedidosListStore.clearPedidosAndUpdate());
-          });
-        },
       );
     } else if (data[0]['pronto'] == false) {
-      return TextButton(
-        child: const Text(
-          'Relatório não finalizado',
-          style: const TextStyle(
-            color: Colors.blue,
+      return Container(
+        width: 300,
+        child: ElevatedButton(
+          child: const Text(
+            'RELATÓRIO NÃO FINALIZADO',
           ),
+          onPressed: () {},
         ),
-        onPressed: () {},
       );
     } else {
-      return TextButton(
-        child: const Text(
-          'Visualizar Relatório',
-          style: const TextStyle(
-            color: Colors.blue,
+      return Container(
+        width: 300,
+        child: ElevatedButton(
+          child: const Text(
+            'VISUALIZAR RELATÓRIO',
           ),
+          onPressed: () {
+            //To pop popup before pushing route
+            //Navigator.of(ctx).pop();
+            _visualizarRelatorioDialog(
+              ctx,
+              _sWidth,
+              _sHeight,
+              data,
+              codPedido,
+              index,
+            );
+          },
         ),
-        onPressed: () {
-          //To pop popup before pushing route
-          //Navigator.of(ctx).pop();
-          _visualizarRelatorioDialog(
-            ctx,
-            _sWidth,
-            _sHeight,
-            data,
-            codPedido,
-            index,
-          );
-        },
       );
     }
   }
@@ -3972,79 +4060,52 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          TextButton(
-            child: Text(
-              "Editar Pedido",
-              style: const TextStyle(
-                color: Colors.blue,
-              ),
-            ),
-            onPressed: () async {
-              //To pop popup before pushing route
-              Navigator.of(ctx).pop();
-              Navigator.of(context).pushNamed(
-                EditarPedido.routeName,
-                arguments: {
-                  'codigoPedido': pedList[index]['codigo_pedido'],
-                  'pedidoId': pedList[index]['id'],
-                  'userId': pedList[index]['users_permissions_user']['id'],
-                  'enderecoId': pedList[index]['endereco_usuario']['id'],
-                  'pedidoDados': pedList[index],
-                },
-              ).then(
-                (value) => Future.delayed(
-                  Duration(milliseconds: 800),
-                  () => _pedidosListStore.clearPedidosAndUpdate(),
-                ),
-              );
-            },
-          ),
-          if (_authStore.role != 'Credenciado')
-            TextButton(
-              child: Text(
-                "Excluir Pedido",
+          /* Container(
+            width: 300,
+            child: ElevatedButton(
+              child: const Text(
+                "Editar Pedido",
                 style: const TextStyle(
                   color: Colors.blue,
                 ),
               ),
               onPressed: () async {
-                await _deletePedidoDialog(ctx, index);
-                Navigator.pop(context);
-                Future.delayed(Duration(milliseconds: 800),
-                    () => _pedidosListStore.clearPedidosAndUpdate());
+                //To pop popup before pushing route
+                Navigator.of(ctx).pop();
+                Navigator.of(context).pushNamed(
+                  EditarPedido.routeName,
+                  arguments: {
+                    'codigoPedido': pedList[index]['codigo_pedido'],
+                    'pedidoId': pedList[index]['id'],
+                    'userId': pedList[index]['users_permissions_user']['id'],
+                    'enderecoId': pedList[index]['endereco_usuario']['id'],
+                    'pedidoDados': pedList[index],
+                  },
+                ).then(
+                  (value) => Future.delayed(
+                    Duration(milliseconds: 800),
+                    () => _pedidosListStore.clearPedidosAndUpdate(),
+                  ),
+                );
               },
             ),
-          if (relatorioFirstFetch)
-            FutureBuilder(
-              future: _fetchRelatorio(pedList[index]['id']),
-              builder: (ctx, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return _manageRelatorioBtn(
-                    ctx,
-                    index,
-                    snapshot.data,
-                    _sWidth,
-                    _sHeight,
-                    pedList[index]['codigo_pedido'],
-                  );
-                } else {
-                  return CircularProgressIndicator(
-                    valueColor: new AlwaysStoppedAnimation<Color>(
-                      Colors.blue,
-                    ),
-                  );
-                }
-              },
+          ), */
+          if (_authStore.role != 'Credenciado')
+            Container(
+              width: 300,
+              child: ElevatedButton(
+                child: const Text(
+                  "EXCLUIR PEDIDO",
+                ),
+                onPressed: () async {
+                  await _deletePedidoDialog(ctx, index);
+                  Navigator.pop(context);
+                  Future.delayed(Duration(milliseconds: 800),
+                      () => _pedidosListStore.clearPedidosAndUpdate());
+                },
+              ),
             ),
-          if (!relatorioFirstFetch && !relatorioData[0].containsKey('error'))
-            _manageRelatorioBtn(
-              ctx,
-              index,
-              relatorioData,
-              _sWidth,
-              _sHeight,
-              pedList[index]['codigo_pedido'],
-            ),
+
           /*
           TextButton(
             color: Colors.blue,
@@ -4168,6 +4229,118 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                 ),
                 child: Column(
                   children: [
+                    ResponsiveGridRow(children: [
+                      //Código pedido
+                      ResponsiveGridCol(
+                        lg: 12,
+                        child: Container(
+                          //color: Colors.black12.withOpacity(0.04),
+                          height: 50,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              '${'PEDIDO: ' + pedList[index]['codigo_pedido']}' ??
+                                  '',
+                              style: const TextStyle(
+                                color: Colors.black54,
+                                fontSize: 36,
+                                //fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      //Divider
+                      ResponsiveGridCol(
+                        lg: 12,
+                        child: SizedBox(
+                          height: 50,
+                          child: Center(
+                            child: Container(
+                              margin: const EdgeInsetsDirectional.only(
+                                  start: 1.0, end: 1.0),
+                              height: 1.0,
+                              color: Colors.black12,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ]),
+                    //EDITAR/VISUALIZAR
+                    Container(
+                      width: 300,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          //To pop popup before pushing route
+
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pushNamed(
+                            EditarPedido.routeName,
+                            arguments: {
+                              'codigoPedido': pedList[index]['codigo_pedido'],
+                              'pedidoId': pedList[index]['id'],
+                              'userId': pedList[index]['users_permissions_user']
+                                  ['id'],
+                              'enderecoId': pedList[index]['endereco_usuario']
+                                  ['id'],
+                              'pedidoDados': pedList[index],
+                            },
+                          ).then(
+                            (value) => Future.delayed(
+                              Duration(milliseconds: 800),
+                              () => _pedidosListStore.clearPedidosAndUpdate(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          'VISUALIZAR/EDITAR PEDIDO',
+                          style: const TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    //RELATÓRIO
+                    const SizedBox(height: 20),
+                    if (relatorioFirstFetch)
+                      FutureBuilder(
+                        future: _fetchRelatorio(pedList[index]['id']),
+                        builder: (ctx, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            return _manageRelatorioBtn(
+                              ctx,
+                              index,
+                              snapshot.data,
+                              sWidth,
+                              sHeight,
+                              pedList[index]['codigo_pedido'],
+                            );
+                          } else {
+                            return CircularProgressIndicator(
+                              valueColor: new AlwaysStoppedAnimation<Color>(
+                                Colors.blue,
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    if (!relatorioFirstFetch &&
+                        !relatorioData[0].containsKey('error'))
+                      _manageRelatorioBtn(
+                        context,
+                        index,
+                        relatorioData,
+                        sWidth,
+                        sHeight,
+                        pedList[index]['codigo_pedido'],
+                      ),
+                    _optionsBtns(
+                      context,
+                      index,
+                      sWidth,
+                      sHeight,
+                    ),
                     _pedidoUi(
                       pedList,
                       index,
@@ -4175,12 +4348,6 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                       sHeight,
                     ),
                     const SizedBox(height: 40),
-                    _optionsBtns(
-                      context,
-                      index,
-                      sWidth,
-                      sHeight,
-                    ),
                   ],
                 ),
               );

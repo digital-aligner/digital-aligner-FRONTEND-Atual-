@@ -45,6 +45,7 @@ class _RefinamentoPedidoState extends State<RefinamentoPedido> {
           isNovoPaciente: false,
           isNovoRefinamento: true,
           pacienteDados: args,
+          blockUi: false,
         ),
       ),
     );

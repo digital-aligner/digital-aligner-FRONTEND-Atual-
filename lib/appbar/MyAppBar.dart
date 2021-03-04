@@ -200,16 +200,6 @@ class _MyAppBarState extends State<MyAppBar> {
                   ),
                   value: 'Gerenciar Cadastros',
                 ),
-                PopupMenuItem(
-                  child: const Text(
-                    'Meus Setups',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontFamily: 'BigNoodleTitling',
-                    ),
-                  ),
-                  value: 'Meus Setups',
-                ),
                 if (role == 'Administrador')
                   PopupMenuItem(
                     child: const Text(
@@ -221,6 +211,16 @@ class _MyAppBarState extends State<MyAppBar> {
                     ),
                     value: 'Gerenciar Permissões',
                   ),
+                PopupMenuItem(
+                  child: const Text(
+                    'Meus Setups',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontFamily: 'BigNoodleTitling',
+                    ),
+                  ),
+                  value: 'Meus Setups',
+                ),
               ],
             ),
           )

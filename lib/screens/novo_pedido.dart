@@ -48,6 +48,7 @@ class _NovoPedidoState extends State<NovoPedido> {
           isNovoPedido: true,
           isNovoRefinamento: false,
           pacienteDados: args,
+          blockUi: false,
         ),
       ),
     );

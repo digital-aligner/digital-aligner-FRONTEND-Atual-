@@ -9,7 +9,7 @@ import 'package:digital_aligner_app/widgets/novo_paciente/7_termos/termos.dart';
 import 'package:digital_aligner_app/widgets/novo_paciente/8_status_pedido/status_pedido.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 
-import '../../widgets/novo_paciente/5_problemas_individuais/problemas_individuais.dart';
+import '5_problemas_individuais/problemas_individuais.dart';
 
 import '../file_uploads/photo_upload.dart';
 
@@ -19,10 +19,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 //Widgets
-import './1_dados_iniciais/dados_iniciais.dart';
-import './2_sagital/sagital.dart';
-import './3_vertical/vertical.dart';
-import './4_transversal/transversal.dart';
+import '1_dados_iniciais/dados_iniciais.dart';
+import '2_sagital/sagital.dart';
+import '3_vertical/vertical.dart';
+import '4_transversal/transversal.dart';
 import '6_endereco/endereco_entrega.dart';
 
 class PedidoForm extends StatefulWidget {
