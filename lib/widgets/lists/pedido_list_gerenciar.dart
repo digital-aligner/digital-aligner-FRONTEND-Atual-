@@ -30,6 +30,10 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
   AuthProvider _authStore;
 
   List<dynamic> pedList;
+
+  //for approving and showing spinner
+  bool _sendingAprovacao = false;
+
   // ----- For flutter web scroll -------
   ScrollController _scrollController = ScrollController();
   ScrollController _scrollController2 = ScrollController();
@@ -165,86 +169,198 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
     );
   }
 
-  Widget _relatorioUi(List<dynamic> data, String codPedido) {
-    return Wrap(
-      alignment: WrapAlignment.center,
-      direction: Axis.horizontal,
-      spacing: 20,
-      runSpacing: 20,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: <Widget>[
-        Text(
-          'RELATÓRIO DO PEDIDO: ' + codPedido,
-          style: TextStyle(
-            fontSize: 35,
-            //fontFamily: 'BigNoodleTitling',
-            color: Colors.grey,
+  Widget _clienteAprovacaoUi(List<dynamic> data) {
+    return Column(
+      children: [
+        //Text
+        const Text(
+          'Aguardando sua aprovação!',
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.red,
+            fontSize: 16,
           ),
         ),
-        Divider(thickness: 1),
-        //RELATÓRIO PREVIEW (PDF)
-
-        const SizedBox(
-          height: 50,
+        const SizedBox(height: 20),
+        const Text(
+          'Selecione se o pedido acima está aprovado para produção ou se é necessário alterações.',
+          style: const TextStyle(
+            fontSize: 16,
+          ),
         ),
-        ElevatedButton.icon(
-          onPressed: () async {
-            Navigator.pop(context);
-            await launch(data[0]['relatorio_pdf']['relatorio1']);
-          },
-          icon: const Icon(Icons.download_done_rounded),
-          label: const Text('Baixar relatório em PDF'),
-        ),
-        const SizedBox(
-          height: 50,
-        ),
-        ElevatedButton.icon(
-          onPressed: () async {
-            Navigator.pop(context);
-            await launch(data[0]['relatorio_ppt']['relatorio1']);
-          },
-          icon: const Icon(Icons.download_done_rounded),
-          label: const Text('Baixar relatório em PPT'),
-        ),
-        const SizedBox(
-          height: 50,
-        ),
-        ElevatedButton.icon(
-          onPressed: () async {
-            String link = data[0]['visualizador_3d'];
-            if (!link.contains('http://') && !link.contains('https://')) {
-              link = 'http://' + link;
-            }
-            Navigator.pop(context);
-            await launch(link);
-          },
-          icon: const Icon(Icons.link),
-          label: const Text('Link do visualizador 3d'),
-        ),
-        const SizedBox(
-          height: 50,
-        ),
-        data[0]['relatorio_pdf'].isEmpty
-            ? ElevatedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.image),
-                label: const Text('Sem relatório'),
-              )
-            : ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ViewRelatorioScreen(
-                        relatorioUrl: data[0]['relatorio_pdf']['relatorio1'],
-                      ),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.image),
-                label: const Text('Visualizar relatório'),
+        const SizedBox(height: 40),
+        //Ui buttons
+        Wrap(
+          alignment: WrapAlignment.center,
+          direction: Axis.horizontal,
+          spacing: 20,
+          runSpacing: 20,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: <Widget>[
+            //Manage aprovação button
+            if (data[0]['relatorio_pdf']['relatorio1'] == null)
+              ElevatedButton.icon(
+                onPressed: null,
+                icon: const Icon(Icons.thumb_up),
+                label: const Text('AGUARDE RELATÓRIO PARA APROVAÇÃO'),
               ),
+            if (!data[0]['aprovado_por_cliente'] &&
+                data[0]['relatorio_pdf']['relatorio1'] != null)
+              ElevatedButton.icon(
+                onPressed: !_sendingAprovacao
+                    ? () async {
+                        setState(() {
+                          _sendingAprovacao = true;
+                        });
+                        Map result = await _pedidosListStore
+                            .aprovarRelatorio(data[0]['id']);
+                        setState(() {
+                          _sendingAprovacao = false;
+                        });
+                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: const Duration(seconds: 3),
+                            content: Text(result['message']),
+                          ),
+                        );
+                        if (result.containsKey('statusCode')) {
+                          if (result['statusCode'] == 200) {
+                            Navigator.pop(context);
+                          }
+                        }
+                      }
+                    : null,
+                icon: const Icon(Icons.thumb_up),
+                label: !_sendingAprovacao
+                    ? const Text('APROVAR RELATÓRIO')
+                    : CircularProgressIndicator(
+                        valueColor: new AlwaysStoppedAnimation<Color>(
+                          Colors.blue,
+                        ),
+                      ),
+              ),
+            if (data[0]['aprovado_por_cliente'] &&
+                data[0]['relatorio_pdf']['relatorio1'] != null)
+              ElevatedButton.icon(
+                onPressed: null,
+                icon: const Icon(Icons.thumb_up),
+                label: const Text('RELATÓRIO APROVADO'),
+              ),
+            //Manage alterações button
+            if (data[0]['relatorio_pdf']['relatorio1'] == null)
+              ElevatedButton.icon(
+                onPressed: null,
+                icon: const Icon(Icons.edit),
+                label: const Text('SOLICITAR ALTERAÇÕES'),
+              ),
+            if (data[0]['aprovado_por_cliente'] &&
+                data[0]['relatorio_pdf']['relatorio1'] != null)
+              ElevatedButton.icon(
+                onPressed: null,
+                icon: const Icon(Icons.edit),
+                label: const Text('SOLICITAR ALTERAÇÕES'),
+              ),
+            if (!data[0]['aprovado_por_cliente'] &&
+                data[0]['relatorio_pdf']['relatorio1'] != null)
+              ElevatedButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.edit),
+                label: const Text('SOLICITAR ALTERAÇÕES'),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _relatorioUi(List<dynamic> data, String codPedido) {
+    return Column(
+      children: [
+        Wrap(
+          alignment: WrapAlignment.center,
+          direction: Axis.horizontal,
+          spacing: 20,
+          runSpacing: 20,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: <Widget>[
+            Text(
+              'RELATÓRIO DO PEDIDO: ' + codPedido,
+              style: TextStyle(
+                fontSize: 35,
+                //fontFamily: 'BigNoodleTitling',
+                color: Colors.grey,
+              ),
+            ),
+            const Divider(thickness: 1),
+            //RELATÓRIO PREVIEW (PDF)
+
+            const SizedBox(
+              height: 50,
+            ),
+            ElevatedButton.icon(
+              onPressed: () async {
+                Navigator.pop(context);
+                await launch(data[0]['relatorio_pdf']['relatorio1']);
+              },
+              icon: const Icon(Icons.download_done_rounded),
+              label: const Text('Baixar relatório em PDF'),
+            ),
+            const SizedBox(
+              height: 50,
+            ),
+            ElevatedButton.icon(
+              onPressed: () async {
+                Navigator.pop(context);
+                await launch(data[0]['relatorio_ppt']['relatorio1']);
+              },
+              icon: const Icon(Icons.download_done_rounded),
+              label: const Text('Baixar relatório em PPT'),
+            ),
+            const SizedBox(
+              height: 50,
+            ),
+            ElevatedButton.icon(
+              onPressed: () async {
+                String link = data[0]['visualizador_3d'];
+                if (!link.contains('http://') && !link.contains('https://')) {
+                  link = 'http://' + link;
+                }
+                Navigator.pop(context);
+                await launch(link);
+              },
+              icon: const Icon(Icons.link),
+              label: const Text('Link do visualizador 3d'),
+            ),
+            const SizedBox(
+              height: 50,
+            ),
+            data[0]['relatorio_pdf']['relatorio1'] == null
+                ? ElevatedButton.icon(
+                    onPressed: null,
+                    icon: const Icon(Icons.image),
+                    label: const Text('Sem relatório'),
+                  )
+                : ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ViewRelatorioScreen(
+                            relatorioUrl: data[0]['relatorio_pdf']
+                                ['relatorio1'],
+                          ),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.image),
+                    label: const Text('Visualizar relatório'),
+                  ),
+          ],
+        ),
+        const SizedBox(height: 40),
+        _clienteAprovacaoUi(data),
       ],
     );
   }

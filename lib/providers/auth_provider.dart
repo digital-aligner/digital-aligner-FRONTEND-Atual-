@@ -90,7 +90,7 @@ class AuthProvider with ChangeNotifier {
         },
       );
       final responseData = json.decode(response.body);
-      print(response.body);
+
       if (responseData.containsKey('error')) {
         if (responseData['message'][0]['messages'][0]['id'] ==
             'Auth.form.error.blocked') {
@@ -124,8 +124,9 @@ class AuthProvider with ChangeNotifier {
       });
       prefs.setString('digitalAlignerData', userData);
     } catch (error) {
+      //If managed to get here, error connecting to strapi server
       print(error);
-      return error.toString();
+      return 'Erro ao se connectar com o servidor.';
     }
   }
 

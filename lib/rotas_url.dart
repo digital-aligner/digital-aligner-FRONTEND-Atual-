@@ -41,6 +41,7 @@ class RotasUrl {
   static const rotaMeuRelatorio = rotaBase + 'meu-relatorio/';
   static const rotaCriarRelatorio = rotaBase + 'criar-relatorio/';
   static const rotaAtualizarRelatorio = rotaBase + 'atualizar-relatorio/';
+  static const rotaAprovarRelatorio = rotaBase + 'aprovar-relatorio/';
   static const rotaDadosBaseRelatorio = rotaBase + 'dados-base-relatorio/';
   //Note: These delete routes only used on editing screens (editar pedido, editar relatório)
   //Not for deleting pedido or relatório

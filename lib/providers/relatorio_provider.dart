@@ -131,7 +131,9 @@ class RelatorioProvider with ChangeNotifier {
 
       _selectedRelatorio.relatorioPdf.id = _data[0]['relatorio_pdf']['id'];
       _selectedRelatorio.relatorioPPT.id = _data[0]['relatorio_ppt']['id'];
+
       _selectedRelatorio.id = _data[0]['id'];
+
       _selectedRelatorio.relatorioPdf.relatorio1 =
           _data[0]['relatorio_pdf']['relatorio1'];
       _selectedRelatorio.relatorioPPT.relatorio1 =
