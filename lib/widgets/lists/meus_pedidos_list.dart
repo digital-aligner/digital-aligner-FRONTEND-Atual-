@@ -1,6 +1,6 @@
 import 'package:digital_aligner_app/dados/scrollbarWidgetConfig.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
-import 'package:digital_aligner_app/screens/editar_relatorio_screen.dart';
+
 //import 'package:digital_aligner_app/screens/gerar_relatorio_screen.dart';
 
 import 'package:digital_aligner_app/screens/pedido_view_screen.dart';
@@ -35,7 +35,8 @@ class _MeusPedidosListState extends State<MeusPedidosList> {
   // ---- For flutter web scroll end ---
 
   Widget _relatorioStatusBtn(int index, double _sWidth, double _sHeight) {
-    if (pedList[index]['status_pedido']['id'] == 2) {
+    if (pedList[index]['status_pedido']['id'] == 2 ||
+        pedList[index]['relatorios'].length == 0) {
       return Container(
         height: 80,
         child: TextButton(
@@ -260,7 +261,7 @@ class _MeusPedidosListState extends State<MeusPedidosList> {
               ),
               Expanded(
                 child: Text(
-                  '${pedList[index]['status_pedido']['status']}',
+                  '${pedList[index]['status_pedido']['status'] ?? '-'}',
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
                 ),
