@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
 import 'package:digital_aligner_app/dados/scrollbarWidgetConfig.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
@@ -6,9 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'gerar_relatorio_screen.dart';
+import '../rotas_url.dart';
+import 'editar_relatorio_screen.dart';
 import 'login_screen.dart';
 import 'view_relatorio_screen.dart';
+
+import 'package:http/http.dart' as http;
 
 class RelatorioViewScreen extends StatefulWidget {
   static const routeName = '/relatorio-view';
@@ -19,80 +24,55 @@ class RelatorioViewScreen extends StatefulWidget {
 class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
   AuthProvider _authStore;
 
+  Map pedido;
+
   //for approving and showing spinner
   bool _sendingAprovacao = false;
 
   // ----- For flutter web scroll -------
   ScrollController _scrollController = ScrollController();
-/*
-  Future<dynamic> _visualizarRelatorioDialog(
-    BuildContext ctx,
-    double _sWidth,
-    double _sHeight,
-    List<dynamic> data,
-    String codPedido,
-    int index,
-  ) async {
-    return showDialog(
-      barrierDismissible: false,
-      context: ctx,
-      builder: (BuildContext ctx2) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Container(
-                width: _sWidth - 20,
-                height: _sHeight - 200,
-                child: DraggableScrollbar.rrect(
-                  heightScrollThumb: ScrollBarWidgetConfig.scrollBarHeight,
-                  backgroundColor: ScrollBarWidgetConfig.color,
-                  alwaysVisibleScrollThumb: false,
-                  controller: _scrollController,
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    itemCount: 1,
-                    itemExtent: null,
-                    itemBuilder: (context, index2) {
-                      return _relatorioUi(data, codPedido);
-                    },
-                  ),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  child: Text("Editar Relatorio"),
-                  onPressed: () {
-                    setState(() {
-                      _absorbPointerBool = true;
-                    });
-                    //To pop popup before pushing route
-                    Navigator.of(ctx2).pop();
-                    Navigator.of(ctx2).pushNamed(
-                      EditarRelatorioScreen.routeName,
-                      arguments: {
-                        'pedidoId': pedList[index]['id'],
-                        'pacienteId': pedList[index]['paciente']['id'],
-                        'relatorioData': data[0],
-                      },
-                    ).then((didUpdate) {
-                      Future.delayed(Duration(milliseconds: 800), () {
-                        _pedidosListStore.clearPedidosAndUpdate();
-                        _absorbPointerBool = false;
-                      });
-                    });
-                  },
-                ),
-                TextButton(
-                  child: Text("Fechar"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
+
+  Future<Map<dynamic, dynamic>> _aprovarRelatorio(int id) async {
+    var _response = await http.put(RotasUrl.rotaAprovarRelatorio,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${_authStore.token}'
+        },
+        body: json.encode({'id': id}));
+
+    print(_response.body);
+
+    Map<dynamic, dynamic> _data = json.decode(_response.body);
+    return _data;
+  }
+
+  Widget _visualizarRelatorioUi() {
+    return Column(
+      children: <Widget>[
+        _relatorioUi(pedido['relatorios'], pedido['codigo_pedido']),
+        TextButton(
+          child: Text("Editar Relatorio"),
+          onPressed: () {
+            Navigator.of(context).pushNamed(
+              EditarRelatorioScreen.routeName,
+              arguments: {
+                'pedidoId': pedido['id'],
+                'pacienteId': pedido['paciente']['id'],
+                'relatorioData': pedido['relatorios'][0],
+              },
+            ).then((didUpdate) {
+              Navigator.pop(context);
+            });
           },
-        );
-      },
+        ),
+        TextButton(
+          child: Text("Fechar"),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
     );
   }
 
@@ -139,8 +119,7 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
                         setState(() {
                           _sendingAprovacao = true;
                         });
-                        Map result = await _pedidosListStore
-                            .aprovarRelatorio(data[0]['id']);
+                        Map result = await _aprovarRelatorio(data[0]['id']);
                         setState(() {
                           _sendingAprovacao = false;
                         });
@@ -238,7 +217,7 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
             ),
             ElevatedButton.icon(
               onPressed: () async {
-                Navigator.pop(context);
+                //Navigator.pop(context);
                 await launch(data[0]['relatorio_ppt']['relatorio1']);
               },
               icon: const Icon(Icons.download_done_rounded),
@@ -270,7 +249,7 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
                   )
                 : ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.pop(context);
+                      //Navigator.pop(context);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -290,7 +269,7 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
         _clienteAprovacaoUi(data),
       ],
     );
-  } */
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -305,7 +284,7 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
 
     Map args = ModalRoute.of(context).settings.arguments;
 
-    //index = args['index'];
+    pedido = args['pedido'];
 
     return Scaffold(
       appBar: SecondaryAppbar(),
@@ -328,7 +307,9 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
                   vertical: 50,
                 ),
                 child: Column(
-                  children: [],
+                  children: [
+                    _visualizarRelatorioUi(),
+                  ],
                 ),
               );
             },

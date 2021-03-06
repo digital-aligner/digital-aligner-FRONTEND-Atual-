@@ -84,8 +84,7 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
             Navigator.of(context).pushNamed(
               RelatorioViewScreen.routeName,
               arguments: {
-                'pedidoId': pedList[index]['id'],
-                'pacienteId': pedList[index]['paciente']['id']
+                'pedido': pedList[index],
               },
             ).then((_) {
               Future.delayed(Duration(milliseconds: 800), () {

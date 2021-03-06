@@ -173,19 +173,4 @@ class PedidosListProvider with ChangeNotifier {
       return error;
     }
   }
-
-  Future<Map<dynamic, dynamic>> aprovarRelatorio(int id) async {
-    var _response = await http.put(RotasUrl.rotaAprovarRelatorio,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $_token'
-        },
-        body: json.encode({'id': id}));
-
-    print(_response.body);
-
-    Map<dynamic, dynamic> _data = json.decode(_response.body);
-    return _data;
-  }
 }
