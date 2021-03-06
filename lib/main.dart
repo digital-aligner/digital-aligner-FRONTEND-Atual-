@@ -33,6 +33,7 @@ import 'providers/login_form_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/pedido_provider.dart';
 import 'providers/cadastro_provider.dart';
+import 'screens/relatorio_view_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -171,6 +172,7 @@ class MyApp extends StatelessWidget {
             Perfil.routeName: (ctx) => Perfil(),
             PedidoViewScreen.routeName: (ctx) => PedidoViewScreen(),
             MeusSetups.routeName: (ctx) => MeusSetups(),
+            RelatorioViewScreen.routeName: (ctx) => RelatorioViewScreen(),
           },
         ),
       ),
