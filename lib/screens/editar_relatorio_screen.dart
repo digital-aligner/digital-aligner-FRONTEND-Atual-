@@ -41,6 +41,8 @@ class _EditarRelatorioScreenState extends State<EditarRelatorioScreen> {
 
   Map _argMap;
 
+  bool _didUpdate = false;
+
   @override
   void dispose() {
     _numeroPedido.dispose();
@@ -112,222 +114,240 @@ class _EditarRelatorioScreenState extends State<EditarRelatorioScreen> {
 
     return Scaffold(
       appBar: SecondaryAppbar(),
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: Form(
-          key: _formKey,
-          child: DraggableScrollbar.rrect(
-            heightScrollThumb: ScrollBarWidgetConfig.scrollBarHeight,
-            backgroundColor: ScrollBarWidgetConfig.color,
-            alwaysVisibleScrollThumb: true,
-            controller: _scrollController,
-            child: ListView.builder(
-                controller: _scrollController,
-                itemCount: 1, // To load full row (will prevent state loss)
-                itemExtent: null,
-                itemBuilder: (context, index) {
-                  return Row(
-                    children: [
-                      Expanded(
-                        child: Container(),
-                      ),
-                      Expanded(
-                        flex: 9,
-                        child: Column(
-                          children: <Widget>[
-                            Center(
-                              child: Container(
-                                margin:
-                                    const EdgeInsets.symmetric(vertical: 40),
-                                child: Text(
-                                  'Editar Relatório',
-                                  style: Theme.of(context).textTheme.headline1,
-                                ),
-                              ),
-                            ),
-                            //Num pedido
-                            Container(
-                              margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                              height: 80,
-                              child: TextFormField(
-                                controller: _numeroPedido,
-                                readOnly: true,
-                                decoration: const InputDecoration(
-                                  hintText: 'Número do Pedido: *',
-                                  labelText: 'Número do Pedido: *',
-                                  border: const OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                            //Nome
-                            Container(
-                              margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                              height: 80,
-                              child: TextFormField(
-                                controller: _nome,
-                                readOnly: true,
-                                decoration: const InputDecoration(
-                                  hintText: 'Nome: *',
-                                  labelText: 'Nome: *',
-                                  border: const OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                            //Sobrenome
-                            Container(
-                              margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                              height: 80,
-                              child: TextFormField(
-                                controller: _sobrenome,
-                                readOnly: true,
-                                decoration: const InputDecoration(
-                                  hintText: 'Sobrenome: *',
-                                  labelText: 'Sobrenome: *',
-                                  border: const OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                            //Email
-                            Container(
-                              margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                              height: 80,
-                              child: TextFormField(
-                                controller: _email,
-                                readOnly: true,
-                                decoration: const InputDecoration(
-                                  hintText: 'Email: *',
-                                  labelText: 'Email: *',
-                                  border: const OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                            //CPF
-                            Container(
-                              margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                              height: 80,
-                              child: TextFormField(
-                                controller: _cpf,
-                                readOnly: true,
-                                decoration: const InputDecoration(
-                                  hintText: 'CPF: *',
-                                  labelText: 'CPF: *',
-                                  border: const OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                            //Paciente
-                            Container(
-                              margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                              height: 80,
-                              child: TextFormField(
-                                controller: _paciente,
-                                readOnly: true,
-                                decoration: const InputDecoration(
-                                  hintText: 'Paciente: *',
-                                  labelText: 'Paciente: *',
-                                  border: const OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                            //Relatório PDF button
-                            RelatorioPdfUpload(
-                              isEdit: true,
-                              relatorioDados: _argMap['relatorioData'],
-                            ),
-                            RelatorioPPTUpload(
-                              isEdit: true,
-                              relatorioDados: _argMap['relatorioData'],
-                            ),
-                            const SizedBox(
-                              height: 60,
-                            ),
-                            //link visualizador 3d
-                            Container(
-                              margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                              height: 80,
-                              child: TextFormField(
-                                onSaved: (value) {
-                                  _relatorioStore
-                                      .getSelectedRelatorio()
-                                      .visualizador3d = value;
-                                },
-                                controller: _visualizador3d,
-                                readOnly: false,
-                                decoration: const InputDecoration(
-                                  //hintText: 'Visualizador 3D: *',
-                                  labelText: 'Visualizador 3D: *',
-                                  border: const OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                            //link visualizador 3d
-                            Container(
-                              margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                              height: 80,
-                              child: TextFormField(
-                                onSaved: (value) {
-                                  _relatorioStore
-                                      .getSelectedRelatorio()
-                                      .visualizador3dOpcao2 = value;
-                                },
-                                controller: _visualizador3d2,
-                                readOnly: false,
-                                decoration: const InputDecoration(
-                                  //hintText: 'Visualizador 3D (segunda opção): *',
-                                  labelText:
-                                      'Visualizador 3D (segunda opção): *',
-                                  border: const OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                            //ENVIAR (atualizar)
-                            Container(
-                              width: 300,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  if (_formKey.currentState.validate()) {
-                                    _formKey.currentState.save();
-
-                                    _relatorioStore
-                                        .atualizarRelatorio()
-                                        .then((res) {
-                                      //Delete from s3 if pedido is deleted
-                                      _s3RelatorioDeleteStore
-                                          .batchDeleteFiles();
-                                      ScaffoldMessenger.of(context)
-                                          .removeCurrentSnackBar();
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          duration: const Duration(seconds: 8),
-                                          content: Text(res['message']),
-                                        ),
-                                      );
-                                    });
-                                    Navigator.pop(context);
-                                  }
-                                },
-                                child: const Text(
-                                  'ATUALIZAR',
-                                  style: const TextStyle(
-                                    color: Colors.white,
+      body: WillPopScope(
+        onWillPop: () async {
+          if (_didUpdate) {
+            //No need for navigator.pop. popping in the update function.
+            return true;
+          }
+          //Return true always to let navigator.pop work
+          //Obs: Need navigator.pop here because its handling
+          //backbutton press
+          Navigator.pop(context, false);
+          return true;
+        },
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: Form(
+            key: _formKey,
+            child: DraggableScrollbar.rrect(
+              heightScrollThumb: ScrollBarWidgetConfig.scrollBarHeight,
+              backgroundColor: ScrollBarWidgetConfig.color,
+              alwaysVisibleScrollThumb: true,
+              controller: _scrollController,
+              child: ListView.builder(
+                  controller: _scrollController,
+                  itemCount: 1, // To load full row (will prevent state loss)
+                  itemExtent: null,
+                  itemBuilder: (context, index) {
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: Container(),
+                        ),
+                        Expanded(
+                          flex: 9,
+                          child: Column(
+                            children: <Widget>[
+                              Center(
+                                child: Container(
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 40),
+                                  child: Text(
+                                    'Editar Relatório',
+                                    style:
+                                        Theme.of(context).textTheme.headline1,
                                   ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(
-                              height: 60,
-                            ),
-                          ],
+                              //Num pedido
+                              Container(
+                                margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                height: 80,
+                                child: TextFormField(
+                                  controller: _numeroPedido,
+                                  readOnly: true,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Número do Pedido: *',
+                                    labelText: 'Número do Pedido: *',
+                                    border: const OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                              //Nome
+                              Container(
+                                margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                height: 80,
+                                child: TextFormField(
+                                  controller: _nome,
+                                  readOnly: true,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Nome: *',
+                                    labelText: 'Nome: *',
+                                    border: const OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                              //Sobrenome
+                              Container(
+                                margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                height: 80,
+                                child: TextFormField(
+                                  controller: _sobrenome,
+                                  readOnly: true,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Sobrenome: *',
+                                    labelText: 'Sobrenome: *',
+                                    border: const OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                              //Email
+                              Container(
+                                margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                height: 80,
+                                child: TextFormField(
+                                  controller: _email,
+                                  readOnly: true,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Email: *',
+                                    labelText: 'Email: *',
+                                    border: const OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                              //CPF
+                              Container(
+                                margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                height: 80,
+                                child: TextFormField(
+                                  controller: _cpf,
+                                  readOnly: true,
+                                  decoration: const InputDecoration(
+                                    hintText: 'CPF: *',
+                                    labelText: 'CPF: *',
+                                    border: const OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                              //Paciente
+                              Container(
+                                margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                height: 80,
+                                child: TextFormField(
+                                  controller: _paciente,
+                                  readOnly: true,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Paciente: *',
+                                    labelText: 'Paciente: *',
+                                    border: const OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                              //Relatório PDF button
+                              RelatorioPdfUpload(
+                                isEdit: true,
+                                relatorioDados: _argMap['relatorioData'],
+                              ),
+                              RelatorioPPTUpload(
+                                isEdit: true,
+                                relatorioDados: _argMap['relatorioData'],
+                              ),
+                              const SizedBox(
+                                height: 60,
+                              ),
+                              //link visualizador 3d
+                              Container(
+                                margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                height: 80,
+                                child: TextFormField(
+                                  onSaved: (value) {
+                                    _relatorioStore
+                                        .getSelectedRelatorio()
+                                        .visualizador3d = value;
+                                  },
+                                  controller: _visualizador3d,
+                                  readOnly: false,
+                                  decoration: const InputDecoration(
+                                    //hintText: 'Visualizador 3D: *',
+                                    labelText: 'Visualizador 3D: *',
+                                    border: const OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                              //link visualizador 3d
+                              Container(
+                                margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                height: 80,
+                                child: TextFormField(
+                                  onSaved: (value) {
+                                    _relatorioStore
+                                        .getSelectedRelatorio()
+                                        .visualizador3dOpcao2 = value;
+                                  },
+                                  controller: _visualizador3d2,
+                                  readOnly: false,
+                                  decoration: const InputDecoration(
+                                    //hintText: 'Visualizador 3D (segunda opção): *',
+                                    labelText:
+                                        'Visualizador 3D (segunda opção): *',
+                                    border: const OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                              //ENVIAR (atualizar)
+                              Container(
+                                width: 300,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    if (_formKey.currentState.validate()) {
+                                      _formKey.currentState.save();
+
+                                      _relatorioStore
+                                          .atualizarRelatorio()
+                                          .then((res) {
+                                        //Delete from s3 if pedido is deleted
+                                        _s3RelatorioDeleteStore
+                                            .batchDeleteFiles();
+                                        ScaffoldMessenger.of(context)
+                                            .removeCurrentSnackBar();
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            duration:
+                                                const Duration(seconds: 8),
+                                            content: Text(res['message']),
+                                          ),
+                                        );
+                                        if (res['statusCode'] == 200) {
+                                          _didUpdate = true;
+                                          Navigator.pop(context, true);
+                                        }
+                                      });
+                                    }
+                                  },
+                                  child: const Text(
+                                    'ATUALIZAR',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 60,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: Container(),
-                      ),
-                    ],
-                  );
-                }),
+                        Expanded(
+                          child: Container(),
+                        ),
+                      ],
+                    );
+                  }),
+            ),
           ),
         ),
       ),

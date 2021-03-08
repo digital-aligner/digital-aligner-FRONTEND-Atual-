@@ -39,6 +39,7 @@ class RotasUrl {
   static const rotaModeloCompactadoList = rotaBase + 'modelo-compactados-list/';
   static const rotaModeloNemoList = rotaBase + 'modelo-nemo-list/';
   static const rotaMeuRelatorio = rotaBase + 'meu-relatorio/';
+  static const rotaSolicitarAlteracao = rotaBase + 'solicitar-alteracao/';
   static const rotaCriarRelatorio = rotaBase + 'criar-relatorio/';
   static const rotaAtualizarRelatorio = rotaBase + 'atualizar-relatorio/';
   static const rotaAprovarRelatorio = rotaBase + 'aprovar-relatorio/';

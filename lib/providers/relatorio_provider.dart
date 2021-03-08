@@ -116,6 +116,37 @@ class RelatorioProvider with ChangeNotifier {
         headers: requestHeaders,
       );
       var _data = json.decode(response.body);
+      _selectedRelatorio.codigoPedido = _data[0]['pedido']['codigo_pedido'];
+      _selectedRelatorio.nome =
+          _data[0]['pedido']['users_permissions_user']['nome'];
+      _selectedRelatorio.sobrenome =
+          _data[0]['pedido']['users_permissions_user']['sobrenome'];
+      _selectedRelatorio.email =
+          _data[0]['pedido']['users_permissions_user']['email'];
+      _selectedRelatorio.cpf =
+          _data[0]['pedido']['users_permissions_user']['username'];
+      _selectedRelatorio.nomePaciente = _data[0]['paciente']['nome_paciente'];
+      _selectedRelatorio.idPedido = _data[0]['pedido']['id'];
+      _selectedRelatorio.idPaciente = _data[0]['paciente']['id'];
+
+      _selectedRelatorio.visualizador3d = _data[0]['visualizador_3d'];
+      _selectedRelatorio.visualizador3dOpcao2 =
+          _data[0]['visualizador_3d_opcao_2'];
+
+      _selectedRelatorio.relatorioPdf.id = _data[0]['relatorio_pdf']['id'];
+      _selectedRelatorio.relatorioPPT.id = _data[0]['relatorio_ppt']['id'];
+
+      _selectedRelatorio.id = _data[0]['id'];
+
+      _selectedRelatorio.relatorioPdf.relatorio1 =
+          _data[0]['relatorio_pdf']['relatorio1'];
+      _selectedRelatorio.relatorioPPT.relatorio1 =
+          _data[0]['relatorio_ppt']['relatorio1'];
+      _selectedRelatorio.relatorioPdf.relatorio1Id =
+          _data[0]['relatorio_pdf']['relatorio1_id'];
+      _selectedRelatorio.relatorioPPT.relatorio1Id =
+          _data[0]['relatorio_ppt']['relatorio1_id'];
+      /*
       _selectedRelatorio.codigoPedido = _data[3]['codigo_pedido'];
       _selectedRelatorio.nome = _data[1]['nome'];
       _selectedRelatorio.sobrenome = _data[1]['sobrenome'];
@@ -142,6 +173,7 @@ class RelatorioProvider with ChangeNotifier {
           _data[0]['relatorio_pdf']['relatorio1_id'];
       _selectedRelatorio.relatorioPPT.relatorio1Id =
           _data[0]['relatorio_ppt']['relatorio1_id'];
+          */
       print(_selectedRelatorio.toJson().toString());
     } catch (error) {
       print('Error! ' + error.toString());
