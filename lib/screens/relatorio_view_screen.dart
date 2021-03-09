@@ -247,7 +247,7 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
         ),
       );
     }
-    return l;
+    return l.reversed.toList();
   }
 
   Widget _listHistoricoAprovacaoUi() {
@@ -495,25 +495,26 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
                     icon: const Icon(Icons.image),
                     label: const Text('Visualizar relatório'),
                   ),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.edit),
-              label: const Text("Editar Relatorio"),
-              onPressed: () {
-                Navigator.of(context).pushNamed(
-                  EditarRelatorioScreen.routeName,
-                  arguments: {
-                    'pedidoId': pedido['id'],
-                    'pacienteId': pedido['paciente']['id'],
-                    'relatorioData': pedido['relatorios'][0],
-                  },
-                ).then((didUpdateNeedsPop) {
-                  print('didUpdatevalue: ' + didUpdateNeedsPop.toString());
-                  if (didUpdateNeedsPop) {
-                    Navigator.pop(context);
-                  }
-                });
-              },
-            ),
+            if (_authStore.role == 'Administrador' ||
+                _authStore.role == 'Gerente')
+              ElevatedButton.icon(
+                icon: const Icon(Icons.edit),
+                label: const Text('Editar Relatório'),
+                onPressed: () {
+                  Navigator.of(context).pushNamed(
+                    EditarRelatorioScreen.routeName,
+                    arguments: {
+                      'pedidoId': pedido['id'],
+                      'pacienteId': pedido['paciente']['id'],
+                      'relatorioData': pedido['relatorios'][0],
+                    },
+                  ).then((didUpdateNeedsPop) {
+                    if (didUpdateNeedsPop) {
+                      Navigator.pop(context);
+                    }
+                  });
+                },
+              ),
           ],
         ),
         const SizedBox(height: 40),

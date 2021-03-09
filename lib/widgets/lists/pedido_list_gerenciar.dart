@@ -1,5 +1,4 @@
 import 'package:digital_aligner_app/dados/scrollbarWidgetConfig.dart';
-import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/screens/gerar_relatorio_screen.dart';
 
 import 'package:digital_aligner_app/screens/pedido_view_screen.dart';
@@ -92,15 +91,6 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                 _absorbPointerBool = false;
               });
             });
-            /*
-            _visualizarRelatorioDialog(
-              context,
-              _sWidth,
-              _sHeight,
-              pedList[index]['relatorios'],
-              pedList[index]['codigo_pedido'],
-              index,
-            );*/
           },
         ),
       );
