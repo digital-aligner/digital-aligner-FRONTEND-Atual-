@@ -143,17 +143,16 @@ class MyApp extends StatelessWidget {
               ),
             ),
           ),
-          home: auth.isAuth
-              ? MeusPacientes()
-              : FutureBuilder(
-                  future: auth.tryAutoLogin(),
-                  builder: (ctx, authResultSnapshot) {
-                    return authResultSnapshot.connectionState ==
-                            ConnectionState.waiting
-                        ? LoadingScreen()
-                        : LoginScreen();
-                  },
-                ),
+          home: FutureBuilder(
+            future: auth.tryAutoLogin(),
+            builder: (ctx, authResultSnapshot) {
+              if (authResultSnapshot.connectionState == ConnectionState.done) {
+                return LoginScreen();
+              } else {
+                return LoadingScreen();
+              }
+            },
+          ),
           routes: {
             MeusPacientes.routeName: (ctx) => MeusPacientes(),
             NovoPaciente.routeName: (ctx) => NovoPaciente(),

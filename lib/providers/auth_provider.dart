@@ -58,7 +58,7 @@ class AuthProvider with ChangeNotifier {
     _userName = extractedUserData['userName'];
     _role = extractedUserData['role'];
     _expiryDate = expiryDate;
-    notifyListeners();
+    //notifyListeners();
     return true;
   }
 

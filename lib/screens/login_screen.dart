@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import '../providers/login_form_provider.dart';
 import '../providers/auth_provider.dart';
+import 'meus_pacientes.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -11,6 +12,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
+  bool _blockUi = true;
+  bool _firstRun = true;
 
   Future<void> _submit(_loginStore, context) async {
     setState(() => _isLoading = true);
@@ -393,35 +396,68 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (Navigator.canPop(context)) {
-        Navigator.pop(context);
+    AuthProvider authStore = Provider.of<AuthProvider>(context);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (_firstRun) {
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: const Duration(milliseconds: 1500),
+            content: const Text('Entrando...'),
+          ),
+        );
+
+        await Future.delayed(Duration(seconds: 2));
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context);
+        }
+
+        if (authStore.isAuth) {
+          Navigator.of(context).pushReplacementNamed(MeusPacientes.routeName);
+        } else {
+          //Unblock ui for login
+          setState(() {
+            _blockUi = false;
+            _firstRun = false;
+          });
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              duration: const Duration(milliseconds: 1500),
+              content: const Text('Por favor favor entre na sua conta.'),
+            ),
+          );
+        }
       }
     });
 
     return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                fit: BoxFit.cover,
-                image: new AssetImage('assets/backgrounds/login_screen.jpg'),
+      body: AbsorbPointer(
+        absorbing: _blockUi,
+        child: Stack(
+          children: <Widget>[
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: new AssetImage('assets/backgrounds/login_screen.jpg'),
+                ),
               ),
             ),
-          ),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              if (constraints.maxWidth > 768) {
-                return _layoutDesktop(context, constraints);
-              } else {
-                return _layoutMobile(context, constraints);
-              }
-            },
-          ),
-        ],
+            LayoutBuilder(
+              builder: (context, constraints) {
+                if (constraints.maxWidth > 768) {
+                  return _layoutDesktop(context, constraints);
+                } else {
+                  return _layoutMobile(context, constraints);
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

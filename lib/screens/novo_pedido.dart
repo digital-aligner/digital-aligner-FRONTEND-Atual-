@@ -1,11 +1,7 @@
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
-import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../appbar/MyAppBar.dart';
-import '../appbar/MyDrawer.dart';
-import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import '../providers/auth_provider.dart';
 import 'login_screen.dart';
 
