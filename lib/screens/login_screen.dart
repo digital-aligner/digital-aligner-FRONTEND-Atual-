@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import '../providers/login_form_provider.dart';
 import '../providers/auth_provider.dart';
 import 'meus_pacientes.dart';
+import 'recuperar_senha.dart';
+
+import 'dart:html';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -113,7 +116,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: 60,
                           ),
                           TextButton(
-                            onPressed: () => true,
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => RecuperarSenha(),
+                                ),
+                              );
+                            },
                             child: Text('Recuperar senha'),
                           ),
                         ],

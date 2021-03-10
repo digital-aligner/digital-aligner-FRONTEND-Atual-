@@ -35,13 +35,25 @@ import 'providers/pedido_provider.dart';
 import 'providers/cadastro_provider.dart';
 import 'screens/relatorio_view_screen.dart';
 
+import 'dart:html';
+import 'dart:js' as js;
+
 void main() {
   runApp(MyApp());
+}
+
+Map<String, String> _queryStrings() {
+  //String url = window.location.hash;
+  //print('right here!' + url);
+  var uri = Uri.tryParse(js.context['location']['href']);
+  print(uri);
+  if (uri != null) return uri.queryParameters;
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    _queryStrings();
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
