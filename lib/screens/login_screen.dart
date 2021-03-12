@@ -1,3 +1,4 @@
+import 'package:digital_aligner_app/screens/criar_nova_senha.dart';
 import 'package:digital_aligner_app/screens/primeiro_cadastro.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -6,9 +7,10 @@ import '../providers/auth_provider.dart';
 import 'meus_pacientes.dart';
 import 'recuperar_senha.dart';
 
-import 'dart:html';
-
 class LoginScreen extends StatefulWidget {
+  final Map<String, String> queryStringsForPasswordReset;
+  LoginScreen({this.queryStringsForPasswordReset});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -425,6 +427,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (authStore.isAuth) {
           Navigator.of(context).pushReplacementNamed(MeusPacientes.routeName);
+          return;
         } else {
           //Unblock ui for login
           setState(() {
@@ -438,6 +441,19 @@ class _LoginScreenState extends State<LoginScreen> {
               content: const Text('Por favor favor entre na sua conta.'),
             ),
           );
+
+          //If logged out, autologin failed and passed query strings for rest, show reset ui
+          if (widget.queryStringsForPasswordReset.isNotEmpty) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CriarNovaSenha(
+                  queryStringsForPasswordReset:
+                      widget.queryStringsForPasswordReset,
+                ),
+              ),
+            );
+          }
         }
       }
     });

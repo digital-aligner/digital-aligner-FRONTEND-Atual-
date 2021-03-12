@@ -46,10 +46,15 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
             TextFormField(
               onSaved: (value) async {
                 Map result = await _recoverPasswordRequest(value);
+                if (result.containsKey('statusCode')) {
+                  if (result['statusCode'] == 200) {
+                    Navigator.pop(context);
+                  }
+                }
                 ScaffoldMessenger.of(context).removeCurrentSnackBar();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    duration: const Duration(seconds: 2),
+                    duration: const Duration(seconds: 5),
                     content: Text(result['message']),
                   ),
                 );

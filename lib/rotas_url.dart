@@ -45,6 +45,7 @@ class RotasUrl {
   static const rotaAprovarRelatorio = rotaBase + 'aprovar-relatorio/';
   static const rotaDadosBaseRelatorio = rotaBase + 'dados-base-relatorio/';
   static const rotaRecuperarSenha = rotaBase + 'recuperar-senha/';
+  static const rotaRecuperarSenhaNova = rotaBase + 'recuperar-senha-nova/';
   //Note: These delete routes only used on editing screens (editar pedido, editar relatório)
   //Not for deleting pedido or relatório
   static const rotaDeleteS3 = rotaBase + 'upload/files/';

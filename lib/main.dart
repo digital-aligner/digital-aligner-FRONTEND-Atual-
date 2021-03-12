@@ -35,7 +35,6 @@ import 'providers/pedido_provider.dart';
 import 'providers/cadastro_provider.dart';
 import 'screens/relatorio_view_screen.dart';
 
-import 'dart:html';
 import 'dart:js' as js;
 
 void main() {
@@ -43,17 +42,20 @@ void main() {
 }
 
 Map<String, String> _queryStrings() {
-  //String url = window.location.hash;
-  //print('right here!' + url);
-  var uri = Uri.tryParse(js.context['location']['href']);
-  print(uri);
-  if (uri != null) return uri.queryParameters;
+  Uri uri = Uri.tryParse(js.context['location']['href']);
+  List<String> uriStringAfterQuestionMark = uri.toString().split('?');
+  //If the url has no query strings, its length will be 1
+  if (uriStringAfterQuestionMark.length == 1) return Map<String, String>();
+  Map<String, String> queryString = Uri.splitQueryString(
+    uriStringAfterQuestionMark[1],
+  );
+  return queryString;
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    _queryStrings();
+    Map<String, String> _qStrings = _queryStrings();
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -159,7 +161,9 @@ class MyApp extends StatelessWidget {
             future: auth.tryAutoLogin(),
             builder: (ctx, authResultSnapshot) {
               if (authResultSnapshot.connectionState == ConnectionState.done) {
-                return LoginScreen();
+                return LoginScreen(
+                  queryStringsForPasswordReset: _qStrings,
+                );
               } else {
                 return LoadingScreen();
               }
