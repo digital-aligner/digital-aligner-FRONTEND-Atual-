@@ -219,6 +219,55 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                 ),
               ],
             ),
+          if (_pedidosListStore.getDropdownValue() == 'Refinamentos')
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    _isoDateTimeToLocal(
+                      pedList[index]['created_at'],
+                    ),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    '${pedList[index]['codigo_pedido']}',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    '${pedList[index]['status_pedido']['status'] ?? '-'}',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Expanded(
+                  child: _relatorioStatusBtn(
+                    index,
+                    _sWidth,
+                    _sHeight,
+                  ),
+                ),
+              ],
+            ),
         ],
       ),
     );

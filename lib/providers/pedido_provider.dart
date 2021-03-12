@@ -233,6 +233,8 @@ class PedidoProvider with ChangeNotifier {
           id: null,
           recorteElasticoAlinhador: _mcpRecorteElastico,
           recorteAlinhadorBotao: _mcpRecorteAlinhador,
+          localMcpRecElastAlinh: _localMcpRecElastAlinh,
+          localMcpRecAlinhBotao: _localMcpRecAlinhBotao,
         ),
       ),
       linhaMediaSuperior: LinhaMediaSuperior(

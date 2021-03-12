@@ -30,6 +30,7 @@ class RotasUrl {
   static const rotaMeusPedidos = rotaBase + 'meus-pedidos/';
   static const rotaMeusSetups = rotaBase + 'meus-setups/';
   static const rotaMeusRefinamentos = rotaBase + 'meus-refinamentos/';
+  static const rotaRefinamentos = rotaBase + 'refinamentos/';
   static const rotaPdfsList = rotaBase + 'pdfs-list/';
   static const rotaPptsList = rotaBase + 'ppts-list';
   static const rotafotografiasList = rotaBase + 'fotografias-list/';

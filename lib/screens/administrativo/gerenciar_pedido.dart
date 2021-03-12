@@ -208,6 +208,80 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
         ],
       );
     }
+    if (_pedidosListStore.getDropdownValue() == 'Refinamentos') {
+      return Row(
+        children: [
+          SizedBox(width: 20),
+          Expanded(
+            child: Text(
+              'Data',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              'Pedido',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Expanded(
+            child: const Text(
+              'Paciente',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Expanded(
+            child: const Text(
+              'Status',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Expanded(
+            child: const Text(
+              'Responsável',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Expanded(
+            child: const Text(
+              'Opções',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 20),
+        ],
+      );
+    }
     return Container(child: const Text(''));
   }
 
@@ -234,6 +308,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
           items: <String>[
             'Todos',
             'Pedidos Aprovados',
+            'Refinamentos',
           ].map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,
