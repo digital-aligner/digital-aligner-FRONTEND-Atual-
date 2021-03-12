@@ -1580,10 +1580,29 @@ class PedidoProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  //Mordida cruzada posterior opcionais
+  //(transversal) Mordida cruzada posterior opcionais
 
   bool _mcpRecorteElastico = false;
   bool _mcpRecorteAlinhador = false;
+
+  String _localMcpRecElastAlinh = '';
+  String _localMcpRecAlinhBotao = '';
+
+  String getLocalMcpRecElastAlinh() {
+    return _localMcpRecElastAlinh;
+  }
+
+  String getLocalMcpRecAlinhBotao() {
+    return _localMcpRecAlinhBotao;
+  }
+
+  void setLocalMcpRecElastAlinh(String value) {
+    _localMcpRecElastAlinh = value;
+  }
+
+  void setLocalMcpRecAlinhBotao(String value) {
+    _localMcpRecAlinhBotao = value;
+  }
 
   bool getMcpRecorteElastico() {
     return _mcpRecorteElastico;
@@ -4450,6 +4469,8 @@ class PedidoProvider with ChangeNotifier {
 
     _mcpRecorteElastico = false;
     _mcpRecorteAlinhador = false;
+    _localMcpRecElastAlinh = '';
+    _localMcpRecAlinhBotao = '';
 
     //Linha média
     //superior

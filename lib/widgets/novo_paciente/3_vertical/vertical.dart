@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 class Vertical extends StatefulWidget {
   final bool blockUi;
 
-  Vertical({this.blockUi});
+  Vertical({@required this.blockUi});
 
   @override
   _VerticalState createState() => _VerticalState();

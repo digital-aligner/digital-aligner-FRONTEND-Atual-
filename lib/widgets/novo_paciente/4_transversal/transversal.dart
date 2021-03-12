@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Transversal extends StatefulWidget {
+  final bool blockUi;
+
+  Transversal({@required this.blockUi});
   @override
   _TransversalState createState() => _TransversalState();
 }
@@ -17,12 +20,19 @@ class _TransversalState extends State<Transversal> {
   final _cLmInfDireita = TextEditingController();
   final _cLmInfEsquerda = TextEditingController();
 
+  final _controllerLocalMcpRecElastAlinh = TextEditingController();
+  final _controllerLocalMcpRecAlinhBotao = TextEditingController();
+
   @override
   void dispose() {
     _cLmSupDireita.dispose();
     _cLmSupEsquerda.dispose();
     _cLmInfDireita.dispose();
     _cLmInfEsquerda.dispose();
+
+    _controllerLocalMcpRecElastAlinh.dispose();
+    _controllerLocalMcpRecAlinhBotao.dispose();
+
     super.dispose();
   }
 
@@ -45,6 +55,11 @@ class _TransversalState extends State<Transversal> {
 
       _cLmInfDireita.text = _novoPedStore.getLmInfDireitaMm().toString();
       _cLmInfEsquerda.text = _novoPedStore.getLmInfEsquerdaMm().toString();
+
+      _controllerLocalMcpRecElastAlinh.text =
+          _novoPedStore.getLocalMcpRecElastAlinh();
+      _controllerLocalMcpRecAlinhBotao.text =
+          _novoPedStore.getLocalMcpRecAlinhBotao();
     }
 
     setCustomInicialState();
@@ -299,7 +314,7 @@ class _TransversalState extends State<Transversal> {
     );
   }
 
-  Widget _contracaoArcoInferior(var _novoPedStore) {
+  Widget _contracaoArcoInferior(PedidoProvider _novoPedStore) {
     return Column(
       children: [
         Row(
@@ -431,23 +446,133 @@ class _TransversalState extends State<Transversal> {
         const SizedBox(height: 20),
         CheckboxListTile(
           controlAffinity: ListTileControlAffinity.leading,
-          title: Text('Recorte para elástico no alinhador'),
+          title: Row(
+            children: [
+              const Text(
+                'Recorte para elástico no alinhador (especificar o dente)',
+              ),
+              const SizedBox(
+                width: 15,
+              ),
+              Container(
+                height: 35,
+                width: 75,
+                child: TextFormField(
+                  onChanged: (value) {
+                    if (!_novoPedStore.getMcpRecorteElastico()) {
+                      _novoPedStore.setLocalMcpRecElastAlinh('');
+                    } else {
+                      _novoPedStore.setLocalMcpRecElastAlinh(value);
+                    }
+                  },
+                  textAlign: TextAlign.center,
+                  onSaved: (String value) {
+                    //sc.usernameCpf = value;
+                  },
+                  enabled: widget.blockUi
+                      ? !widget.blockUi
+                      : _novoPedStore.getMcpRecorteElastico(),
+                  validator: (value) {
+                    if (value.length < 0) {
+                      return 'Não valido.';
+                    }
+                    return null;
+                  },
+                  maxLength: 5,
+                  controller: _controllerLocalMcpRecElastAlinh,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                  ],
+                  decoration: const InputDecoration(
+                    //To hide cpf length num
+                    counterText: '',
+                    //labelText: 'Quantos mm?',
+                    // border: const OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              )
+            ],
+          ),
           value: _novoPedStore.getMcpRecorteElastico(),
-          onChanged: (value) {
-            _removeFocus(context);
-            _novoPedStore.setMcpRecorteElastico(value);
-          },
+          onChanged: widget.blockUi
+              ? null
+              : (value) {
+                  _removeFocus(context);
+                  if (!value) {
+                    _novoPedStore.setLocalMcpRecElastAlinh('');
+                  }
+                  _novoPedStore.setMcpRecorteElastico(value);
+                },
           activeColor: Colors.black12,
           checkColor: Colors.blue,
         ),
         CheckboxListTile(
           controlAffinity: ListTileControlAffinity.leading,
-          title: Text('Recorte no alinhador para botão'),
+          title: Row(
+            children: [
+              const Text(
+                'Recorte no alinhador para botão (especificar o dente)',
+              ),
+              const SizedBox(
+                width: 15,
+              ),
+              Container(
+                height: 35,
+                width: 75,
+                child: TextFormField(
+                  onChanged: (value) {
+                    if (!_novoPedStore.getMcpRecorteAlinhador()) {
+                      _novoPedStore.setLocalMcpRecAlinhBotao('');
+                    } else {
+                      _novoPedStore.setLocalMcpRecAlinhBotao(value);
+                    }
+                  },
+                  textAlign: TextAlign.center,
+                  onSaved: (String value) {
+                    //sc.usernameCpf = value;
+                  },
+                  enabled: widget.blockUi
+                      ? !widget.blockUi
+                      : _novoPedStore.getMcpRecorteAlinhador(),
+                  validator: (value) {
+                    if (value.length < 0) {
+                      return 'Não valido.';
+                    }
+                    return null;
+                  },
+                  maxLength: 5,
+                  controller: _controllerLocalMcpRecAlinhBotao,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                  ],
+                  decoration: const InputDecoration(
+                    //To hide cpf length num
+                    counterText: '',
+                    //labelText: 'Quantos mm?',
+                    // border: const OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              )
+            ],
+          ),
           value: _novoPedStore.getMcpRecorteAlinhador(),
-          onChanged: (value) {
-            _removeFocus(context);
-            _novoPedStore.setMcpRecorteAlinhador(value);
-          },
+          onChanged: widget.blockUi
+              ? null
+              : (value) {
+                  _removeFocus(context);
+                  if (!value) {
+                    _novoPedStore.setLocalMcpRecAlinhBotao('');
+                  }
+                  _novoPedStore.setMcpRecorteAlinhador(value);
+                },
           activeColor: Colors.black12,
           checkColor: Colors.blue,
         ),

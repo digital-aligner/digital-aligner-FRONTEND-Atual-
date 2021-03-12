@@ -1,4 +1,3 @@
-import 'package:digital_aligner_app/dados/models/pedido/pedido.dart';
 import 'package:flutter/services.dart';
 
 import '../../../providers/pedido_provider.dart';
@@ -9,7 +8,7 @@ import 'package:provider/provider.dart';
 class Sagital extends StatefulWidget {
   final bool blockUi;
 
-  Sagital({this.blockUi});
+  Sagital({@required this.blockUi});
 
   @override
   _SagitalState createState() => _SagitalState();
@@ -1180,7 +1179,7 @@ class _SagitalState extends State<Sagital> {
           title: Row(
             children: [
               const Text(
-                'Recorte para elástico no alinhador (especificar o local)',
+                'Recorte para elástico no alinhador (especificar o dente)',
               ),
               const SizedBox(
                 width: 15,
@@ -1246,7 +1245,7 @@ class _SagitalState extends State<Sagital> {
           title: Row(
             children: [
               const Text(
-                'Recorte no alinhador para botão (especificar o local)',
+                'Recorte no alinhador para botão (especificar o dente)',
               ),
               const SizedBox(
                 width: 15,

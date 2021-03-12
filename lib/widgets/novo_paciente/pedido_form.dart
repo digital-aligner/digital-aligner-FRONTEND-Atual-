@@ -276,7 +276,9 @@ class _PedidoFormState extends State<PedidoForm> {
                     thickness: 2,
                   ),
                 ),
-                Transversal(),
+                Transversal(
+                  blockUi: widget.blockUi,
+                ),
                 const SizedBox(
                   height: 50,
                   child: const Divider(
