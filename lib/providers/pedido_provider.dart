@@ -221,6 +221,8 @@ class PedidoProvider with ChangeNotifier {
           esquerdo: _easEsquerdo,
           movimentoDeCorpo: _easMovimentoCorpo,
           inclinacaoTorque: _easInclinacaoTorque,
+          movimentoDeCorpoEsq: _easMovimentoCorpoEsq,
+          inclinacaoTorqueEsq: _easInclinacaoTorqueEsq,
         ),
         contracaoArcoInferior: ContracaoArcoInferior(
           id: null,
@@ -228,6 +230,8 @@ class PedidoProvider with ChangeNotifier {
           esquerdo: _caiEsquerdo,
           movimentoDeCorpo: _caiMovimentoCorpo,
           inclinacaoTorque: _caiInclinacaoTorque,
+          movimentoDeCorpoEsq: _caiMovimentoCorpoEsq,
+          inclinacaoTorqueEsq: _caiInclinacaoTorqueEsq,
         ),
         opcionaisMordidaCruzPost: OpcionaisMordidaCruzPost(
           id: null,
@@ -1485,11 +1489,15 @@ class PedidoProvider with ChangeNotifier {
       _easEsquerdo = false;
       _easMovimentoCorpo = false;
       _easInclinacaoTorque = false;
+      _easMovimentoCorpoEsq = false;
+      _easInclinacaoTorqueEsq = false;
 
       _caiDireito = false;
       _caiEsquerdo = false;
       _caiMovimentoCorpo = false;
       _caiInclinacaoTorque = false;
+      _caiMovimentoCorpoEsq = false;
+      _caiInclinacaoTorqueEsq = false;
     } else {
       _mordidaCruzPost = true;
     }
@@ -1502,6 +1510,8 @@ class PedidoProvider with ChangeNotifier {
   bool _easEsquerdo = false;
   bool _easMovimentoCorpo = false;
   bool _easInclinacaoTorque = false;
+  bool _easMovimentoCorpoEsq = false;
+  bool _easInclinacaoTorqueEsq = false;
 
   bool getEasInclinacaoTorque() {
     return _easInclinacaoTorque;
@@ -1512,12 +1522,30 @@ class PedidoProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  bool getEasInclinacaoTorqueEsq() {
+    return _easInclinacaoTorqueEsq;
+  }
+
+  void setEasInclinacaoTorqueEsq(bool value) {
+    _easInclinacaoTorqueEsq = value;
+    notifyListeners();
+  }
+
   bool getEasMovimentoCorpo() {
     return _easMovimentoCorpo;
   }
 
   void setEasMovimentoCorpo(bool value) {
     _easMovimentoCorpo = value;
+    notifyListeners();
+  }
+
+  bool getEasMovimentoCorpoEsq() {
+    return _easMovimentoCorpoEsq;
+  }
+
+  void setEasMovimentoCorpoEsq(bool value) {
+    _easMovimentoCorpoEsq = value;
     notifyListeners();
   }
 
@@ -1545,6 +1573,8 @@ class PedidoProvider with ChangeNotifier {
   bool _caiEsquerdo = false;
   bool _caiMovimentoCorpo = false;
   bool _caiInclinacaoTorque = false;
+  bool _caiMovimentoCorpoEsq = false;
+  bool _caiInclinacaoTorqueEsq = false;
 
   bool getCaiInclinacaoTorque() {
     return _caiInclinacaoTorque;
@@ -1555,12 +1585,30 @@ class PedidoProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  bool getCaiInclinacaoTorqueEsq() {
+    return _caiInclinacaoTorqueEsq;
+  }
+
+  void setCaiInclinacaoTorqueEsq(bool value) {
+    _caiInclinacaoTorqueEsq = value;
+    notifyListeners();
+  }
+
   bool getCaiMovimentoCorpo() {
     return _caiMovimentoCorpo;
   }
 
   void setCaiMovimentoCorpo(bool value) {
     _caiMovimentoCorpo = value;
+    notifyListeners();
+  }
+
+  bool getCaiMovimentoCorpoEsq() {
+    return _caiMovimentoCorpoEsq;
+  }
+
+  void setCaiMovimentoCorpoEsq(bool value) {
+    _caiMovimentoCorpoEsq = value;
     notifyListeners();
   }
 
@@ -3823,15 +3871,20 @@ class PedidoProvider with ChangeNotifier {
       _easEsquerdo = ped['expansao_arco_superior']['esquerdo'];
       _easMovimentoCorpo = ped['expansao_arco_superior']['movimento_de_corpo'];
       _easInclinacaoTorque = ped['expansao_arco_superior']['inclinacao_torque'];
-
+      _easMovimentoCorpoEsq =
+          ped['expansao_arco_superior']['movimento_de_corpo_esq'];
+      _easInclinacaoTorqueEsq =
+          ped['expansao_arco_superior']['inclinacao_torque_esq'];
       //contração arco inferior
-
       _caiDireito = ped['contracao_arco_inferior']['direito'];
       _caiEsquerdo = ped['contracao_arco_inferior']['esquerdo'];
       _caiMovimentoCorpo = ped['contracao_arco_inferior']['movimento_de_corpo'];
       _caiInclinacaoTorque =
           ped['contracao_arco_inferior']['inclinacao_torque'];
-
+      _caiMovimentoCorpoEsq =
+          ped['contracao_arco_inferior']['movimento_de_corpo_esq'];
+      _caiInclinacaoTorqueEsq =
+          ped['contracao_arco_inferior']['inclinacao_torque_esq'];
       //Mordida cruzada posterior opcionais
 
       _mcpRecorteElastico =
@@ -4463,14 +4516,16 @@ class PedidoProvider with ChangeNotifier {
     _easEsquerdo = false;
     _easMovimentoCorpo = false;
     _easInclinacaoTorque = false;
-
+    _easMovimentoCorpoEsq = false;
+    _easInclinacaoTorqueEsq = false;
     //contração arco inferior
 
     _caiDireito = false;
     _caiEsquerdo = false;
     _caiMovimentoCorpo = false;
     _caiInclinacaoTorque = false;
-
+    _caiMovimentoCorpoEsq = false;
+    _caiInclinacaoTorqueEsq = false;
     //Mordida cruzada posterior opcionais
 
     _mcpRecorteElastico = false;

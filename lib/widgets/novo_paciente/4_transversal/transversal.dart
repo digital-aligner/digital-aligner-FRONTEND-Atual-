@@ -190,7 +190,7 @@ class _TransversalState extends State<Transversal> {
     );
   }
 
-  Widget _expansaoArcoSuperior(var _novoPedStore) {
+  Widget _expansaoArcoSuperior(PedidoProvider _novoPedStore) {
     return Column(
       children: [
         //Texto
@@ -265,46 +265,102 @@ class _TransversalState extends State<Transversal> {
                   ],
                 ),
                 //movimento de corpo
-                CheckboxListTile(
-                  controlAffinity: ListTileControlAffinity.leading,
-                  title: Text(
-                    'Movimento de Corpo',
-                    style: TextStyle(
-                      color: _novoPedStore.getMordidaCruzPost()
-                          ? Colors.black
-                          : Colors.grey.withOpacity(0.5),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CheckboxListTile(
+                        controlAffinity: ListTileControlAffinity.leading,
+                        title: Text(
+                          'Movimento de Corpo',
+                          style: TextStyle(
+                            color: _novoPedStore.getMordidaCruzPost()
+                                ? Colors.black
+                                : Colors.grey.withOpacity(0.5),
+                          ),
+                        ),
+                        value: _novoPedStore.getEasMovimentoCorpo(),
+                        onChanged: (value) {
+                          _removeFocus(context);
+                          if (_novoPedStore.getMordidaCruzPost()) {
+                            _novoPedStore.setEasMovimentoCorpo(value);
+                          }
+                        },
+                        activeColor: Colors.black12,
+                        checkColor: Colors.blue,
+                      ),
                     ),
-                  ),
-                  value: _novoPedStore.getEasMovimentoCorpo(),
-                  onChanged: (value) {
-                    _removeFocus(context);
-                    if (_novoPedStore.getMordidaCruzPost()) {
-                      _novoPedStore.setEasMovimentoCorpo(value);
-                    }
-                  },
-                  activeColor: Colors.black12,
-                  checkColor: Colors.blue,
+                    Expanded(
+                      child: CheckboxListTile(
+                        controlAffinity: ListTileControlAffinity.leading,
+                        title: Text(
+                          'Movimento de Corpo',
+                          style: TextStyle(
+                            color: _novoPedStore.getMordidaCruzPost()
+                                ? Colors.black
+                                : Colors.grey.withOpacity(0.5),
+                          ),
+                        ),
+                        value: _novoPedStore.getEasMovimentoCorpoEsq(),
+                        onChanged: (value) {
+                          _removeFocus(context);
+                          if (_novoPedStore.getMordidaCruzPost()) {
+                            _novoPedStore.setEasMovimentoCorpoEsq(value);
+                          }
+                        },
+                        activeColor: Colors.black12,
+                        checkColor: Colors.blue,
+                      ),
+                    ),
+                  ],
                 ),
                 //inclinação / torque
-                CheckboxListTile(
-                  controlAffinity: ListTileControlAffinity.leading,
-                  title: Text(
-                    'Inclinação / torque',
-                    style: TextStyle(
-                      color: _novoPedStore.getMordidaCruzPost()
-                          ? Colors.black
-                          : Colors.grey.withOpacity(0.5),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CheckboxListTile(
+                        controlAffinity: ListTileControlAffinity.leading,
+                        title: Text(
+                          'Inclinação / torque',
+                          style: TextStyle(
+                            color: _novoPedStore.getMordidaCruzPost()
+                                ? Colors.black
+                                : Colors.grey.withOpacity(0.5),
+                          ),
+                        ),
+                        value: _novoPedStore.getEasInclinacaoTorque(),
+                        onChanged: (value) {
+                          _removeFocus(context);
+                          if (_novoPedStore.getMordidaCruzPost()) {
+                            _novoPedStore.setEasInclinacaoTorque(value);
+                          }
+                        },
+                        activeColor: Colors.black12,
+                        checkColor: Colors.blue,
+                      ),
                     ),
-                  ),
-                  value: _novoPedStore.getEasInclinacaoTorque(),
-                  onChanged: (value) {
-                    _removeFocus(context);
-                    if (_novoPedStore.getMordidaCruzPost()) {
-                      _novoPedStore.setEasInclinacaoTorque(value);
-                    }
-                  },
-                  activeColor: Colors.black12,
-                  checkColor: Colors.blue,
+                    Expanded(
+                      child: CheckboxListTile(
+                        controlAffinity: ListTileControlAffinity.leading,
+                        title: Text(
+                          'Inclinação / torque',
+                          style: TextStyle(
+                            color: _novoPedStore.getMordidaCruzPost()
+                                ? Colors.black
+                                : Colors.grey.withOpacity(0.5),
+                          ),
+                        ),
+                        value: _novoPedStore.getEasInclinacaoTorqueEsq(),
+                        onChanged: (value) {
+                          _removeFocus(context);
+                          if (_novoPedStore.getMordidaCruzPost()) {
+                            _novoPedStore.setEasInclinacaoTorqueEsq(value);
+                          }
+                        },
+                        activeColor: Colors.black12,
+                        checkColor: Colors.blue,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -388,46 +444,102 @@ class _TransversalState extends State<Transversal> {
                   ],
                 ),
                 //movimento de corpo
-                CheckboxListTile(
-                  controlAffinity: ListTileControlAffinity.leading,
-                  title: Text(
-                    'Movimento de Corpo',
-                    style: TextStyle(
-                      color: _novoPedStore.getMordidaCruzPost()
-                          ? Colors.black
-                          : Colors.grey.withOpacity(0.5),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CheckboxListTile(
+                        controlAffinity: ListTileControlAffinity.leading,
+                        title: Text(
+                          'Movimento de Corpo',
+                          style: TextStyle(
+                            color: _novoPedStore.getMordidaCruzPost()
+                                ? Colors.black
+                                : Colors.grey.withOpacity(0.5),
+                          ),
+                        ),
+                        value: _novoPedStore.getCaiMovimentoCorpo(),
+                        onChanged: (value) {
+                          _removeFocus(context);
+                          if (_novoPedStore.getMordidaCruzPost()) {
+                            _novoPedStore.setCaiMovimentoCorpo(value);
+                          }
+                        },
+                        activeColor: Colors.black12,
+                        checkColor: Colors.blue,
+                      ),
                     ),
-                  ),
-                  value: _novoPedStore.getCaiMovimentoCorpo(),
-                  onChanged: (value) {
-                    _removeFocus(context);
-                    if (_novoPedStore.getMordidaCruzPost()) {
-                      _novoPedStore.setCaiMovimentoCorpo(value);
-                    }
-                  },
-                  activeColor: Colors.black12,
-                  checkColor: Colors.blue,
+                    Expanded(
+                      child: CheckboxListTile(
+                        controlAffinity: ListTileControlAffinity.leading,
+                        title: Text(
+                          'Movimento de Corpo',
+                          style: TextStyle(
+                            color: _novoPedStore.getMordidaCruzPost()
+                                ? Colors.black
+                                : Colors.grey.withOpacity(0.5),
+                          ),
+                        ),
+                        value: _novoPedStore.getCaiMovimentoCorpoEsq(),
+                        onChanged: (value) {
+                          _removeFocus(context);
+                          if (_novoPedStore.getMordidaCruzPost()) {
+                            _novoPedStore.setCaiMovimentoCorpoEsq(value);
+                          }
+                        },
+                        activeColor: Colors.black12,
+                        checkColor: Colors.blue,
+                      ),
+                    ),
+                  ],
                 ),
                 //inclinação / torque
-                CheckboxListTile(
-                  controlAffinity: ListTileControlAffinity.leading,
-                  title: Text(
-                    'Inclinação / torque',
-                    style: TextStyle(
-                      color: _novoPedStore.getMordidaCruzPost()
-                          ? Colors.black
-                          : Colors.grey.withOpacity(0.5),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CheckboxListTile(
+                        controlAffinity: ListTileControlAffinity.leading,
+                        title: Text(
+                          'Inclinação / torque',
+                          style: TextStyle(
+                            color: _novoPedStore.getMordidaCruzPost()
+                                ? Colors.black
+                                : Colors.grey.withOpacity(0.5),
+                          ),
+                        ),
+                        value: _novoPedStore.getCaiInclinacaoTorque(),
+                        onChanged: (value) {
+                          _removeFocus(context);
+                          if (_novoPedStore.getMordidaCruzPost()) {
+                            _novoPedStore.setCaiInclinacaoTorque(value);
+                          }
+                        },
+                        activeColor: Colors.black12,
+                        checkColor: Colors.blue,
+                      ),
                     ),
-                  ),
-                  value: _novoPedStore.getCaiInclinacaoTorque(),
-                  onChanged: (value) {
-                    _removeFocus(context);
-                    if (_novoPedStore.getMordidaCruzPost()) {
-                      _novoPedStore.setCaiInclinacaoTorque(value);
-                    }
-                  },
-                  activeColor: Colors.black12,
-                  checkColor: Colors.blue,
+                    Expanded(
+                      child: CheckboxListTile(
+                        controlAffinity: ListTileControlAffinity.leading,
+                        title: Text(
+                          'Inclinação / torque',
+                          style: TextStyle(
+                            color: _novoPedStore.getMordidaCruzPost()
+                                ? Colors.black
+                                : Colors.grey.withOpacity(0.5),
+                          ),
+                        ),
+                        value: _novoPedStore.getCaiInclinacaoTorqueEsq(),
+                        onChanged: (value) {
+                          _removeFocus(context);
+                          if (_novoPedStore.getMordidaCruzPost()) {
+                            _novoPedStore.setCaiInclinacaoTorqueEsq(value);
+                          }
+                        },
+                        activeColor: Colors.black12,
+                        checkColor: Colors.blue,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

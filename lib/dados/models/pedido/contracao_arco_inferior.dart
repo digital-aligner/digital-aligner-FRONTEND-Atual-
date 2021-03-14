@@ -4,6 +4,8 @@ class ContracaoArcoInferior {
   bool esquerdo;
   bool movimentoDeCorpo;
   bool inclinacaoTorque;
+  bool movimentoDeCorpoEsq;
+  bool inclinacaoTorqueEsq;
 
   ContracaoArcoInferior({
     this.id,
@@ -11,6 +13,8 @@ class ContracaoArcoInferior {
     this.esquerdo,
     this.movimentoDeCorpo,
     this.inclinacaoTorque,
+    this.movimentoDeCorpoEsq,
+    this.inclinacaoTorqueEsq,
   });
 
   factory ContracaoArcoInferior.fromJson(Map<String, dynamic> data) {
@@ -20,6 +24,8 @@ class ContracaoArcoInferior {
       esquerdo: data['esquerdo'],
       movimentoDeCorpo: data['movimento_de_corpo'],
       inclinacaoTorque: data['inclinacao_torque'],
+      movimentoDeCorpoEsq: data['movimento_de_corpo_esq'],
+      inclinacaoTorqueEsq: data['inclinacao_torque_esq'],
     );
   }
 
@@ -30,6 +36,8 @@ class ContracaoArcoInferior {
       'esquerdo': esquerdo,
       'movimento_de_corpo': movimentoDeCorpo,
       'inclinacao_torque': inclinacaoTorque,
+      'movimento_de_corpo_esq': movimentoDeCorpoEsq,
+      'inclinacao_torque_esq': inclinacaoTorqueEsq,
     };
   }
 }
