@@ -3838,6 +3838,10 @@ class PedidoProvider with ChangeNotifier {
           ped['opcionais_mordida_cruz_post']['recorte_elastico_alinhador'];
       _mcpRecorteAlinhador =
           ped['opcionais_mordida_cruz_post']['recorte_alinhador_botao'];
+      _localMcpRecElastAlinh =
+          ped['opcionais_mordida_cruz_post']['local_mcp_rec_elast_alinh'];
+      _localMcpRecAlinhBotao =
+          ped['opcionais_mordida_cruz_post']['local_mcp_rec_alinh_botao'];
     } else {
       //Mordida Cruzada posterior
       _mordidaCruzPost = false;
