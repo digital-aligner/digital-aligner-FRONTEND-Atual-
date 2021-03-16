@@ -70,15 +70,9 @@ class PedidoProvider with ChangeNotifier {
   Paciente _paciente;
 
   int _usersPermissionsUser = 0;
-  //only for editing pedido
-  int _pedidoId;
 
   void setUserId(int value) {
     _usersPermissionsUser = value;
-  }
-
-  void setPedidoId(int value) {
-    _pedidoId = value;
   }
 
   //Obs: can send null to server. Don't need to inicial value.
@@ -4418,6 +4412,17 @@ class PedidoProvider with ChangeNotifier {
 
   //CLEAR FULL FORM (STILL CODING)
   void clearAll() {
+    _pedido = Pedido();
+    _fotografias = Fotografias();
+    _radiografias = Radiografias();
+    _modeloSuperior = ModeloSuperior();
+    _modeloInferior = ModeloInferior();
+    _modeloCompactado = ModeloCompactado();
+    _modeloNemo = ModeloNemo();
+    _paciente = Paciente();
+
+    _usersPermissionsUser = 0;
+
     _cadistaResponsavel = null;
     _linkModelos = null;
     // 1 - DADOS INICIAIS ---------------------------

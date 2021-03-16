@@ -83,7 +83,7 @@ class _VerticalState extends State<Vertical> {
           const SizedBox(height: 20),
           _sobremordidaProfunda(_novoPedStore),
           const SizedBox(height: 20),
-          _opcionaisSobremordida(_novoPedStore),
+          //_opcionaisSobremordida(_novoPedStore),
           const SizedBox(height: 20),
           _mordidaAbertaAnterior(_novoPedStore),
         ],
@@ -598,7 +598,7 @@ class _VerticalState extends State<Vertical> {
     );
   }
 
-  Widget _opcionaisSobremordida(var _novoPedStore) {
+  Widget _opcionaisSobremordida(PedidoProvider _novoPedStore) {
     return Column(
       children: [
         const SizedBox(height: 40),

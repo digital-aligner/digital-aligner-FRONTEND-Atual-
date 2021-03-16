@@ -147,7 +147,6 @@ class _PedidoFormState extends State<PedidoForm> {
     if (widget.isEditarPedido && _initialSetup) {
       _novoPedStore.clearAll();
       _novoPedStore.setToken(_authStore.token);
-      _novoPedStore.setPedidoId(widget.pedidoId);
       _novoPedStore.setPedido(widget.pedidoDados);
 
       _initialSetup = false;

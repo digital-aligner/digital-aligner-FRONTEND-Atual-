@@ -365,6 +365,25 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
     }
   }
 
+  Widget _manageNemoBtn(
+    BuildContext ctx,
+    int index,
+    double _sWidth,
+    double _sHeight,
+  ) {
+    if (pedList[index]['']) {
+      return Container(
+        width: 300,
+        child: ElevatedButton(
+          child: const Text(
+            'RELATÓRIO NÃO FINALIZADO',
+          ),
+          onPressed: () {},
+        ),
+      );
+    }
+  }
+
   Widget _optionsBtns(BuildContext ctx, int index, _sWidth, _sHeight) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -607,6 +626,13 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                         sHeight,
                         pedList[index]['codigo_pedido'],
                       ),
+                    /*
+                    _manageNemoBtn(
+                      context,
+                      index,
+                      sWidth,
+                      sHeight,
+                    ), */
                     _optionsBtns(
                       context,
                       index,
