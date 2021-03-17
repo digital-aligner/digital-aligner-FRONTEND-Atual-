@@ -19,9 +19,11 @@ import './multipart_request.dart';
 class PhotoUpload extends StatefulWidget {
   final bool isEdit;
   final Map pedidoDados;
+  final bool blockUi;
   PhotoUpload({
     this.isEdit,
     this.pedidoDados,
+    @required this.blockUi,
   });
 
   @override
@@ -91,26 +93,38 @@ class _PhotoUploadState extends State<PhotoUpload>
       _currentPhoto.bytes,
       filename: _currentPhoto.name,
     ));
+    try {
+      var response = await request.send();
+      var resStream = await response.stream.bytesToString();
+      var resData = json.decode(resStream);
 
-    var response = await request.send();
-    var resStream = await response.stream.bytesToString();
-    var resData = json.decode(resStream);
-
-    if (resData[0]['id'] != null) {
+      if (resData[0].containsKey('id')) {
+        for (int i = 0; i < _photosList.length; i++) {
+          if (_photosList[i].listId == rNum) {
+            setState(() {
+              _photosList[i].id = resData[0]['id'];
+              _photosList[i].fileName = resData[0]['name'];
+              _photosList[i].thumbnail =
+                  resData[0]['formats']['thumbnail']['url'];
+              _photosList[i].imageUrl = resData[0]['url'];
+            });
+          }
+        }
+      }
+    } catch (e) {
       for (int i = 0; i < _photosList.length; i++) {
         if (_photosList[i].listId == rNum) {
           setState(() {
-            _photosList[i].id = resData[0]['id'];
-            _photosList[i].fileName = resData[0]['name'];
-            _photosList[i].thumbnail =
-                resData[0]['formats']['thumbnail']['url'];
-            _photosList[i].imageUrl = resData[0]['url'];
+            _photosList[i].id = -1;
+            _photosList[i].fileName =
+                'Algo deu errado, por favor tente novamente.';
+            _photosList[i].thumbnail = '';
+            _photosList[i].imageUrl = '';
           });
         }
       }
+      print(e);
     }
-
-    return resData;
   }
 
   Future<void> _openFileExplorer() async {
@@ -170,27 +184,29 @@ class _PhotoUploadState extends State<PhotoUpload>
                   icon: widget.isEdit == false
                       ? const Icon(Icons.delete)
                       : const Icon(Icons.delete_forever),
-                  onPressed: () {
-                    if (widget.isEdit) {
-                      _s3deleteStore.setIdToDelete(curPhoto.id);
-                      setState(() {
-                        _photosList.removeWhere(
-                          (photo) => photo.id == curPhoto.id,
-                        );
-                      });
-                    } else {
-                      _deletePhoto(_token, curPhoto.id).then((res) {
-                        var data = json.decode(res.body);
-                        if (data['id'] != null) {
-                          setState(() {
-                            _photosList.removeWhere(
-                              (photo) => photo.id == data['id'],
-                            );
-                          });
-                        }
-                      });
-                    }
-                  },
+                  onPressed: widget.blockUi
+                      ? null
+                      : () {
+                          if (widget.isEdit) {
+                            _s3deleteStore.setIdToDelete(curPhoto.id);
+                            setState(() {
+                              _photosList.removeWhere(
+                                (photo) => photo.id == curPhoto.id,
+                              );
+                            });
+                          } else {
+                            _deletePhoto(_token, curPhoto.id).then((res) {
+                              var data = json.decode(res.body);
+                              if (data['id'] != null) {
+                                setState(() {
+                                  _photosList.removeWhere(
+                                    (photo) => photo.id == data['id'],
+                                  );
+                                });
+                              }
+                            });
+                          }
+                        },
                 ),
               if (curPhoto.id == null) Container(),
               const SizedBox(
@@ -287,39 +303,42 @@ class _PhotoUploadState extends State<PhotoUpload>
             Container(
               width: 300,
               child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(seconds: 8),
-                      content: const Text('Aguarde...'),
-                    ),
-                  );
+                onPressed: widget.blockUi
+                    ? null
+                    : () {
+                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: const Duration(seconds: 8),
+                            content: const Text('Aguarde...'),
+                          ),
+                        );
 
-                  _openFileExplorer().then((_) {
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 8),
-                        content: Text('Enviando imagens...'),
-                      ),
-                    );
+                        _openFileExplorer().then((_) {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 8),
+                              content: Text('Enviando imagens...'),
+                            ),
+                          );
 
-                    Future.delayed(const Duration(milliseconds: 500), () {
-                      for (var photo in _photosDataList) {
-                        _sendPhoto(_authStore.token, photo).then((value) {});
-                      }
-                    });
-                  }).catchError((e) {
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 8),
-                        content: Text('Selecione no máximo 16 imagens!'),
-                      ),
-                    );
-                  });
-                },
+                          Future.delayed(const Duration(milliseconds: 500), () {
+                            for (var photo in _photosDataList) {
+                              _sendPhoto(_authStore.token, photo)
+                                  .then((value) {});
+                            }
+                          });
+                        }).catchError((e) {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 8),
+                              content: Text('Selecione no máximo 16 imagens!'),
+                            ),
+                          );
+                        });
+                      },
                 child: const Text(
                   'CARREGAR FOTOGRAFIAS',
                   style: const TextStyle(

@@ -18,9 +18,11 @@ import './multipart_request.dart';
 class RadiografiaUpload extends StatefulWidget {
   final bool isEdit;
   final Map pedidoDados;
+  final bool blockUi;
   RadiografiaUpload({
     this.isEdit,
     this.pedidoDados,
+    @required this.blockUi,
   });
 
   @override
@@ -88,23 +90,37 @@ class _RadiografiaUploadState extends State<RadiografiaUpload>
       _currentRadiografia.bytes,
       filename: _currentRadiografia.name,
     ));
+    try {
+      var response = await request.send();
+      var resStream = await response.stream.bytesToString();
+      var resData = json.decode(resStream);
 
-    var response = await request.send();
-    var resStream = await response.stream.bytesToString();
-    var resData = json.decode(resStream);
-
-    if (resData[0]['id'] != null) {
+      if (resData[0].containsKey('id')) {
+        for (int i = 0; i < _radiografiasList.length; i++) {
+          if (_radiografiasList[i].listId == rNum) {
+            setState(() {
+              _radiografiasList[i].id = resData[0]['id'];
+              _radiografiasList[i].fileName = resData[0]['name'];
+              _radiografiasList[i].imageUrl = resData[0]['url'];
+              _radiografiasList[i].thumbnail =
+                  resData[0]['formats']['thumbnail']['url'];
+            });
+          }
+        }
+      }
+    } catch (e) {
       for (int i = 0; i < _radiografiasList.length; i++) {
         if (_radiografiasList[i].listId == rNum) {
           setState(() {
-            _radiografiasList[i].id = resData[0]['id'];
-            _radiografiasList[i].fileName = resData[0]['name'];
-            _radiografiasList[i].imageUrl = resData[0]['url'];
-            _radiografiasList[i].thumbnail =
-                resData[0]['formats']['thumbnail']['url'];
+            _radiografiasList[i].id = -1;
+            _radiografiasList[i].fileName =
+                'Algo deu errado, por favor tente novamente.';
+            _radiografiasList[i].imageUrl = '';
+            _radiografiasList[i].thumbnail = '';
           });
         }
       }
+      print(e);
     }
   }
 
@@ -165,27 +181,32 @@ class _RadiografiaUploadState extends State<RadiografiaUpload>
                   icon: widget.isEdit == false
                       ? const Icon(Icons.delete)
                       : const Icon(Icons.delete_forever),
-                  onPressed: () {
-                    if (widget.isEdit) {
-                      _s3deleteStore.setIdToDelete(curRadiografia.id);
-                      setState(() {
-                        _radiografiasList.removeWhere(
-                          (radiografia) => radiografia.id == curRadiografia.id,
-                        );
-                      });
-                    } else {
-                      _deleteRadiografia(_token, curRadiografia.id).then((res) {
-                        var data = json.decode(res.body);
-                        if (data['id'] != null) {
-                          setState(() {
-                            _radiografiasList.removeWhere(
-                              (radiografia) => radiografia.id == data['id'],
-                            );
-                          });
-                        }
-                      });
-                    }
-                  },
+                  onPressed: widget.blockUi
+                      ? null
+                      : () {
+                          if (widget.isEdit) {
+                            _s3deleteStore.setIdToDelete(curRadiografia.id);
+                            setState(() {
+                              _radiografiasList.removeWhere(
+                                (radiografia) =>
+                                    radiografia.id == curRadiografia.id,
+                              );
+                            });
+                          } else {
+                            _deleteRadiografia(_token, curRadiografia.id)
+                                .then((res) {
+                              var data = json.decode(res.body);
+                              if (data['id'] != null) {
+                                setState(() {
+                                  _radiografiasList.removeWhere(
+                                    (radiografia) =>
+                                        radiografia.id == data['id'],
+                                  );
+                                });
+                              }
+                            });
+                          }
+                        },
                 ),
               if (curRadiografia.id == null) Container(),
               SizedBox(
@@ -271,39 +292,42 @@ class _RadiografiaUploadState extends State<RadiografiaUpload>
             Container(
               width: 300,
               child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(seconds: 8),
-                      content: const Text('Aguarde...'),
-                    ),
-                  );
+                onPressed: widget.blockUi
+                    ? null
+                    : () {
+                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: const Duration(seconds: 8),
+                            content: const Text('Aguarde...'),
+                          ),
+                        );
 
-                  _openFileExplorer().then((_) {
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 8),
-                        content: Text('Enviando radiografias...'),
-                      ),
-                    );
+                        _openFileExplorer().then((_) {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 8),
+                              content: Text('Enviando radiografias...'),
+                            ),
+                          );
 
-                    Future.delayed(const Duration(milliseconds: 500), () {
-                      for (var radiografia in _radiografiasDataList) {
-                        _sendRadiografia(_authStore.token, radiografia);
-                      }
-                    });
-                  }).catchError((e) {
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 8),
-                        content: Text('Selecione no máximo 4 radiografias!'),
-                      ),
-                    );
-                  });
-                },
+                          Future.delayed(const Duration(milliseconds: 500), () {
+                            for (var radiografia in _radiografiasDataList) {
+                              _sendRadiografia(_authStore.token, radiografia);
+                            }
+                          });
+                        }).catchError((e) {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 8),
+                              content:
+                                  Text('Selecione no máximo 4 radiografias!'),
+                            ),
+                          );
+                        });
+                      },
                 child: const Text(
                   'CARREGAR RADIOGRAFIAS',
                   style: const TextStyle(

@@ -314,7 +314,9 @@ class _PedidoFormState extends State<PedidoForm> {
             flex: 8,
             child: Column(
               children: [
-                ProblemasIndividuais(),
+                ProblemasIndividuais(
+                  blockUi: widget.blockUi,
+                ),
                 const SizedBox(
                   height: 50,
                   child: const Divider(
@@ -339,6 +341,7 @@ class _PedidoFormState extends State<PedidoForm> {
                 PhotoUpload(
                   isEdit: widget.isEditarPedido,
                   pedidoDados: widget.pedidoDados,
+                  blockUi: widget.blockUi,
                 ),
                 const SizedBox(height: 20),
                 //Text: Radiografias
@@ -346,6 +349,7 @@ class _PedidoFormState extends State<PedidoForm> {
                 RadiografiaUpload(
                   isEdit: widget.isEditarPedido,
                   pedidoDados: widget.pedidoDados,
+                  blockUi: widget.blockUi,
                 ),
                 const SizedBox(
                   height: 50,
@@ -887,16 +891,19 @@ class _PedidoFormState extends State<PedidoForm> {
         ModeloSuperiorUpload(
           isEdit: widget.isEditarPedido,
           pedidoDados: widget.pedidoDados,
+          blockUi: widget.blockUi,
         ),
         const SizedBox(height: 20),
         ModeloInferiorUpload(
           isEdit: widget.isEditarPedido,
           pedidoDados: widget.pedidoDados,
+          blockUi: widget.blockUi,
         ),
         const SizedBox(height: 20),
         CompactadoUpload(
           isEdit: widget.isEditarPedido,
           pedidoDados: widget.pedidoDados,
+          blockUi: widget.blockUi,
         ),
       ],
     );
@@ -937,21 +944,25 @@ class _PedidoFormState extends State<PedidoForm> {
         Radio(
           activeColor: Colors.blue,
           groupValue: _novoPedStore.getFormatoModelos(),
-          onChanged: (value) {
-            _novoPedStore.setFormatoModelos(value);
-          },
+          onChanged: widget.blockUi
+              ? null
+              : (value) {
+                  _novoPedStore.setFormatoModelos(value);
+                },
           value: 1,
         ),
-        Text('Digital'),
+        const Text('Digital'),
         Radio(
           activeColor: Colors.blue,
           groupValue: _novoPedStore.getFormatoModelos(),
-          onChanged: (value) {
-            _novoPedStore.setFormatoModelos(value);
-          },
+          onChanged: widget.blockUi
+              ? null
+              : (value) {
+                  _novoPedStore.setFormatoModelos(value);
+                },
           value: 2,
         ),
-        Text('Gesso'),
+        const Text('Gesso'),
       ],
     );
   }

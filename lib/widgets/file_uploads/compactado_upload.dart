@@ -15,9 +15,12 @@ import 'compactado_model.dart';
 class CompactadoUpload extends StatefulWidget {
   final bool isEdit;
   final Map pedidoDados;
+  final bool blockUi;
+
   CompactadoUpload({
     this.isEdit,
     this.pedidoDados,
+    @required this.blockUi,
   });
   @override
   _CompactadoUploadState createState() => _CompactadoUploadState();
@@ -108,29 +111,32 @@ class _CompactadoUploadState extends State<CompactadoUpload>
                   icon: widget.isEdit == false
                       ? const Icon(Icons.delete)
                       : const Icon(Icons.delete_forever),
-                  onPressed: () {
-                    if (widget.isEdit) {
-                      _s3deleteStore.setIdToDelete(curcompactUpload.id);
-                      setState(() {
-                        _compactUploadsList.removeWhere(
-                          (compactUpload) =>
-                              compactUpload.id == curcompactUpload.id,
-                        );
-                      });
-                    } else {
-                      _deletecompactUpload(_token, curcompactUpload.id)
-                          .then((res) {
-                        var data = json.decode(res.body);
-                        if (data['id'] != null) {
-                          setState(() {
-                            _compactUploadsList.removeWhere(
-                              (compactUpload) => compactUpload.id == data['id'],
-                            );
-                          });
-                        }
-                      });
-                    }
-                  },
+                  onPressed: widget.blockUi
+                      ? null
+                      : () {
+                          if (widget.isEdit) {
+                            _s3deleteStore.setIdToDelete(curcompactUpload.id);
+                            setState(() {
+                              _compactUploadsList.removeWhere(
+                                (compactUpload) =>
+                                    compactUpload.id == curcompactUpload.id,
+                              );
+                            });
+                          } else {
+                            _deletecompactUpload(_token, curcompactUpload.id)
+                                .then((res) {
+                              var data = json.decode(res.body);
+                              if (data['id'] != null) {
+                                setState(() {
+                                  _compactUploadsList.removeWhere(
+                                    (compactUpload) =>
+                                        compactUpload.id == data['id'],
+                                  );
+                                });
+                              }
+                            });
+                          }
+                        },
                 ),
               if (curcompactUpload.id == null) Container(),
               SizedBox(
@@ -169,17 +175,32 @@ class _CompactadoUploadState extends State<CompactadoUpload>
       _currentcompactUpload.bytes,
       filename: _currentcompactUpload.name,
     ));
-    var response = await request.send();
-    var resStream = await response.stream.bytesToString();
-    var resData = json.decode(resStream);
 
-    if (resData[0]['id'] != null) {
+    try {
+      var response = await request.send();
+      var resStream = await response.stream.bytesToString();
+      var resData = json.decode(resStream);
+
+      if (resData[0]['id'] != null) {
+        for (int i = 0; i < _compactUploadsList.length; i++) {
+          if (_compactUploadsList[i].listId == rNum) {
+            setState(() {
+              _compactUploadsList[i].id = resData[0]['id'];
+              _compactUploadsList[i].fileName = resData[0]['name'];
+              _compactUploadsList[i].imageUrl = resData[0]['url'];
+            });
+          }
+        }
+      }
+    } catch (e) {
+      print(e);
       for (int i = 0; i < _compactUploadsList.length; i++) {
         if (_compactUploadsList[i].listId == rNum) {
           setState(() {
-            _compactUploadsList[i].id = resData[0]['id'];
-            _compactUploadsList[i].fileName = resData[0]['name'];
-            _compactUploadsList[i].imageUrl = resData[0]['url'];
+            _compactUploadsList[i].id = -1;
+            _compactUploadsList[i].fileName =
+                'Algo deu errado, por favor tente novamente.';
+            _compactUploadsList[i].imageUrl = '';
           });
         }
       }
@@ -252,41 +273,44 @@ class _CompactadoUploadState extends State<CompactadoUpload>
             Container(
               width: 300,
               child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(seconds: 8),
-                      content: const Text('Aguarde...'),
-                    ),
-                  );
+                onPressed: widget.blockUi
+                    ? null
+                    : () {
+                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: const Duration(seconds: 8),
+                            content: const Text('Aguarde...'),
+                          ),
+                        );
 
-                  _openFileExplorer().then((_) {
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 8),
-                        content: const Text(
-                          'Enviando modelos compactado. Por ser um arquivo grande, por favor aguarde...',
-                        ),
-                      ),
-                    );
+                        _openFileExplorer().then((_) {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 8),
+                              content: const Text(
+                                'Enviando modelos compactado. Por ser um arquivo grande, por favor aguarde...',
+                              ),
+                            ),
+                          );
 
-                    Future.delayed(const Duration(milliseconds: 500), () {
-                      for (var compactUpload in _compactUploadsDataList) {
-                        _sendcompactUpload(_authStore.token, compactUpload);
-                      }
-                    });
-                  }).catchError((e) {
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 8),
-                        content: Text('Selecione no máximo 1 arquivo!'),
-                      ),
-                    );
-                  });
-                },
+                          Future.delayed(const Duration(milliseconds: 500), () {
+                            for (var compactUpload in _compactUploadsDataList) {
+                              _sendcompactUpload(
+                                  _authStore.token, compactUpload);
+                            }
+                          });
+                        }).catchError((e) {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 8),
+                              content: Text('Selecione no máximo 1 arquivo!'),
+                            ),
+                          );
+                        });
+                      },
                 child: const Text(
                   'MODELOS COMPACTADO',
                   style: const TextStyle(

@@ -17,9 +17,11 @@ import 'modelo_inferior.dart';
 class ModeloInferiorUpload extends StatefulWidget {
   final bool isEdit;
   final Map pedidoDados;
+  final bool blockUi;
   ModeloInferiorUpload({
     this.isEdit,
     this.pedidoDados,
+    @required this.blockUi,
   });
   @override
   _ModeloInferiorUploadState createState() => _ModeloInferiorUploadState();
@@ -110,27 +112,30 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload>
                   icon: widget.isEdit == false
                       ? const Icon(Icons.delete)
                       : const Icon(Icons.delete_forever),
-                  onPressed: () {
-                    if (widget.isEdit) {
-                      _s3deleteStore.setIdToDelete(curmodeloInf.id);
-                      setState(() {
-                        _modeloInfsList.removeWhere(
-                          (modeloInf) => modeloInf.id == curmodeloInf.id,
-                        );
-                      });
-                    } else {
-                      _deletemodeloInf(_token, curmodeloInf.id).then((res) {
-                        var data = json.decode(res.body);
-                        if (data['id'] != null) {
-                          setState(() {
-                            _modeloInfsList.removeWhere(
-                              (modeloInf) => modeloInf.id == data['id'],
-                            );
-                          });
-                        }
-                      });
-                    }
-                  },
+                  onPressed: widget.blockUi
+                      ? null
+                      : () {
+                          if (widget.isEdit) {
+                            _s3deleteStore.setIdToDelete(curmodeloInf.id);
+                            setState(() {
+                              _modeloInfsList.removeWhere(
+                                (modeloInf) => modeloInf.id == curmodeloInf.id,
+                              );
+                            });
+                          } else {
+                            _deletemodeloInf(_token, curmodeloInf.id)
+                                .then((res) {
+                              var data = json.decode(res.body);
+                              if (data['id'] != null) {
+                                setState(() {
+                                  _modeloInfsList.removeWhere(
+                                    (modeloInf) => modeloInf.id == data['id'],
+                                  );
+                                });
+                              }
+                            });
+                          }
+                        },
                 ),
               if (curmodeloInf.id == null) Container(),
               SizedBox(
@@ -169,17 +174,31 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload>
       _currentmodeloInf.bytes,
       filename: _currentmodeloInf.name,
     ));
-    var response = await request.send();
-    var resStream = await response.stream.bytesToString();
-    var resData = json.decode(resStream);
 
-    if (resData[0]['id'] != null) {
+    try {
+      var response = await request.send();
+      var resStream = await response.stream.bytesToString();
+      var resData = json.decode(resStream);
+
+      if (resData[0].containsKey('id')) {
+        for (int i = 0; i < _modeloInfsList.length; i++) {
+          if (_modeloInfsList[i].listId == rNum) {
+            setState(() {
+              _modeloInfsList[i].id = resData[0]['id'];
+              _modeloInfsList[i].fileName = resData[0]['name'];
+              _modeloInfsList[i].imageUrl = resData[0]['url'];
+            });
+          }
+        }
+      }
+    } catch (e) {
       for (int i = 0; i < _modeloInfsList.length; i++) {
         if (_modeloInfsList[i].listId == rNum) {
           setState(() {
-            _modeloInfsList[i].id = resData[0]['id'];
-            _modeloInfsList[i].fileName = resData[0]['name'];
-            _modeloInfsList[i].imageUrl = resData[0]['url'];
+            _modeloInfsList[i].id = -1;
+            _modeloInfsList[i].fileName =
+                'Algo deu errado, por favor tente novamente.';
+            _modeloInfsList[i].imageUrl = '';
           });
         }
       }
@@ -253,41 +272,43 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload>
             Container(
               width: 300,
               child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(seconds: 8),
-                      content: const Text('Aguarde...'),
-                    ),
-                  );
+                onPressed: widget.blockUi
+                    ? null
+                    : () {
+                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: const Duration(seconds: 8),
+                            content: const Text('Aguarde...'),
+                          ),
+                        );
 
-                  _openFileExplorer().then((_) {
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 8),
-                        content: Text(
-                          'Enviando modelo inferior. Por ser um arquivo grande, por favor aguarde...',
-                        ),
-                      ),
-                    );
+                        _openFileExplorer().then((_) {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 8),
+                              content: Text(
+                                'Enviando modelo inferior. Por ser um arquivo grande, por favor aguarde...',
+                              ),
+                            ),
+                          );
 
-                    Future.delayed(const Duration(milliseconds: 500), () {
-                      for (var modeloInf in _modeloInfsDataList) {
-                        _sendmodeloInf(_authStore.token, modeloInf);
-                      }
-                    });
-                  }).catchError((e) {
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 8),
-                        content: Text('Selecione no máximo 1 modelo!'),
-                      ),
-                    );
-                  });
-                },
+                          Future.delayed(const Duration(milliseconds: 500), () {
+                            for (var modeloInf in _modeloInfsDataList) {
+                              _sendmodeloInf(_authStore.token, modeloInf);
+                            }
+                          });
+                        }).catchError((e) {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 8),
+                              content: Text('Selecione no máximo 1 modelo!'),
+                            ),
+                          );
+                        });
+                      },
                 child: const Text(
                   'MODELO INFERIOR',
                   style: const TextStyle(

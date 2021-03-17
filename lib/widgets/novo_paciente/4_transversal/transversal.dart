@@ -97,11 +97,11 @@ class _TransversalState extends State<Transversal> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'MORDIDA CRUZADA POSTERIOR:',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            Text(
+            const Text(
               '*',
               style: TextStyle(
                 color: Colors.red,
@@ -165,25 +165,29 @@ class _TransversalState extends State<Transversal> {
             Radio(
               activeColor: Colors.blue,
               groupValue: _novoPedStore.getMordidaCruzPostRadio(),
-              onChanged: (value) {
-                _removeFocus(context);
-                _novoPedStore.setMordidaCruzPostRadio(value);
-                _novoPedStore.manageFormMcp();
-              },
+              onChanged: widget.blockUi
+                  ? null
+                  : (value) {
+                      _removeFocus(context);
+                      _novoPedStore.setMordidaCruzPostRadio(value);
+                      _novoPedStore.manageFormMcp();
+                    },
               value: 1,
             ),
-            Text('Manter'),
+            const Text('Manter'),
             Radio(
               activeColor: Colors.blue,
               groupValue: _novoPedStore.getMordidaCruzPostRadio(),
-              onChanged: (value) {
-                _removeFocus(context);
-                _novoPedStore.setMordidaCruzPostRadio(value);
-                _novoPedStore.manageFormMcp();
-              },
+              onChanged: widget.blockUi
+                  ? null
+                  : (value) {
+                      _removeFocus(context);
+                      _novoPedStore.setMordidaCruzPostRadio(value);
+                      _novoPedStore.manageFormMcp();
+                    },
               value: 2,
             ),
-            Text('Corrigir'),
+            const Text('Corrigir'),
           ],
         ),
       ],
@@ -230,12 +234,14 @@ class _TransversalState extends State<Transversal> {
                           ),
                         ),
                         value: _novoPedStore.getEasDireito(),
-                        onChanged: (value) {
-                          _removeFocus(context);
-                          if (_novoPedStore.getMordidaCruzPost()) {
-                            _novoPedStore.setEasDireito(value);
-                          }
-                        },
+                        onChanged: widget.blockUi
+                            ? null
+                            : (value) {
+                                _removeFocus(context);
+                                if (_novoPedStore.getMordidaCruzPost()) {
+                                  _novoPedStore.setEasDireito(value);
+                                }
+                              },
                         activeColor: Colors.black12,
                         checkColor: Colors.blue,
                       ),
@@ -252,12 +258,14 @@ class _TransversalState extends State<Transversal> {
                           ),
                         ),
                         value: _novoPedStore.getEasEsquerdo(),
-                        onChanged: (value) {
-                          _removeFocus(context);
-                          if (_novoPedStore.getMordidaCruzPost()) {
-                            _novoPedStore.setEasEsquerdo(value);
-                          }
-                        },
+                        onChanged: widget.blockUi
+                            ? null
+                            : (value) {
+                                _removeFocus(context);
+                                if (_novoPedStore.getMordidaCruzPost()) {
+                                  _novoPedStore.setEasEsquerdo(value);
+                                }
+                              },
                         activeColor: Colors.black12,
                         checkColor: Colors.blue,
                       ),
@@ -279,12 +287,14 @@ class _TransversalState extends State<Transversal> {
                           ),
                         ),
                         value: _novoPedStore.getEasMovimentoCorpo(),
-                        onChanged: (value) {
-                          _removeFocus(context);
-                          if (_novoPedStore.getMordidaCruzPost()) {
-                            _novoPedStore.setEasMovimentoCorpo(value);
-                          }
-                        },
+                        onChanged: widget.blockUi
+                            ? null
+                            : (value) {
+                                _removeFocus(context);
+                                if (_novoPedStore.getMordidaCruzPost()) {
+                                  _novoPedStore.setEasMovimentoCorpo(value);
+                                }
+                              },
                         activeColor: Colors.black12,
                         checkColor: Colors.blue,
                       ),
@@ -301,12 +311,14 @@ class _TransversalState extends State<Transversal> {
                           ),
                         ),
                         value: _novoPedStore.getEasMovimentoCorpoEsq(),
-                        onChanged: (value) {
-                          _removeFocus(context);
-                          if (_novoPedStore.getMordidaCruzPost()) {
-                            _novoPedStore.setEasMovimentoCorpoEsq(value);
-                          }
-                        },
+                        onChanged: widget.blockUi
+                            ? null
+                            : (value) {
+                                _removeFocus(context);
+                                if (_novoPedStore.getMordidaCruzPost()) {
+                                  _novoPedStore.setEasMovimentoCorpoEsq(value);
+                                }
+                              },
                         activeColor: Colors.black12,
                         checkColor: Colors.blue,
                       ),
@@ -328,12 +340,14 @@ class _TransversalState extends State<Transversal> {
                           ),
                         ),
                         value: _novoPedStore.getEasInclinacaoTorque(),
-                        onChanged: (value) {
-                          _removeFocus(context);
-                          if (_novoPedStore.getMordidaCruzPost()) {
-                            _novoPedStore.setEasInclinacaoTorque(value);
-                          }
-                        },
+                        onChanged: widget.blockUi
+                            ? null
+                            : (value) {
+                                _removeFocus(context);
+                                if (_novoPedStore.getMordidaCruzPost()) {
+                                  _novoPedStore.setEasInclinacaoTorque(value);
+                                }
+                              },
                         activeColor: Colors.black12,
                         checkColor: Colors.blue,
                       ),
@@ -350,12 +364,15 @@ class _TransversalState extends State<Transversal> {
                           ),
                         ),
                         value: _novoPedStore.getEasInclinacaoTorqueEsq(),
-                        onChanged: (value) {
-                          _removeFocus(context);
-                          if (_novoPedStore.getMordidaCruzPost()) {
-                            _novoPedStore.setEasInclinacaoTorqueEsq(value);
-                          }
-                        },
+                        onChanged: widget.blockUi
+                            ? null
+                            : (value) {
+                                _removeFocus(context);
+                                if (_novoPedStore.getMordidaCruzPost()) {
+                                  _novoPedStore
+                                      .setEasInclinacaoTorqueEsq(value);
+                                }
+                              },
                         activeColor: Colors.black12,
                         checkColor: Colors.blue,
                       ),
@@ -409,12 +426,14 @@ class _TransversalState extends State<Transversal> {
                           ),
                         ),
                         value: _novoPedStore.getCaiDireito(),
-                        onChanged: (value) {
-                          _removeFocus(context);
-                          if (_novoPedStore.getMordidaCruzPost()) {
-                            _novoPedStore.setCaiDireito(value);
-                          }
-                        },
+                        onChanged: widget.blockUi
+                            ? null
+                            : (value) {
+                                _removeFocus(context);
+                                if (_novoPedStore.getMordidaCruzPost()) {
+                                  _novoPedStore.setCaiDireito(value);
+                                }
+                              },
                         activeColor: Colors.black12,
                         checkColor: Colors.blue,
                       ),
@@ -431,12 +450,14 @@ class _TransversalState extends State<Transversal> {
                           ),
                         ),
                         value: _novoPedStore.getCaiEsquerdo(),
-                        onChanged: (value) {
-                          _removeFocus(context);
-                          if (_novoPedStore.getMordidaCruzPost()) {
-                            _novoPedStore.setCaiEsquerdo(value);
-                          }
-                        },
+                        onChanged: widget.blockUi
+                            ? null
+                            : (value) {
+                                _removeFocus(context);
+                                if (_novoPedStore.getMordidaCruzPost()) {
+                                  _novoPedStore.setCaiEsquerdo(value);
+                                }
+                              },
                         activeColor: Colors.black12,
                         checkColor: Colors.blue,
                       ),
@@ -458,12 +479,14 @@ class _TransversalState extends State<Transversal> {
                           ),
                         ),
                         value: _novoPedStore.getCaiMovimentoCorpo(),
-                        onChanged: (value) {
-                          _removeFocus(context);
-                          if (_novoPedStore.getMordidaCruzPost()) {
-                            _novoPedStore.setCaiMovimentoCorpo(value);
-                          }
-                        },
+                        onChanged: widget.blockUi
+                            ? null
+                            : (value) {
+                                _removeFocus(context);
+                                if (_novoPedStore.getMordidaCruzPost()) {
+                                  _novoPedStore.setCaiMovimentoCorpo(value);
+                                }
+                              },
                         activeColor: Colors.black12,
                         checkColor: Colors.blue,
                       ),
@@ -480,12 +503,14 @@ class _TransversalState extends State<Transversal> {
                           ),
                         ),
                         value: _novoPedStore.getCaiMovimentoCorpoEsq(),
-                        onChanged: (value) {
-                          _removeFocus(context);
-                          if (_novoPedStore.getMordidaCruzPost()) {
-                            _novoPedStore.setCaiMovimentoCorpoEsq(value);
-                          }
-                        },
+                        onChanged: widget.blockUi
+                            ? null
+                            : (value) {
+                                _removeFocus(context);
+                                if (_novoPedStore.getMordidaCruzPost()) {
+                                  _novoPedStore.setCaiMovimentoCorpoEsq(value);
+                                }
+                              },
                         activeColor: Colors.black12,
                         checkColor: Colors.blue,
                       ),
@@ -507,12 +532,14 @@ class _TransversalState extends State<Transversal> {
                           ),
                         ),
                         value: _novoPedStore.getCaiInclinacaoTorque(),
-                        onChanged: (value) {
-                          _removeFocus(context);
-                          if (_novoPedStore.getMordidaCruzPost()) {
-                            _novoPedStore.setCaiInclinacaoTorque(value);
-                          }
-                        },
+                        onChanged: widget.blockUi
+                            ? null
+                            : (value) {
+                                _removeFocus(context);
+                                if (_novoPedStore.getMordidaCruzPost()) {
+                                  _novoPedStore.setCaiInclinacaoTorque(value);
+                                }
+                              },
                         activeColor: Colors.black12,
                         checkColor: Colors.blue,
                       ),
@@ -529,12 +556,15 @@ class _TransversalState extends State<Transversal> {
                           ),
                         ),
                         value: _novoPedStore.getCaiInclinacaoTorqueEsq(),
-                        onChanged: (value) {
-                          _removeFocus(context);
-                          if (_novoPedStore.getMordidaCruzPost()) {
-                            _novoPedStore.setCaiInclinacaoTorqueEsq(value);
-                          }
-                        },
+                        onChanged: widget.blockUi
+                            ? null
+                            : (value) {
+                                _removeFocus(context);
+                                if (_novoPedStore.getMordidaCruzPost()) {
+                                  _novoPedStore
+                                      .setCaiInclinacaoTorqueEsq(value);
+                                }
+                              },
                         activeColor: Colors.black12,
                         checkColor: Colors.blue,
                       ),
@@ -692,7 +722,7 @@ class _TransversalState extends State<Transversal> {
     );
   }
 
-  Widget _linhaMediaSupTop(var _novoPedStore) {
+  Widget _linhaMediaSupTop(PedidoProvider _novoPedStore) {
     return Column(
       children: [
         //Texto: LINHA MÉDIA SUPERIOR
@@ -785,25 +815,29 @@ class _TransversalState extends State<Transversal> {
               Radio(
                 activeColor: Colors.blue,
                 groupValue: _novoPedStore.getLinhaMediaSupRadio(),
-                onChanged: (value) {
-                  _removeFocus(context);
-                  _novoPedStore.setLinhaMediaSupRadio(value);
-                  _novoPedStore.manageFormLmSup();
-                },
+                onChanged: widget.blockUi
+                    ? null
+                    : (value) {
+                        _removeFocus(context);
+                        _novoPedStore.setLinhaMediaSupRadio(value);
+                        _novoPedStore.manageFormLmSup();
+                      },
                 value: 1,
               ),
-              Text('Manter'),
+              const Text('Manter'),
               Radio(
                 activeColor: Colors.blue,
                 groupValue: _novoPedStore.getLinhaMediaSupRadio(),
-                onChanged: (value) {
-                  _removeFocus(context);
-                  _novoPedStore.setLinhaMediaSupRadio(value);
-                  _novoPedStore.manageFormLmSup();
-                },
+                onChanged: widget.blockUi
+                    ? null
+                    : (value) {
+                        _removeFocus(context);
+                        _novoPedStore.setLinhaMediaSupRadio(value);
+                        _novoPedStore.manageFormLmSup();
+                      },
                 value: 2,
               ),
-              Text('Corrigir'),
+              const Text('Corrigir'),
             ],
           ),
           const SizedBox(height: 40),
@@ -842,15 +876,18 @@ class _TransversalState extends State<Transversal> {
                                   activeColor: Colors.blue,
                                   groupValue:
                                       _novoPedStore.getLmSupRadioValue(null),
-                                  onChanged: (value) {
-                                    _removeFocus(context);
-                                    if (_novoPedStore.getLinhaMediaSupState()) {
-                                      _novoPedStore.setLmSupRadio(
-                                        value,
-                                        '_lmSupDireita',
-                                      );
-                                    }
-                                  },
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore
+                                              .getLinhaMediaSupState()) {
+                                            _novoPedStore.setLmSupRadio(
+                                              value,
+                                              '_lmSupDireita',
+                                            );
+                                          }
+                                        },
                                   value: 1,
                                 ),
                                 Text(
@@ -875,10 +912,12 @@ class _TransversalState extends State<Transversal> {
                                         onSaved: (String value) {
                                           //sc.usernameCpf = value;
                                         },
-                                        enabled: _novoPedStore
-                                                .getLinhaMediaSupState() &&
-                                            _novoPedStore
-                                                .getLmSupDireitaState(),
+                                        enabled: widget.blockUi
+                                            ? !widget.blockUi
+                                            : _novoPedStore
+                                                    .getLinhaMediaSupState() &&
+                                                _novoPedStore
+                                                    .getLmSupDireitaState(),
                                         validator: (value) {
                                           if (value.length < 0) {
                                             return 'Não valido.';
@@ -929,15 +968,18 @@ class _TransversalState extends State<Transversal> {
                                   activeColor: Colors.blue,
                                   groupValue:
                                       _novoPedStore.getLmSupRadioValue(null),
-                                  onChanged: (value) {
-                                    _removeFocus(context);
-                                    if (_novoPedStore.getLinhaMediaSupState()) {
-                                      _novoPedStore.setLmSupRadio(
-                                        value,
-                                        '_lmSupEsquerda',
-                                      );
-                                    }
-                                  },
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore
+                                              .getLinhaMediaSupState()) {
+                                            _novoPedStore.setLmSupRadio(
+                                              value,
+                                              '_lmSupEsquerda',
+                                            );
+                                          }
+                                        },
                                   value: 2,
                                 ),
                                 Text(
@@ -962,10 +1004,12 @@ class _TransversalState extends State<Transversal> {
                                         onSaved: (String value) {
                                           //sc.usernameCpf = value;
                                         },
-                                        enabled: _novoPedStore
-                                                .getLinhaMediaSupState() &&
-                                            _novoPedStore
-                                                .getLmSupEsquerdaState(),
+                                        enabled: widget.blockUi
+                                            ? !widget.blockUi
+                                            : _novoPedStore
+                                                    .getLinhaMediaSupState() &&
+                                                _novoPedStore
+                                                    .getLmSupEsquerdaState(),
                                         validator: (value) {
                                           if (value.length < 0) {
                                             return 'Não valido.';
@@ -1008,14 +1052,14 @@ class _TransversalState extends State<Transversal> {
     );
   }
 
-  Widget _linhaMediaInfTop(var _novoPedStore) {
+  Widget _linhaMediaInfTop(PedidoProvider _novoPedStore) {
     return Column(
       children: [
         const SizedBox(height: 20),
         //Text: Linha média inferior
         Column(
           children: [
-            Text(
+            const Text(
               'Linha Média Inferior:',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
@@ -1084,25 +1128,29 @@ class _TransversalState extends State<Transversal> {
               Radio(
                 activeColor: Colors.blue,
                 groupValue: _novoPedStore.getLinhaMediaInfRadio(),
-                onChanged: (value) {
-                  _removeFocus(context);
-                  _novoPedStore.setLinhaMediaInfRadio(value);
-                  _novoPedStore.manageFormLmInf();
-                },
+                onChanged: widget.blockUi
+                    ? null
+                    : (value) {
+                        _removeFocus(context);
+                        _novoPedStore.setLinhaMediaInfRadio(value);
+                        _novoPedStore.manageFormLmInf();
+                      },
                 value: 1,
               ),
               const Text('Manter'),
               Radio(
                 activeColor: Colors.blue,
                 groupValue: _novoPedStore.getLinhaMediaInfRadio(),
-                onChanged: (value) {
-                  _removeFocus(context);
-                  _novoPedStore.setLinhaMediaInfRadio(value);
-                  _novoPedStore.manageFormLmInf();
-                },
+                onChanged: widget.blockUi
+                    ? null
+                    : (value) {
+                        _removeFocus(context);
+                        _novoPedStore.setLinhaMediaInfRadio(value);
+                        _novoPedStore.manageFormLmInf();
+                      },
                 value: 2,
               ),
-              Text('Corrigir'),
+              const Text('Corrigir'),
             ],
           ),
           const SizedBox(height: 40),
@@ -1141,15 +1189,18 @@ class _TransversalState extends State<Transversal> {
                                   activeColor: Colors.blue,
                                   groupValue:
                                       _novoPedStore.getLmInfRadioValue(null),
-                                  onChanged: (value) {
-                                    _removeFocus(context);
-                                    if (_novoPedStore.getLinhaMediaInfState()) {
-                                      _novoPedStore.setLmInfRadio(
-                                        value,
-                                        '_lmInfDireita',
-                                      );
-                                    }
-                                  },
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore
+                                              .getLinhaMediaInfState()) {
+                                            _novoPedStore.setLmInfRadio(
+                                              value,
+                                              '_lmInfDireita',
+                                            );
+                                          }
+                                        },
                                   value: 1,
                                 ),
                                 Text(
@@ -1174,10 +1225,12 @@ class _TransversalState extends State<Transversal> {
                                         onSaved: (String value) {
                                           //sc.usernameCpf = value;
                                         },
-                                        enabled: _novoPedStore
-                                                .getLinhaMediaInfState() &&
-                                            _novoPedStore
-                                                .getLmInfDireitaState(),
+                                        enabled: widget.blockUi
+                                            ? !widget.blockUi
+                                            : _novoPedStore
+                                                    .getLinhaMediaInfState() &&
+                                                _novoPedStore
+                                                    .getLmInfDireitaState(),
                                         validator: (value) {
                                           if (value.length < 0) {
                                             return 'Não valido.';
@@ -1228,15 +1281,18 @@ class _TransversalState extends State<Transversal> {
                                   activeColor: Colors.blue,
                                   groupValue:
                                       _novoPedStore.getLmInfRadioValue(null),
-                                  onChanged: (value) {
-                                    _removeFocus(context);
-                                    if (_novoPedStore.getLinhaMediaInfState()) {
-                                      _novoPedStore.setLmInfRadio(
-                                        value,
-                                        '_lmInfEsquerda',
-                                      );
-                                    }
-                                  },
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore
+                                              .getLinhaMediaInfState()) {
+                                            _novoPedStore.setLmInfRadio(
+                                              value,
+                                              '_lmInfEsquerda',
+                                            );
+                                          }
+                                        },
                                   value: 2,
                                 ),
                                 Text(
@@ -1261,10 +1317,12 @@ class _TransversalState extends State<Transversal> {
                                         onSaved: (String value) {
                                           //sc.usernameCpf = value;
                                         },
-                                        enabled: _novoPedStore
-                                                .getLinhaMediaInfState() &&
-                                            _novoPedStore
-                                                .getLmInfEsquerdaState(),
+                                        enabled: widget.blockUi
+                                            ? !widget.blockUi
+                                            : _novoPedStore
+                                                    .getLinhaMediaInfState() &&
+                                                _novoPedStore
+                                                    .getLmInfEsquerdaState(),
                                         validator: (value) {
                                           if (value.length < 0) {
                                             return 'Não valido.';

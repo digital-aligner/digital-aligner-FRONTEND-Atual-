@@ -507,71 +507,98 @@ class PedidoProvider with ChangeNotifier {
   }
 
   Future<dynamic> enviarPaciente() async {
-    _fieldsToObj(null);
-    Map<String, dynamic> _jsonRequest = _objToJsonRequest();
-    print(_jsonRequest);
+    try {
+      _fieldsToObj(null);
+      Map<String, dynamic> _jsonRequest = _objToJsonRequest();
+      print(_jsonRequest);
 
-    var _response = await http.post(RotasUrl.rotaNovoPaciente,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $_token',
-        },
-        body: json.encode(_jsonRequest));
+      var _response = await http.post(RotasUrl.rotaNovoPaciente,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $_token',
+          },
+          body: json.encode(_jsonRequest));
 
-    List<dynamic> _data = json.decode(_response.body);
-    return _data;
+      List<dynamic> _data = json.decode(_response.body);
+      return _data;
+    } catch (e) {
+      print(e);
+      return [
+        {'message': 'Algo deu errado, tente novamente', 'error': 500}
+      ];
+    }
   }
 
   Future<dynamic> enviarNovoPedido() async {
-    _fieldsToObj(null);
-    Map<String, dynamic> _jsonRequest = _objToJsonRequest();
-    print(_jsonRequest);
+    try {
+      _fieldsToObj(null);
+      Map<String, dynamic> _jsonRequest = _objToJsonRequest();
+      print(_jsonRequest);
 
-    var _response = await http.post(RotasUrl.rotaNovoPedido,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $_token',
-        },
-        body: json.encode(_jsonRequest));
+      var _response = await http.post(RotasUrl.rotaNovoPedido,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $_token',
+          },
+          body: json.encode(_jsonRequest));
 
-    List<dynamic> _data = json.decode(_response.body);
-    return _data;
+      List<dynamic> _data = json.decode(_response.body);
+      return _data;
+    } catch (e) {
+      print(e);
+      return [
+        {'message': 'Algo deu errado, tente novamente', 'error': 500}
+      ];
+    }
   }
 
   Future<dynamic> enviarNovoRefinamento() async {
-    _fieldsToObj(null);
-    Map<String, dynamic> _jsonRequest = _objToJsonRequest();
-    print(_jsonRequest);
+    try {
+      _fieldsToObj(null);
+      Map<String, dynamic> _jsonRequest = _objToJsonRequest();
+      print(_jsonRequest);
 
-    var _response = await http.post(RotasUrl.rotaNovoRefinamento,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $_token',
-        },
-        body: json.encode(_jsonRequest));
+      var _response = await http.post(RotasUrl.rotaNovoRefinamento,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $_token',
+          },
+          body: json.encode(_jsonRequest));
 
-    List<dynamic> _data = json.decode(_response.body);
-    return _data;
+      List<dynamic> _data = json.decode(_response.body);
+      return _data;
+    } catch (e) {
+      print(e);
+      return [
+        {'message': 'Algo deu errado, tente novamente', 'error': 500}
+      ];
+    }
   }
 
   Future<dynamic> atualizarPedido(int pedidoId) async {
-    _fieldsToObj(pedidoId);
-    Map<String, dynamic> _jsonRequest = _objToJsonRequest();
-    print(_jsonRequest);
+    try {
+      _fieldsToObj(pedidoId);
+      Map<String, dynamic> _jsonRequest = _objToJsonRequest();
 
-    var _response = await http.put(RotasUrl.rotaNovoPaciente,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $_token',
-        },
-        body: json.encode(_jsonRequest));
+      var _response = await http.put(RotasUrl.rotaNovoPaciente,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $_token',
+          },
+          body: json.encode(_jsonRequest));
 
-    List<dynamic> _data = json.decode(_response.body);
-    return _data;
+      List<dynamic> _data = json.decode(_response.body);
+      return _data;
+    } catch (e) {
+      print(e);
+      return [
+        {'message': 'Algo deu errado, tente novamente', 'error': 500}
+      ];
+    }
   }
 
   void setPhotosList(List<PhotoModel> list) {

@@ -178,7 +178,7 @@ class _VerticalState extends State<Vertical> {
                         },
                   value: 1,
                 ),
-                Text('Manter'),
+                const Text('Manter'),
                 Radio(
                   activeColor: Colors.blue,
                   groupValue: _novoPedStore.getVerticalSbmpRadio(),
@@ -191,7 +191,7 @@ class _VerticalState extends State<Vertical> {
                         },
                   value: 2,
                 ),
-                Text('Corrigir'),
+                const Text('Corrigir'),
               ],
             ),
             const SizedBox(height: 20),
@@ -782,25 +782,29 @@ class _VerticalState extends State<Vertical> {
                   Radio(
                     activeColor: Colors.blue,
                     groupValue: _novoPedStore.getVerticalMaaRadio(),
-                    onChanged: (value) {
-                      _removeFocus(context);
-                      _novoPedStore.setVerticalMaaRadio(value);
-                      _novoPedStore.manageFormMaa();
-                    },
+                    onChanged: widget.blockUi
+                        ? null
+                        : (value) {
+                            _removeFocus(context);
+                            _novoPedStore.setVerticalMaaRadio(value);
+                            _novoPedStore.manageFormMaa();
+                          },
                     value: 1,
                   ),
-                  Text('Manter'),
+                  const Text('Manter'),
                   Radio(
                     activeColor: Colors.blue,
                     groupValue: _novoPedStore.getVerticalMaaRadio(),
-                    onChanged: (value) {
-                      _removeFocus(context);
-                      _novoPedStore.setVerticalMaaRadio(value);
-                      _novoPedStore.manageFormMaa();
-                    },
+                    onChanged: widget.blockUi
+                        ? null
+                        : (value) {
+                            _removeFocus(context);
+                            _novoPedStore.setVerticalMaaRadio(value);
+                            _novoPedStore.manageFormMaa();
+                          },
                     value: 2,
                   ),
-                  Text('Corrigir'),
+                  const Text('Corrigir'),
                 ],
               ),
               const SizedBox(height: 20),
@@ -848,16 +852,18 @@ class _VerticalState extends State<Vertical> {
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getMaaRadioValue('_maaEdaSup'),
-                                      onChanged: (value) {
-                                        _removeFocus(context);
-                                        if (_novoPedStore
-                                            .getMordidaAbertaAntState()) {
-                                          _novoPedStore.setMaaRadio(
-                                            value,
-                                            '_maaEdaSup',
-                                          );
-                                        }
-                                      },
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              if (_novoPedStore
+                                                  .getMordidaAbertaAntState()) {
+                                                _novoPedStore.setMaaRadio(
+                                                  value,
+                                                  '_maaEdaSup',
+                                                );
+                                              }
+                                            },
                                       value: 1,
                                     ),
                                     Text(
@@ -882,8 +888,10 @@ class _VerticalState extends State<Vertical> {
                                             onSaved: (String value) {
                                               //sc.usernameCpf = value;
                                             },
-                                            enabled: _novoPedStore
-                                                .getMaaEdaSupState(),
+                                            enabled: widget.blockUi
+                                                ? !widget.blockUi
+                                                : _novoPedStore
+                                                    .getMaaEdaSupState(),
                                             validator: (value) {
                                               if (value.length < 0) {
                                                 return 'Não valido.';
@@ -936,16 +944,18 @@ class _VerticalState extends State<Vertical> {
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getMaaRadioValue('_maaIdpSup'),
-                                      onChanged: (value) {
-                                        _removeFocus(context);
-                                        if (_novoPedStore
-                                            .getMordidaAbertaAntState()) {
-                                          _novoPedStore.setMaaRadio(
-                                            value,
-                                            '_maaIdpSup',
-                                          );
-                                        }
-                                      },
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              if (_novoPedStore
+                                                  .getMordidaAbertaAntState()) {
+                                                _novoPedStore.setMaaRadio(
+                                                  value,
+                                                  '_maaIdpSup',
+                                                );
+                                              }
+                                            },
                                       value: 1,
                                     ),
                                     Text(
@@ -970,8 +980,10 @@ class _VerticalState extends State<Vertical> {
                                             onSaved: (String value) {
                                               //sc.usernameCpf = value;
                                             },
-                                            enabled: _novoPedStore
-                                                .getMaaIdpSupState(),
+                                            enabled: widget.blockUi
+                                                ? !widget.blockUi
+                                                : _novoPedStore
+                                                    .getMaaIdpSupState(),
                                             validator: (value) {
                                               if (value.length < 0) {
                                                 return 'Não valido.';
@@ -1030,16 +1042,18 @@ class _VerticalState extends State<Vertical> {
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getMaaRadioValue('_maaEdaInf'),
-                                      onChanged: (value) {
-                                        _removeFocus(context);
-                                        if (_novoPedStore
-                                            .getMordidaAbertaAntState()) {
-                                          _novoPedStore.setMaaRadio(
-                                            value,
-                                            '_maaEdaInf',
-                                          );
-                                        }
-                                      },
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              if (_novoPedStore
+                                                  .getMordidaAbertaAntState()) {
+                                                _novoPedStore.setMaaRadio(
+                                                  value,
+                                                  '_maaEdaInf',
+                                                );
+                                              }
+                                            },
                                       value: 1,
                                     ),
                                     Text(
@@ -1064,8 +1078,10 @@ class _VerticalState extends State<Vertical> {
                                             onSaved: (String value) {
                                               //sc.usernameCpf = value;
                                             },
-                                            enabled: _novoPedStore
-                                                .getMaaEdaInfState(),
+                                            enabled: widget.blockUi
+                                                ? !widget.blockUi
+                                                : _novoPedStore
+                                                    .getMaaEdaInfState(),
                                             validator: (value) {
                                               if (value.length < 0) {
                                                 return 'Não valido.';
@@ -1118,16 +1134,18 @@ class _VerticalState extends State<Vertical> {
                                       activeColor: Colors.blue,
                                       groupValue: _novoPedStore
                                           .getMaaRadioValue('_maaIdpInf'),
-                                      onChanged: (value) {
-                                        _removeFocus(context);
-                                        if (_novoPedStore
-                                            .getMordidaAbertaAntState()) {
-                                          _novoPedStore.setMaaRadio(
-                                            value,
-                                            '_maaIdpInf',
-                                          );
-                                        }
-                                      },
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              if (_novoPedStore
+                                                  .getMordidaAbertaAntState()) {
+                                                _novoPedStore.setMaaRadio(
+                                                  value,
+                                                  '_maaIdpInf',
+                                                );
+                                              }
+                                            },
                                       value: 1,
                                     ),
                                     Text(
@@ -1152,8 +1170,10 @@ class _VerticalState extends State<Vertical> {
                                             onSaved: (String value) {
                                               //sc.usernameCpf = value;
                                             },
-                                            enabled: _novoPedStore
-                                                .getMaaIdpInfState(),
+                                            enabled: widget.blockUi
+                                                ? !widget.blockUi
+                                                : _novoPedStore
+                                                    .getMaaIdpInfState(),
                                             validator: (value) {
                                               if (value.length < 0) {
                                                 return 'Não valido.';

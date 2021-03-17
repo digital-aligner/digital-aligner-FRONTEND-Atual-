@@ -22,9 +22,11 @@ import 'multipart_request.dart';
 class ModeloSuperiorUpload extends StatefulWidget {
   final bool isEdit;
   final Map pedidoDados;
+  final bool blockUi;
   ModeloSuperiorUpload({
     this.isEdit,
     this.pedidoDados,
+    @required this.blockUi,
   });
   @override
   _ModeloSuperiorUploadState createState() => _ModeloSuperiorUploadState();
@@ -113,27 +115,30 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
                   icon: widget.isEdit == false
                       ? const Icon(Icons.delete)
                       : const Icon(Icons.delete_forever),
-                  onPressed: () {
-                    if (widget.isEdit) {
-                      _s3deleteStore.setIdToDelete(curmodeloSup.id);
-                      setState(() {
-                        _modeloSupsList.removeWhere(
-                          (modeloSup) => modeloSup.id == curmodeloSup.id,
-                        );
-                      });
-                    } else {
-                      _deletemodeloSup(_token, curmodeloSup.id).then((res) {
-                        var data = json.decode(res.body);
-                        if (data['id'] != null) {
-                          setState(() {
-                            _modeloSupsList.removeWhere(
-                              (modeloSup) => modeloSup.id == data['id'],
-                            );
-                          });
-                        }
-                      });
-                    }
-                  },
+                  onPressed: widget.blockUi
+                      ? null
+                      : () {
+                          if (widget.isEdit) {
+                            _s3deleteStore.setIdToDelete(curmodeloSup.id);
+                            setState(() {
+                              _modeloSupsList.removeWhere(
+                                (modeloSup) => modeloSup.id == curmodeloSup.id,
+                              );
+                            });
+                          } else {
+                            _deletemodeloSup(_token, curmodeloSup.id)
+                                .then((res) {
+                              var data = json.decode(res.body);
+                              if (data['id'] != null) {
+                                setState(() {
+                                  _modeloSupsList.removeWhere(
+                                    (modeloSup) => modeloSup.id == data['id'],
+                                  );
+                                });
+                              }
+                            });
+                          }
+                        },
                 ),
               if (curmodeloSup.id == null) Container(),
               SizedBox(
@@ -171,21 +176,33 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
       _currentmodeloSup.bytes,
       filename: _currentmodeloSup.name,
     ));
+    try {
+      var response = await request.send();
+      var resStream = await response.stream.bytesToString();
+      var resData = json.decode(resStream);
 
-    var response = await request.send();
-    var resStream = await response.stream.bytesToString();
-    var resData = json.decode(resStream);
-
-    if (resData[0]['id'] != null) {
+      if (resData[0].containsKey('id')) {
+        for (int i = 0; i < _modeloSupsList.length; i++) {
+          if (_modeloSupsList[i].listId == rNum) {
+            setState(() {
+              _modeloSupsList[i].id = resData[0]['id'];
+              _modeloSupsList[i].fileName = resData[0]['name'];
+              _modeloSupsList[i].imageUrl = resData[0]['url'];
+            });
+          }
+        }
+      }
+    } catch (e) {
       for (int i = 0; i < _modeloSupsList.length; i++) {
         if (_modeloSupsList[i].listId == rNum) {
           setState(() {
-            _modeloSupsList[i].id = resData[0]['id'];
-            _modeloSupsList[i].fileName = resData[0]['name'];
-            _modeloSupsList[i].imageUrl = resData[0]['url'];
+            _modeloSupsList[i].id = -1;
+            _modeloSupsList[i].fileName = 'Error, por favor tente novamente.';
+            _modeloSupsList[i].imageUrl = '';
           });
         }
       }
+      print(e);
     }
   }
 
@@ -258,40 +275,42 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
             Container(
               width: 300,
               child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(seconds: 8),
-                      content: const Text('Aguarde...'),
-                    ),
-                  );
+                onPressed: widget.blockUi
+                    ? null
+                    : () {
+                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: const Duration(seconds: 8),
+                            content: const Text('Aguarde...'),
+                          ),
+                        );
 
-                  _openFileExplorer().then((_) {
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 8),
-                        content: Text(
-                            'Enviando modelo superior. Por ser um arquivo grande, por favor aguarde...'),
-                      ),
-                    );
+                        _openFileExplorer().then((_) {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 8),
+                              content: Text(
+                                  'Enviando modelo superior. Por ser um arquivo grande, por favor aguarde...'),
+                            ),
+                          );
 
-                    Future.delayed(const Duration(milliseconds: 500), () {
-                      for (var modeloSup in _modeloSupsDataList) {
-                        _sendmodeloSup(_authStore.token, modeloSup);
-                      }
-                    });
-                  }).catchError((e) {
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 8),
-                        content: Text('Selecione no máximo 1 modelo!'),
-                      ),
-                    );
-                  });
-                },
+                          Future.delayed(const Duration(milliseconds: 500), () {
+                            for (var modeloSup in _modeloSupsDataList) {
+                              _sendmodeloSup(_authStore.token, modeloSup);
+                            }
+                          });
+                        }).catchError((e) {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 8),
+                              content: Text('Selecione no máximo 1 modelo!'),
+                            ),
+                          );
+                        });
+                      },
                 child: const Text(
                   'MODELO SUPERIOR',
                   style: const TextStyle(

@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ProblemasIndividuais extends StatefulWidget {
+  final bool blockUi;
+
+  ProblemasIndividuais({@required this.blockUi});
   @override
   _ProblemasIndividuaisState createState() => _ProblemasIndividuaisState();
 }
@@ -92,7 +95,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 'Apinhamento (Observar padrão periodontal do paciente)',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
@@ -160,48 +163,54 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
     );
   }
 
-  Widget _apinhamento(_novoPedStore) {
+  Widget _apinhamento(PedidoProvider _novoPedStore) {
     return Row(
       children: <Widget>[
         Radio(
           activeColor: Colors.blue,
           groupValue: _novoPedStore.getTratarApinRadioValue('_tratarApinRadio'),
-          onChanged: (value) {
-            _removeFocus(context);
-            _novoPedStore.setTratarApinRadio(value, '_tratarApinRadio');
-            if (_novoPedStore.getCorrigirApinSelecionado()) {
-              _novoPedStore.clearApinFields();
-            }
-          },
+          onChanged: widget.blockUi
+              ? null
+              : (value) {
+                  _removeFocus(context);
+                  _novoPedStore.setTratarApinRadio(value, '_tratarApinRadio');
+                  if (_novoPedStore.getCorrigirApinSelecionado()) {
+                    _novoPedStore.clearApinFields();
+                  }
+                },
           value: 3,
         ),
-        Text('Ausência de apinhamento'),
+        const Text('Ausência de apinhamento'),
         Expanded(flex: 1, child: Container()),
         Radio(
           activeColor: Colors.blue,
           groupValue: _novoPedStore.getTratarApinRadioValue('_tratarApinRadio'),
-          onChanged: (value) {
-            _removeFocus(context);
-            _novoPedStore.setTratarApinRadio(value, '_tratarApinRadio');
-            if (_novoPedStore.getCorrigirApinSelecionado()) {
-              _novoPedStore.clearApinFields();
-            }
-          },
+          onChanged: widget.blockUi
+              ? null
+              : (value) {
+                  _removeFocus(context);
+                  _novoPedStore.setTratarApinRadio(value, '_tratarApinRadio');
+                  if (_novoPedStore.getCorrigirApinSelecionado()) {
+                    _novoPedStore.clearApinFields();
+                  }
+                },
           value: 1,
         ),
-        Text('Manter'),
+        const Text('Manter'),
         Expanded(flex: 1, child: Container()),
         Radio(
           activeColor: Colors.blue,
           groupValue: _novoPedStore.getTratarApinRadioValue('_tratarApinRadio'),
-          onChanged: (value) {
-            _removeFocus(context);
-            _novoPedStore.setTratarApinRadio(value, '_tratarApinRadio');
-            _novoPedStore.setCorrigirApinSelecionado();
-          },
+          onChanged: widget.blockUi
+              ? null
+              : (value) {
+                  _removeFocus(context);
+                  _novoPedStore.setTratarApinRadio(value, '_tratarApinRadio');
+                  _novoPedStore.setCorrigirApinSelecionado();
+                },
           value: 2,
         ),
-        Text('Corrigir'),
+        const Text('Corrigir'),
       ],
     );
   }
@@ -214,7 +223,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Arco Superior',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
@@ -246,16 +255,19 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                           ),
                         ),
                         value: _novoPedStore.getExpArcoSupApin(),
-                        onChanged: (value) {
-                          _removeFocus(context);
-                          if (_novoPedStore.getCorrigirApinSelecionado()) {
-                            _novoPedStore.setExpArcoSupApin(value);
-                            if (value == false) {
-                              _novoPedStore.clearExpArcoSupFields(
-                                  clearParentCheckbox: false);
-                            }
-                          }
-                        },
+                        onChanged: widget.blockUi
+                            ? null
+                            : (value) {
+                                _removeFocus(context);
+                                if (_novoPedStore
+                                    .getCorrigirApinSelecionado()) {
+                                  _novoPedStore.setExpArcoSupApin(value);
+                                  if (value == false) {
+                                    _novoPedStore.clearExpArcoSupFields(
+                                        clearParentCheckbox: false);
+                                  }
+                                }
+                              },
                         activeColor: Colors.black12,
                         checkColor: Colors.blue,
                       ),
@@ -272,13 +284,15 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                     Radio(
                       activeColor: Colors.blue,
                       groupValue: _novoPedStore.getExpArcoSupApinRadio(),
-                      onChanged: (value) {
-                        _removeFocus(context);
-                        if (_novoPedStore.getCorrigirApinSelecionado() &&
-                            _novoPedStore.getExpArcoSupApin()) {
-                          _novoPedStore.setExpArcoSupApinRadio(value);
-                        }
-                      },
+                      onChanged: widget.blockUi
+                          ? null
+                          : (value) {
+                              _removeFocus(context);
+                              if (_novoPedStore.getCorrigirApinSelecionado() &&
+                                  _novoPedStore.getExpArcoSupApin()) {
+                                _novoPedStore.setExpArcoSupApinRadio(value);
+                              }
+                            },
                       value: 1,
                     ),
                     Text(
@@ -293,13 +307,15 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                     Radio(
                       activeColor: Colors.blue,
                       groupValue: _novoPedStore.getExpArcoSupApinRadio(),
-                      onChanged: (value) {
-                        _removeFocus(context);
-                        if (_novoPedStore.getCorrigirApinSelecionado() &&
-                            _novoPedStore.getExpArcoSupApin()) {
-                          _novoPedStore.setExpArcoSupApinRadio(value);
-                        }
-                      },
+                      onChanged: widget.blockUi
+                          ? null
+                          : (value) {
+                              _removeFocus(context);
+                              if (_novoPedStore.getCorrigirApinSelecionado() &&
+                                  _novoPedStore.getExpArcoSupApin()) {
+                                _novoPedStore.setExpArcoSupApinRadio(value);
+                              }
+                            },
                       value: 2,
                     ),
                     Text(
@@ -333,16 +349,19 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                           ),
                         ),
                         value: _novoPedStore.getIncProjArcoSupApin(),
-                        onChanged: (value) {
-                          _removeFocus(context);
-                          if (_novoPedStore.getCorrigirApinSelecionado()) {
-                            _novoPedStore.setIncProjArcoSupApin(value);
-                            if (value == false) {
-                              _novoPedStore.clearIncProjArcoSupFields(
-                                  clearParentCheckbox: false);
-                            }
-                          }
-                        },
+                        onChanged: widget.blockUi
+                            ? null
+                            : (value) {
+                                _removeFocus(context);
+                                if (_novoPedStore
+                                    .getCorrigirApinSelecionado()) {
+                                  _novoPedStore.setIncProjArcoSupApin(value);
+                                  if (value == false) {
+                                    _novoPedStore.clearIncProjArcoSupFields(
+                                        clearParentCheckbox: false);
+                                  }
+                                }
+                              },
                         activeColor: Colors.black12,
                         checkColor: Colors.blue,
                       ),
@@ -357,14 +376,16 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                   Radio(
                     activeColor: Colors.blue,
                     groupValue: _novoPedStore.getIncProjArcoSupApinRadio(),
-                    onChanged: (value) {
-                      _removeFocus(context);
-                      if (_novoPedStore.getCorrigirApinSelecionado() &&
-                          _novoPedStore.getIncProjArcoSupApin()) {
-                        _novoPedStore.setIncProjArcoSupApinRadio(value);
-                        _novoPedStore.setIncProjArcoSupApinOutros('');
-                      }
-                    },
+                    onChanged: widget.blockUi
+                        ? null
+                        : (value) {
+                            _removeFocus(context);
+                            if (_novoPedStore.getCorrigirApinSelecionado() &&
+                                _novoPedStore.getIncProjArcoSupApin()) {
+                              _novoPedStore.setIncProjArcoSupApinRadio(value);
+                              _novoPedStore.setIncProjArcoSupApinOutros('');
+                            }
+                          },
                     value: 1,
                   ),
                   Text(
@@ -379,14 +400,16 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                   Radio(
                     activeColor: Colors.blue,
                     groupValue: _novoPedStore.getIncProjArcoSupApinRadio(),
-                    onChanged: (value) {
-                      _removeFocus(context);
-                      if (_novoPedStore.getCorrigirApinSelecionado() &&
-                          _novoPedStore.getIncProjArcoSupApin()) {
-                        _novoPedStore.setIncProjArcoSupApinRadio(value);
-                        _novoPedStore.setIncProjArcoSupApinOutros('');
-                      }
-                    },
+                    onChanged: widget.blockUi
+                        ? null
+                        : (value) {
+                            _removeFocus(context);
+                            if (_novoPedStore.getCorrigirApinSelecionado() &&
+                                _novoPedStore.getIncProjArcoSupApin()) {
+                              _novoPedStore.setIncProjArcoSupApinRadio(value);
+                              _novoPedStore.setIncProjArcoSupApinOutros('');
+                            }
+                          },
                     value: 2,
                   ),
                   Text(
@@ -403,13 +426,17 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                       Radio(
                         activeColor: Colors.blue,
                         groupValue: _novoPedStore.getIncProjArcoSupApinRadio(),
-                        onChanged: (value) {
-                          _removeFocus(context);
-                          if (_novoPedStore.getCorrigirApinSelecionado() &&
-                              _novoPedStore.getIncProjArcoSupApin()) {
-                            _novoPedStore.setIncProjArcoSupApinRadio(value);
-                          }
-                        },
+                        onChanged: widget.blockUi
+                            ? null
+                            : (value) {
+                                _removeFocus(context);
+                                if (_novoPedStore
+                                        .getCorrigirApinSelecionado() &&
+                                    _novoPedStore.getIncProjArcoSupApin()) {
+                                  _novoPedStore
+                                      .setIncProjArcoSupApinRadio(value);
+                                }
+                              },
                         value: 3,
                       ),
                       Text(
@@ -434,9 +461,12 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                               onSaved: (String value) {
                                 //sc.usernameCpf = value;
                               },
-                              enabled: _novoPedStore.getIncProjArcoSupApin() &&
-                                  _novoPedStore.getIncProjArcoSupApinRadio() ==
-                                      3,
+                              enabled: widget.blockUi
+                                  ? !widget.blockUi
+                                  : _novoPedStore.getIncProjArcoSupApin() &&
+                                      _novoPedStore
+                                              .getIncProjArcoSupApinRadio() ==
+                                          3,
                               validator: (value) {
                                 if (value.length < 0) {
                                   return 'Não valido.';
@@ -496,17 +526,20 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                           ),
                         ),
                         value: _novoPedStore.getDistDPASupState(),
-                        onChanged: (value) {
-                          _removeFocus(context);
-                          if (_novoPedStore.getCorrigirApinSelecionado()) {
-                            _novoPedStore.setDistDPASupState(value);
-                            if (value == false) {
-                              //To clear child fields
-                              _novoPedStore.clearDistalizacaoSupFields(
-                                  clearParentCheckbox: false);
-                            }
-                          }
-                        },
+                        onChanged: widget.blockUi
+                            ? null
+                            : (value) {
+                                _removeFocus(context);
+                                if (_novoPedStore
+                                    .getCorrigirApinSelecionado()) {
+                                  _novoPedStore.setDistDPASupState(value);
+                                  if (value == false) {
+                                    //To clear child fields
+                                    _novoPedStore.clearDistalizacaoSupFields(
+                                        clearParentCheckbox: false);
+                                  }
+                                }
+                              },
                         activeColor: Colors.black12,
                         checkColor: Colors.blue,
                       ),
@@ -548,18 +581,22 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                   ),
                                 ),
                                 value: _novoPedStore.getDistDPASAEsq(),
-                                onChanged: (value) {
-                                  _removeFocus(context);
-                                  if (_novoPedStore
-                                          .getCorrigirApinSelecionado() &&
-                                      _novoPedStore.getDistDPASupState()) {
-                                    _novoPedStore.setDistDPASAEsq(value);
-                                    if (value == false) {
-                                      _novoPedStore.clearDistDPASAEsqFields(
-                                          clearParentCheckbox: false);
-                                    }
-                                  }
-                                },
+                                onChanged: widget.blockUi
+                                    ? null
+                                    : (value) {
+                                        _removeFocus(context);
+                                        if (_novoPedStore
+                                                .getCorrigirApinSelecionado() &&
+                                            _novoPedStore
+                                                .getDistDPASupState()) {
+                                          _novoPedStore.setDistDPASAEsq(value);
+                                          if (value == false) {
+                                            _novoPedStore
+                                                .clearDistDPASAEsqFields(
+                                                    clearParentCheckbox: false);
+                                          }
+                                        }
+                                      },
                                 activeColor: Colors.black12,
                                 checkColor: Colors.blue,
                               ),
@@ -574,15 +611,18 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                           Radio(
                             activeColor: Colors.blue,
                             groupValue: _novoPedStore.getDistDPASAEsqRadio(),
-                            onChanged: (value) {
-                              _removeFocus(context);
-                              if (_novoPedStore.getDistDPASAEsq() &&
-                                  _novoPedStore.getDistDPASupState() &&
-                                  _novoPedStore.getCorrigirApinSelecionado()) {
-                                _novoPedStore.setDistDPASAEsqRadio(value);
-                                _novoPedStore.setDistDPASAEsqOutros('');
-                              }
-                            },
+                            onChanged: widget.blockUi
+                                ? null
+                                : (value) {
+                                    _removeFocus(context);
+                                    if (_novoPedStore.getDistDPASAEsq() &&
+                                        _novoPedStore.getDistDPASupState() &&
+                                        _novoPedStore
+                                            .getCorrigirApinSelecionado()) {
+                                      _novoPedStore.setDistDPASAEsqRadio(value);
+                                      _novoPedStore.setDistDPASAEsqOutros('');
+                                    }
+                                  },
                             value: 1,
                           ),
                           Text(
@@ -600,15 +640,18 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                           Radio(
                             activeColor: Colors.blue,
                             groupValue: _novoPedStore.getDistDPASAEsqRadio(),
-                            onChanged: (value) {
-                              _removeFocus(context);
-                              if (_novoPedStore.getDistDPASAEsq() &&
-                                  _novoPedStore.getDistDPASupState() &&
-                                  _novoPedStore.getCorrigirApinSelecionado()) {
-                                _novoPedStore.setDistDPASAEsqRadio(value);
-                                _novoPedStore.setDistDPASAEsqOutros('');
-                              }
-                            },
+                            onChanged: widget.blockUi
+                                ? null
+                                : (value) {
+                                    _removeFocus(context);
+                                    if (_novoPedStore.getDistDPASAEsq() &&
+                                        _novoPedStore.getDistDPASupState() &&
+                                        _novoPedStore
+                                            .getCorrigirApinSelecionado()) {
+                                      _novoPedStore.setDistDPASAEsqRadio(value);
+                                      _novoPedStore.setDistDPASAEsqOutros('');
+                                    }
+                                  },
                             value: 2,
                           ),
                           Text(
@@ -631,15 +674,18 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                           Radio(
                             activeColor: Colors.blue,
                             groupValue: _novoPedStore.getDistDPASAEsqRadio(),
-                            onChanged: (value) {
-                              _removeFocus(context);
-                              if (_novoPedStore.getDistDPASAEsq() &&
-                                  _novoPedStore.getDistDPASupState() &&
-                                  _novoPedStore.getCorrigirApinSelecionado()) {
-                                _novoPedStore.setDistDPASAEsqRadio(value);
-                                _novoPedStore.setDistDPASAEsqOutros('');
-                              }
-                            },
+                            onChanged: widget.blockUi
+                                ? null
+                                : (value) {
+                                    _removeFocus(context);
+                                    if (_novoPedStore.getDistDPASAEsq() &&
+                                        _novoPedStore.getDistDPASupState() &&
+                                        _novoPedStore
+                                            .getCorrigirApinSelecionado()) {
+                                      _novoPedStore.setDistDPASAEsqRadio(value);
+                                      _novoPedStore.setDistDPASAEsqOutros('');
+                                    }
+                                  },
                             value: 3,
                           ),
                           Text(
@@ -657,14 +703,17 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                           Radio(
                             activeColor: Colors.blue,
                             groupValue: _novoPedStore.getDistDPASAEsqRadio(),
-                            onChanged: (value) {
-                              _removeFocus(context);
-                              if (_novoPedStore.getDistDPASAEsq() &&
-                                  _novoPedStore.getDistDPASupState() &&
-                                  _novoPedStore.getCorrigirApinSelecionado()) {
-                                _novoPedStore.setDistDPASAEsqRadio(value);
-                              }
-                            },
+                            onChanged: widget.blockUi
+                                ? null
+                                : (value) {
+                                    _removeFocus(context);
+                                    if (_novoPedStore.getDistDPASAEsq() &&
+                                        _novoPedStore.getDistDPASupState() &&
+                                        _novoPedStore
+                                            .getCorrigirApinSelecionado()) {
+                                      _novoPedStore.setDistDPASAEsqRadio(value);
+                                    }
+                                  },
                             value: 4,
                           ),
                           Text(
@@ -691,8 +740,12 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                   onSaved: (String value) {
                                     //sc.usernameCpf = value;
                                   },
-                                  enabled: _novoPedStore.getDistDPASAEsq() &&
-                                      _novoPedStore.getDistDPASAEsqRadio() == 4,
+                                  enabled: widget.blockUi
+                                      ? !widget.blockUi
+                                      : _novoPedStore.getDistDPASAEsq() &&
+                                          _novoPedStore
+                                                  .getDistDPASAEsqRadio() ==
+                                              4,
                                   validator: (value) {
                                     if (value.length < 0) {
                                       return 'Não valido.';
@@ -753,18 +806,22 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                   ),
                                 ),
                                 value: _novoPedStore.getDistDPASADir(),
-                                onChanged: (value) {
-                                  _removeFocus(context);
-                                  if (_novoPedStore
-                                          .getCorrigirApinSelecionado() &&
-                                      _novoPedStore.getDistDPASupState()) {
-                                    _novoPedStore.setDistDPASADir(value);
-                                    if (value == false) {
-                                      _novoPedStore.clearDistDPASADirFields(
-                                          clearParentCheckbox: false);
-                                    }
-                                  }
-                                },
+                                onChanged: widget.blockUi
+                                    ? null
+                                    : (value) {
+                                        _removeFocus(context);
+                                        if (_novoPedStore
+                                                .getCorrigirApinSelecionado() &&
+                                            _novoPedStore
+                                                .getDistDPASupState()) {
+                                          _novoPedStore.setDistDPASADir(value);
+                                          if (value == false) {
+                                            _novoPedStore
+                                                .clearDistDPASADirFields(
+                                                    clearParentCheckbox: false);
+                                          }
+                                        }
+                                      },
                                 activeColor: Colors.black12,
                                 checkColor: Colors.blue,
                               ),
@@ -779,15 +836,18 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                           Radio(
                             activeColor: Colors.blue,
                             groupValue: _novoPedStore.getDistDPASADirRadio(),
-                            onChanged: (value) {
-                              _removeFocus(context);
-                              if (_novoPedStore.getDistDPASADir() &&
-                                  _novoPedStore.getDistDPASupState() &&
-                                  _novoPedStore.getCorrigirApinSelecionado()) {
-                                _novoPedStore.setDistDPASADirRadio(value);
-                                _novoPedStore.setDistDPASADirOutros('');
-                              }
-                            },
+                            onChanged: widget.blockUi
+                                ? null
+                                : (value) {
+                                    _removeFocus(context);
+                                    if (_novoPedStore.getDistDPASADir() &&
+                                        _novoPedStore.getDistDPASupState() &&
+                                        _novoPedStore
+                                            .getCorrigirApinSelecionado()) {
+                                      _novoPedStore.setDistDPASADirRadio(value);
+                                      _novoPedStore.setDistDPASADirOutros('');
+                                    }
+                                  },
                             value: 1,
                           ),
                           Text(
@@ -805,15 +865,18 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                           Radio(
                             activeColor: Colors.blue,
                             groupValue: _novoPedStore.getDistDPASADirRadio(),
-                            onChanged: (value) {
-                              _removeFocus(context);
-                              if (_novoPedStore.getDistDPASADir() &&
-                                  _novoPedStore.getDistDPASupState() &&
-                                  _novoPedStore.getCorrigirApinSelecionado()) {
-                                _novoPedStore.setDistDPASADirRadio(value);
-                                _novoPedStore.setDistDPASADirOutros('');
-                              }
-                            },
+                            onChanged: widget.blockUi
+                                ? null
+                                : (value) {
+                                    _removeFocus(context);
+                                    if (_novoPedStore.getDistDPASADir() &&
+                                        _novoPedStore.getDistDPASupState() &&
+                                        _novoPedStore
+                                            .getCorrigirApinSelecionado()) {
+                                      _novoPedStore.setDistDPASADirRadio(value);
+                                      _novoPedStore.setDistDPASADirOutros('');
+                                    }
+                                  },
                             value: 2,
                           ),
                           Text(
@@ -836,15 +899,18 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                           Radio(
                             activeColor: Colors.blue,
                             groupValue: _novoPedStore.getDistDPASADirRadio(),
-                            onChanged: (value) {
-                              _removeFocus(context);
-                              if (_novoPedStore.getDistDPASADir() &&
-                                  _novoPedStore.getDistDPASupState() &&
-                                  _novoPedStore.getCorrigirApinSelecionado()) {
-                                _novoPedStore.setDistDPASADirRadio(value);
-                                _novoPedStore.setDistDPASADirOutros('');
-                              }
-                            },
+                            onChanged: widget.blockUi
+                                ? null
+                                : (value) {
+                                    _removeFocus(context);
+                                    if (_novoPedStore.getDistDPASADir() &&
+                                        _novoPedStore.getDistDPASupState() &&
+                                        _novoPedStore
+                                            .getCorrigirApinSelecionado()) {
+                                      _novoPedStore.setDistDPASADirRadio(value);
+                                      _novoPedStore.setDistDPASADirOutros('');
+                                    }
+                                  },
                             value: 3,
                           ),
                           Text(
@@ -862,14 +928,17 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                           Radio(
                             activeColor: Colors.blue,
                             groupValue: _novoPedStore.getDistDPASADirRadio(),
-                            onChanged: (value) {
-                              _removeFocus(context);
-                              if (_novoPedStore.getDistDPASADir() &&
-                                  _novoPedStore.getDistDPASupState() &&
-                                  _novoPedStore.getCorrigirApinSelecionado()) {
-                                _novoPedStore.setDistDPASADirRadio(value);
-                              }
-                            },
+                            onChanged: widget.blockUi
+                                ? null
+                                : (value) {
+                                    _removeFocus(context);
+                                    if (_novoPedStore.getDistDPASADir() &&
+                                        _novoPedStore.getDistDPASupState() &&
+                                        _novoPedStore
+                                            .getCorrigirApinSelecionado()) {
+                                      _novoPedStore.setDistDPASADirRadio(value);
+                                    }
+                                  },
                             value: 4,
                           ),
                           Text(
@@ -896,8 +965,12 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                   onSaved: (String value) {
                                     //sc.usernameCpf = value;
                                   },
-                                  enabled: _novoPedStore.getDistDPASADir() &&
-                                      _novoPedStore.getDistDPASADirRadio() == 4,
+                                  enabled: widget.blockUi
+                                      ? !widget.blockUi
+                                      : _novoPedStore.getDistDPASADir() &&
+                                          _novoPedStore
+                                                  .getDistDPASADirRadio() ==
+                                              4,
                                   validator: (value) {
                                     if (value.length < 0) {
                                       return 'Não valido.';
@@ -958,18 +1031,23 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                   ),
                                 ),
                                 value: _novoPedStore.getDistDPASADesInter(),
-                                onChanged: (value) {
-                                  _removeFocus(context);
-                                  if (_novoPedStore
-                                          .getCorrigirApinSelecionado() &&
-                                      _novoPedStore.getDistDPASupState()) {
-                                    _novoPedStore.setDistDPASADesInter(value);
-                                    if (value == false) {
-                                      _novoPedStore.clearDistDPASADesInter(
-                                          clearParentCheckbox: false);
-                                    }
-                                  }
-                                },
+                                onChanged: widget.blockUi
+                                    ? null
+                                    : (value) {
+                                        _removeFocus(context);
+                                        if (_novoPedStore
+                                                .getCorrigirApinSelecionado() &&
+                                            _novoPedStore
+                                                .getDistDPASupState()) {
+                                          _novoPedStore
+                                              .setDistDPASADesInter(value);
+                                          if (value == false) {
+                                            _novoPedStore
+                                                .clearDistDPASADesInter(
+                                                    clearParentCheckbox: false);
+                                          }
+                                        }
+                                      },
                                 activeColor: Colors.black12,
                                 checkColor: Colors.blue,
                               ),
@@ -985,15 +1063,20 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                             activeColor: Colors.blue,
                             groupValue:
                                 _novoPedStore.getDistDPASADesInterRadio(),
-                            onChanged: (value) {
-                              _removeFocus(context);
-                              if (_novoPedStore.getDistDPASADesInter() &&
-                                  _novoPedStore.getDistDPASupState() &&
-                                  _novoPedStore.getCorrigirApinSelecionado()) {
-                                _novoPedStore.setDistDPASADesInterRadio(value);
-                                _novoPedStore.setDistDPASADesInterOutros('');
-                              }
-                            },
+                            onChanged: widget.blockUi
+                                ? null
+                                : (value) {
+                                    _removeFocus(context);
+                                    if (_novoPedStore.getDistDPASADesInter() &&
+                                        _novoPedStore.getDistDPASupState() &&
+                                        _novoPedStore
+                                            .getCorrigirApinSelecionado()) {
+                                      _novoPedStore
+                                          .setDistDPASADesInterRadio(value);
+                                      _novoPedStore
+                                          .setDistDPASADesInterOutros('');
+                                    }
+                                  },
                             value: 1,
                           ),
                           Text(
@@ -1012,15 +1095,20 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                             activeColor: Colors.blue,
                             groupValue:
                                 _novoPedStore.getDistDPASADesInterRadio(),
-                            onChanged: (value) {
-                              _removeFocus(context);
-                              if (_novoPedStore.getDistDPASADesInter() &&
-                                  _novoPedStore.getDistDPASupState() &&
-                                  _novoPedStore.getCorrigirApinSelecionado()) {
-                                _novoPedStore.setDistDPASADesInterRadio(value);
-                                _novoPedStore.setDistDPASADesInterOutros('');
-                              }
-                            },
+                            onChanged: widget.blockUi
+                                ? null
+                                : (value) {
+                                    _removeFocus(context);
+                                    if (_novoPedStore.getDistDPASADesInter() &&
+                                        _novoPedStore.getDistDPASupState() &&
+                                        _novoPedStore
+                                            .getCorrigirApinSelecionado()) {
+                                      _novoPedStore
+                                          .setDistDPASADesInterRadio(value);
+                                      _novoPedStore
+                                          .setDistDPASADesInterOutros('');
+                                    }
+                                  },
                             value: 2,
                           ),
                           Text(
@@ -1044,15 +1132,20 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                             activeColor: Colors.blue,
                             groupValue:
                                 _novoPedStore.getDistDPASADesInterRadio(),
-                            onChanged: (value) {
-                              _removeFocus(context);
-                              if (_novoPedStore.getDistDPASADesInter() &&
-                                  _novoPedStore.getDistDPASupState() &&
-                                  _novoPedStore.getCorrigirApinSelecionado()) {
-                                _novoPedStore.setDistDPASADesInterRadio(value);
-                                _novoPedStore.setDistDPASADesInterOutros('');
-                              }
-                            },
+                            onChanged: widget.blockUi
+                                ? null
+                                : (value) {
+                                    _removeFocus(context);
+                                    if (_novoPedStore.getDistDPASADesInter() &&
+                                        _novoPedStore.getDistDPASupState() &&
+                                        _novoPedStore
+                                            .getCorrigirApinSelecionado()) {
+                                      _novoPedStore
+                                          .setDistDPASADesInterRadio(value);
+                                      _novoPedStore
+                                          .setDistDPASADesInterOutros('');
+                                    }
+                                  },
                             value: 3,
                           ),
                           Text(
@@ -1071,14 +1164,18 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                             activeColor: Colors.blue,
                             groupValue:
                                 _novoPedStore.getDistDPASADesInterRadio(),
-                            onChanged: (value) {
-                              _removeFocus(context);
-                              if (_novoPedStore.getDistDPASADesInter() &&
-                                  _novoPedStore.getDistDPASupState() &&
-                                  _novoPedStore.getCorrigirApinSelecionado()) {
-                                _novoPedStore.setDistDPASADesInterRadio(value);
-                              }
-                            },
+                            onChanged: widget.blockUi
+                                ? null
+                                : (value) {
+                                    _removeFocus(context);
+                                    if (_novoPedStore.getDistDPASADesInter() &&
+                                        _novoPedStore.getDistDPASupState() &&
+                                        _novoPedStore
+                                            .getCorrigirApinSelecionado()) {
+                                      _novoPedStore
+                                          .setDistDPASADesInterRadio(value);
+                                    }
+                                  },
                             value: 4,
                           ),
                           Text(
@@ -1106,11 +1203,12 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                   onSaved: (String value) {
                                     //sc.usernameCpf = value;
                                   },
-                                  enabled: _novoPedStore
-                                          .getDistDPASADesInter() &&
-                                      _novoPedStore
-                                              .getDistDPASADesInterRadio() ==
-                                          4,
+                                  enabled: widget.blockUi
+                                      ? !widget.blockUi
+                                      : _novoPedStore.getDistDPASADesInter() &&
+                                          _novoPedStore
+                                                  .getDistDPASADesInterRadio() ==
+                                              4,
                                   validator: (value) {
                                     if (value.length < 0) {
                                       return 'Não valido.';
