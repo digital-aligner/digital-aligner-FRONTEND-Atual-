@@ -450,9 +450,11 @@ class _PedidoFormState extends State<PedidoForm> {
                     thickness: 2,
                   ),
                 ),
+
                 //MODELO NEMO
-                if (widget.isEditarPedido) const SizedBox(height: 40),
-                if (widget.isEditarPedido)
+                if (widget.isEditarPedido && _authStore.role != 'Credenciado')
+                  const SizedBox(height: 40),
+                if (widget.isEditarPedido && _authStore.role != 'Credenciado')
                   DropdownSearch<String>(
                     errorBuilder: (context, searchEntry, exception) {
                       return Center(child: const Text('Algum erro ocorreu.'));
@@ -531,8 +533,9 @@ class _PedidoFormState extends State<PedidoForm> {
                             ),
                   ),
                 if (widget.isEditarPedido) const SizedBox(height: 10),
-                if (widget.isEditarPedido) _modeloNemo(),
-                if (widget.isEditarPedido)
+                if (widget.isEditarPedido && _authStore.role != 'Credenciado')
+                  _modeloNemo(),
+                if (widget.isEditarPedido && _authStore.role != 'Credenciado')
                   const SizedBox(
                     height: 50,
                     child: const Divider(

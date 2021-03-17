@@ -94,16 +94,38 @@ class _EditarCadastroState extends State<EditarCadastro> {
   CadastroProvider cadastroStore;
   CadastroModel sc;
 
-  //For country json mapping
-  //final _country = COUNTRY.country;
-  //Depends on country
-  List<String> _state;
+  //countrys and states data list
+  List<dynamic> _countryAndStates;
 
   //Representantes data list
   List<dynamic> _representantes;
 
   //onboarding data list
   List<dynamic> _onboardings;
+
+  Future<List<dynamic>> fetchCountrysAndStates() async {
+    //Fetch data if last fetch was with error
+    if (_countryAndStates != null &&
+        !_countryAndStates[0].containsKey('error')) {
+      return _representantes;
+    }
+    Map<String, String> requestHeaders = {
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${authStore.token}',
+    };
+
+    try {
+      final response = await http.get(
+        RotasUrl.rotaGetPaisesAndState,
+        headers: requestHeaders,
+      );
+      _countryAndStates = json.decode(response.body);
+    } catch (error) {
+      print(error.toString());
+    }
+    return _countryAndStates;
+  }
 
   Future<List<dynamic>> fetchRepresentantes() async {
     //Fetch cadistas if last fetch was with error
@@ -391,25 +413,98 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                     Container(
                                       height: 80,
                                       child: DropdownSearch<String>(
-                                          onSaved: (String value) {
-                                            sc.cro_uf = value;
-                                          },
-                                          dropdownSearchDecoration:
-                                              InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            contentPadding: EdgeInsets.fromLTRB(
-                                                10, 10, 10, 10),
-                                          ),
-                                          mode: Mode.MENU,
-                                          showSearchBox: true,
-                                          showSelectedItem: true,
-                                          items: _state,
-                                          label: 'CRO (UF): *',
-                                          //hint: 'country in menu mode',
-                                          popupItemDisabled: (String
-                                              s) => /*s.startsWith('I')*/ null,
-                                          onChanged: (value) {},
-                                          selectedItem: sc.cro_uf),
+                                        errorBuilder:
+                                            (context, searchEntry, exception) {
+                                          return Center(
+                                              child: const Text(
+                                                  'Algum erro ocorreu.'));
+                                        },
+                                        emptyBuilder: (context, searchEntry) {
+                                          return Center(
+                                              child: const Text('Nada'));
+                                        },
+                                        loadingBuilder: (context, searchEntry) {
+                                          return Center(
+                                            child: CircularProgressIndicator(
+                                              valueColor:
+                                                  new AlwaysStoppedAnimation<
+                                                      Color>(
+                                                Colors.blue,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        onFind: (_) async {
+                                          await fetchCountrysAndStates();
+                                          //Error handling
+                                          if (_countryAndStates[0]
+                                              .containsKey('error')) {
+                                            if (_countryAndStates[0]
+                                                    ['statusCode'] !=
+                                                404) {
+                                              //Will go to errorBuilder
+                                              throw Error();
+                                            } else {
+                                              //Will go to emptyBuilder
+                                              return null;
+                                            }
+                                          }
+                                          List<String> _croUfUi = [];
+                                          //Check countries for matching uf and return the ufs
+                                          for (var _pais in _countryAndStates) {
+                                            if (_pais['pais'] == 'Portugal') {
+                                              for (var _estado in _pais[
+                                                  'estado_portugals']) {
+                                                if (_estado['estado'] ==
+                                                    sc.cro_uf) {
+                                                  for (var _estado in _pais[
+                                                      'estado_portugals']) {
+                                                    _croUfUi.add(
+                                                      _estado['estado'],
+                                                    );
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                          for (var _pais in _countryAndStates) {
+                                            if (_pais['pais'] == 'Brasil') {
+                                              for (var _estado
+                                                  in _pais['estado_brasils']) {
+                                                if (_estado['estado'] ==
+                                                    sc.cro_uf) {
+                                                  for (var _estado in _pais[
+                                                      'estado_brasils']) {
+                                                    _croUfUi.add(
+                                                      _estado['estado'],
+                                                    );
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+
+                                          return _croUfUi;
+                                        },
+                                        onSaved: (String value) {
+                                          sc.cro_uf = value;
+                                        },
+                                        dropdownSearchDecoration:
+                                            InputDecoration(
+                                          border: OutlineInputBorder(),
+                                          contentPadding: EdgeInsets.fromLTRB(
+                                              10, 10, 10, 10),
+                                        ),
+                                        mode: Mode.MENU,
+                                        showSearchBox: true,
+                                        showSelectedItem: true,
+                                        label: 'CRO (UF): *',
+                                        //hint: 'country in menu mode',
+                                        popupItemDisabled: (String
+                                            s) => /*s.startsWith('I')*/ null,
+                                        onChanged: (value) {},
+                                        selectedItem: sc.cro_uf,
+                                      ),
                                     ),
                                     const SizedBox(height: 10),
                                     Container(
@@ -433,176 +528,183 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                     ),
                                     const SizedBox(height: 10),
                                     //representante
-                                    DropdownSearch<String>(
-                                      label: 'Representante:',
-                                      errorBuilder:
-                                          (context, searchEntry, exception) {
-                                        return Center(
-                                            child: const Text(
-                                                'Algum erro ocorreu.'));
-                                      },
-                                      emptyBuilder: (context, searchEntry) {
-                                        return Center(
-                                            child: const Text('Nada'));
-                                      },
-                                      loadingBuilder: (context, searchEntry) {
-                                        return Center(
-                                          child: CircularProgressIndicator(
-                                            valueColor:
-                                                new AlwaysStoppedAnimation<
-                                                    Color>(
-                                              Colors.blue,
+                                    if (authStore.role != 'Credenciado')
+                                      DropdownSearch<String>(
+                                        label: 'Representante:',
+                                        errorBuilder:
+                                            (context, searchEntry, exception) {
+                                          return Center(
+                                              child: const Text(
+                                                  'Algum erro ocorreu.'));
+                                        },
+                                        emptyBuilder: (context, searchEntry) {
+                                          return Center(
+                                              child: const Text('Nada'));
+                                        },
+                                        loadingBuilder: (context, searchEntry) {
+                                          return Center(
+                                            child: CircularProgressIndicator(
+                                              valueColor:
+                                                  new AlwaysStoppedAnimation<
+                                                      Color>(
+                                                Colors.blue,
+                                              ),
                                             ),
-                                          ),
-                                        );
-                                      },
-                                      onFind: (_) async {
-                                        await fetchRepresentantes();
-                                        //Error handling
-                                        if (_representantes[0]
-                                            .containsKey('error')) {
+                                          );
+                                        },
+                                        onFind: (_) async {
+                                          await fetchRepresentantes();
+                                          //Error handling
                                           if (_representantes[0]
-                                                  ['statusCode'] !=
-                                              404) {
-                                            //Will go to errorBuilder
-                                            throw Error();
-                                          } else {
-                                            //Will go to emptyBuilder
-                                            return null;
+                                              .containsKey('error')) {
+                                            if (_representantes[0]
+                                                    ['statusCode'] !=
+                                                404) {
+                                              //Will go to errorBuilder
+                                              throw Error();
+                                            } else {
+                                              //Will go to emptyBuilder
+                                              return null;
+                                            }
                                           }
-                                        }
-                                        List<String> _repUi = [];
-                                        for (var _representante
-                                            in _representantes) {
-                                          _repUi.add(
-                                            _representante['nome'] +
+                                          List<String> _repUi = [];
+                                          for (var _representante
+                                              in _representantes) {
+                                            _repUi.add(
+                                              _representante['nome'] +
+                                                  ' ' +
+                                                  _representante['sobrenome'] +
+                                                  ' | ' +
+                                                  _formatCpf(_representante[
+                                                      'username']),
+                                            );
+                                          }
+                                          return _repUi;
+                                        },
+                                        dropdownSearchDecoration:
+                                            InputDecoration(
+                                          border: OutlineInputBorder(),
+                                          contentPadding: EdgeInsets.fromLTRB(
+                                              10, 10, 10, 10),
+                                        ),
+                                        maxHeight: 350,
+                                        mode: Mode.MENU,
+                                        showSearchBox: true,
+                                        showSelectedItem: true,
+                                        //items: _enderecoUiList,
+                                        //label: 'UF: *',
+                                        //hint: 'UF: *',
+                                        popupItemDisabled: (String
+                                            s) => /*s.startsWith('I')*/ null,
+                                        onChanged: (value) {
+                                          String _selectedCpf =
+                                              _getCpfFromSelectedValue(value);
+                                          //Match with list of representantes cpf
+                                          for (var _representante
+                                              in _representantes) {
+                                            if (_representante['username'] ==
+                                                _selectedCpf) {
+                                              sc.representante =
+                                                  RepresentanteModel.fromJson(
+                                                _representante,
+                                              );
+                                            }
+                                          }
+                                        },
+                                        selectedItem: sc.representante.id == -1
+                                            ? 'selecione um representante'
+                                            : sc.representante.nome +
                                                 ' ' +
-                                                _representante['sobrenome'] +
+                                                sc.representante.sobrenome +
                                                 ' | ' +
                                                 _formatCpf(
-                                                    _representante['username']),
-                                          );
-                                        }
-                                        return _repUi;
-                                      },
-                                      dropdownSearchDecoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        contentPadding:
-                                            EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                                  sc.representante.usernameCpf,
+                                                ),
                                       ),
-                                      maxHeight: 350,
-                                      mode: Mode.MENU,
-                                      showSearchBox: true,
-                                      showSelectedItem: true,
-                                      //items: _enderecoUiList,
-                                      //label: 'UF: *',
-                                      //hint: 'UF: *',
-                                      popupItemDisabled: (String
-                                          s) => /*s.startsWith('I')*/ null,
-                                      onChanged: (value) {
-                                        String _selectedCpf =
-                                            _getCpfFromSelectedValue(value);
-                                        //Match with list of representantes cpf
-                                        for (var _representante
-                                            in _representantes) {
-                                          if (_representante['username'] ==
-                                              _selectedCpf) {
-                                            sc.representante =
-                                                RepresentanteModel.fromJson(
-                                              _representante,
-                                            );
-                                          }
-                                        }
-                                      },
-                                      selectedItem: sc.representante.id == -1
-                                          ? 'selecione um representante'
-                                          : sc.representante.nome +
-                                              ' ' +
-                                              sc.representante.sobrenome +
-                                              ' | ' +
-                                              _formatCpf(
-                                                sc.representante.usernameCpf,
-                                              ),
-                                    ),
-                                    const SizedBox(height: 40),
+                                    if (authStore.role != 'Credenciado')
+                                      const SizedBox(height: 40),
                                     //onboarding
-                                    DropdownSearch<String>(
-                                      label: 'Onboarding:',
-                                      errorBuilder:
-                                          (context, searchEntry, exception) {
-                                        return Center(
-                                          child:
-                                              const Text('Algum erro ocorreu.'),
-                                        );
-                                      },
-                                      emptyBuilder: (context, searchEntry) {
-                                        return Center(
-                                            child: const Text('Nada'));
-                                      },
-                                      loadingBuilder: (context, searchEntry) {
-                                        return Center(
-                                          child: CircularProgressIndicator(
-                                            valueColor:
-                                                new AlwaysStoppedAnimation<
-                                                    Color>(
-                                              Colors.blue,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      onFind: (_) async {
-                                        await fetchOnboarding();
-
-                                        //Error handling
-                                        if (_onboardings[0]
-                                            .containsKey('error')) {
-                                          if (_onboardings[0]['statusCode'] !=
-                                              404) {
-                                            //Will go to errorBuilder
-                                            throw Error();
-                                          } else {
-                                            //Will go to emptyBuilder
-                                            return null;
-                                          }
-                                        }
-                                        List<String> _onboardingUi = [];
-                                        for (var _onboarding in _onboardings) {
-                                          _onboardingUi.add(
-                                            _onboarding['onboarding'],
+                                    if (authStore.role != 'Credenciado')
+                                      DropdownSearch<String>(
+                                        label: 'Onboarding:',
+                                        errorBuilder:
+                                            (context, searchEntry, exception) {
+                                          return Center(
+                                            child: const Text(
+                                                'Algum erro ocorreu.'),
                                           );
-                                        }
-                                        return _onboardingUi;
-                                      },
-                                      dropdownSearchDecoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        contentPadding:
-                                            EdgeInsets.fromLTRB(10, 10, 10, 10),
-                                      ),
-                                      maxHeight: 350,
-                                      mode: Mode.MENU,
-                                      showSearchBox: true,
-                                      showSelectedItem: true,
-                                      //items: _enderecoUiList,
-                                      //label: 'UF: *',
-                                      //hint: 'UF: *',
-                                      popupItemDisabled: (String
-                                          s) => /*s.startsWith('I')*/ null,
-                                      onChanged: (value) {
-                                        //Match with list of representantes cpf
-                                        for (var _onboarding in _onboardings) {
-                                          if (_onboarding['onboarding'] ==
-                                              value) {
-                                            sc.onboarding =
-                                                OnboardingModel.fromJson(
-                                              _onboarding,
+                                        },
+                                        emptyBuilder: (context, searchEntry) {
+                                          return Center(
+                                              child: const Text('Nada'));
+                                        },
+                                        loadingBuilder: (context, searchEntry) {
+                                          return Center(
+                                            child: CircularProgressIndicator(
+                                              valueColor:
+                                                  new AlwaysStoppedAnimation<
+                                                      Color>(
+                                                Colors.blue,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        onFind: (_) async {
+                                          await fetchOnboarding();
+
+                                          //Error handling
+                                          if (_onboardings[0]
+                                              .containsKey('error')) {
+                                            if (_onboardings[0]['statusCode'] !=
+                                                404) {
+                                              //Will go to errorBuilder
+                                              throw Error();
+                                            } else {
+                                              //Will go to emptyBuilder
+                                              return null;
+                                            }
+                                          }
+                                          List<String> _onboardingUi = [];
+                                          for (var _onboarding
+                                              in _onboardings) {
+                                            _onboardingUi.add(
+                                              _onboarding['onboarding'],
                                             );
                                           }
-                                        }
-                                      },
-                                      selectedItem: sc.onboarding.id == -1
-                                          ? 'Selecionar qual onboarding participou'
-                                          : sc.onboarding.onboarding,
-                                    ),
+                                          return _onboardingUi;
+                                        },
+                                        dropdownSearchDecoration:
+                                            InputDecoration(
+                                          border: OutlineInputBorder(),
+                                          contentPadding: EdgeInsets.fromLTRB(
+                                              10, 10, 10, 10),
+                                        ),
+                                        maxHeight: 350,
+                                        mode: Mode.MENU,
+                                        showSearchBox: true,
+                                        showSelectedItem: true,
+                                        //items: _enderecoUiList,
+                                        //label: 'UF: *',
+                                        //hint: 'UF: *',
+                                        popupItemDisabled: (String
+                                            s) => /*s.startsWith('I')*/ null,
+                                        onChanged: (value) {
+                                          //Match with list of representantes cpf
+                                          for (var _onboarding
+                                              in _onboardings) {
+                                            if (_onboarding['onboarding'] ==
+                                                value) {
+                                              sc.onboarding =
+                                                  OnboardingModel.fromJson(
+                                                _onboarding,
+                                              );
+                                            }
+                                          }
+                                        },
+                                        selectedItem: sc.onboarding.id == -1
+                                            ? 'Selecionar qual onboarding participou'
+                                            : sc.onboarding.onboarding,
+                                      ),
 
                                     const Divider(
                                       height: 75,
