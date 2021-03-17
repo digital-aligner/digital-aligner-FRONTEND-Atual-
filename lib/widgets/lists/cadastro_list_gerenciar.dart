@@ -482,7 +482,48 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                         Icons.engineering,
                       )),
                 ),
-                const SizedBox(width: 130),
+                Container(
+                  width: 270,
+                  height: 50,
+                  child: SwitchListTile(
+                      activeColor: Colors.blue,
+                      title: const Text('Representante?'),
+                      value: cadList[index]['is_representante'],
+                      onChanged: (bool value) {
+                        cadastroStore
+                            .sendRepresentanteState(cadList[index]['id'], value)
+                            .then((data) {
+                          if (!data.containsKey('error')) {
+                            ScaffoldMessenger.of(context)
+                                .removeCurrentSnackBar();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 8),
+                                content: value
+                                    ? const Text(
+                                        'Acesso de representante liberado!',
+                                      )
+                                    : const Text(
+                                        'Acesso de representante removido!',
+                                      ),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context)
+                                .removeCurrentSnackBar();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 8),
+                                content: const Text('Algo deu errado'),
+                              ),
+                            );
+                          }
+                        });
+                      },
+                      secondary: const Icon(
+                        Icons.supervisor_account,
+                      )),
+                ),
                 TextButton(
                   child: const Text("Aprovar"),
                   onPressed: () {

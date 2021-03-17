@@ -1,6 +1,8 @@
+import 'package:digital_aligner_app/dados/models/cadastro/onboarding_model.dart';
+
 import './aprovacao_usuario_model.dart';
 import './role_model.dart';
-import 'cadastro_endereco_model.dart';
+import 'representante_model.dart';
 
 class CadastroModel {
   int id;
@@ -16,6 +18,8 @@ class CadastroModel {
   String telefone;
   String celular;
   AprovacaoUsuarioModel aprovacao_usuario;
+  RepresentanteModel representante;
+  OnboardingModel onboarding;
 
   CadastroModel({
     this.id,
@@ -31,6 +35,8 @@ class CadastroModel {
     this.telefone,
     this.celular,
     this.aprovacao_usuario,
+    this.representante,
+    this.onboarding,
   });
 
   factory CadastroModel.fromJson(Map<String, dynamic> data) {
@@ -50,6 +56,31 @@ class CadastroModel {
       aprovacao_usuario: AprovacaoUsuarioModel.fromJson(
         data['aprovacao_usuario'],
       ),
+      representante: RepresentanteModel.fromJson(
+        data['representante'] ??
+            {
+              'id': -1,
+              'username': '',
+              'email': '',
+              'blocked': false,
+              'role': {'id': -1, 'name': ''},
+              'nome': '',
+              'sobrenome': '',
+              'cro_uf': '',
+              'cro_num': '',
+              'data_nasc': '',
+              'telefone': '',
+              'celular': '',
+              'aprovacao_usuario': {'id': -1, 'status': ''},
+            },
+      ),
+      onboarding: OnboardingModel.fromJson(
+        data['onboarding'] ??
+            {
+              'id': -1,
+              'onboarding': '',
+            },
+      ),
     );
   }
 
@@ -68,6 +99,8 @@ class CadastroModel {
       'telefone': telefone,
       'celular': celular,
       'aprovacao_usuario': aprovacao_usuario.toJson(),
+      'representante': representante.toJson(),
+      'onboarding': onboarding.toJson(),
     };
   }
 }

@@ -7,6 +7,8 @@ class RotasUrl {
   static const rotaCadastro = rotaBase + 'users/';
   static const rotaPedidosAprovados = rotaBase + 'pedidos-aprovados/';
   static const rotaCadistas = rotaBase + 'cadistas/';
+  static const rotaRepresentantes = rotaBase + 'representantes/';
+  static const rotaOnboardings = rotaBase + 'onboardings/';
   static const rotaCadastrosAprovados = rotaBase + 'cadastros-aprovados/';
   static const rotaCadastrosAguardando = rotaBase + 'cadastros-aguardando/';
   static const rotaCadastrosNegado = rotaBase + 'cadastros-negado/';

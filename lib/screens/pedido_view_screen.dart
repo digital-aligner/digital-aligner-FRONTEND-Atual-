@@ -371,14 +371,29 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
     double _sWidth,
     double _sHeight,
   ) {
-    if (pedList[index]['']) {
+    if (pedList[index]['modelo_nemo']['modelo_nemo'] == null) {
       return Container(
         width: 300,
         child: ElevatedButton(
           child: const Text(
-            'RELATÓRIO NÃO FINALIZADO',
+            'SEM MODELO NEMO',
           ),
-          onPressed: () {},
+          onPressed: null,
+        ),
+      );
+    } else {
+      return Container(
+        width: 300,
+        child: ElevatedButton(
+          child: const Text(
+            'BAIXAR MODELO NEMO',
+          ),
+          onPressed: () async {
+            String nemo = pedList[index]['modelo_nemo']['modelo_nemo'];
+            if (nemo.contains('http')) {
+              await launch(nemo);
+            }
+          },
         ),
       );
     }
@@ -626,13 +641,14 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                         sHeight,
                         pedList[index]['codigo_pedido'],
                       ),
-                    /*
-                    _manageNemoBtn(
-                      context,
-                      index,
-                      sWidth,
-                      sHeight,
-                    ), */
+                    const SizedBox(height: 20),
+                    if (_authStore.role != 'Credenciado')
+                      _manageNemoBtn(
+                        context,
+                        index,
+                        sWidth,
+                        sHeight,
+                      ),
                     _optionsBtns(
                       context,
                       index,

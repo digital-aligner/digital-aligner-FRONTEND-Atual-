@@ -1,8 +1,5 @@
 import 'dart:convert';
 
-import '../dados/models/cadastro/aprovacao_usuario_model.dart';
-import '../dados/models/cadastro/role_model.dart';
-
 import '../dados/models/cadastro/cadastro_model.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -83,49 +80,12 @@ class CadastroProvider with ChangeNotifier {
   }
 
   void setSelectedCad(int index) {
-    _selectedCad = CadastroModel(
-      id: _cadastros[index]['id'],
-      usernameCpf: _cadastros[index]['username'],
-      email: _cadastros[index]['email'],
-      blocked: _cadastros[index]['blocked'],
-      role: RoleModel(
-          id: _cadastros[index]['role']['id'],
-          name: _cadastros[index]['role']['name']),
-      nome: _cadastros[index]['nome'],
-      sobrenome: _cadastros[index]['sobrenome'],
-      cro_uf: _cadastros[index]['cro_uf'],
-      cro_num: _cadastros[index]['cro_num'],
-      data_nasc: _cadastros[index]['data_nasc'],
-      telefone: _cadastros[index]['telefone'],
-      celular: _cadastros[index]['celular'],
-      aprovacao_usuario: AprovacaoUsuarioModel(
-          id: _cadastros[index]['aprovacao_usuario']['id'],
-          status: _cadastros[index]['aprovacao_usuario']['status']),
-    );
+    print(_cadastros[index]);
+    _selectedCad = CadastroModel.fromJson(_cadastros[index]);
   }
 
   void setMyCad(List<dynamic> data) {
-    _selectedCad = CadastroModel(
-      id: data[0]['id'],
-      usernameCpf: data[0]['username'],
-      email: data[0]['email'],
-      blocked: data[0]['blocked'],
-      role: RoleModel(
-        id: data[0]['role']['id'],
-        name: data[0]['role']['name'],
-      ),
-      nome: data[0]['nome'],
-      sobrenome: data[0]['sobrenome'],
-      cro_uf: data[0]['cro_uf'],
-      cro_num: data[0]['cro_num'],
-      data_nasc: data[0]['data_nasc'],
-      telefone: data[0]['telefone'],
-      celular: data[0]['celular'],
-      aprovacao_usuario: AprovacaoUsuarioModel(
-        id: data[0]['aprovacao_usuario']['id'],
-        status: data[0]['aprovacao_usuario']['status'],
-      ),
-    );
+    _selectedCad = CadastroModel.fromJson(data[0]);
   }
 
   Future<List<dynamic>> fetchMyCadastro() async {
@@ -275,6 +235,34 @@ class CadastroProvider with ChangeNotifier {
         body: json.encode(
           {
             'is_cadista': value,
+          },
+        ),
+      );
+      Map responseData = json.decode(response.body);
+
+      clearCadastrosAndUpdate();
+      return responseData;
+    } catch (error) {
+      print('Error! Status code: ' + error.toString());
+    }
+  }
+
+  Future<dynamic> sendRepresentanteState(int id, bool value) async {
+    String url = RotasUrl.rotaCadastro + id.toString();
+
+    Map<String, String> requestHeaders = {
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $_token',
+    };
+
+    try {
+      final response = await http.put(
+        url,
+        headers: requestHeaders,
+        body: json.encode(
+          {
+            'is_representante': value,
           },
         ),
       );
