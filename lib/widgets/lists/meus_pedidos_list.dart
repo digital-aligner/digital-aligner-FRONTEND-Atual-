@@ -25,7 +25,7 @@ class MeusPedidosList extends StatefulWidget {
 
 class _MeusPedidosListState extends State<MeusPedidosList> {
   PedidosListProvider _pedidosListStore;
-
+  AuthProvider _authStore;
   List<dynamic> pedList;
   // ----- For flutter web scroll -------
   ScrollController _scrollController2 = ScrollController();
@@ -119,13 +119,15 @@ class _MeusPedidosListState extends State<MeusPedidosList> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              Expanded(
-                child: Text(
-                  '${pedList[index]['status_pedido']['status'] ?? '-'}',
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
+              if (_authStore.role != 'Credenciado')
+                Expanded(
+                  child: Text(
+                    '${pedList[index]['status_pedido']['status'] ?? '-'}',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
+
               /*
               Expanded(
                 child: Text(
@@ -151,6 +153,7 @@ class _MeusPedidosListState extends State<MeusPedidosList> {
   @override
   Widget build(BuildContext context) {
     _pedidosListStore = Provider.of<PedidosListProvider>(context);
+    _authStore = Provider.of<AuthProvider>(context);
 
     pedList = _pedidosListStore.getPedidosList();
     final double sWidth = MediaQuery.of(context).size.width;

@@ -22,6 +22,7 @@ class PrimeiroCadastro extends StatefulWidget {
 class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
   AuthProvider _authStore;
   bool firstFetch = true;
+  bool _sendingCadastro = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // ----- For flutter web scroll -------
@@ -608,6 +609,9 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 if (value.length == 0) {
                                   return 'Por favor insira sua senha';
                                 }
+                                if (value.length < 6) {
+                                  return 'A senha deve ter no mínimo 6 caracteres';
+                                }
                                 if (value != _passwordConfirm) {
                                   return 'Senhas não correspondem';
                                 }
@@ -667,41 +671,58 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
         Container(
           width: 300,
           child: ElevatedButton(
-            child: const Text(
-              'ENVIAR INFORMAÇÕES',
-              style: const TextStyle(
-                color: Colors.white,
-              ),
-            ),
-            onPressed: () {
-              if (_formKey.currentState.validate()) {
-                _formKey.currentState.save();
-                _enviarCadastro().then((data) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(seconds: 3),
-                      content: Text(
-                        data['message'],
-                        textAlign: TextAlign.center,
-                      ),
+            child: !_sendingCadastro
+                ? const Text(
+                    'ENVIAR INFORMAÇÕES',
+                    style: const TextStyle(
+                      color: Colors.white,
                     ),
-                  );
-                  if (data['statusCode'] == 200) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 8),
-                        content: Text(
-                          data[
-                              'Seu cadastro está sendo averiguado e será aprovado em até 48h.'],
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    );
-                    Navigator.pop(context);
+                  )
+                : CircularProgressIndicator(
+                    valueColor: new AlwaysStoppedAnimation<Color>(
+                      Colors.blue,
+                    ),
+                  ),
+            onPressed: !_sendingCadastro
+                ? () {
+                    if (_formKey.currentState.validate()) {
+                      _formKey.currentState.save();
+                      setState(() {
+                        _sendingCadastro = true;
+                      });
+                      _enviarCadastro().then((data) {
+                        print(data);
+                        if (data['statusCode'] == 200) {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 5),
+                              content: Text(
+                                'Seu cadastro está sendo averiguado e será aprovado em até 48h.',
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          );
+                          Navigator.pop(context);
+                        } else {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 3),
+                              content: Text(
+                                data['message'],
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          );
+                        }
+                        setState(() {
+                          _sendingCadastro = false;
+                        });
+                      });
+                    }
                   }
-                });
-              }
-            },
+                : null,
           ),
         ),
         const SizedBox(

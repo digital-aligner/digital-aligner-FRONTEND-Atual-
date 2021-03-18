@@ -6,6 +6,7 @@ import 'package:digital_aligner_app/providers/cadastro_provider.dart';
 import 'package:digital_aligner_app/screens/login_screen.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 
@@ -139,7 +140,9 @@ class _PerfilState extends State<Perfil> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(data[0]['data_nasc']) ?? '',
+              child: Text(DateFormat('dd/MM/yyyy')
+                      .format(DateTime.parse(data[0]['data_nasc'])) ??
+                  ''),
             ),
           ),
         ),
@@ -272,6 +275,12 @@ class _PerfilState extends State<Perfil> {
   bool firstFetch = true;
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    firstFetch = true;
+  }
+
+  @override
   Widget build(BuildContext context) {
     //Bug fix: Listen to false. When updating cadastro and notify listener
     //both screens pop. Use onPop method to update instead.
@@ -355,7 +364,10 @@ class _PerfilState extends State<Perfil> {
                       ),
                     if (cadastroStore.getCadastros() != null)
                       _userDataUi(
-                          cadastroStore.getCadastros(), sWidth, sHeight),
+                        cadastroStore.getCadastros(),
+                        sWidth,
+                        sHeight,
+                      ),
                     const SizedBox(
                       height: 50,
                     ),
@@ -370,11 +382,21 @@ class _PerfilState extends State<Perfil> {
                             ),
                           ),
                           onPressed: () {
-                            Navigator.of(context).pushNamed(
+                            Navigator.of(context)
+                                .pushNamed(
                               EditarCadastro.routeName,
-                            );
+                            )
+                                .then((value) {
+                              if (value) {
+                                Future.delayed(Duration(microseconds: 600))
+                                    .then((value) => setState(() {
+                                          firstFetch = true;
+                                        }));
+                              }
+                            });
                           },
                         ),
+                        const SizedBox(width: 20),
                         TextButton(
                           child: const Text(
                             "Alterar Senha",

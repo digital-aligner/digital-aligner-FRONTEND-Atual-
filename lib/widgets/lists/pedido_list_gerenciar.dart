@@ -34,8 +34,7 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
   bool _absorbPointerBool = false;
 
   Widget _relatorioStatusBtn(int index, double _sWidth, double _sHeight) {
-    if (pedList[index]['status_pedido']['id'] == 2 &&
-        pedList[index]['relatorios'].length == 0) {
+    if (pedList[index]['relatorios'].length == 0) {
       return Container(
         height: 80,
         child: TextButton(

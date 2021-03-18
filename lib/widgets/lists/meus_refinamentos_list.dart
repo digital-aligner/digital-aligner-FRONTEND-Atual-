@@ -1,14 +1,14 @@
 import 'package:digital_aligner_app/dados/scrollbarWidgetConfig.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
+
 //import 'package:digital_aligner_app/screens/gerar_relatorio_screen.dart';
 
 import 'package:digital_aligner_app/screens/pedido_view_screen.dart';
 import 'package:digital_aligner_app/screens/relatorio_view_screen.dart';
-import 'package:digital_aligner_app/screens/view_relatorio_screen.dart';
+
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 
 import 'package:flutter/rendering.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../providers/pedidos_list_provider.dart';
 
@@ -25,10 +25,9 @@ class MeusRefinamentosList extends StatefulWidget {
 
 class _MeusRefinamentosListState extends State<MeusRefinamentosList> {
   PedidosListProvider _pedidosListStore;
-
+  AuthProvider authStore;
   List<dynamic> pedList;
   // ----- For flutter web scroll -------
-  ScrollController _scrollController = ScrollController();
   ScrollController _scrollController2 = ScrollController();
   // ---- For flutter web scroll end ---
 
@@ -117,13 +116,14 @@ class _MeusRefinamentosListState extends State<MeusRefinamentosList> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              Expanded(
-                child: Text(
-                  '${pedList[index]['status_pedido']['status'] ?? '-'}',
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
+              if (authStore.role != 'Credenciado')
+                Expanded(
+                  child: Text(
+                    '${pedList[index]['status_pedido']['status'] ?? '-'}',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
               /*
               Expanded(
                 child: Text(
@@ -149,7 +149,7 @@ class _MeusRefinamentosListState extends State<MeusRefinamentosList> {
   @override
   Widget build(BuildContext context) {
     _pedidosListStore = Provider.of<PedidosListProvider>(context);
-
+    authStore = Provider.of<AuthProvider>(context);
     pedList = _pedidosListStore.getPedidosList();
     final double sWidth = MediaQuery.of(context).size.width;
     final double sHeight = MediaQuery.of(context).size.height;

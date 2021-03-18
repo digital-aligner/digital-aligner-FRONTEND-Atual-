@@ -382,15 +382,17 @@ class _SagitalState extends State<Sagital> {
                                     activeColor: Colors.blue,
                                     groupValue:
                                         _novoPedStore.getRmRadioValue('_rmSe'),
-                                    onChanged: (value) {
-                                      _removeFocus(context);
-                                      if (_novoPedStore.getRmLeState()) {
-                                        _novoPedStore.setRmRadio(
-                                          value,
-                                          '_rmSe',
-                                        );
-                                      }
-                                    },
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            if (_novoPedStore.getRmLeState()) {
+                                              _novoPedStore.setRmRadio(
+                                                value,
+                                                '_rmSe',
+                                              );
+                                            }
+                                          },
                                     value: 2,
                                   ),
                                   Text(

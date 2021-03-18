@@ -39,6 +39,7 @@ class EditarCadastro extends StatefulWidget {
 
 class _EditarCadastroState extends State<EditarCadastro> {
   bool _firstFetch = true;
+  bool _sendingCadastro = false;
 
   // ----- For flutter web scroll -------
   ScrollController _scrollController = ScrollController();
@@ -57,7 +58,7 @@ class _EditarCadastroState extends State<EditarCadastro> {
   final _controllerCEL = TextEditingController();
 
   //Formating date to iso standard. Manditory to store date in db.
-  DateFormat format = DateFormat("yyyy-MM-dd");
+  DateFormat format = DateFormat("dd/MM/yyyy");
 
   String _formatCpf(String cpf) {
     String _formatedCpf = cpf.substring(0, 3) +
@@ -195,17 +196,21 @@ class _EditarCadastroState extends State<EditarCadastro> {
       sc.aprovacao_usuario = AprovacaoUsuarioModel();
       sc.aprovacao_usuario.status = '';
     } else {
-      //Selected cadastro
-      sc = cadastroStore.selectedCad();
+      if (_firstFetch) {
+        //Selected cadastro
+        sc = cadastroStore.selectedCad();
 
-      //Inserting data onto fields
-      _controllerDataNasc.text = sc.data_nasc;
+        DateTime d = DateTime.parse(sc.data_nasc);
 
-      _controllerCRO.text = sc.cro_num;
-      _controllerCPF.text = sc.usernameCpf;
+        //Inserting data onto fields
+        _controllerDataNasc.text = DateFormat('dd/MM/yyyy').format(d);
 
-      _controllerTEL.text = sc.telefone;
-      _controllerCEL.text = sc.celular;
+        _controllerCRO.text = sc.cro_num;
+        _controllerCPF.text = sc.usernameCpf;
+
+        _controllerTEL.text = sc.telefone;
+        _controllerCEL.text = sc.celular;
+      }
     }
 
     //Direct acess to url, pop page to remove duplicate.
@@ -369,12 +374,9 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                               onSaved: (DateTime value) {
                                                 //If doesnt change date value, its null.
                                                 //Send date loaded in controller
-                                                if (value == null) {
+                                                if (value != null) {
                                                   sc.data_nasc =
-                                                      _controllerDataNasc.text;
-                                                } else {
-                                                  sc.data_nasc =
-                                                      value.toString();
+                                                      value.toIso8601String();
                                                 }
                                               },
                                               controller: _controllerDataNasc,
@@ -528,7 +530,8 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                     ),
                                     const SizedBox(height: 10),
                                     //representante
-                                    if (authStore.role != 'Credenciado')
+                                    if (authStore.role != 'Credenciado' &&
+                                        sc.id != authStore.id)
                                       DropdownSearch<String>(
                                         label: 'Representante:',
                                         errorBuilder:
@@ -624,7 +627,8 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                     if (authStore.role != 'Credenciado')
                                       const SizedBox(height: 40),
                                     //onboarding
-                                    if (authStore.role != 'Credenciado')
+                                    if (authStore.role != 'Credenciado' &&
+                                        sc.id != authStore.id)
                                       DropdownSearch<String>(
                                         label: 'Onboarding:',
                                         errorBuilder:
@@ -798,7 +802,8 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                     const SizedBox(height: 40),
                                     //Aprovação de Usuário
                                     if (_firstFetch &&
-                                        authStore.role == 'Administrador')
+                                        authStore.role != 'Credenciado' &&
+                                        sc.id != authStore.id)
                                       Container(
                                         height: 80,
                                         child: FutureBuilder(
@@ -845,7 +850,9 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                           },
                                         ),
                                       ),
-                                    if (!_firstFetch)
+                                    if (!_firstFetch &&
+                                        authStore.role != 'Credenciado' &&
+                                        sc.id != authStore.id)
                                       Container(
                                         height: 80,
                                         child: DropdownSearch<String>(
@@ -884,44 +891,71 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                 builder: (ctx) => Container(
                                   width: 300,
                                   child: ElevatedButton(
-                                    child: const Text(
-                                      'ATUALIZAR',
-                                    ),
-                                    onPressed: () {
-                                      if (_formKey.currentState.validate()) {
-                                        _formKey.currentState.save();
-
-                                        cadastroStore.enviarCadastro().then(
-                                          (data) {
-                                            if (data.containsKey('error')) {
-                                              ScaffoldMessenger.of(context)
-                                                  .removeCurrentSnackBar();
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                SnackBar(
-                                                  duration: const Duration(
-                                                      seconds: 8),
-                                                  content: Text(
-                                                      'Erro ao atualizar cadastro'),
-                                                ),
-                                              );
-                                            } else {
-                                              ScaffoldMessenger.of(context)
-                                                  .removeCurrentSnackBar();
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                SnackBar(
-                                                  duration: const Duration(
-                                                      seconds: 8),
-                                                  content: Text(
-                                                      'Cadastro atualizado!'),
-                                                ),
+                                    child: !_sendingCadastro
+                                        ? const Text(
+                                            'ATUALIZAR',
+                                          )
+                                        : CircularProgressIndicator(
+                                            valueColor:
+                                                new AlwaysStoppedAnimation<
+                                                    Color>(
+                                              Colors.blue,
+                                            ),
+                                          ),
+                                    onPressed: !_sendingCadastro
+                                        ? () {
+                                            if (_formKey.currentState
+                                                .validate()) {
+                                              _formKey.currentState.save();
+                                              setState(() {
+                                                _sendingCadastro = true;
+                                              });
+                                              cadastroStore
+                                                  .enviarCadastro()
+                                                  .then(
+                                                (data) {
+                                                  if (data
+                                                      .containsKey('error')) {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .removeCurrentSnackBar();
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                        duration:
+                                                            const Duration(
+                                                                seconds: 3),
+                                                        content: Text(
+                                                            'Erro ao atualizar cadastro'),
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    Navigator.pop(
+                                                        context, true);
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .removeCurrentSnackBar();
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                        duration:
+                                                            const Duration(
+                                                                seconds: 3),
+                                                        content: Text(
+                                                            'Cadastro atualizado!'),
+                                                      ),
+                                                    );
+                                                  }
+                                                  setState(() {
+                                                    _sendingCadastro = false;
+                                                  });
+                                                },
                                               );
                                             }
-                                          },
-                                        );
-                                      }
-                                    },
+                                          }
+                                        : null,
                                   ),
                                 ),
                               ),

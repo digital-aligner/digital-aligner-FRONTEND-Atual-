@@ -31,47 +31,42 @@ class _StatusPedidoState extends State<StatusPedido> {
       width: double.infinity,
       child: Column(
         children: <Widget>[
-          //Verification will be here to show based on user (true for now)
-          true
-              ? Container(
-                  height: 80,
-                  child: FutureBuilder(
-                    future: _fetchDataHandler,
-                    builder: (ctx, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        return DropdownSearch<String>(
-                            //popupShape: null,
-                            onSaved: (String value) {
-                              _novoPedStore.setCurrentStatus(value);
-                            },
-                            dropdownSearchDecoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              contentPadding:
-                                  EdgeInsets.fromLTRB(10, 10, 10, 10),
-                            ),
-                            mode: Mode.MENU,
-                            showSearchBox: false,
-                            showSelectedItem: true,
-                            items: snapshot.data,
-                            label: 'Status do Pedido: *',
-                            //hint: 'country in menu mode',
-                            popupItemDisabled:
-                                (String s) => /*s.startsWith('I')*/ null,
-                            onChanged: (value) {
-                              //_novoPedStore.setCurrentStatus(value);
-                              //print(value);
-                            },
-                            selectedItem:
-                                _status == null ? 'Selecione' : _status);
-                      } else {
-                        return CircularProgressIndicator(
-                          backgroundColor: Colors.blue,
-                        );
-                      }
-                    },
-                  ),
-                )
-              : Container(),
+          Container(
+            height: 80,
+            child: FutureBuilder(
+              future: _fetchDataHandler,
+              builder: (ctx, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return DropdownSearch<String>(
+                      //popupShape: null,
+                      onSaved: (String value) {
+                        _novoPedStore.setCurrentStatus(value);
+                      },
+                      dropdownSearchDecoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                      ),
+                      mode: Mode.MENU,
+                      showSearchBox: false,
+                      showSelectedItem: true,
+                      items: snapshot.data,
+                      label: 'Status do Pedido: *',
+                      //hint: 'country in menu mode',
+                      popupItemDisabled:
+                          (String s) => /*s.startsWith('I')*/ null,
+                      onChanged: (value) {
+                        //_novoPedStore.setCurrentStatus(value);
+                        //print(value);
+                      },
+                      selectedItem: _status == null ? 'Selecione' : _status);
+                } else {
+                  return CircularProgressIndicator(
+                    backgroundColor: Colors.blue,
+                  );
+                }
+              },
+            ),
+          )
         ],
       ),
     );

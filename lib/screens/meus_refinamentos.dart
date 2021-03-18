@@ -76,17 +76,18 @@ class _MeusRefinamentosState extends State<MeusRefinamentos> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Expanded(
-            child: const Text(
-              'Status',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (authStore.role != 'Credenciado')
+            Expanded(
+              child: const Text(
+                'Status',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           /*
           Expanded(
             child: const Text(

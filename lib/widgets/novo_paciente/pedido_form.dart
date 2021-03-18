@@ -592,7 +592,8 @@ class _PedidoFormState extends State<PedidoForm> {
                 //Status pedido
                 const SizedBox(height: 40),
                 //Widget makes request to server
-                if (_authStore.role != 'Credenciado') StatusPedido(),
+                if (_authStore.role != 'Credenciado' && widget.isEditarPedido)
+                  StatusPedido(),
                 const SizedBox(height: 20),
                 //Enviar
                 Row(
@@ -633,11 +634,10 @@ class _PedidoFormState extends State<PedidoForm> {
                                         ),
                                       );
                                       if (!data[0].containsKey('error')) {
-                                        Navigator.pop(context);
+                                        Navigator.pop(context, true);
                                       }
                                     });
-                                  }
-                                  {
+                                  } else {
                                     ScaffoldMessenger.of(context)
                                         .removeCurrentSnackBar();
                                     ScaffoldMessenger.of(context).showSnackBar(

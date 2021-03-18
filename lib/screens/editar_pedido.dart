@@ -31,6 +31,8 @@ class _EditarPedidoState extends State<EditarPedido> {
     final Map _idsMap = ModalRoute.of(context).settings.arguments;
     authStore = Provider.of<AuthProvider>(context);
 
+    print(_idsMap);
+
     _s3deleteStore = Provider.of<S3DeleteProvider>(context, listen: false);
     _s3deleteStore.setToken(authStore.token);
 

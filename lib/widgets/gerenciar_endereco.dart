@@ -181,38 +181,42 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
           Container(
             width: 300,
             child: ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState.validate()) {
-                  _formKey.currentState.save();
-                  _deleteEndereco().then((_data) {
-                    if (!_data[0].containsKey('error')) {
-                      _restartInicialValues();
-                      _clearInputFields();
-                      _getAllData();
-                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          duration: const Duration(seconds: 4),
-                          content: Text(
-                            _data[0]['message'],
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          duration: const Duration(seconds: 8),
-                          content: Text(
-                            _data[0]['message'],
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      );
-                    }
-                  });
-                }
-              },
+              onPressed: true
+                  ? null
+                  : () {
+                      //blocked the functionality
+                      if (_formKey.currentState.validate()) {
+                        _formKey.currentState.save();
+                        _deleteEndereco().then((_data) {
+                          if (!_data[0].containsKey('error')) {
+                            _restartInicialValues();
+                            _clearInputFields();
+                            _getAllData();
+                            ScaffoldMessenger.of(context)
+                                .removeCurrentSnackBar();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 4),
+                                content: Text(
+                                  _data[0]['message'],
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 8),
+                                content: Text(
+                                  _data[0]['message'],
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            );
+                          }
+                        });
+                      }
+                    },
               child: const Text(
                 'DELETAR ENDEREÇO',
                 style: const TextStyle(

@@ -1701,8 +1701,8 @@ class PedidoProvider with ChangeNotifier {
 
   bool _lmSupDireitaState = false;
   bool _lmSupEsquerdaState = false;
-  int _lmSupDireita = 0;
-  int _lmSupEsquerda = 0;
+  //int _lmSupDireita = 0;
+  //int _lmSupEsquerda = 0;
 
   //New value for changes to functionality 25/02/21
   int _lmSupNovo = 0;
@@ -1710,7 +1710,7 @@ class PedidoProvider with ChangeNotifier {
   // number values in mm
   String _lmSupDireitaMm = '';
   String _lmSupEsquerdaMm = '';
-
+  /*
   void setLmSupDireita(int value) {
     _lmSupDireita = value;
   }
@@ -1725,7 +1725,7 @@ class PedidoProvider with ChangeNotifier {
 
   int getLmSupEsquerda() {
     return _lmSupEsquerda;
-  }
+  }*/
 
   void setLmSupDireitaMm(String value) {
     _lmSupDireitaMm = value;
@@ -1768,7 +1768,7 @@ class PedidoProvider with ChangeNotifier {
         _lmSupEsquerdaMm = '';
 
         notifyListeners();
-        print(_lmSupDireita);
+        //print(_lmSupDireita);
         break;
       case '_lmSupEsquerda':
         //For updated functionality 25/02/21
@@ -1780,7 +1780,7 @@ class PedidoProvider with ChangeNotifier {
         //remove its value
         _lmSupDireitaMm = '';
         notifyListeners();
-        print(_lmSupEsquerda);
+
         break;
       default:
         return null;
@@ -1838,8 +1838,8 @@ class PedidoProvider with ChangeNotifier {
 
   bool _lmInfDireitaState = false;
   bool _lmInfEsquerdaState = false;
-  int _lmInfDireita = 0;
-  int _lmInfEsquerda = 0;
+  //int _lmInfDireita = 0;
+  //int _lmInfEsquerda = 0;
 
   //New value for changes to functionality 25/02/21
   int _lmInfNovo = 0;
@@ -1847,7 +1847,7 @@ class PedidoProvider with ChangeNotifier {
 // number values in mm
   String _lmInfDireitaMm = '';
   String _lmInfEsquerdaMm = '';
-
+  /*
   void setLmInfDireita(int value) {
     _lmInfDireita = value;
   }
@@ -1863,7 +1863,7 @@ class PedidoProvider with ChangeNotifier {
   int getLmInfEsquerda() {
     return _lmInfEsquerda;
   }
-
+*/
   void setLmInfDireitaMm(String value) {
     _lmInfDireitaMm = value;
   }
@@ -1906,7 +1906,7 @@ class PedidoProvider with ChangeNotifier {
         _lmInfEsquerdaMm = '';
 
         notifyListeners();
-        print(_lmInfDireita);
+
         break;
       case '_lmInfEsquerda':
         //For updated functionality 25/02/21
@@ -1920,7 +1920,7 @@ class PedidoProvider with ChangeNotifier {
         _lmInfDireitaMm = '';
 
         notifyListeners();
-        print(_lmInfEsquerda);
+        //print(_lmInfEsquerda);
         break;
       default:
         return null;
@@ -3704,7 +3704,7 @@ class PedidoProvider with ChangeNotifier {
     } else {
       _tratarRadio = 0;
     }
-
+    //aqui
     // 2 - SAGITAL ---------------------------
     // Relação Molar
     if (ped['relacao_molar']['lado_direito']['id'] == 1) {
@@ -3713,8 +3713,22 @@ class PedidoProvider with ChangeNotifier {
     } else if (ped['relacao_molar']['lado_direito']['id'] == 2) {
       _rmLdState = true;
       _rmLd = 2;
-      _rmSd = ped['relacao_molar']['superior_direito']['id'];
-      _rmId = ped['relacao_molar']['inferior_direito']['id'];
+      //Verifications prevent empty map being inserted into int field
+      if (ped['relacao_molar']['superior_direito'] == null) {
+        _rmSd = 0;
+      } else if (ped['relacao_molar']['superior_direito'].length == 0) {
+        _rmSd = 0;
+      } else {
+        _rmSd = ped['relacao_molar']['superior_direito']['id'];
+      }
+
+      if (ped['relacao_molar']['inferior_direito'] == null) {
+        _rmId = 0;
+      } else if (ped['relacao_molar']['inferior_direito'].length == 0) {
+        _rmId = 0;
+      } else {
+        _rmId = ped['relacao_molar']['inferior_direito']['id'];
+      }
     }
 
     if (ped['relacao_molar']['lado_esquerdo']['id'] == 1) {
@@ -3723,8 +3737,22 @@ class PedidoProvider with ChangeNotifier {
     } else if (ped['relacao_molar']['lado_esquerdo']['id'] == 2) {
       _rmLeState = true;
       _rmLe = 2;
-      _rmSe = ped['relacao_molar']['superior_esquerdo']['id'];
-      _rmIe = ped['relacao_molar']['inferior_esquerdo']['id'];
+
+      if (ped['relacao_molar']['superior_esquerdo'] == null) {
+        _rmSe = 0;
+      } else if (ped['relacao_molar']['superior_esquerdo'].length == 0) {
+        _rmSe = 0;
+      } else {
+        _rmSe = ped['relacao_molar']['superior_esquerdo']['id'];
+      }
+
+      if (ped['relacao_molar']['inferior_esquerdo'] == null) {
+        _rmIe = 0;
+      } else if (ped['relacao_molar']['inferior_esquerdo'].length == 0) {
+        _rmIe = 0;
+      } else {
+        _rmIe = ped['relacao_molar']['inferior_esquerdo']['id'];
+      }
     }
     _rmOutro = ped['relacao_molar']['outro'];
 
@@ -3736,8 +3764,21 @@ class PedidoProvider with ChangeNotifier {
     } else if (ped['relacao_canino']['lado_direito']['id'] == 2) {
       _rcLdState = true;
       _rcLd = 2;
-      _rcSd = ped['relacao_canino']['superior_direito']['id'];
-      _rcId = ped['relacao_canino']['inferior_direito']['id'];
+
+      if (ped['relacao_canino']['superior_direito'] == null) {
+        _rcSd = 0;
+      } else if (ped['relacao_canino']['superior_direito'].length == 0) {
+        _rcSd = 0;
+      } else {
+        _rcSd = ped['relacao_canino']['superior_direito']['id'];
+      }
+      if (ped['relacao_canino']['inferior_direito'] == null) {
+        _rcId = 0;
+      } else if (ped['relacao_canino']['inferior_direito'].length == 0) {
+        _rcId = 0;
+      } else {
+        _rcId = ped['relacao_canino']['inferior_direito']['id'];
+      }
     }
 
     if (ped['relacao_canino']['lado_esquerdo']['id'] == 1) {
@@ -3746,8 +3787,22 @@ class PedidoProvider with ChangeNotifier {
     } else if (ped['relacao_canino']['lado_esquerdo']['id'] == 2) {
       _rcLeState = true;
       _rcLe = 2;
-      _rcSe = ped['relacao_canino']['superior_esquerdo']['id'];
-      _rcIe = ped['relacao_canino']['inferior_esquerdo']['id'];
+
+      if (ped['relacao_canino']['superior_esquerdo'] == null) {
+        _rcSe = 0;
+      } else if (ped['relacao_canino']['superior_esquerdo'].length == 0) {
+        _rcSe = 0;
+      } else {
+        _rcSe = ped['relacao_canino']['superior_esquerdo']['id'];
+      }
+
+      if (ped['relacao_canino']['inferior_esquerdo'] == null) {
+        _rcIe = 0;
+      } else if (ped['relacao_canino']['inferior_esquerdo'].length == 0) {
+        _rcSe = 0;
+      } else {
+        _rcIe = ped['relacao_canino']['inferior_esquerdo']['id'];
+      }
     }
     _rcOutro = ped['relacao_canino']['outro'];
 
@@ -3939,13 +3994,15 @@ class PedidoProvider with ChangeNotifier {
       if (ped['linha_media_superior']['mover_direita'].isNotEmpty) {
         _linhaMediaSup = 2;
         _linhaMediaSupState = true;
-        _lmSupDireita = 1;
+        //_lmSupDireita = 1;
+        _lmSupNovo = 1;
         _lmSupDireitaState = true;
         _lmSupDireitaMm = ped['linha_media_superior']['mover_direita'];
       }
       if (ped['linha_media_superior']['mover_esquerda'].isNotEmpty) {
         _linhaMediaSupState = true;
-        _lmSupEsquerda = 1;
+        //_lmSupEsquerda = 1;
+        _lmSupNovo = 2;
         _lmSupEsquerdaState = true;
         _lmSupEsquerdaMm = ped['linha_media_superior']['mover_esquerda'];
       }
@@ -3967,13 +4024,15 @@ class PedidoProvider with ChangeNotifier {
       if (ped['linha_media_inferior']['mover_direita'].isNotEmpty) {
         _linhaMediaInf = 2;
         _linhaMediaInfState = true;
-        _lmInfDireita = 1;
+        //_lmInfDireita = 1;
+        _lmInfNovo = 1;
         _lmInfDireitaState = true;
         _lmInfDireitaMm = ped['linha_media_inferior']['mover_direita'];
       }
       if (ped['linha_media_inferior']['mover_esquerda'].isNotEmpty) {
         _linhaMediaInfState = true;
-        _lmInfEsquerda = 1;
+        //_lmInfEsquerda = 1;
+        _lmInfNovo = 2;
         _lmInfEsquerdaState = true;
         _lmInfEsquerdaMm = ped['linha_media_inferior']['mover_esquerda'];
       }
@@ -4573,8 +4632,9 @@ class PedidoProvider with ChangeNotifier {
 
     _lmSupDireitaState = false;
     _lmSupEsquerdaState = false;
-    _lmSupDireita = 0;
-    _lmSupEsquerda = 0;
+    _lmSupNovo = 0;
+    //_lmSupDireita = 0;
+    //_lmSupEsquerda = 0;
 
     // number values in mm
     _lmSupDireitaMm = '';
@@ -4588,8 +4648,9 @@ class PedidoProvider with ChangeNotifier {
 
     _lmInfDireitaState = false;
     _lmInfEsquerdaState = false;
-    _lmInfDireita = 0;
-    _lmInfEsquerda = 0;
+    _lmInfNovo = 0;
+    //_lmInfDireita = 0;
+    //_lmInfEsquerda = 0;
 
     // number values in mm
     _lmInfDireitaMm = '';

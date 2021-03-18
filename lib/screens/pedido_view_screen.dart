@@ -572,14 +572,11 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                         ),
                       ),
                     ]),
-                    //EDITAR/VISUALIZAR
+                    //VISUALIZAR/EDITAR PEDIDO
                     Container(
                       width: 300,
                       child: ElevatedButton(
                         onPressed: () {
-                          //To pop popup before pushing route
-
-                          Navigator.of(context).pop();
                           Navigator.of(context).pushNamed(
                             EditarPedido.routeName,
                             arguments: {
@@ -591,12 +588,15 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                                   ['id'],
                               'pedidoDados': pedList[index],
                             },
-                          ).then(
-                            (value) => Future.delayed(
-                              Duration(milliseconds: 800),
-                              () => _pedidosListStore.clearPedidosAndUpdate(),
-                            ),
-                          );
+                          ).then((value) {
+                            if (value) {
+                              Navigator.pop(context);
+                              Future.delayed(
+                                Duration(milliseconds: 200),
+                                () => _pedidosListStore.clearPedidosAndUpdate(),
+                              );
+                            }
+                          });
                         },
                         child: const Text(
                           'VISUALIZAR/EDITAR PEDIDO',

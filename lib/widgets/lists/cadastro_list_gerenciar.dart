@@ -20,6 +20,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
   List<dynamic> cadList;
   AuthProvider authStore;
   bool _dialogOpen = false;
+  bool _sendingCadastro = false;
   // ----- For flutter web scroll -------
   ScrollController _scrollController = ScrollController();
   // ---- For flutter web scroll end ---
@@ -525,40 +526,73 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                       )),
                 ),
                 TextButton(
-                  child: const Text("Aprovar"),
-                  onPressed: () {
-                    cadastroStore
-                        .aprovarCadastro(cadList[index]['id'])
-                        .then((data) {
-                      if (!data.containsKey('error')) {
-                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            duration: const Duration(seconds: 8),
-                            content: Text('Cadastro aprovado!'),
+                  child: !_sendingCadastro
+                      ? const Text("Aprovar")
+                      : CircularProgressIndicator(
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                            Colors.blue,
                           ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            duration: const Duration(seconds: 8),
-                            content: Text('Algo deu errado'),
-                          ),
-                        );
-                      }
-                    });
-                  },
+                        ),
+                  onPressed: !_sendingCadastro
+                      ? () {
+                          setState(() {
+                            _sendingCadastro = true;
+                          });
+                          cadastroStore
+                              .aprovarCadastro(cadList[index]['id'])
+                              .then((data) {
+                            if (!data.containsKey('error')) {
+                              ScaffoldMessenger.of(context)
+                                  .removeCurrentSnackBar();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: const Duration(seconds: 8),
+                                  content: Text('Cadastro aprovado!'),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context)
+                                  .removeCurrentSnackBar();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: const Duration(seconds: 8),
+                                  content: Text('Algo deu errado'),
+                                ),
+                              );
+                            }
+                            setState(() {
+                              _sendingCadastro = false;
+                            });
+                          });
+                        }
+                      : null,
                 ),
                 TextButton(
-                  child: Text("Editar"),
-                  onPressed: () {
-                    cadastroStore.setSelectedCad(index);
+                  child: !_sendingCadastro
+                      ? Text("Editar")
+                      : CircularProgressIndicator(
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                            Colors.blue,
+                          ),
+                        ),
+                  onPressed: !_sendingCadastro
+                      ? () {
+                          cadastroStore.setSelectedCad(index);
 
-                    Navigator.of(context).pushNamed(
-                      EditarCadastro.routeName,
-                    );
-                  },
+                          Navigator.of(context)
+                              .pushNamed(
+                            EditarCadastro.routeName,
+                          )
+                              .then((value) {
+                            if (value) {
+                              Navigator.pop(context);
+                              Future.delayed(Duration(milliseconds: 600)).then(
+                                  (value) =>
+                                      cadastroStore.clearCadastrosAndUpdate());
+                            }
+                          });
+                        }
+                      : null,
                 ),
                 TextButton(
                   child: Text("Excluir"),

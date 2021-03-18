@@ -1,3 +1,4 @@
+import 'package:digital_aligner_app/providers/cadastro_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/providers/pedidos_list_provider.dart';
 import 'package:digital_aligner_app/providers/relatorio_provider.dart';
@@ -231,13 +232,15 @@ class _MyDrawerState extends State<MyDrawer> {
                 );
                 RelatorioProvider _relatorioStore =
                     Provider.of<RelatorioProvider>(context, listen: false);
+                CadastroProvider _cadastroStore =
+                    Provider.of<CadastroProvider>(context);
                 //CLEAR VALUES
-                _pedidosListStore.clearPedidosOnLeave();
-                _pedidosListStore.setToken(null);
                 _novoPedStore.clearAll();
                 _relatorioStore.clearSelectedRelatorio();
                 _relatorioStore.clearToken();
-                setState(() {});
+                _cadastroStore.clearCadastros();
+                _pedidosListStore.clearPedidosOnLeave();
+                _pedidosListStore.setToken(null);
               },
             ),
             Divider(),

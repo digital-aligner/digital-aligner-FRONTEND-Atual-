@@ -43,6 +43,8 @@ class _EditarRelatorioScreenState extends State<EditarRelatorioScreen> {
 
   bool _didUpdate = false;
 
+  bool _sendingRelatorio = false;
+
   @override
   void dispose() {
     _numeroPedido.dispose();
@@ -300,39 +302,54 @@ class _EditarRelatorioScreenState extends State<EditarRelatorioScreen> {
                               Container(
                                 width: 300,
                                 child: ElevatedButton(
-                                  onPressed: () {
-                                    if (_formKey.currentState.validate()) {
-                                      _formKey.currentState.save();
-
-                                      _relatorioStore
-                                          .atualizarRelatorio()
-                                          .then((res) {
-                                        //Delete from s3 if pedido is deleted
-                                        _s3RelatorioDeleteStore
-                                            .batchDeleteFiles();
-                                        ScaffoldMessenger.of(context)
-                                            .removeCurrentSnackBar();
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            duration:
-                                                const Duration(seconds: 8),
-                                            content: Text(res['message']),
-                                          ),
-                                        );
-                                        if (res['statusCode'] == 200) {
-                                          _didUpdate = true;
-                                          Navigator.pop(context, true);
+                                  onPressed: !_sendingRelatorio
+                                      ? () {
+                                          if (_formKey.currentState
+                                              .validate()) {
+                                            _formKey.currentState.save();
+                                            setState(() {
+                                              _sendingRelatorio = true;
+                                            });
+                                            _relatorioStore
+                                                .atualizarRelatorio()
+                                                .then((res) {
+                                              //Delete from s3 if pedido is deleted
+                                              _s3RelatorioDeleteStore
+                                                  .batchDeleteFiles();
+                                              ScaffoldMessenger.of(context)
+                                                  .removeCurrentSnackBar();
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  duration: const Duration(
+                                                      seconds: 8),
+                                                  content: Text(res['message']),
+                                                ),
+                                              );
+                                              if (res['statusCode'] == 200) {
+                                                _didUpdate = true;
+                                                Navigator.pop(context, true);
+                                              }
+                                              setState(() {
+                                                _sendingRelatorio = false;
+                                              });
+                                            });
+                                          }
                                         }
-                                      });
-                                    }
-                                  },
-                                  child: const Text(
-                                    'ATUALIZAR',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
+                                      : null,
+                                  child: !_sendingRelatorio
+                                      ? const Text(
+                                          'ATUALIZAR',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      : CircularProgressIndicator(
+                                          valueColor:
+                                              new AlwaysStoppedAnimation<Color>(
+                                            Colors.blue,
+                                          ),
+                                        ),
                                 ),
                               ),
                               const SizedBox(

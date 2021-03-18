@@ -356,13 +356,15 @@ class _MyAppBarState extends State<MyAppBar> {
         CadastroProvider _cadastroStore =
             Provider.of<CadastroProvider>(context);
         //CLEAR VALUES
-        _pedidosListStore.clearPedidosOnLeave();
-        _pedidosListStore.setToken(null);
         _novoPedStore.clearAll();
         _relatorioStore.clearSelectedRelatorio();
         _relatorioStore.clearToken();
         _cadastroStore.clearCadastros();
-        setState(() {});
+        _pedidosListStore.clearPedidosOnLeave();
+        _pedidosListStore.setToken(null);
+        //Force update of old screen
+        //_pedidosListStore.clearPedidosAndUpdate();
+        //_cadastroStore.clearCadastrosAndUpdate();
       },
       icon: const Icon(Icons.sensor_door),
       label: const Text(

@@ -110,6 +110,13 @@ class _MeusPacientesState extends State<MeusPacientes> {
   }
 
   bool firstFetch = true;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    firstFetch = true;
+  }
+
   @override
   Widget build(BuildContext context) {
     authStore = Provider.of<AuthProvider>(context);
