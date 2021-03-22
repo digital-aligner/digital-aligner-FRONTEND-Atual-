@@ -1,23 +1,22 @@
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
-import 'package:digital_aligner_app/screens/model_viewer.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'login_screen.dart';
+import 'model_viewer_sup.dart';
 
-class ViewModelosScreen extends StatefulWidget {
+class ViewModelosScreenSup extends StatefulWidget {
   final String modeloSupLink;
-  final String modeloInfLink;
 
-  ViewModelosScreen({this.modeloSupLink, this.modeloInfLink});
+  ViewModelosScreenSup({this.modeloSupLink});
 
   @override
-  _ViewModelosScreenState createState() => _ViewModelosScreenState();
+  _ViewModelosScreenSupState createState() => _ViewModelosScreenSupState();
 }
 
-class _ViewModelosScreenState extends State<ViewModelosScreen> {
+class _ViewModelosScreenSupState extends State<ViewModelosScreenSup> {
   @override
   Widget build(BuildContext context) {
     AuthProvider authStore = Provider.of<AuthProvider>(context);
@@ -33,14 +32,13 @@ class _ViewModelosScreenState extends State<ViewModelosScreen> {
         showTrackOnHover: true,
         child: SingleChildScrollView(
           child: Container(
-            height: 1500,
+            height: 800,
             padding: EdgeInsets.symmetric(
               horizontal: MediaQuery.of(context).size.width > 760 ? 100 : 8,
               vertical: 50,
             ),
-            child: ModelViewer(
+            child: ModelViewerSup(
               modeloSupLink: widget.modeloSupLink,
-              modeloInfLink: widget.modeloInfLink,
             ),
           ),
         ),
