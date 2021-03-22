@@ -181,15 +181,18 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
   ) {
     return Column(
       children: [
-        //Modelos 3d
+        //Modelos 3d text
+        const SizedBox(height: 40),
         Container(
-          height: 100,
+          //color: Colors.black12.withOpacity(0.04),
+          height: 50,
           child: Align(
-            alignment: Alignment.centerLeft,
-            child: const Text(
-              ' Modelo superior/inferior: ',
+            alignment: Alignment.topCenter,
+            child: Text(
+              'Modelos Superior/Inferior:',
               style: const TextStyle(
-                fontSize: 16,
+                color: Colors.black54,
+                fontSize: 18,
                 //fontWeight: FontWeight.bold,
               ),
             ),
@@ -283,37 +286,45 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
           ),
         ),
         //Fotografias
+        //text
+        const SizedBox(height: 40),
         Container(
-          height: 100,
+          //color: Colors.black12.withOpacity(0.04),
+          height: 50,
           child: Align(
-            alignment: Alignment.centerLeft,
-            child: const Text(
-              ' Fotografias: ',
+            alignment: Alignment.topCenter,
+            child: Text(
+              'Fotografias:',
               style: const TextStyle(
-                fontSize: 16,
+                color: Colors.black54,
+                fontSize: 18,
                 //fontWeight: FontWeight.bold,
               ),
             ),
           ),
         ),
+
         Container(
           child: _mapFotografiasUrlToUi(pedList[index]['fotografias']),
         ),
         //Radiografias
+        const SizedBox(height: 40),
         Container(
-          height: 100,
+          //color: Colors.black12.withOpacity(0.04),
+          height: 50,
           child: Align(
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.topCenter,
             child: Text(
-              ' Radiografias: ',
-              style: TextStyle(
-                fontSize: 16,
+              'Radiografias:',
+              style: const TextStyle(
+                color: Colors.black54,
+                fontSize: 18,
                 //fontWeight: FontWeight.bold,
-                //color: Colors.black12.withOpacity(0.04),
               ),
             ),
           ),
         ),
+
         Container(
           child: _mapRadiografiasUrlToUi(pedList[index]['radiografias']),
         ),
@@ -629,7 +640,7 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                     //color: Colors.black12.withOpacity(0.04),
                     height: 50,
                     child: Align(
-                      alignment: Alignment.centerLeft,
+                      alignment: Alignment.topCenter,
                       child: Text(
                         '${'PEDIDO: ' + pedList[index]['codigo_pedido']}' ?? '',
                         style: const TextStyle(
@@ -641,7 +652,13 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                     ),
                   ),
                   //Divider
-                  //New divider will have to be here
+                  Container(
+                    padding: const EdgeInsets.only(bottom: 40),
+                    child: Divider(
+                      color: Colors.grey,
+                    ),
+                  ),
+
                   //VISUALIZAR/EDITAR PEDIDO
                   Container(
                     width: 300,

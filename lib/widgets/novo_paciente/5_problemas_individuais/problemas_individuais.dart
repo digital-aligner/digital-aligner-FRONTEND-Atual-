@@ -551,7 +551,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
               Card(
                 color: _novoPedStore.getDistDPASupState()
                     ? Colors.white
-                    : Color.fromRGBO(128, 128, 128, 0.1),
+                    : Color(0xffe3e3e3),
                 elevation: 3,
                 child: Padding(
                   padding: const EdgeInsets.all(20),
@@ -1589,7 +1589,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                 Card(
                   color: _novoPedStore.getDistDPAInfState()
                       ? Colors.white
-                      : Color.fromRGBO(128, 128, 128, 0.1),
+                      : Color(0xffe3e3e3),
                   elevation: 3,
                   child: Padding(
                     padding: const EdgeInsets.all(20),
