@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
-import 'package:digital_aligner_app/dados/scrollbarWidgetConfig.dart';
-import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -18,9 +16,7 @@ class CriarNovaSenha extends StatefulWidget {
 
 class _CriarNovaSenhaState extends State<CriarNovaSenha> {
   final _formKey = GlobalKey<FormState>();
-
-  // ----- For flutter web scroll -------
-  ScrollController _scrollController = ScrollController();
+  bool _sendingRequest = false;
 
   String _password;
   String _passwordConfirm;
@@ -33,7 +29,7 @@ class _CriarNovaSenhaState extends State<CriarNovaSenha> {
     };
 
     var _response = await http.post(
-      RotasUrl.rotaRecuperarSenhaNova,
+      Uri.parse(RotasUrl.rotaRecuperarSenhaNova),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(_data),
     );
@@ -53,65 +49,70 @@ class _CriarNovaSenhaState extends State<CriarNovaSenha> {
         child: ListView(
           children: <Widget>[
             //password
-            Expanded(
-              child: Container(
-                height: 80,
-                child: TextFormField(
-                  obscureText: true,
-                  onSaved: (String value) async {
-                    _password = value;
-                    Map result = await _sendPassword();
-                    if (result.containsKey('statusCode')) {
-                      if (result['statusCode'] == 200) {
-                        Navigator.pop(context);
-                      }
+            Container(
+              height: 80,
+              child: TextFormField(
+                obscureText: true,
+                onSaved: (String value) async {
+                  _password = value;
+                  Map result = await _sendPassword();
+                  if (result.containsKey('statusCode')) {
+                    if (result['statusCode'] == 200) {
+                      Navigator.pop(context);
                     }
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 5),
-                        content: Text(result['message']),
-                      ),
-                    );
-                  },
-                  validator: (value) {
-                    if (value.length == 0) {
-                      return 'Por favor insira sua senha';
-                    }
-                    if (value != _passwordConfirm) {
-                      return 'Senhas não correspondem';
-                    }
-                    return null;
-                  },
-                  initialValue: null,
-                  decoration: InputDecoration(
-                    labelText: 'Senha: *',
-                    border: OutlineInputBorder(),
-                  ),
+                  }
+                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      duration: const Duration(seconds: 5),
+                      content: Text(result['message']),
+                    ),
+                  );
+                  setState(() {
+                    _sendingRequest = false;
+                  });
+                },
+                validator: (value) {
+                  if (value.length < 6) {
+                    return 'Sua senha deve ter no mínimo 6 characteres';
+                  }
+                  if (value.length == 0) {
+                    return 'Por favor insira sua senha';
+                  }
+                  if (value != _passwordConfirm) {
+                    return 'Senhas não correspondem';
+                  }
+                  return null;
+                },
+                initialValue: null,
+                decoration: InputDecoration(
+                  labelText: 'Senha: *',
+                  border: OutlineInputBorder(),
                 ),
               ),
             ),
             const SizedBox(width: 20),
             //password confirm
-            Expanded(
-              child: Container(
-                height: 80,
-                child: TextFormField(
-                  obscureText: true,
-                  onChanged: (String value) {
-                    _passwordConfirm = value;
-                  },
-                  validator: (value) {
-                    if (value.length == 0) {
-                      return 'Por favor confirme sua senha';
-                    }
-                    return null;
-                  },
-                  initialValue: null,
-                  decoration: InputDecoration(
-                    labelText: 'Confirme sua senha.',
-                    border: OutlineInputBorder(),
-                  ),
+            Container(
+              height: 80,
+              child: TextFormField(
+                obscureText: true,
+                onChanged: (String value) {
+                  _passwordConfirm = value;
+                },
+                validator: (value) {
+                  if (value.length < 6) {
+                    return 'Sua senha deve ter no mínimo 6 characteres';
+                  }
+                  if (value.length == 0) {
+                    return 'Por favor confirme sua senha';
+                  }
+                  return null;
+                },
+                initialValue: null,
+                decoration: InputDecoration(
+                  labelText: 'Confirme sua senha.',
+                  border: OutlineInputBorder(),
                 ),
               ),
             ),
@@ -120,17 +121,28 @@ class _CriarNovaSenhaState extends State<CriarNovaSenha> {
               child: SizedBox(
                 width: 300,
                 child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState.validate()) {
-                      _formKey.currentState.save();
-                    }
-                  },
-                  child: const Text(
-                    'ENVIAR',
-                    style: const TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
+                  onPressed: !_sendingRequest
+                      ? () {
+                          if (_formKey.currentState.validate()) {
+                            setState(() {
+                              _sendingRequest = true;
+                            });
+                            _formKey.currentState.save();
+                          }
+                        }
+                      : null,
+                  child: !_sendingRequest
+                      ? const Text(
+                          'ENVIAR',
+                          style: const TextStyle(
+                            color: Colors.white,
+                          ),
+                        )
+                      : CircularProgressIndicator(
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                            Colors.blue,
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -144,35 +156,29 @@ class _CriarNovaSenhaState extends State<CriarNovaSenha> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: SecondaryAppbar(),
-      body: DraggableScrollbar.rrect(
-        heightScrollThumb: ScrollBarWidgetConfig.scrollBarHeight,
-        backgroundColor: ScrollBarWidgetConfig.color,
-        alwaysVisibleScrollThumb: false,
-        controller: _scrollController,
-        child: ListView.builder(
-          controller: _scrollController,
-          itemCount: 1,
-          itemExtent: null,
-          itemBuilder: (context, index2) {
-            return Column(
-              children: <Widget>[
-                const SizedBox(height: 50),
-                //HEADLINE TEXT
-                Center(
-                  child: const Text(
-                    'ESCOLHA NOVA SENHA',
-                    style: const TextStyle(
-                      color: Colors.indigo,
-                      fontSize: 50,
-                      fontFamily: 'BigNoodleTitling',
-                    ),
+      body: Scrollbar(
+        isAlwaysShown: true,
+        thickness: 15,
+        showTrackOnHover: true,
+        child: Container(
+          child: Column(
+            children: <Widget>[
+              const SizedBox(height: 50),
+              //HEADLINE TEXT
+              Center(
+                child: const Text(
+                  'ESCOLHA NOVA SENHA',
+                  style: const TextStyle(
+                    color: Colors.indigo,
+                    fontSize: 50,
+                    fontFamily: 'BigNoodleTitling',
                   ),
                 ),
-                const SizedBox(height: 50),
-                _sendPasswordRequestUi(),
-              ],
-            );
-          },
+              ),
+              const SizedBox(height: 50),
+              _sendPasswordRequestUi(),
+            ],
+          ),
         ),
       ),
     );

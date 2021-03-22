@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class StatusPedido extends StatefulWidget {
+  final bool blockUi;
+
+  StatusPedido({this.blockUi});
   @override
   _StatusPedidoState createState() => _StatusPedidoState();
 }
@@ -38,6 +41,7 @@ class _StatusPedidoState extends State<StatusPedido> {
               builder: (ctx, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   return DropdownSearch<String>(
+                      enabled: !widget.blockUi,
                       //popupShape: null,
                       onSaved: (String value) {
                         _novoPedStore.setCurrentStatus(value);

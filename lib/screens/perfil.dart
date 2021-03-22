@@ -1,10 +1,10 @@
 import 'package:digital_aligner_app/appbar/MyAppBar.dart';
 import 'package:digital_aligner_app/appbar/MyDrawer.dart';
-import 'package:digital_aligner_app/dados/scrollbarWidgetConfig.dart';
+
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/providers/cadastro_provider.dart';
 import 'package:digital_aligner_app/screens/login_screen.dart';
-import 'package:draggable_scrollbar/draggable_scrollbar.dart';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -22,9 +22,6 @@ class _PerfilState extends State<Perfil> {
   CadastroProvider cadastroStore;
   AuthProvider authStore;
 
-  // ----- For flutter web scroll -------
-  ScrollController _scrollController = ScrollController();
-  // ---- For flutter web scroll end ---
 /*
   @override
   void deactivate() {
@@ -305,118 +302,107 @@ class _PerfilState extends State<Perfil> {
       appBar: MyAppBar(),
       // *BUG* Verify closing drawer automaticlly when under 1200
       drawer: sWidth < 1200 ? MyDrawer() : null,
-      body: Container(
-        width: sWidth,
-        height: sHeight,
-        child: DraggableScrollbar.rrect(
-          heightScrollThumb: ScrollBarWidgetConfig.scrollBarHeight,
-          backgroundColor: ScrollBarWidgetConfig.color,
-          alwaysVisibleScrollThumb: true,
-          controller: _scrollController,
-          child: ListView.builder(
-            controller: _scrollController,
-            itemCount: 1,
-            itemExtent: null,
-            itemBuilder: (context, index2) {
-              return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 100),
-                child: Column(
-                  children: <Widget>[
-                    const SizedBox(
-                      height: 50,
-                    ),
-                    Center(
-                      child: Text(
-                        'Perfil',
-                        style: Theme.of(context).textTheme.headline1,
+      body: Scrollbar(
+        thickness: 15,
+        isAlwaysShown: true,
+        showTrackOnHover: true,
+        child: SingleChildScrollView(
+          child: Container(
+            height: 1000,
+            padding: const EdgeInsets.symmetric(horizontal: 100),
+            child: Column(
+              children: <Widget>[
+                const SizedBox(
+                  height: 50,
+                ),
+                Center(
+                  child: Text(
+                    'Perfil',
+                    style: Theme.of(context).textTheme.headline1,
+                  ),
+                ),
+                if (cadastroStore.getCadastros() == null)
+                  FutureBuilder(
+                    future: cadastroStore.fetchMyCadastro(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        if (snapshot.data == null) {
+                          return Container(
+                            child: Text(
+                                'Erro ao se connectar. Verifique sua conexão ou tente novamente mais tarde.'),
+                          );
+                        } else if (snapshot.data[0].containsKey('error')) {
+                          return Container(
+                            child: Text(
+                              snapshot.data[0]['message'] ?? '',
+                            ),
+                          );
+                        } else {
+                          return _userDataUi(snapshot.data, sWidth, sHeight);
+                        }
+                      } else {
+                        return Center(
+                          child: CircularProgressIndicator(
+                            valueColor:
+                                new AlwaysStoppedAnimation<Color>(Colors.blue),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                if (cadastroStore.getCadastros() != null)
+                  _userDataUi(
+                    cadastroStore.getCadastros(),
+                    sWidth,
+                    sHeight,
+                  ),
+                const SizedBox(
+                  height: 50,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      child: const Text(
+                        "Editar Cadastro",
+                        style: TextStyle(
+                          color: Colors.lightBlue,
+                        ),
                       ),
-                    ),
-                    if (cadastroStore.getCadastros() == null)
-                      FutureBuilder(
-                        future: cadastroStore.fetchMyCadastro(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            if (snapshot.data == null) {
-                              return Container(
-                                child: Text(
-                                    'Erro ao se connectar. Verifique sua conexão ou tente novamente mais tarde.'),
-                              );
-                            } else if (snapshot.data[0].containsKey('error')) {
-                              return Container(
-                                child: Text(
-                                  snapshot.data[0]['message'] ?? '',
-                                ),
-                              );
-                            } else {
-                              return _userDataUi(
-                                  snapshot.data, sWidth, sHeight);
-                            }
-                          } else {
-                            return Center(
-                              child: CircularProgressIndicator(
-                                valueColor: new AlwaysStoppedAnimation<Color>(
-                                    Colors.blue),
-                              ),
-                            );
+                      onPressed: () {
+                        Navigator.of(context)
+                            .pushNamed(
+                          EditarCadastro.routeName,
+                        )
+                            .then((value) {
+                          if (value) {
+                            Future.delayed(Duration(microseconds: 600))
+                                .then((value) => setState(() {
+                                      firstFetch = true;
+                                    }));
                           }
-                        },
-                      ),
-                    if (cadastroStore.getCadastros() != null)
-                      _userDataUi(
-                        cadastroStore.getCadastros(),
-                        sWidth,
-                        sHeight,
-                      ),
-                    const SizedBox(
-                      height: 50,
+                        });
+                      },
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextButton(
-                          child: const Text(
-                            "Editar Cadastro",
-                            style: TextStyle(
-                              color: Colors.lightBlue,
-                            ),
-                          ),
-                          onPressed: () {
-                            Navigator.of(context)
-                                .pushNamed(
-                              EditarCadastro.routeName,
-                            )
-                                .then((value) {
-                              if (value) {
-                                Future.delayed(Duration(microseconds: 600))
-                                    .then((value) => setState(() {
-                                          firstFetch = true;
-                                        }));
-                              }
-                            });
-                          },
+                    const SizedBox(width: 20),
+                    TextButton(
+                      child: const Text(
+                        "Alterar Senha",
+                        style: TextStyle(
+                          color: Colors.lightBlue,
                         ),
-                        const SizedBox(width: 20),
-                        TextButton(
-                          child: const Text(
-                            "Alterar Senha",
-                            style: TextStyle(
-                              color: Colors.lightBlue,
-                            ),
-                          ),
-                          onPressed: () {
-                            //Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 100,
+                      ),
+                      onPressed: () {
+                        //Navigator.of(context).pop();
+                      },
                     ),
                   ],
                 ),
-              );
-            },
+                const SizedBox(
+                  height: 100,
+                ),
+              ],
+            ),
           ),
         ),
       ),

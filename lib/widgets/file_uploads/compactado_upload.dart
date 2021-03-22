@@ -43,7 +43,7 @@ class _CompactadoUploadState extends State<CompactadoUpload>
   //List<CompactadoModel> _compactUploadsList = List<CompactadoModel>();
   Future<dynamic> _deletecompactUpload(_token, compactUploadId) async {
     var _response = await http.delete(
-      RotasUrl.rotaDeletecompactUpload + compactUploadId.toString(),
+      Uri.parse(RotasUrl.rotaDeletecompactUpload + compactUploadId.toString()),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -210,7 +210,7 @@ class _CompactadoUploadState extends State<CompactadoUpload>
 //FOR EDIT SCREEN
   Future<dynamic> _getModeloComp(_token) async {
     var _response = await http.post(
-      RotasUrl.rotaModeloCompactadoList,
+      Uri.parse(RotasUrl.rotaModeloCompactadoList),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

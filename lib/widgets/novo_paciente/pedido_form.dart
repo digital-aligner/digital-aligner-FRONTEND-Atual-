@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:digital_aligner_app/dados/scrollbarWidgetConfig.dart';
 import 'package:digital_aligner_app/providers/pedidos_list_provider.dart';
 import 'package:digital_aligner_app/providers/s3_delete_provider.dart';
 import 'package:digital_aligner_app/screens/meus_pacientes.dart';
@@ -12,7 +11,7 @@ import 'package:digital_aligner_app/widgets/file_uploads/radiografia_upload.dart
 import 'package:digital_aligner_app/widgets/novo_paciente/6_endereco/editar_endereco_entrega.dart';
 import 'package:digital_aligner_app/widgets/novo_paciente/7_termos/termos.dart';
 import 'package:digital_aligner_app/widgets/novo_paciente/8_status_pedido/status_pedido.dart';
-import 'package:draggable_scrollbar/draggable_scrollbar.dart';
+
 import 'package:dropdown_search/dropdown_search.dart';
 
 import '../../rotas_url.dart';
@@ -109,7 +108,7 @@ class _PedidoFormState extends State<PedidoForm> {
 
     try {
       final response = await http.get(
-        RotasUrl.rotaCadistas,
+        Uri.parse(RotasUrl.rotaCadistas),
         headers: requestHeaders,
       );
       _cadistas = json.decode(response.body);
@@ -118,10 +117,6 @@ class _PedidoFormState extends State<PedidoForm> {
     }
     return _cadistas;
   }
-
-  // ----- For flutter web scroll -------
-  ScrollController _scrollController = ScrollController();
-  // ---- For flutter web scroll end ---
 
   List<Function> _formList = [];
 
@@ -190,13 +185,11 @@ class _PedidoFormState extends State<PedidoForm> {
   ) {
     return Form(
       key: _formKey,
-      child: DraggableScrollbar.rrect(
-        heightScrollThumb: ScrollBarWidgetConfig.scrollBarHeight,
-        backgroundColor: ScrollBarWidgetConfig.color,
-        alwaysVisibleScrollThumb: true,
-        controller: _scrollController,
+      child: Scrollbar(
+        thickness: 15,
+        isAlwaysShown: true,
+        showTrackOnHover: true,
         child: ListView.builder(
-          controller: _scrollController,
           itemCount: 2,
           itemExtent: null,
           itemBuilder: (context, index2) {
@@ -430,6 +423,7 @@ class _PedidoFormState extends State<PedidoForm> {
                 Container(
                   height: 80,
                   child: TextFormField(
+                    enabled: !widget.blockUi,
                     onFieldSubmitted: (_) {
                       //_removeNodeFocus(context);
                     },
@@ -456,6 +450,7 @@ class _PedidoFormState extends State<PedidoForm> {
                   const SizedBox(height: 40),
                 if (widget.isEditarPedido && _authStore.role != 'Credenciado')
                   DropdownSearch<String>(
+                    enabled: !widget.blockUi,
                     errorBuilder: (context, searchEntry, exception) {
                       return Center(child: const Text('Algum erro ocorreu.'));
                     },
@@ -580,6 +575,7 @@ class _PedidoFormState extends State<PedidoForm> {
                   EditarEnderecoEntrega(
                     idUsuario: widget.userId,
                     idEndereco: widget.enderecoId,
+                    blockUi: widget.blockUi,
                   ),
                 const SizedBox(
                   height: 50,
@@ -588,19 +584,37 @@ class _PedidoFormState extends State<PedidoForm> {
                   ),
                 ),
                 //Termos
-                Termos(),
+                Termos(
+                  blockUi: widget.blockUi,
+                ),
                 //Status pedido
                 const SizedBox(height: 40),
                 //Widget makes request to server
                 if (_authStore.role != 'Credenciado' && widget.isEditarPedido)
-                  StatusPedido(),
+                  StatusPedido(
+                    blockUi: widget.blockUi,
+                  ),
                 const SizedBox(height: 20),
                 //Enviar
                 Row(
                   children: [
                     Expanded(child: Container()),
                     //Atualizar pedido btn
-                    if (widget.isEditarPedido)
+                    if (widget.isEditarPedido && widget.blockUi)
+                      Container(
+                        width: 300,
+                        child: ElevatedButton(
+                          onPressed: null,
+                          child: const Text(
+                            'ATUALIZAR PEDIDO',
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                    if (widget.isEditarPedido && !widget.blockUi)
                       Container(
                         width: 300,
                         child: ElevatedButton(
@@ -871,6 +885,7 @@ class _PedidoFormState extends State<PedidoForm> {
         NemoUpload(
           isEdit: widget.isEditarPedido,
           pedidoDados: widget.pedidoDados,
+          blockUi: widget.blockUi,
         ),
       ],
     );

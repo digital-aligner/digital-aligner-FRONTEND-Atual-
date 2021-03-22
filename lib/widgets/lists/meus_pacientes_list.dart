@@ -1,7 +1,6 @@
-import 'package:digital_aligner_app/dados/scrollbarWidgetConfig.dart';
 import 'package:digital_aligner_app/providers/pacientes_list_provider.dart';
 import 'package:digital_aligner_app/screens/paciente_screen.dart';
-import 'package:draggable_scrollbar/draggable_scrollbar.dart';
+
 import 'package:intl/intl.dart';
 
 import '../../providers/pacientes_list_provider.dart';
@@ -18,10 +17,6 @@ class MeusPacientesList extends StatefulWidget {
 class _MeusPacientesListState extends State<MeusPacientesList> {
   PacientesListProvider _pacienteListStore;
   var pacList;
-
-  // ----- For flutter web scroll -------
-  ScrollController _scrollController = ScrollController();
-  // ---- For flutter web scroll end ---
 
   //static ValueKey key = ValueKey('key_0');
   //static ValueKey key1 = ValueKey('key_1');
@@ -57,13 +52,11 @@ class _MeusPacientesListState extends State<MeusPacientesList> {
       );
     }
 
-    return DraggableScrollbar.rrect(
-      heightScrollThumb: ScrollBarWidgetConfig.scrollBarHeight / 2,
-      backgroundColor: Colors.black12,
-      alwaysVisibleScrollThumb: pacList.length > 3 ? true : false,
-      controller: _scrollController,
+    return Scrollbar(
+      thickness: 15,
+      isAlwaysShown: true,
+      showTrackOnHover: true,
       child: ListView.builder(
-        controller: _scrollController,
         itemCount: pacList.length,
         itemBuilder: (ctx, index) {
           return Container(
@@ -72,9 +65,7 @@ class _MeusPacientesListState extends State<MeusPacientesList> {
             child: Card(
               shadowColor: Colors.grey,
               margin: EdgeInsets.all(0),
-              color: (index % 2 == 0)
-                  ? Colors.white
-                  : Colors.black12.withOpacity(0.04),
+              color: (index % 2 == 0) ? Colors.white : Color(0xffe3e3e3),
               elevation: 0.5,
               child: Row(
                 children: <Widget>[

@@ -82,7 +82,7 @@ class AuthProvider with ChangeNotifier {
 
     try {
       final response = await http.post(
-        RotasUrl.rotaLogin,
+        Uri.parse(RotasUrl.rotaLogin),
         headers: requestHeaders,
         body: {
           'identifier': email,
@@ -131,7 +131,8 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<dynamic> getCountryAndStateData() async {
-    var _response = await http.get(RotasUrl.rotaGetPaisesAndState, headers: {
+    var _response =
+        await http.get(Uri.parse(RotasUrl.rotaGetPaisesAndState), headers: {
       'Content-Type': 'application/json',
     });
 

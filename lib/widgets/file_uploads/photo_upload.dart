@@ -48,7 +48,7 @@ class _PhotoUploadState extends State<PhotoUpload>
   //For novo pedido screen
   Future<dynamic> _deletePhoto(_token, photoId) async {
     var _response = await http.delete(
-      RotasUrl.rotaDeletePhoto + photoId.toString(),
+      Uri.parse(RotasUrl.rotaDeletePhoto + photoId.toString()),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -225,7 +225,7 @@ class _PhotoUploadState extends State<PhotoUpload>
   //FOR EDIT SCREEN
   Future<dynamic> _getPhotos(_token) async {
     var _response = await http.post(
-      RotasUrl.rotafotografiasList,
+      Uri.parse(RotasUrl.rotafotografiasList),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

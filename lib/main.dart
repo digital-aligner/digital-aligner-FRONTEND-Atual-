@@ -141,10 +141,15 @@ class MyApp extends StatelessWidget {
               enabledBorder: OutlineInputBorder(
                 //borderRadius: BorderRadius.circular(30),
                 borderSide: BorderSide(
-                  color: Color.fromRGBO(232, 232, 232, 1),
+                  width: 1.5,
+                  color: Colors.black26,
                 ),
               ),
+              disabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black12),
+              ),
             ),
+
             primarySwatch: Colors.blue,
             accentColor: Colors.white,
             //Custom textheme for use anywhere in app

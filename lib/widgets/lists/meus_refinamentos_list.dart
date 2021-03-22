@@ -1,12 +1,9 @@
-import 'package:digital_aligner_app/dados/scrollbarWidgetConfig.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 
 //import 'package:digital_aligner_app/screens/gerar_relatorio_screen.dart';
 
 import 'package:digital_aligner_app/screens/pedido_view_screen.dart';
 import 'package:digital_aligner_app/screens/relatorio_view_screen.dart';
-
-import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 
 import 'package:flutter/rendering.dart';
 
@@ -27,9 +24,6 @@ class _MeusRefinamentosListState extends State<MeusRefinamentosList> {
   PedidosListProvider _pedidosListStore;
   AuthProvider authStore;
   List<dynamic> pedList;
-  // ----- For flutter web scroll -------
-  ScrollController _scrollController2 = ScrollController();
-  // ---- For flutter web scroll end ---
 
   bool _absorbPointerBool = false;
 
@@ -172,13 +166,11 @@ class _MeusRefinamentosListState extends State<MeusRefinamentosList> {
       );
     }
 
-    return DraggableScrollbar.rrect(
-      heightScrollThumb: ScrollBarWidgetConfig.scrollBarHeight / 2,
-      backgroundColor: Colors.black12,
-      alwaysVisibleScrollThumb: pedList.length > 3 ? true : false,
-      controller: _scrollController2,
+    return Scrollbar(
+      thickness: 15,
+      isAlwaysShown: true,
+      showTrackOnHover: true,
       child: ListView.builder(
-        controller: _scrollController2,
         itemCount: pedList.length,
         itemBuilder: (ctx, index) {
           return AbsorbPointer(
@@ -188,9 +180,7 @@ class _MeusRefinamentosListState extends State<MeusRefinamentosList> {
               child: Card(
                 shadowColor: Colors.grey,
                 margin: EdgeInsets.all(0),
-                color: (index % 2 == 0)
-                    ? Colors.white
-                    : Colors.black12.withOpacity(0.04),
+                color: (index % 2 == 0) ? Colors.white : Color(0xffe3e3e3),
                 elevation: 0.5,
                 child: Row(
                   children: <Widget>[

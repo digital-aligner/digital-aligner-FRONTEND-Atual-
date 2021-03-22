@@ -48,7 +48,8 @@ class _RelatorioPPTUploadState extends State<RelatorioPPTUpload>
   Future<dynamic> _deleterelatorioPPTUpload(
       _token, relatorioPPTUploadId) async {
     var _response = await http.delete(
-      RotasUrl.rotaDeleteRelatorioUpload + relatorioPPTUploadId.toString(),
+      Uri.parse(
+          RotasUrl.rotaDeleteRelatorioUpload + relatorioPPTUploadId.toString()),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -203,7 +204,7 @@ class _RelatorioPPTUploadState extends State<RelatorioPPTUpload>
   //FOR EDIT SCREEN
   Future<dynamic> _getPpts(_token) async {
     var _response = await http.post(
-      RotasUrl.rotaPptsList,
+      Uri.parse(RotasUrl.rotaPptsList),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

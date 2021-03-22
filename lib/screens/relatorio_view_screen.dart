@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
-import 'package:digital_aligner_app/dados/scrollbarWidgetConfig.dart';
+
 import 'package:digital_aligner_app/providers/auth_provider.dart';
-import 'package:draggable_scrollbar/draggable_scrollbar.dart';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -33,11 +33,8 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
   //for approving and showing spinner
   bool _sendingAprovacao = false;
 
-  // ----- For flutter web scroll -------
-  ScrollController _scrollController = ScrollController();
-
   Future<Map<dynamic, dynamic>> _aprovarRelatorio(int id) async {
-    var _response = await http.put(RotasUrl.rotaAprovarRelatorio,
+    var _response = await http.put(Uri.parse(RotasUrl.rotaAprovarRelatorio),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -277,7 +274,7 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
     };
 
     var _response = await http.post(
-      RotasUrl.rotaSolicitarAlteracao,
+      Uri.parse(RotasUrl.rotaSolicitarAlteracao),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${_authStore.token}'
@@ -543,28 +540,23 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
       body: Container(
         width: sWidth,
         height: sHeight,
-        child: DraggableScrollbar.rrect(
-          heightScrollThumb: ScrollBarWidgetConfig.scrollBarHeight,
-          backgroundColor: ScrollBarWidgetConfig.color,
-          alwaysVisibleScrollThumb: true,
-          controller: _scrollController,
-          child: ListView.builder(
-            controller: _scrollController,
-            itemCount: 1,
-            itemExtent: null,
-            itemBuilder: (context, index2) {
-              return Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: sWidth > 760 ? 100 : 8,
-                  vertical: 50,
-                ),
-                child: Column(
-                  children: [
-                    _visualizarRelatorioUi(),
-                  ],
-                ),
-              );
-            },
+        child: Scrollbar(
+          thickness: 15,
+          isAlwaysShown: true,
+          showTrackOnHover: true,
+          child: SingleChildScrollView(
+            child: Container(
+              height: 900,
+              padding: EdgeInsets.symmetric(
+                horizontal: sWidth > 760 ? 100 : 8,
+                vertical: 50,
+              ),
+              child: Column(
+                children: [
+                  _visualizarRelatorioUi(),
+                ],
+              ),
+            ),
           ),
         ),
       ),

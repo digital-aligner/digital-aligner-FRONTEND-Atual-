@@ -72,6 +72,7 @@ class _DadosIniciaisState extends State<DadosIniciais>
                         _novoPedStore.setNomePaciente(value);
                       },
                       decoration: const InputDecoration(
+                        border: const OutlineInputBorder(),
                         counterText: '',
                         labelText: 'Nome do Paciente *',
                         //hintText: 'Nome do Paciente *',

@@ -56,7 +56,7 @@ class PedidosListProvider with ChangeNotifier {
 
     try {
       final response = await http.post(
-        RotasUrl.rotaDeletePedido,
+        Uri.parse(RotasUrl.rotaDeletePedido),
         headers: requestHeaders,
         body: json.encode({'id_pedido': id.toString()}),
       );
@@ -88,7 +88,7 @@ class PedidosListProvider with ChangeNotifier {
 
     try {
       final response = await http.get(
-        _routeType + '?queryString=' + _queryString,
+        Uri.parse(_routeType + '?queryString=' + _queryString),
         headers: requestHeaders,
       );
       _pedidos = json.decode(response.body);
@@ -111,11 +111,11 @@ class PedidosListProvider with ChangeNotifier {
 
     try {
       final response = await http.get(
-        RotasUrl.rotaMeusPedidos +
+        Uri.parse(RotasUrl.rotaMeusPedidos +
             '?pacienteId=' +
             id.toString() +
             '&queryString=' +
-            _queryString,
+            _queryString),
         headers: requestHeaders,
       );
       _pedidos = json.decode(response.body);
@@ -136,11 +136,11 @@ class PedidosListProvider with ChangeNotifier {
 
     try {
       final response = await http.get(
-        RotasUrl.rotaMeusSetups +
+        Uri.parse(RotasUrl.rotaMeusSetups +
             '?userId=' +
             id.toString() +
             '&queryString=' +
-            _queryString,
+            _queryString),
         headers: requestHeaders,
       );
       _pedidos = json.decode(response.body);
@@ -161,11 +161,11 @@ class PedidosListProvider with ChangeNotifier {
 
     try {
       final response = await http.get(
-        RotasUrl.rotaMeusRefinamentos +
+        Uri.parse(RotasUrl.rotaMeusRefinamentos +
             '?pacienteId=' +
             id.toString() +
             '&queryString=' +
-            _queryString,
+            _queryString),
         headers: requestHeaders,
       );
       _pedidos = json.decode(response.body);

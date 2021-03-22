@@ -25,7 +25,7 @@ class S3DeleteProvider with ChangeNotifier {
 
   Future<void> deleteFileRequest(int fileId) async {
     await http.delete(
-      RotasUrl.rotaDeleteS3 + fileId.toString(),
+      Uri.parse(RotasUrl.rotaDeleteS3 + fileId.toString()),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

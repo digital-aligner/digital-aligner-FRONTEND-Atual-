@@ -97,7 +97,7 @@ class CadastroProvider with ChangeNotifier {
 
     try {
       final response = await http.get(
-        RotasUrl.rotaUserMe,
+        Uri.parse(RotasUrl.rotaUserMe),
         headers: requestHeaders,
       );
       _cadastros = json.decode(response.body);
@@ -140,7 +140,7 @@ class CadastroProvider with ChangeNotifier {
 
     try {
       final response = await http.get(
-        _routeType + '?queryString=' + _queryString,
+        Uri.parse(_routeType + '?queryString=' + _queryString),
         headers: requestHeaders,
       );
       _cadastros = json.decode(response.body);
@@ -177,7 +177,7 @@ class CadastroProvider with ChangeNotifier {
 
     try {
       final response = await http.get(
-        _routeType + '?queryString=' + _queryString,
+        Uri.parse(_routeType + '?queryString=' + _queryString),
         headers: requestHeaders,
       );
       _cadastros = json.decode(response.body);
@@ -201,7 +201,7 @@ class CadastroProvider with ChangeNotifier {
 
     try {
       final response = await http.put(
-        url,
+        Uri.parse(url),
         headers: requestHeaders,
         body: json.encode(
           {
@@ -230,7 +230,7 @@ class CadastroProvider with ChangeNotifier {
 
     try {
       final response = await http.put(
-        url,
+        Uri.parse(url),
         headers: requestHeaders,
         body: json.encode(
           {
@@ -258,7 +258,7 @@ class CadastroProvider with ChangeNotifier {
 
     try {
       final response = await http.put(
-        url,
+        Uri.parse(url),
         headers: requestHeaders,
         body: json.encode(
           {
@@ -276,14 +276,14 @@ class CadastroProvider with ChangeNotifier {
   }
 
   Future<dynamic> enviarCadastro() async {
-    var _response =
-        await http.put(RotasUrl.rotaCadastro + _selectedCad.id.toString(),
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              'Authorization': 'Bearer $_token'
-            },
-            body: json.encode(_selectedCad.toJson()));
+    var _response = await http.put(
+        Uri.parse(RotasUrl.rotaCadastro + _selectedCad.id.toString()),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $_token'
+        },
+        body: json.encode(_selectedCad.toJson()));
 
     Map _data = json.decode(_response.body);
 
@@ -323,7 +323,7 @@ class CadastroProvider with ChangeNotifier {
 
     try {
       final _response = await http.get(
-        RotasUrl.rotaAprovacao,
+        Uri.parse(RotasUrl.rotaAprovacao),
         headers: requestHeaders,
       );
       _aprovTableMap = json.decode(_response.body);

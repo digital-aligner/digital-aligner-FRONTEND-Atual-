@@ -45,7 +45,7 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload>
 
   Future<dynamic> _deletemodeloInf(_token, modeloInfId) async {
     var _response = await http.delete(
-      RotasUrl.rotaDeleteModeloInf + modeloInfId.toString(),
+      Uri.parse(RotasUrl.rotaDeleteModeloInf + modeloInfId.toString()),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -208,7 +208,7 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload>
   //FOR EDIT SCREEN
   Future<dynamic> _getModeloInf(_token) async {
     var _response = await http.post(
-      RotasUrl.rotaModeloInferiorList,
+      Uri.parse(RotasUrl.rotaModeloInferiorList),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

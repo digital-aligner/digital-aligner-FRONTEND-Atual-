@@ -1,7 +1,7 @@
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
-import 'package:digital_aligner_app/dados/scrollbarWidgetConfig.dart';
+
 import 'package:digital_aligner_app/providers/auth_provider.dart';
-import 'package:draggable_scrollbar/draggable_scrollbar.dart';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:native_pdf_view/native_pdf_view.dart';
@@ -20,11 +20,9 @@ class ViewRelatorioScreen extends StatefulWidget {
 class _ViewRelatorioScreenState extends State<ViewRelatorioScreen> {
   PdfController pdfController;
   bool firstFetch = true;
-  // ----- For flutter web scroll -------
-  ScrollController _scrollController = ScrollController();
 
   Future<dynamic> _fetchRelatorioPDF(String url) async {
-    var response = await http.get(url);
+    var response = await http.get(Uri.parse(url));
     setState(() {
       firstFetch = false;
       pdfController = PdfController(
@@ -37,6 +35,7 @@ class _ViewRelatorioScreenState extends State<ViewRelatorioScreen> {
   Widget _relatorioView() {
     return Column(
       children: [
+        const SizedBox(height: 20),
         Container(
           width: MediaQuery.of(context).size.width - 60 < 100
               ? 100
@@ -101,31 +100,26 @@ class _ViewRelatorioScreenState extends State<ViewRelatorioScreen> {
     }
     return Scaffold(
       appBar: SecondaryAppbar(),
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        //padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-        child: DraggableScrollbar.rrect(
-          heightScrollThumb: ScrollBarWidgetConfig.scrollBarHeight,
-          backgroundColor: ScrollBarWidgetConfig.color,
-          alwaysVisibleScrollThumb: false,
-          controller: _scrollController,
-          child: ListView.builder(
-            controller: _scrollController,
-            itemCount: 1,
-            itemExtent: null,
-            itemBuilder: (context, index2) {
-              if (firstFetch)
-                return Center(
-                  child: CircularProgressIndicator(
-                    valueColor: new AlwaysStoppedAnimation<Color>(
-                      Colors.blue,
-                    ),
-                  ),
-                );
-              if (!firstFetch) return _relatorioView();
-              return Container();
-            },
+      body: Scrollbar(
+        thickness: 15,
+        isAlwaysShown: true,
+        showTrackOnHover: true,
+        child: SingleChildScrollView(
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              children: [
+                firstFetch
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                            Colors.blue,
+                          ),
+                        ),
+                      )
+                    : _relatorioView(),
+              ],
+            ),
           ),
         ),
       ),

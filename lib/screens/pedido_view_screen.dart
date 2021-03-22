@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
-import 'package:digital_aligner_app/dados/scrollbarWidgetConfig.dart';
+
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 
 import 'package:digital_aligner_app/providers/pedidos_list_provider.dart';
@@ -9,19 +9,18 @@ import 'package:digital_aligner_app/rotas_url.dart';
 
 import 'package:digital_aligner_app/screens/gerar_relatorio_screen.dart';
 import 'package:digital_aligner_app/screens/login_screen.dart';
-import 'package:digital_aligner_app/screens/model_viewer.dart';
+
 import 'package:digital_aligner_app/screens/relatorio_view_screen.dart';
 import 'package:digital_aligner_app/screens/view_images_screen.dart';
 
-import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
-import 'package:responsive_grid/responsive_grid.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'editar_pedido.dart';
+import 'view_modelos_screen.dart';
 
 class PedidoViewScreen extends StatefulWidget {
   static const routeName = '/pedido-view';
@@ -184,9 +183,63 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
   ) {
     return Column(
       children: [
-        ModelViewer(
-          modeloSupLink: _modeloSupLink,
-          modeloInfLink: _modeloInfLink,
+        //Modelos 3d
+        Container(
+          height: 100,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: const Text(
+              ' Modelo superior/inferior: ',
+              style: const TextStyle(
+                fontSize: 16,
+                //fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        Card(
+          elevation: 5,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ViewModelosScreen(
+                          modeloSupLink: _modeloSupLink,
+                          modeloInfLink: _modeloInfLink,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Image(
+                    fit: BoxFit.cover,
+                    width: 100,
+                    image: AssetImage('logos/cubo.jpg'),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ViewModelosScreen(
+                          modeloSupLink: _modeloSupLink,
+                          modeloInfLink: _modeloInfLink,
+                        ),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.download_done_rounded),
+                  label: const Text('Visualizar modelos 3D'),
+                ),
+              ],
+            ),
+          ),
         ),
         //Fotografias
         Container(
@@ -272,7 +325,7 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
 
   Future<List<dynamic>> _fetchRelatorio(int pedidoId) async {
     var _response = await http.get(
-      RotasUrl.rotaMeuRelatorio + '?pedidoId=' + pedidoId.toString(),
+      Uri.parse(RotasUrl.rotaMeuRelatorio + '?pedidoId=' + pedidoId.toString()),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -518,11 +571,8 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
       body: Container(
         width: sWidth,
         height: sHeight,
-        child: DraggableScrollbar.rrect(
-          heightScrollThumb: ScrollBarWidgetConfig.scrollBarHeight,
-          backgroundColor: ScrollBarWidgetConfig.color,
-          alwaysVisibleScrollThumb: true,
-          controller: _scrollController,
+        child: Scrollbar(
+          isAlwaysShown: true,
           child: ListView.builder(
             controller: _scrollController,
             itemCount: 1,
@@ -533,137 +583,122 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                   horizontal: sWidth > 760 ? 100 : 8,
                   vertical: 50,
                 ),
-                child: Column(
-                  children: [
-                    ResponsiveGridRow(children: [
+                child: Column(children: [
+                  Column(
+                    children: [
                       //Código pedido
-                      ResponsiveGridCol(
-                        lg: 12,
-                        child: Container(
-                          //color: Colors.black12.withOpacity(0.04),
-                          height: 50,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              '${'PEDIDO: ' + pedList[index]['codigo_pedido']}' ??
-                                  '',
-                              style: const TextStyle(
-                                color: Colors.black54,
-                                fontSize: 36,
-                                //fontWeight: FontWeight.bold,
-                              ),
+                      Container(
+                        //color: Colors.black12.withOpacity(0.04),
+                        height: 50,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            '${'PEDIDO: ' + pedList[index]['codigo_pedido']}' ??
+                                '',
+                            style: const TextStyle(
+                              color: Colors.black54,
+                              fontSize: 36,
+                              //fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                       ),
                       //Divider
-                      ResponsiveGridCol(
-                        lg: 12,
-                        child: SizedBox(
-                          height: 50,
-                          child: Center(
-                            child: Container(
-                              margin: const EdgeInsetsDirectional.only(
-                                  start: 1.0, end: 1.0),
-                              height: 1.0,
-                              color: Colors.black12,
+                      //New divider will have to be here
+                      //VISUALIZAR/EDITAR PEDIDO
+                      Container(
+                        width: 300,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pushNamed(
+                              EditarPedido.routeName,
+                              arguments: {
+                                'codigoPedido': pedList[index]['codigo_pedido'],
+                                'pedidoId': pedList[index]['id'],
+                                'userId': pedList[index]
+                                    ['users_permissions_user']['id'],
+                                'enderecoId': pedList[index]['endereco_usuario']
+                                    ['id'],
+                                'pedidoDados': pedList[index],
+                              },
+                            ).then((value) {
+                              if (value) {
+                                Navigator.pop(context);
+                                Future.delayed(
+                                  Duration(milliseconds: 200),
+                                  () =>
+                                      _pedidosListStore.clearPedidosAndUpdate(),
+                                );
+                              }
+                            });
+                          },
+                          child: const Text(
+                            'VISUALIZAR/EDITAR PEDIDO',
+                            style: const TextStyle(
+                              color: Colors.white,
                             ),
                           ),
                         ),
                       ),
-                    ]),
-                    //VISUALIZAR/EDITAR PEDIDO
-                    Container(
-                      width: 300,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pushNamed(
-                            EditarPedido.routeName,
-                            arguments: {
-                              'codigoPedido': pedList[index]['codigo_pedido'],
-                              'pedidoId': pedList[index]['id'],
-                              'userId': pedList[index]['users_permissions_user']
-                                  ['id'],
-                              'enderecoId': pedList[index]['endereco_usuario']
-                                  ['id'],
-                              'pedidoDados': pedList[index],
-                            },
-                          ).then((value) {
-                            if (value) {
-                              Navigator.pop(context);
-                              Future.delayed(
-                                Duration(milliseconds: 200),
-                                () => _pedidosListStore.clearPedidosAndUpdate(),
+                      //RELATÓRIO
+                      const SizedBox(height: 20),
+                      if (relatorioFirstFetch)
+                        FutureBuilder(
+                          future: _fetchRelatorio(pedList[index]['id']),
+                          builder: (ctx, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              return _manageRelatorioBtn(
+                                ctx,
+                                index,
+                                snapshot.data,
+                                sWidth,
+                                sHeight,
+                                pedList[index]['codigo_pedido'],
+                              );
+                            } else {
+                              return CircularProgressIndicator(
+                                valueColor: new AlwaysStoppedAnimation<Color>(
+                                  Colors.blue,
+                                ),
                               );
                             }
-                          });
-                        },
-                        child: const Text(
-                          'VISUALIZAR/EDITAR PEDIDO',
-                          style: const TextStyle(
-                            color: Colors.white,
-                          ),
+                          },
                         ),
-                      ),
-                    ),
-                    //RELATÓRIO
-                    const SizedBox(height: 20),
-                    if (relatorioFirstFetch)
-                      FutureBuilder(
-                        future: _fetchRelatorio(pedList[index]['id']),
-                        builder: (ctx, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            return _manageRelatorioBtn(
-                              ctx,
-                              index,
-                              snapshot.data,
-                              sWidth,
-                              sHeight,
-                              pedList[index]['codigo_pedido'],
-                            );
-                          } else {
-                            return CircularProgressIndicator(
-                              valueColor: new AlwaysStoppedAnimation<Color>(
-                                Colors.blue,
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    if (!relatorioFirstFetch &&
-                        !relatorioData[0].containsKey('error'))
-                      _manageRelatorioBtn(
-                        context,
-                        index,
-                        relatorioData,
-                        sWidth,
-                        sHeight,
-                        pedList[index]['codigo_pedido'],
-                      ),
-                    const SizedBox(height: 20),
-                    if (_authStore.role != 'Credenciado')
-                      _manageNemoBtn(
+                      if (!relatorioFirstFetch &&
+                          !relatorioData[0].containsKey('error'))
+                        _manageRelatorioBtn(
+                          context,
+                          index,
+                          relatorioData,
+                          sWidth,
+                          sHeight,
+                          pedList[index]['codigo_pedido'],
+                        ),
+                      const SizedBox(height: 20),
+                      if (_authStore.role != 'Credenciado')
+                        _manageNemoBtn(
+                          context,
+                          index,
+                          sWidth,
+                          sHeight,
+                        ),
+                      _optionsBtns(
                         context,
                         index,
                         sWidth,
                         sHeight,
                       ),
-                    _optionsBtns(
-                      context,
-                      index,
-                      sWidth,
-                      sHeight,
-                    ),
-                    _pedidoUi(
-                      pedList,
-                      index,
-                      sWidth,
-                      sHeight,
-                    ),
-                    const SizedBox(height: 40),
-                  ],
-                ),
+                      _pedidoUi(
+                        pedList,
+                        index,
+                        sWidth,
+                        sHeight,
+                      ),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                ]),
               );
             },
           ),

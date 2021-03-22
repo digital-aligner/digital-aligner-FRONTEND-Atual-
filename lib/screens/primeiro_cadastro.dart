@@ -1,10 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
 import 'package:digital_aligner_app/dados/scrollbarWidgetConfig.dart';
+import 'package:digital_aligner_app/functions/system_functions.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
-import 'package:draggable_scrollbar/draggable_scrollbar.dart';
+
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -62,6 +64,8 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
   final _controllerTEL = TextEditingController();
   final _controllerCEL = TextEditingController();
 
+  Timer searchOnStoppedTyping;
+
   Widget _form() {
     return Form(
       key: _formKey,
@@ -79,6 +83,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                     Container(
                       height: 80,
                       child: TextFormField(
+                        maxLength: 255,
                         onSaved: (String value) {
                           _nome = value;
                         },
@@ -90,6 +95,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                         },
                         decoration: const InputDecoration(
                           labelText: 'Nome: *',
+                          counterText: '',
                           //hintText: 'Insira seu nome',
                           border: const OutlineInputBorder(),
                         ),
@@ -99,6 +105,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                     Container(
                       height: 80,
                       child: TextFormField(
+                        maxLength: 255,
                         onSaved: (String value) {
                           _sobrenome = value;
                         },
@@ -111,6 +118,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                         decoration: const InputDecoration(
                           labelText: 'Sobrenome: *',
                           //hintText: 'Insira seu nome',
+                          counterText: '',
                           border: const OutlineInputBorder(),
                         ),
                       ),
@@ -123,13 +131,36 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                             height: 80,
                             child: TextFormField(
                               onSaved: (String value) {
-                                _controllerCPF.text = value;
+                                _controllerCPF.text =
+                                    SystemFunctions.formatCpfRemoveFormating(
+                                  cpf: value,
+                                );
                               },
                               validator: (value) {
                                 if (value.length < 11) {
                                   return 'Por favor insira seu cpf';
                                 }
                                 return null;
+                              },
+                              onChanged: (value) async {
+                                const duration = Duration(milliseconds: 500);
+                                if (searchOnStoppedTyping != null) {
+                                  setState(
+                                      () => searchOnStoppedTyping.cancel());
+                                }
+                                setState(
+                                  () => searchOnStoppedTyping = new Timer(
+                                    duration,
+                                    () {
+                                      if (value.length == 11) {
+                                        String fCpf = SystemFunctions.formatCpf(
+                                          cpf: value,
+                                        );
+                                        _controllerCPF.text = fCpf;
+                                      }
+                                    },
+                                  ),
+                                );
                               },
                               maxLength: 11,
                               controller: _controllerCPF,
@@ -252,6 +283,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
                       height: 80,
                       child: TextFormField(
+                        maxLength: 255,
                         onSaved: (String value) {
                           _endereco = value;
                         },
@@ -263,6 +295,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                         },
                         initialValue: null,
                         decoration: const InputDecoration(
+                          counterText: '',
                           labelText: 'Endereço: *',
                           border: const OutlineInputBorder(),
                         ),
@@ -275,6 +308,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                           child: Container(
                             height: 80,
                             child: TextFormField(
+                              maxLength: 255,
                               onSaved: (String value) {
                                 _controllerNUM.text = value;
                               },
@@ -292,6 +326,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                               ],
                               initialValue: null,
                               decoration: InputDecoration(
+                                counterText: '',
                                 labelText: 'Número: *',
                                 border: OutlineInputBorder(),
                               ),
@@ -303,6 +338,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                           child: Container(
                             height: 80,
                             child: TextFormField(
+                              maxLength: 255,
                               onSaved: (String value) {
                                 _complemento = value;
                               },
@@ -314,6 +350,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                               },
                               initialValue: null,
                               decoration: InputDecoration(
+                                counterText: '',
                                 labelText: 'Complemento: *',
                                 border: OutlineInputBorder(),
                               ),
@@ -326,6 +363,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                     Container(
                       height: 80,
                       child: TextFormField(
+                        maxLength: 255,
                         onSaved: (String value) {
                           _bairro = value;
                         },
@@ -337,6 +375,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                         },
                         initialValue: null,
                         decoration: InputDecoration(
+                          counterText: '',
                           labelText: 'Bairro: *',
                           border: OutlineInputBorder(),
                         ),
@@ -347,13 +386,35 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       height: 80,
                       child: TextFormField(
                         onSaved: (String value) {
-                          _controllerCEP.text = value;
+                          _controllerCEP.text =
+                              SystemFunctions.formatCepRemoveFormating(
+                            cep: value,
+                          );
                         },
                         validator: (value) {
                           if (value.length == 0) {
                             return 'Por favor insira seu CEP';
                           }
                           return null;
+                        },
+                        onChanged: (value) async {
+                          const duration = Duration(milliseconds: 500);
+                          if (searchOnStoppedTyping != null) {
+                            setState(() => searchOnStoppedTyping.cancel());
+                          }
+                          setState(
+                            () => searchOnStoppedTyping = new Timer(
+                              duration,
+                              () {
+                                if (value.length == 8) {
+                                  String fCep = SystemFunctions.formatCep(
+                                    cep: value,
+                                  );
+                                  _controllerCEP.text = fCep;
+                                }
+                              },
+                            ),
+                          );
                         },
                         maxLength: 8,
                         controller: _controllerCEP,
@@ -471,13 +532,37 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                             height: 80,
                             child: TextFormField(
                               onSaved: (String value) {
-                                _controllerTEL.text = value;
+                                _controllerTEL.text = SystemFunctions
+                                    .formatTelefoneRemoveFormating(
+                                  telefone: value,
+                                );
                               },
                               validator: (value) {
                                 if (value.length == 0) {
                                   return 'Por favor insira seu número de telefone';
                                 }
                                 return null;
+                              },
+                              onChanged: (value) async {
+                                const duration = Duration(milliseconds: 500);
+                                if (searchOnStoppedTyping != null) {
+                                  setState(
+                                      () => searchOnStoppedTyping.cancel());
+                                }
+                                setState(
+                                  () => searchOnStoppedTyping = new Timer(
+                                    duration,
+                                    () {
+                                      if (value.length == 10) {
+                                        String fTel =
+                                            SystemFunctions.formatTelefone(
+                                          telefone: value,
+                                        );
+                                        _controllerTEL.text = fTel;
+                                      }
+                                    },
+                                  ),
+                                );
                               },
                               maxLength: 10,
                               controller: _controllerTEL,
@@ -487,9 +572,6 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                     RegExp(r'[0-9]')),
                               ],
                               initialValue: null,
-                              onChanged: (value) {
-                                //_loginStore.setEmail(value);
-                              },
                               decoration: InputDecoration(
                                 //To hide cep length num
                                 counterText: '',
@@ -507,13 +589,37 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                             height: 80,
                             child: TextFormField(
                               onSaved: (String value) {
-                                _controllerCEL.text = value;
+                                _controllerCEL.text = SystemFunctions
+                                    .formatCellphoneRemoveFormating(
+                                  cellphone: value,
+                                );
                               },
                               validator: (value) {
                                 if (value.length == 0) {
                                   return 'Por favor insira seu número de celular';
                                 }
                                 return null;
+                              },
+                              onChanged: (value) async {
+                                const duration = Duration(milliseconds: 500);
+                                if (searchOnStoppedTyping != null) {
+                                  setState(
+                                      () => searchOnStoppedTyping.cancel());
+                                }
+                                setState(
+                                  () => searchOnStoppedTyping = new Timer(
+                                    duration,
+                                    () {
+                                      if (value.length == 11) {
+                                        String fCel =
+                                            SystemFunctions.formatCellphone(
+                                          cellphone: value,
+                                        );
+                                        _controllerCEL.text = fCel;
+                                      }
+                                    },
+                                  ),
+                                );
                               },
                               maxLength: 11,
                               controller: _controllerCEL,
@@ -523,9 +629,6 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                     RegExp(r'[0-9]')),
                               ],
                               initialValue: null,
-                              onChanged: (value) {
-                                //_loginStore.setEmail(value);
-                              },
                               decoration: InputDecoration(
                                 //To hide cep length num
                                 counterText: '',
@@ -774,7 +877,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
         DateFormat('dd/MM/yyyy').format(dataNasc).toString();
 
     var _response = await http.post(
-      RotasUrl.rotaCadastro,
+      Uri.parse(RotasUrl.rotaCadastro),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(_cadastro),
     );
@@ -827,17 +930,14 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
             currentFocus.unfocus();
           }
         },
-        child: DraggableScrollbar.rrect(
-          heightScrollThumb: ScrollBarWidgetConfig.scrollBarHeight,
-          backgroundColor: ScrollBarWidgetConfig.color,
-          alwaysVisibleScrollThumb: true,
-          controller: _scrollController,
-          child: ListView.builder(
-            controller: _scrollController,
-            itemCount: 1,
-            itemExtent: null,
-            itemBuilder: (context, index2) {
-              return Column(
+        child: Scrollbar(
+          thickness: 15,
+          isAlwaysShown: true,
+          showTrackOnHover: true,
+          child: SingleChildScrollView(
+            child: Container(
+              height: 1800,
+              child: Column(
                 children: <Widget>[
                   if (firstFetch && _stateCountryData == null)
                     Column(
@@ -873,8 +973,8 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       ],
                     ),
                 ],
-              );
-            },
+              ),
+            ),
           ),
         ),
       ),

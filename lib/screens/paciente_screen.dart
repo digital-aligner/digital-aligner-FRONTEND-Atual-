@@ -66,7 +66,7 @@ class _PacienteScreenState extends State<PacienteScreen> {
 
     try {
       final response = await http.get(
-        RotasUrl.rotaMeuHistorico + '?id=' + args['id'].toString(),
+        Uri.parse(RotasUrl.rotaMeuHistorico + '?id=' + args['id'].toString()),
         headers: requestHeaders,
       );
       var _historico = json.decode(response.body);
@@ -292,7 +292,7 @@ class _PacienteScreenState extends State<PacienteScreen> {
     print(_cadastro);
 
     var _response = await http.put(
-      RotasUrl.rotaPaciente + args['id'].toString(),
+      Uri.parse(RotasUrl.rotaPaciente + args['id'].toString()),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${_authStore.token}'
@@ -430,12 +430,17 @@ class _PacienteScreenState extends State<PacienteScreen> {
     }
     return Scaffold(
       appBar: SecondaryAppbar(),
-      body: SingleChildScrollView(
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: 1000,
-          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-          child: _pacienteData(args),
+      body: Scrollbar(
+        isAlwaysShown: true,
+        thickness: 15,
+        showTrackOnHover: true,
+        child: SingleChildScrollView(
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: 1000,
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+            child: _pacienteData(args),
+          ),
         ),
       ),
     );

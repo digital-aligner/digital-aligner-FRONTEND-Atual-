@@ -50,11 +50,11 @@ class PacientesListProvider with ChangeNotifier {
 
     try {
       final response = await http.get(
-        RotasUrl.rotaMeusPacientes +
+        Uri.parse(RotasUrl.rotaMeusPacientes +
             '?id=' +
             _id.toString() +
             '&queryString=' +
-            _queryString,
+            _queryString),
         headers: requestHeaders,
       );
       _pacientes = json.decode(response.body);

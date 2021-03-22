@@ -512,7 +512,7 @@ class PedidoProvider with ChangeNotifier {
       Map<String, dynamic> _jsonRequest = _objToJsonRequest();
       print(_jsonRequest);
 
-      var _response = await http.post(RotasUrl.rotaNovoPaciente,
+      var _response = await http.post(Uri.parse(RotasUrl.rotaNovoPaciente),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
@@ -536,7 +536,7 @@ class PedidoProvider with ChangeNotifier {
       Map<String, dynamic> _jsonRequest = _objToJsonRequest();
       print(_jsonRequest);
 
-      var _response = await http.post(RotasUrl.rotaNovoPedido,
+      var _response = await http.post(Uri.parse(RotasUrl.rotaNovoPedido),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
@@ -560,7 +560,7 @@ class PedidoProvider with ChangeNotifier {
       Map<String, dynamic> _jsonRequest = _objToJsonRequest();
       print(_jsonRequest);
 
-      var _response = await http.post(RotasUrl.rotaNovoRefinamento,
+      var _response = await http.post(Uri.parse(RotasUrl.rotaNovoRefinamento),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
@@ -583,7 +583,7 @@ class PedidoProvider with ChangeNotifier {
       _fieldsToObj(pedidoId);
       Map<String, dynamic> _jsonRequest = _objToJsonRequest();
 
-      var _response = await http.put(RotasUrl.rotaNovoPaciente,
+      var _response = await http.put(Uri.parse(RotasUrl.rotaNovoPaciente),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
@@ -3604,7 +3604,7 @@ class PedidoProvider with ChangeNotifier {
   Future<dynamic> fetchStatusPedido(String _token) async {
     if (_didFetchStatusPedido == false) {
       var _response = await http.get(
-        RotasUrl.rotaStatusPedido,
+        Uri.parse(RotasUrl.rotaStatusPedido),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',

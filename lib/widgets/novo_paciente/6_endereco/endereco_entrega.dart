@@ -289,7 +289,7 @@ class _EnderecoEntregaState extends State<EnderecoEntrega> {
     };
 
     var _response = await http.post(
-      RotasUrl.rotaEnderecoUsuarios,
+      Uri.parse(RotasUrl.rotaEnderecoUsuarios),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${_authStore.token}',
@@ -316,7 +316,7 @@ class _EnderecoEntregaState extends State<EnderecoEntrega> {
     };
 
     var _response = await http.put(
-      RotasUrl.rotaEnderecoUsuarios + _selectedEndId.toString(),
+      Uri.parse(RotasUrl.rotaEnderecoUsuarios + _selectedEndId.toString()),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${_authStore.token}',
@@ -332,7 +332,7 @@ class _EnderecoEntregaState extends State<EnderecoEntrega> {
 
   Future<dynamic> _deleteEndereco() async {
     var _response = await http.delete(
-      RotasUrl.rotaEnderecoUsuarios + _selectedEndId.toString(),
+      Uri.parse(RotasUrl.rotaEnderecoUsuarios + _selectedEndId.toString()),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${_authStore.token}',
@@ -347,7 +347,9 @@ class _EnderecoEntregaState extends State<EnderecoEntrega> {
   Future<dynamic> _getEndereco() async {
     if (_fetchData) {
       var _response = await http.get(
-        RotasUrl.rotaGetEnderecoUsuarios + '?id=' + widget.idUsuario.toString(),
+        Uri.parse(RotasUrl.rotaGetEnderecoUsuarios +
+            '?id=' +
+            widget.idUsuario.toString()),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${_authStore.token}',

@@ -45,7 +45,7 @@ class _RadiografiaUploadState extends State<RadiografiaUpload>
 
   Future<dynamic> _deleteRadiografia(_token, radiografiaId) async {
     var _response = await http.delete(
-      RotasUrl.rotaDeleteRadiografia + radiografiaId.toString(),
+      Uri.parse(RotasUrl.rotaDeleteRadiografia + radiografiaId.toString()),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -225,7 +225,7 @@ class _RadiografiaUploadState extends State<RadiografiaUpload>
   //FOR EDIT SCREEN
   Future<dynamic> _getRadiografias(_token) async {
     var _response = await http.post(
-      RotasUrl.rotaRadiografiasList,
+      Uri.parse(RotasUrl.rotaRadiografiasList),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

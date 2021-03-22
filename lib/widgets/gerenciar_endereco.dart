@@ -22,6 +22,7 @@ class GerenciarEndereco extends StatefulWidget {
 
 class _GerenciarEnderecoState extends State<GerenciarEndereco> {
   AuthProvider _authStore;
+  bool sendingEndereco = false;
 
   //-------------- general variables ----------------
   final _bairro = TextEditingController();
@@ -88,44 +89,58 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
       return Container(
         width: 300,
         child: ElevatedButton(
-          onPressed: () {
-            if (_formKey.currentState.validate()) {
-              _formKey.currentState.save();
-              _sendEndereco().then((_data) {
-                if (!_data[0].containsKey('error')) {
-                  _restartInicialValues();
-                  _clearInputFields();
-                  _getAllData();
-                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(seconds: 4),
-                      content: Text(
-                        _data[0]['message'],
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(seconds: 8),
-                      content: Text(
-                        _data[0]['message'],
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  );
+          onPressed: !sendingEndereco
+              ? () {
+                  if (_formKey.currentState.validate()) {
+                    setState(() {
+                      sendingEndereco = true;
+                    });
+                    _formKey.currentState.save();
+                    _sendEndereco().then((_data) {
+                      if (!_data[0].containsKey('error')) {
+                        _restartInicialValues();
+                        _clearInputFields();
+                        _getAllData();
+                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: const Duration(seconds: 4),
+                            content: Text(
+                              _data[0]['message'],
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: const Duration(seconds: 8),
+                            content: Text(
+                              _data[0]['message'],
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        );
+                      }
+                      setState(() {
+                        sendingEndereco = false;
+                      });
+                    });
+                  }
                 }
-              });
-            }
-          },
-          child: const Text(
-            'ENVIAR ENDEREÇO',
-            style: const TextStyle(
-              color: Colors.white,
-            ),
-          ),
+              : null,
+          child: !sendingEndereco
+              ? const Text(
+                  'ENVIAR ENDEREÇO',
+                  style: const TextStyle(
+                    color: Colors.white,
+                  ),
+                )
+              : CircularProgressIndicator(
+                  valueColor: new AlwaysStoppedAnimation<Color>(
+                    Colors.blue,
+                  ),
+                ),
         ),
       );
     } else if (_atualizarEndereco) {
@@ -136,44 +151,59 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
           Container(
             width: 300,
             child: ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState.validate()) {
-                  _formKey.currentState.save();
-                  _updateEndereco().then((_data) {
-                    if (!_data[0].containsKey('error')) {
-                      _restartInicialValues();
-                      _clearInputFields();
-                      _getAllData();
-                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          duration: const Duration(seconds: 4),
-                          content: const Text(
-                            'Endereço atualizado',
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          duration: const Duration(seconds: 4),
-                          content: Text(
-                            'Erro ao atualizar endereço.',
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      );
+              onPressed: !sendingEndereco
+                  ? () {
+                      if (_formKey.currentState.validate()) {
+                        setState(() {
+                          sendingEndereco = true;
+                        });
+                        _formKey.currentState.save();
+                        _updateEndereco().then((_data) {
+                          if (!_data[0].containsKey('error')) {
+                            _restartInicialValues();
+                            _clearInputFields();
+                            _getAllData();
+                            ScaffoldMessenger.of(context)
+                                .removeCurrentSnackBar();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 4),
+                                content: const Text(
+                                  'Endereço atualizado',
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 4),
+                                content: Text(
+                                  'Erro ao atualizar endereço.',
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            );
+                          }
+                          setState(() {
+                            sendingEndereco = false;
+                          });
+                        });
+                      }
                     }
-                  });
-                }
-              },
-              child: const Text(
-                'ATUALIZAR ENDEREÇO',
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
-              ),
+                  : null,
+              child: !sendingEndereco
+                  ? const Text(
+                      'ATUALIZAR ENDEREÇO',
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
+                    )
+                  : CircularProgressIndicator(
+                      valueColor: new AlwaysStoppedAnimation<Color>(
+                        Colors.blue,
+                      ),
+                    ),
             ),
           ),
           SizedBox(width: 20),
@@ -295,7 +325,7 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
     };
 
     var _response = await http.post(
-      RotasUrl.rotaEnderecoUsuarios,
+      Uri.parse(RotasUrl.rotaEnderecoUsuarios),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${_authStore.token}',
@@ -322,7 +352,7 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
     };
 
     var _response = await http.put(
-      RotasUrl.rotaEnderecoUsuarios + _selectedEndId.toString(),
+      Uri.parse(RotasUrl.rotaEnderecoUsuarios + _selectedEndId.toString()),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${_authStore.token}',
@@ -338,7 +368,7 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
 
   Future<dynamic> _deleteEndereco() async {
     var _response = await http.delete(
-      RotasUrl.rotaEnderecoUsuarios + _selectedEndId.toString(),
+      Uri.parse(RotasUrl.rotaEnderecoUsuarios + _selectedEndId.toString()),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${_authStore.token}',
@@ -353,7 +383,9 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
   Future<dynamic> _getEndereco() async {
     if (_fetchData) {
       var _response = await http.get(
-        RotasUrl.rotaGetEnderecoUsuarios + '?id=' + widget.idUsuario.toString(),
+        Uri.parse(RotasUrl.rotaGetEnderecoUsuarios +
+            '?id=' +
+            widget.idUsuario.toString()),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${_authStore.token}',

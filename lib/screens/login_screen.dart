@@ -1,7 +1,3 @@
-import 'package:digital_aligner_app/providers/cadastro_provider.dart';
-import 'package:digital_aligner_app/providers/pedido_provider.dart';
-import 'package:digital_aligner_app/providers/pedidos_list_provider.dart';
-import 'package:digital_aligner_app/providers/relatorio_provider.dart';
 import 'package:digital_aligner_app/screens/criar_nova_senha.dart';
 import 'package:digital_aligner_app/screens/primeiro_cadastro.dart';
 import 'package:provider/provider.dart';
@@ -482,7 +478,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: const Text(
-                  'V1.0',
+                  'V1.00',
                   style: TextStyle(
                     color: Colors.black45,
                   ),

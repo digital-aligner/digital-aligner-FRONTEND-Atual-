@@ -79,11 +79,11 @@ class RelatorioProvider with ChangeNotifier {
 
     try {
       final response = await http.get(
-        RotasUrl.rotaDadosBaseRelatorio +
+        Uri.parse(RotasUrl.rotaDadosBaseRelatorio +
             '?pedidoId=' +
             pedidoId.toString() +
             '&pacienteId=' +
-            pacienteId.toString(),
+            pacienteId.toString()),
         headers: requestHeaders,
       );
       var _data = json.decode(response.body);
@@ -112,7 +112,8 @@ class RelatorioProvider with ChangeNotifier {
 
     try {
       final response = await http.get(
-        RotasUrl.rotaMeuRelatorio + '?pedidoId=' + pedidoId.toString(),
+        Uri.parse(
+            RotasUrl.rotaMeuRelatorio + '?pedidoId=' + pedidoId.toString()),
         headers: requestHeaders,
       );
       var _data = json.decode(response.body);
@@ -182,7 +183,7 @@ class RelatorioProvider with ChangeNotifier {
   }
 
   Future<Map<dynamic, dynamic>> enviarRelatorio() async {
-    var _response = await http.post(RotasUrl.rotaCriarRelatorio,
+    var _response = await http.post(Uri.parse(RotasUrl.rotaCriarRelatorio),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -195,7 +196,7 @@ class RelatorioProvider with ChangeNotifier {
   }
 
   Future<Map<dynamic, dynamic>> atualizarRelatorio() async {
-    var _response = await http.put(RotasUrl.rotaAtualizarRelatorio,
+    var _response = await http.put(Uri.parse(RotasUrl.rotaAtualizarRelatorio),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',

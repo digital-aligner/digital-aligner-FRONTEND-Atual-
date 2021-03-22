@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
-import 'package:digital_aligner_app/dados/scrollbarWidgetConfig.dart';
-import 'package:draggable_scrollbar/draggable_scrollbar.dart';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -14,7 +13,7 @@ class RecuperarSenha extends StatefulWidget {
 
 class _RecuperarSenhaState extends State<RecuperarSenha> {
   final _formKey = GlobalKey<FormState>();
-
+  bool _sendingRequest = false;
   // ----- For flutter web scroll -------
   ScrollController _scrollController = ScrollController();
 
@@ -24,7 +23,7 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
     };
 
     var _response = await http.post(
-      RotasUrl.rotaRecuperarSenha,
+      Uri.parse(RotasUrl.rotaRecuperarSenha),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(_email),
     );
@@ -58,6 +57,9 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
                     content: Text(result['message']),
                   ),
                 );
+                setState(() {
+                  _sendingRequest = false;
+                });
               },
               validator: (value) {
                 return value.length == 0 ? 'Insira seu email' : null;
@@ -73,17 +75,28 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
               child: SizedBox(
                 width: 300,
                 child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState.validate()) {
-                      _formKey.currentState.save();
-                    }
-                  },
-                  child: const Text(
-                    'RECUPERAR ACESSO',
-                    style: const TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
+                  onPressed: !_sendingRequest
+                      ? () {
+                          if (_formKey.currentState.validate()) {
+                            setState(() {
+                              _sendingRequest = true;
+                            });
+                            _formKey.currentState.save();
+                          }
+                        }
+                      : null,
+                  child: !_sendingRequest
+                      ? const Text(
+                          'RECUPERAR ACESSO',
+                          style: const TextStyle(
+                            color: Colors.white,
+                          ),
+                        )
+                      : CircularProgressIndicator(
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                            Colors.blue,
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -97,13 +110,11 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: SecondaryAppbar(),
-      body: DraggableScrollbar.rrect(
-        heightScrollThumb: ScrollBarWidgetConfig.scrollBarHeight,
-        backgroundColor: ScrollBarWidgetConfig.color,
-        alwaysVisibleScrollThumb: false,
-        controller: _scrollController,
+      body: Scrollbar(
+        isAlwaysShown: true,
+        thickness: 15,
+        showTrackOnHover: true,
         child: ListView.builder(
-          controller: _scrollController,
           itemCount: 1,
           itemExtent: null,
           itemBuilder: (context, index2) {

@@ -15,9 +15,11 @@ import 'nemo_model.dart';
 class NemoUpload extends StatefulWidget {
   final bool isEdit;
   final Map pedidoDados;
+  final bool blockUi;
   NemoUpload({
     this.isEdit,
     this.pedidoDados,
+    this.blockUi,
   });
   @override
   _NemoUploadState createState() => _NemoUploadState();
@@ -40,7 +42,7 @@ class _NemoUploadState extends State<NemoUpload>
   //List<NemoModel> _nemoUploadsList = List<NemoModel>();
   Future<dynamic> _deleteNemoUpload(_token, nemoUploadId) async {
     var _response = await http.delete(
-      RotasUrl.rotaDeleteNemoUpload + nemoUploadId.toString(),
+      Uri.parse(RotasUrl.rotaDeleteNemoUpload + nemoUploadId.toString()),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -107,27 +109,31 @@ class _NemoUploadState extends State<NemoUpload>
                   icon: widget.isEdit == false
                       ? const Icon(Icons.delete)
                       : const Icon(Icons.delete_forever),
-                  onPressed: () {
-                    if (widget.isEdit) {
-                      _s3deleteStore.setIdToDelete(curnemoUpload.id);
-                      setState(() {
-                        _nemoUploadsList.removeWhere(
-                          (nemoUpload) => nemoUpload.id == curnemoUpload.id,
-                        );
-                      });
-                    } else {
-                      _deleteNemoUpload(_token, curnemoUpload.id).then((res) {
-                        var data = json.decode(res.body);
-                        if (data['id'] != null) {
-                          setState(() {
-                            _nemoUploadsList.removeWhere(
-                              (nemoUpload) => nemoUpload.id == data['id'],
-                            );
-                          });
-                        }
-                      });
-                    }
-                  },
+                  onPressed: widget.blockUi
+                      ? null
+                      : () {
+                          if (widget.isEdit) {
+                            _s3deleteStore.setIdToDelete(curnemoUpload.id);
+                            setState(() {
+                              _nemoUploadsList.removeWhere(
+                                (nemoUpload) =>
+                                    nemoUpload.id == curnemoUpload.id,
+                              );
+                            });
+                          } else {
+                            _deleteNemoUpload(_token, curnemoUpload.id)
+                                .then((res) {
+                              var data = json.decode(res.body);
+                              if (data['id'] != null) {
+                                setState(() {
+                                  _nemoUploadsList.removeWhere(
+                                    (nemoUpload) => nemoUpload.id == data['id'],
+                                  );
+                                });
+                              }
+                            });
+                          }
+                        },
                 ),
               if (curnemoUpload.id == null) Container(),
               const SizedBox(
@@ -188,7 +194,7 @@ class _NemoUploadState extends State<NemoUpload>
     var resData;
     try {
       var _response = await http.post(
-        RotasUrl.rotaModeloNemoList,
+        Uri.parse(RotasUrl.rotaModeloNemoList),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -249,41 +255,43 @@ class _NemoUploadState extends State<NemoUpload>
             Container(
               width: 300,
               child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(seconds: 8),
-                      content: const Text('Aguarde...'),
-                    ),
-                  );
+                onPressed: widget.blockUi
+                    ? null
+                    : () {
+                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: const Duration(seconds: 8),
+                            content: const Text('Aguarde...'),
+                          ),
+                        );
 
-                  _openFileExplorer().then((_) {
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 8),
-                        content: const Text(
-                          'Enviando modelo nemo. Por favor aguarde...',
-                        ),
-                      ),
-                    );
+                        _openFileExplorer().then((_) {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 8),
+                              content: const Text(
+                                'Enviando modelo nemo. Por favor aguarde...',
+                              ),
+                            ),
+                          );
 
-                    Future.delayed(const Duration(milliseconds: 500), () {
-                      for (var nemoUpload in _nemoUploadsDataList) {
-                        _sendnemoUpload(_authStore.token, nemoUpload);
-                      }
-                    });
-                  }).catchError((e) {
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 8),
-                        content: Text('Selecione no máximo 1 arquivo!'),
-                      ),
-                    );
-                  });
-                },
+                          Future.delayed(const Duration(milliseconds: 500), () {
+                            for (var nemoUpload in _nemoUploadsDataList) {
+                              _sendnemoUpload(_authStore.token, nemoUpload);
+                            }
+                          });
+                        }).catchError((e) {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 8),
+                              content: Text('Selecione no máximo 1 arquivo!'),
+                            ),
+                          );
+                        });
+                      },
                 child: const Text(
                   'MODELO NEMO',
                   style: const TextStyle(

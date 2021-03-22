@@ -49,7 +49,7 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
 
   Future<dynamic> _deletemodeloSup(_token, modeloSupId) async {
     var _response = await http.delete(
-      RotasUrl.rotaDeleteModeloSup + modeloSupId.toString(),
+      Uri.parse(RotasUrl.rotaDeleteModeloSup + modeloSupId.toString()),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -211,7 +211,7 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
     print(widget.pedidoDados.toString());
 
     var _response = await http.post(
-      RotasUrl.rotaModeloSuperiorList,
+      Uri.parse(RotasUrl.rotaModeloSuperiorList),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

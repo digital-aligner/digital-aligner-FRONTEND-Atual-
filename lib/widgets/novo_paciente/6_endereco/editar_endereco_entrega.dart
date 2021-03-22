@@ -15,10 +15,12 @@ import '../../../rotas_url.dart';
 class EditarEnderecoEntrega extends StatefulWidget {
   final int idUsuario;
   final int idEndereco;
+  final bool blockUi;
 
   EditarEnderecoEntrega({
     this.idUsuario,
     this.idEndereco,
+    this.blockUi,
   });
 
   @override
@@ -148,9 +150,9 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
     try {
       if (_fetchData) {
         var _response = await http.get(
-          RotasUrl.rotaGetEnderecoUsuarios +
+          Uri.parse(RotasUrl.rotaGetEnderecoUsuarios +
               '?id=' +
-              widget.idUsuario.toString(),
+              widget.idUsuario.toString()),
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ${_authStore.token}',
@@ -210,6 +212,7 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
               builder: (ctx, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   return DropdownSearch<String>(
+                      enabled: !widget.blockUi,
                       dropdownSearchDecoration: InputDecoration(
                         border: OutlineInputBorder(),
                         contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
@@ -246,6 +249,7 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
               margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
               height: 80,
               child: TextFormField(
+                enabled: !widget.blockUi,
                 readOnly: true,
                 controller: _endereco,
                 onSaved: (String value) {
@@ -267,6 +271,7 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
                   child: Container(
                     height: 80,
                     child: TextFormField(
+                      enabled: !widget.blockUi,
                       readOnly: true,
                       onSaved: (String value) {
                         _controllerNUM.text = value;
@@ -293,6 +298,7 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
                   child: Container(
                     height: 80,
                     child: TextFormField(
+                      enabled: !widget.blockUi,
                       readOnly: true,
                       controller: _complemento,
                       onSaved: (String value) {
@@ -314,6 +320,7 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
             Container(
               height: 80,
               child: TextFormField(
+                enabled: !widget.blockUi,
                 readOnly: true,
                 controller: _bairro,
                 onSaved: (String value) {
@@ -332,6 +339,7 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
             Container(
               height: 80,
               child: TextFormField(
+                enabled: !widget.blockUi,
                 readOnly: true,
                 onSaved: (String value) {
                   _controllerCEP.text = value;
@@ -395,6 +403,7 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
                   child: Container(
                     height: 80,
                     child: TextFormField(
+                      enabled: !widget.blockUi,
                       readOnly: true,
                       controller: _cidade,
                       onSaved: (String value) {

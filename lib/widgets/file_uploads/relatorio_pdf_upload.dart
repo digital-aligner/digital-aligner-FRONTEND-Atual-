@@ -47,7 +47,8 @@ class _RelatorioPdfUploadState extends State<RelatorioPdfUpload>
   Future<dynamic> _deleterelatorioPdfUpload(
       _token, relatorioPdfUploadId) async {
     var _response = await http.delete(
-      RotasUrl.rotaDeleteRelatorioUpload + relatorioPdfUploadId.toString(),
+      Uri.parse(
+          RotasUrl.rotaDeleteRelatorioUpload + relatorioPdfUploadId.toString()),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -201,7 +202,7 @@ class _RelatorioPdfUploadState extends State<RelatorioPdfUpload>
   //FOR EDIT SCREEN
   Future<dynamic> _getPdfs(_token) async {
     var _response = await http.post(
-      RotasUrl.rotaPdfsList,
+      Uri.parse(RotasUrl.rotaPdfsList),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
