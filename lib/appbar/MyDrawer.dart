@@ -5,6 +5,7 @@ import 'package:digital_aligner_app/providers/relatorio_provider.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pedido.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_permissoes.dart';
 import 'package:digital_aligner_app/screens/meus_setups.dart';
+import 'package:digital_aligner_app/screens/minhas_revisoes.dart';
 import 'package:digital_aligner_app/screens/novo_paciente.dart';
 import 'package:digital_aligner_app/screens/perfil.dart';
 
@@ -117,6 +118,15 @@ class _MyDrawerState extends State<MyDrawer> {
                                 Navigator.of(context)
                                     .pushReplacementNamed(MeusSetups.routeName);
                               }
+                            } else if (selectedValue == 'Minhas Revisões') {
+                              Route route = ModalRoute.of(context);
+                              final routeName = route.settings.name;
+
+                              if (routeName != null &&
+                                  routeName != '/minhas-revisoes') {
+                                Navigator.of(context).pushReplacementNamed(
+                                    MinhasRevisoes.routeName);
+                              }
                             }
                           },
                           itemBuilder: (_) => [
@@ -160,6 +170,16 @@ class _MyDrawerState extends State<MyDrawer> {
                                 ),
                               ),
                               value: 'Meus Setups',
+                            ),
+                            PopupMenuItem(
+                              child: const Text(
+                                'Minhas Revisões',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: 'BigNoodleTitling',
+                                ),
+                              ),
+                              value: 'Minhas Revisões',
                             ),
                           ],
                         ),

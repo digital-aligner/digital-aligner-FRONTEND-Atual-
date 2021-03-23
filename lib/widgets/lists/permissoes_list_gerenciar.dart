@@ -386,27 +386,28 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
                 width: 600,
                 height: 400,
                 child: Scrollbar(
-                    thickness: 15,
-                    isAlwaysShown: true,
-                    showTrackOnHover: true,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Container(
-                            child: Text(
-                              '${cadList[index]['nome'] + ' ' + cadList[index]['sobrenome']}' ??
-                                  '',
-                              style: TextStyle(
-                                fontSize: 35,
-                                color: Colors.black54,
-                              ),
+                  thickness: 15,
+                  isAlwaysShown: true,
+                  showTrackOnHover: true,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          child: Text(
+                            '${cadList[index]['nome'] + ' ' + cadList[index]['sobrenome']}' ??
+                                '',
+                            style: TextStyle(
+                              fontSize: 35,
+                              color: Colors.black54,
                             ),
                           ),
-                          const Divider(thickness: 1),
-                          _ui(index),
-                        ],
-                      ),
-                    )),
+                        ),
+                        const Divider(thickness: 1),
+                        _ui(index),
+                      ],
+                    ),
+                  ),
+                ),
               ),
               actions: [
                 TextButton(
@@ -583,6 +584,7 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
       isAlwaysShown: true,
       showTrackOnHover: true,
       child: ListView.builder(
+        addAutomaticKeepAlives: true,
         itemCount: cadList.length,
         itemBuilder: (ctx, index) {
           if (cadList[index]['id'] == authStore.id) {

@@ -51,7 +51,6 @@ class _MeusPacientesListState extends State<MeusPacientesList> {
         ),
       );
     }
-
     return Scrollbar(
       thickness: 15,
       isAlwaysShown: true,

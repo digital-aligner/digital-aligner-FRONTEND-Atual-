@@ -275,6 +275,34 @@ class CadastroProvider with ChangeNotifier {
     }
   }
 
+  Future<dynamic> sendRevisorState(int id, bool value) async {
+    String url = RotasUrl.rotaCadastro + id.toString();
+
+    Map<String, String> requestHeaders = {
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $_token',
+    };
+
+    try {
+      final response = await http.put(
+        Uri.parse(url),
+        headers: requestHeaders,
+        body: json.encode(
+          {
+            'is_revisor': value,
+          },
+        ),
+      );
+      Map responseData = json.decode(response.body);
+
+      clearCadastrosAndUpdate();
+      return responseData;
+    } catch (error) {
+      print('Error! Status code: ' + error.toString());
+    }
+  }
+
   Future<dynamic> enviarCadastro() async {
     var _response = await http.put(
         Uri.parse(RotasUrl.rotaCadastro + _selectedCad.id.toString()),

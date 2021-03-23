@@ -185,10 +185,6 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
       // *BUG* Verify closing drawer automaticlly when under 1200
       drawer: sWidth < 1200 ? MyDrawer() : null,
       body: Container(
-        padding: const EdgeInsets.symmetric(
-          vertical: 20,
-          horizontal: 50,
-        ),
         width: sWidth,
         height: sHeight,
         decoration: BoxDecoration(
@@ -201,66 +197,74 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
             ? Align(
                 alignment: Alignment.topCenter,
                 child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      Text(
-                        'Gerenciar Cadastros',
-                        style: Theme.of(context).textTheme.headline1,
-                      ),
-                      const SizedBox(height: 40),
-                      _searchBox(),
-                      const SizedBox(
-                        height: 50,
-                        child: const Divider(
-                          thickness: 0.5,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 20,
+                      horizontal: 50,
+                    ),
+                    width: sWidth,
+                    height: sHeight,
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        Text(
+                          'Gerenciar Cadastros',
+                          style: Theme.of(context).textTheme.headline1,
                         ),
-                      ),
-                      //TOP TEXT
-                      _getHeaders(),
-                      const SizedBox(height: 20),
-                      cadastroStore.getCadastros() == null
-                          ? FutureBuilder(
-                              future: cadastroStore.fetchCadastros(),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.done) {
-                                  if (snapshot.data == null) {
-                                    return Container(
-                                      child: Text(
-                                          'Erro ao se connectar. Verifique sua conexão ou tente novamente mais tarde.'),
-                                    );
-                                  } else if (snapshot.data[0]
-                                      .containsKey('error')) {
-                                    return Container(
-                                      child: Text(
-                                        snapshot.data[0]['message'] ?? '',
-                                      ),
-                                    );
-                                  } else {
-                                    return Scrollbar(
-                                      thickness: 15,
-                                      isAlwaysShown: true,
-                                      showTrackOnHover: true,
-                                      child: Container(
+                        const SizedBox(height: 40),
+                        _searchBox(),
+                        const SizedBox(
+                          height: 50,
+                          child: const Divider(
+                            thickness: 0.5,
+                          ),
+                        ),
+                        //TOP TEXT
+                        _getHeaders(),
+                        const SizedBox(height: 20),
+                        cadastroStore.getCadastros() == null
+                            ? FutureBuilder(
+                                future: cadastroStore.fetchCadastros(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                    if (snapshot.data == null) {
+                                      return Container(
+                                        child: Text(
+                                            'Erro ao se connectar. Verifique sua conexão ou tente novamente mais tarde.'),
+                                      );
+                                    } else if (snapshot.data[0]
+                                        .containsKey('error')) {
+                                      return Container(
+                                        child: Text(
+                                          snapshot.data[0]['message'] ?? '',
+                                        ),
+                                      );
+                                    } else {
+                                      return Container(
+                                        width: sWidth - 20,
                                         height: 300,
                                         child: CadastroListGerenciar(),
+                                      );
+                                    }
+                                  } else {
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        valueColor:
+                                            new AlwaysStoppedAnimation<Color>(
+                                                Colors.blue),
                                       ),
                                     );
                                   }
-                                } else {
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      valueColor:
-                                          new AlwaysStoppedAnimation<Color>(
-                                              Colors.blue),
-                                    ),
-                                  );
-                                }
-                              },
-                            )
-                          : CadastroListGerenciar(),
-                    ],
+                                },
+                              )
+                            : Container(
+                                width: sWidth - 20,
+                                height: 300,
+                                child: CadastroListGerenciar(),
+                              ),
+                      ],
+                    ),
                   ),
                 ),
               )

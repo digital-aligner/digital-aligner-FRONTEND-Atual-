@@ -402,6 +402,18 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
     double _sHeight,
     String codPedido,
   ) {
+    //Prevent null bug if connection failed
+    if (data == null) {
+      return Container(
+        width: 300,
+        child: ElevatedButton(
+          child: const Text(
+            'ERRO AO BUSCAR RELATÓRIO',
+          ),
+          onPressed: null,
+        ),
+      );
+    }
     if (data[0].containsKey('error')) {
       if (_authStore.role == 'Credenciado') {
         return Container(

@@ -392,7 +392,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
           builder: (context, setState) {
             return AlertDialog(
               title: Container(
-                width: 600,
+                width: 850,
                 height: 400,
                 child: Scrollbar(
                   thickness: 15,
@@ -484,6 +484,48 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                                       )
                                     : const Text(
                                         'Acesso de representante removido!',
+                                      ),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context)
+                                .removeCurrentSnackBar();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 8),
+                                content: const Text('Algo deu errado'),
+                              ),
+                            );
+                          }
+                        });
+                      },
+                      secondary: const Icon(
+                        Icons.supervisor_account,
+                      )),
+                ),
+                Container(
+                  width: 270,
+                  height: 50,
+                  child: SwitchListTile(
+                      activeColor: Colors.blue,
+                      title: const Text('Revisor?'),
+                      value: cadList[index]['is_revisor'] ?? false,
+                      onChanged: (bool value) {
+                        cadastroStore
+                            .sendRevisorState(cadList[index]['id'], value)
+                            .then((data) {
+                          if (!data.containsKey('error')) {
+                            ScaffoldMessenger.of(context)
+                                .removeCurrentSnackBar();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 8),
+                                content: value
+                                    ? const Text(
+                                        'Acesso de revisor liberado!',
+                                      )
+                                    : const Text(
+                                        'Acesso de revisor removido!',
                                       ),
                               ),
                             );
@@ -621,27 +663,55 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
         ),
       );
     }
-    return ListView.builder(
-      addAutomaticKeepAlives: true,
-      itemCount: cadList.length,
-      itemBuilder: (ctx, index) {
-        if (cadList[index]['id'] == authStore.id) {
+    return Scrollbar(
+      thickness: 15,
+      isAlwaysShown: true,
+      showTrackOnHover: true,
+      child: ListView.builder(
+        addAutomaticKeepAlives: true,
+        itemCount: cadList.length,
+        itemBuilder: (ctx, index) {
+          if (cadList[index]['id'] == authStore.id) {
+            return Container(
+              height: 80,
+              child: Card(
+                shadowColor: Colors.grey,
+                margin: EdgeInsets.all(0),
+                color: Colors.lightBlue.withOpacity(0.3),
+                elevation: 0.5,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: ListTile(
+                        onTap: () {
+                          //_dialog(ctx, index).then((_) => _dialogOpen = false);
+                        },
+                        title: Tooltip(
+                          message: 'Altere seu cadastro pelo perfil',
+                          child: _listItem(index),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
           return Container(
             height: 80,
             child: Card(
-              shadowColor: Colors.grey,
               margin: EdgeInsets.all(0),
-              color: Colors.lightBlue.withOpacity(0.3),
+              color: (index % 2 == 0) ? Colors.white : Color(0xffe3e3e3),
               elevation: 0.5,
               child: Row(
                 children: <Widget>[
                   Expanded(
                     child: ListTile(
                       onTap: () {
-                        //_dialog(ctx, index).then((_) => _dialogOpen = false);
+                        _dialog(ctx, index).then((_) => _dialogOpen = false);
                       },
                       title: Tooltip(
-                        message: 'Altere seu cadastro pelo perfil',
+                        message: 'Visualizar e editar cadastro',
                         child: _listItem(index),
                       ),
                     ),
@@ -650,31 +720,8 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
               ),
             ),
           );
-        }
-        return Container(
-          height: 80,
-          child: Card(
-            margin: EdgeInsets.all(0),
-            color: (index % 2 == 0) ? Colors.white : Color(0xffe3e3e3),
-            elevation: 0.5,
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: ListTile(
-                    onTap: () {
-                      _dialog(ctx, index).then((_) => _dialogOpen = false);
-                    },
-                    title: Tooltip(
-                      message: 'Visualizar e editar cadastro',
-                      child: _listItem(index),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+        },
+      ),
     );
   }
 }

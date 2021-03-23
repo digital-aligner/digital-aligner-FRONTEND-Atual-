@@ -5,6 +5,7 @@ import 'package:digital_aligner_app/providers/s3_relatorio_delete_provider.dart'
 import 'package:digital_aligner_app/screens/gerar_relatorio_screen.dart';
 import 'package:digital_aligner_app/screens/meus_refinamentos.dart';
 import 'package:digital_aligner_app/screens/meus_setups.dart';
+import 'package:digital_aligner_app/screens/minhas_revisoes.dart';
 import 'package:digital_aligner_app/screens/paciente_screen.dart';
 import 'package:digital_aligner_app/screens/pedido_view_screen.dart';
 import 'package:digital_aligner_app/screens/perfil.dart';
@@ -192,6 +193,7 @@ class MyApp extends StatelessWidget {
             Perfil.routeName: (ctx) => Perfil(),
             PedidoViewScreen.routeName: (ctx) => PedidoViewScreen(),
             MeusSetups.routeName: (ctx) => MeusSetups(),
+            MinhasRevisoes.routeName: (ctx) => MinhasRevisoes(),
             RelatorioViewScreen.routeName: (ctx) => RelatorioViewScreen(),
           },
         ),

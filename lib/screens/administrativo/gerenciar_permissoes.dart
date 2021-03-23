@@ -209,7 +209,9 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
                 child: SingleChildScrollView(
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        vertical: 20, horizontal: 50),
+                      vertical: 20,
+                      horizontal: 50,
+                    ),
                     width: sWidth,
                     height: sHeight,
                     child: Column(

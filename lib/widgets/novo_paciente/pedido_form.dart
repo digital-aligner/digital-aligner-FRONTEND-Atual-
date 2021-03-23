@@ -75,6 +75,9 @@ class _PedidoFormState extends State<PedidoForm> {
   //For nemo dropdown
   List<dynamic> _cadistas;
 
+  //For revisor dropdown
+  List<dynamic> _revisores;
+
   String _formatCpf(String cpf) {
     String _formatedCpf = cpf.substring(0, 3) +
         '.' +
@@ -118,7 +121,225 @@ class _PedidoFormState extends State<PedidoForm> {
     return _cadistas;
   }
 
+  Future<List<dynamic>> fetchRevisores() async {
+    //Fetch revisores if last fetch was with error
+    if (_revisores != null && !_revisores[0].containsKey('error')) {
+      return _revisores;
+    }
+    Map<String, String> requestHeaders = {
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${_authStore.token}',
+    };
+
+    try {
+      final response = await http.get(
+        Uri.parse(RotasUrl.rotaRevisores),
+        headers: requestHeaders,
+      );
+      _revisores = json.decode(response.body);
+    } catch (error) {
+      print(error.toString());
+    }
+    return _revisores;
+  }
+
   List<Function> _formList = [];
+
+  Widget _nemoUi() {
+    return Column(
+      children: [
+        const SizedBox(height: 40),
+        const Text(
+          'PARA CADISTAS',
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+        const SizedBox(height: 20),
+        DropdownSearch<String>(
+          enabled: !widget.blockUi,
+          errorBuilder: (context, searchEntry, exception) {
+            return Center(child: const Text('Algum erro ocorreu.'));
+          },
+          emptyBuilder: (context, searchEntry) {
+            return Center(child: const Text('Nada'));
+          },
+          loadingBuilder: (context, searchEntry) {
+            return Center(
+              child: CircularProgressIndicator(
+                valueColor: new AlwaysStoppedAnimation<Color>(
+                  Colors.blue,
+                ),
+              ),
+            );
+          },
+          onFind: (_) async {
+            await fetchCadistas();
+            //Error handling
+            if (_cadistas[0].containsKey('error')) {
+              if (_cadistas[0]['statusCode'] != 404) {
+                //Will go to errorBuilder
+                throw Error();
+              } else {
+                //Will go to emptyBuilder
+                return null;
+              }
+            }
+            List<String> _cadUi = [];
+            for (var _cadista in _cadistas) {
+              _cadUi.add(
+                _cadista['nome'] +
+                    ' ' +
+                    _cadista['sobrenome'] +
+                    ' | ' +
+                    _formatCpf(_cadista['username']),
+              );
+            }
+            return _cadUi;
+          },
+          dropdownSearchDecoration: InputDecoration(
+            border: OutlineInputBorder(),
+            contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          ),
+          maxHeight: 350,
+          mode: Mode.MENU,
+          showSearchBox: true,
+          showSelectedItem: true,
+          //items: _enderecoUiList,
+          //label: 'UF: *',
+          //hint: 'UF: *',
+          popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
+          onChanged: (value) {
+            int selectedValueId = 0;
+            String _selectedCpf = _getCpfFromSelectedValue(value);
+            //Match with list of cadistas cpf
+            for (var _cadista in _cadistas) {
+              if (_cadista['username'] == _selectedCpf) {
+                selectedValueId = _cadista['id'];
+              }
+            }
+            //Setting the value in the pedido provider for update on backend
+            _novoPedStore.setCadistaResponsavelId(selectedValueId);
+          },
+          selectedItem: widget.pedidoDados['cadista_responsavel'] == null
+              ? 'selecione um cadista'
+              : widget.pedidoDados['cadista_responsavel']['nome'] +
+                  ' ' +
+                  widget.pedidoDados['cadista_responsavel']['sobrenome'] +
+                  ' | ' +
+                  _formatCpf(
+                    widget.pedidoDados['cadista_responsavel']['username'],
+                  ),
+        ),
+        _modeloNemo(),
+        const SizedBox(
+          height: 50,
+          child: const Divider(
+            thickness: 2,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _revisorUi() {
+    return Column(
+      children: [
+        const SizedBox(height: 40),
+        const Text(
+          'PARA REVISOR',
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+        const SizedBox(height: 20),
+        DropdownSearch<String>(
+          enabled: !widget.blockUi,
+          errorBuilder: (context, searchEntry, exception) {
+            return Center(child: const Text('Algum erro ocorreu.'));
+          },
+          emptyBuilder: (context, searchEntry) {
+            return Center(child: const Text('Nada'));
+          },
+          loadingBuilder: (context, searchEntry) {
+            return Center(
+              child: CircularProgressIndicator(
+                valueColor: new AlwaysStoppedAnimation<Color>(
+                  Colors.blue,
+                ),
+              ),
+            );
+          },
+          onFind: (_) async {
+            await fetchRevisores();
+            //Error handling
+            if (_revisores[0].containsKey('error')) {
+              if (_revisores[0]['statusCode'] != 404) {
+                //Will go to errorBuilder
+                throw Error();
+              } else {
+                //Will go to emptyBuilder
+                return null;
+              }
+            }
+            List<String> _revUi = [];
+            for (var _revisor in _revisores) {
+              _revUi.add(
+                _revisor['nome'] +
+                    ' ' +
+                    _revisor['sobrenome'] +
+                    ' | ' +
+                    _formatCpf(_revisor['username']),
+              );
+            }
+            return _revUi;
+          },
+          dropdownSearchDecoration: InputDecoration(
+            border: OutlineInputBorder(),
+            contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          ),
+          maxHeight: 350,
+          mode: Mode.MENU,
+          showSearchBox: true,
+          showSelectedItem: true,
+          //items: _enderecoUiList,
+          //label: 'UF: *',
+          //hint: 'UF: *',
+          popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
+          onChanged: (value) {
+            int selectedValueId = 0;
+            String _selectedCpf = _getCpfFromSelectedValue(value);
+            //Match with list of revisores cpf
+            for (var _revisor in _revisores) {
+              if (_revisor['username'] == _selectedCpf) {
+                selectedValueId = _revisor['id'];
+              }
+            }
+            //Setting the value in the pedido provider for update on backend
+            _novoPedStore.setRevisorResponsavelId(selectedValueId);
+          },
+          selectedItem: widget.pedidoDados['revisor_responsavel'] == null
+              ? 'selecione um revisor'
+              : widget.pedidoDados['revisor_responsavel']['nome'] +
+                  ' ' +
+                  widget.pedidoDados['revisor_responsavel']['sobrenome'] +
+                  ' | ' +
+                  _formatCpf(
+                    widget.pedidoDados['revisor_responsavel']['username'],
+                  ),
+        ),
+        const SizedBox(
+          height: 50,
+          child: const Divider(
+            thickness: 2,
+          ),
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -444,99 +665,13 @@ class _PedidoFormState extends State<PedidoForm> {
                     thickness: 2,
                   ),
                 ),
+                //REVISOR
 
                 //MODELO NEMO
                 if (widget.isEditarPedido && _authStore.role != 'Credenciado')
-                  const SizedBox(height: 40),
+                  _nemoUi(),
                 if (widget.isEditarPedido && _authStore.role != 'Credenciado')
-                  DropdownSearch<String>(
-                    enabled: !widget.blockUi,
-                    errorBuilder: (context, searchEntry, exception) {
-                      return Center(child: const Text('Algum erro ocorreu.'));
-                    },
-                    emptyBuilder: (context, searchEntry) {
-                      return Center(child: const Text('Nada'));
-                    },
-                    loadingBuilder: (context, searchEntry) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          valueColor: new AlwaysStoppedAnimation<Color>(
-                            Colors.blue,
-                          ),
-                        ),
-                      );
-                    },
-                    onFind: (_) async {
-                      await fetchCadistas();
-                      //Error handling
-                      if (_cadistas[0].containsKey('error')) {
-                        if (_cadistas[0]['statusCode'] != 404) {
-                          //Will go to errorBuilder
-                          throw Error();
-                        } else {
-                          //Will go to emptyBuilder
-                          return null;
-                        }
-                      }
-                      List<String> _cadUi = [];
-                      for (var _cadista in _cadistas) {
-                        _cadUi.add(
-                          _cadista['nome'] +
-                              ' ' +
-                              _cadista['sobrenome'] +
-                              ' | ' +
-                              _formatCpf(_cadista['username']),
-                        );
-                      }
-                      return _cadUi;
-                    },
-                    dropdownSearchDecoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                    ),
-                    maxHeight: 350,
-                    mode: Mode.MENU,
-                    showSearchBox: true,
-                    showSelectedItem: true,
-                    //items: _enderecoUiList,
-                    //label: 'UF: *',
-                    //hint: 'UF: *',
-                    popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
-                    onChanged: (value) {
-                      int selectedValueId = 0;
-                      String _selectedCpf = _getCpfFromSelectedValue(value);
-                      //Match with list of cadistas cpf
-                      for (var _cadista in _cadistas) {
-                        if (_cadista['username'] == _selectedCpf) {
-                          selectedValueId = _cadista['id'];
-                        }
-                      }
-                      //Setting the value in the pedido provider for update on backend
-                      _novoPedStore.setCadistaResponsavelId(selectedValueId);
-                    },
-                    selectedItem: widget.pedidoDados['cadista_responsavel'] ==
-                            null
-                        ? 'selecione um cadista'
-                        : widget.pedidoDados['cadista_responsavel']['nome'] +
-                            ' ' +
-                            widget.pedidoDados['cadista_responsavel']
-                                ['sobrenome'] +
-                            ' | ' +
-                            _formatCpf(
-                              widget.pedidoDados['cadista_responsavel']
-                                  ['username'],
-                            ),
-                  ),
-                if (widget.isEditarPedido) const SizedBox(height: 10),
-                if (widget.isEditarPedido && _authStore.role != 'Credenciado')
-                  _modeloNemo(),
-                if (widget.isEditarPedido && _authStore.role != 'Credenciado')
-                  const SizedBox(
-                    height: 50,
-                    child: const Divider(
-                      thickness: 2,
-                    ),
-                  ),
+                  _revisorUi(),
                 //Text: Endereço Entrega
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -869,18 +1004,6 @@ class _PedidoFormState extends State<PedidoForm> {
   Widget _modeloNemo() {
     return Column(
       children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Modelo Nemo',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
-            ),
-          ],
-        ),
         const SizedBox(height: 20),
         NemoUpload(
           isEdit: widget.isEditarPedido,
