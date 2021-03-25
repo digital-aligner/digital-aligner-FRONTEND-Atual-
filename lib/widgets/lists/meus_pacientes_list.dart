@@ -16,7 +16,7 @@ class MeusPacientesList extends StatefulWidget {
 
 class _MeusPacientesListState extends State<MeusPacientesList> {
   PacientesListProvider _pacienteListStore;
-  var pacList;
+  List<dynamic> pacList;
 
   //static ValueKey key = ValueKey('key_0');
   //static ValueKey key1 = ValueKey('key_1');

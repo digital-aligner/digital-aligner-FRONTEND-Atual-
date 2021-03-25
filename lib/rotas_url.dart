@@ -1,7 +1,7 @@
 class RotasUrl {
   //static const rotaHeroku = 'https://aqueous-wave-03435.herokuapp.com/';
   //static const rotaBase = 'http://localhost:1337/';
-  static const rotaBase = 'http://localhost:1337/';
+  static const rotaBase = 'https://aqueous-wave-03435.herokuapp.com/';
   static const rotaGetPaisesAndState = rotaBase + 'paises';
   static const rotaLogin = rotaBase + 'auth/local/';
   static const rotaCadastro = rotaBase + 'users/';
@@ -29,6 +29,7 @@ class RotasUrl {
   static const rotaEnderecoUsuarios = rotaBase + 'endereco-usuarios/';
   static const rotaGetEnderecoUsuarios = rotaBase + 'get-enderecos-usuario/';
   static const rotaMeusPacientes = rotaBase + 'meus-pacientes/';
+  static const rotaGerenciarPacientes = rotaBase + 'gerenciar-pacientes/';
   static const rotaMeuHistorico = rotaBase + 'meu-historico/';
   static const rotaMeusPedidos = rotaBase + 'meus-pedidos/';
   static const rotaMeusSetups = rotaBase + 'meus-setups/';

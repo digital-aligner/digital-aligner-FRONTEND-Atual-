@@ -4,8 +4,8 @@ import 'package:digital_aligner_app/providers/s3_delete_provider.dart';
 import 'package:digital_aligner_app/providers/s3_relatorio_delete_provider.dart';
 import 'package:digital_aligner_app/screens/gerar_relatorio_screen.dart';
 import 'package:digital_aligner_app/screens/meus_refinamentos.dart';
-import 'package:digital_aligner_app/screens/meus_setups.dart';
-import 'package:digital_aligner_app/screens/minhas_revisoes.dart';
+import 'package:digital_aligner_app/screens/administrativo/meus_setups.dart';
+import 'package:digital_aligner_app/screens/administrativo/minhas_revisoes.dart';
 import 'package:digital_aligner_app/screens/paciente_screen.dart';
 import 'package:digital_aligner_app/screens/pedido_view_screen.dart';
 import 'package:digital_aligner_app/screens/perfil.dart';
@@ -21,6 +21,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import './screens/login_screen.dart';
+import 'screens/administrativo/gerenciar_pacientes.dart';
 import 'screens/editar_relatorio_screen.dart';
 import 'screens/meus_pacientes.dart';
 import 'screens/meus_pedidos.dart';
@@ -183,6 +184,7 @@ class MyApp extends StatelessWidget {
             EditarCadastro.routeName: (ctx) => EditarCadastro(),
             EditarPedido.routeName: (ctx) => EditarPedido(),
             GerenciarPermissoes.routeName: (ctx) => GerenciarPermissoes(),
+            GerenciarPacientes.routeName: (ctx) => GerenciarPacientes(),
             GerarRelatorioScreen.routeName: (ctx) => GerarRelatorioScreen(),
             PacienteScreen.routeName: (ctx) => PacienteScreen(),
             EditarRelatorioScreen.routeName: (ctx) => EditarRelatorioScreen(),

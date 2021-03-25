@@ -24,6 +24,8 @@ import 'editar_pedido.dart';
 import 'view_modelo_screen_inf.dart';
 import 'view_modelo_screen_sup.dart';
 
+import 'package:transparent_image/transparent_image.dart';
+
 class PedidoViewScreen extends StatefulWidget {
   static const routeName = '/pedido-view';
   @override
@@ -46,6 +48,9 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
 
   bool firstFetch = true;
 
+  List<Widget> networkImgPhotoList = [];
+  List<Widget> networkImgRadList = [];
+
   //Set the urls to file on disk (local storage) to be retrieved by
   //html file in web folder
   Future<void> _setModelosUrlToStorage(String _mSupUrl, String _mInfUrl) async {
@@ -60,11 +65,9 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
   }
 
   Widget _mapRadiografiasUrlToUi(Map<String, dynamic> radiografias) {
-    List<Widget> networkImgList = [];
-
     for (int i = 1; i <= radiografias.length; i++) {
       if (radiografias['foto' + i.toString()] != null) {
-        networkImgList.add(
+        networkImgRadList.add(
           Card(
             elevation: 5,
             child: Padding(
@@ -82,16 +85,12 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                         ),
                       );
                     },
-                    child: Image.network(
-                      radiografias['foto' + i.toString()],
+                    child: FadeInImage.memoryNetwork(
                       width: 120,
                       height: 120,
                       fit: BoxFit.contain,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        return loadingProgress == null
-                            ? child
-                            : LinearProgressIndicator();
-                      },
+                      image: radiografias['foto' + i.toString()],
+                      placeholder: kTransparentImage,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -112,16 +111,14 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
     return Wrap(
       direction: Axis.horizontal,
       spacing: 10,
-      children: networkImgList,
+      children: networkImgRadList,
     );
   }
 
   Widget _mapFotografiasUrlToUi(Map<String, dynamic> fotografias) {
-    List<Widget> networkImgList = [];
-
     for (int i = 1; i <= fotografias.length; i++) {
       if (fotografias['foto' + i.toString()] != null) {
-        networkImgList.add(
+        networkImgPhotoList.add(
           Card(
             elevation: 5,
             child: Padding(
@@ -139,16 +136,12 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                         ),
                       );
                     },
-                    child: Image.network(
-                      fotografias['foto' + i.toString()],
+                    child: FadeInImage.memoryNetwork(
                       width: 120,
                       height: 120,
                       fit: BoxFit.contain,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        return loadingProgress == null
-                            ? child
-                            : LinearProgressIndicator();
-                      },
+                      image: fotografias['foto' + i.toString()],
+                      placeholder: kTransparentImage,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -169,15 +162,13 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
     return Wrap(
       direction: Axis.horizontal,
       spacing: 10,
-      children: networkImgList,
+      children: networkImgPhotoList,
     );
   }
 
   Widget _pedidoUi(
     List<dynamic> pedList,
     int index,
-    double _sWidth,
-    double _sHeight,
   ) {
     return Column(
       children: [
@@ -188,7 +179,7 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
           height: 50,
           child: Align(
             alignment: Alignment.topCenter,
-            child: Text(
+            child: const Text(
               'Modelos Superior/Inferior:',
               style: const TextStyle(
                 color: Colors.black54,
@@ -216,10 +207,10 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                       ),
                     );
                   },
-                  child: Image(
+                  child: const Image(
                     fit: BoxFit.cover,
                     width: 100,
-                    image: AssetImage('logos/cubo.jpg'),
+                    image: const AssetImage('logos/cubo.jpg'),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -260,10 +251,10 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                       ),
                     );
                   },
-                  child: Image(
+                  child: const Image(
                     fit: BoxFit.cover,
                     width: 100,
-                    image: AssetImage('logos/cubo.jpg'),
+                    image: const AssetImage('logos/cubo.jpg'),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -293,7 +284,7 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
           height: 50,
           child: Align(
             alignment: Alignment.topCenter,
-            child: Text(
+            child: const Text(
               'Fotografias:',
               style: const TextStyle(
                 color: Colors.black54,
@@ -305,7 +296,15 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
         ),
 
         Container(
-          child: _mapFotografiasUrlToUi(pedList[index]['fotografias']),
+          child: networkImgPhotoList.length > 0
+              ? Wrap(
+                  direction: Axis.horizontal,
+                  spacing: 10,
+                  children: networkImgPhotoList,
+                )
+              : _mapFotografiasUrlToUi(
+                  pedList[index]['fotografias'],
+                ),
         ),
         //Radiografias
         const SizedBox(height: 40),
@@ -314,7 +313,7 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
           height: 50,
           child: Align(
             alignment: Alignment.topCenter,
-            child: Text(
+            child: const Text(
               'Radiografias:',
               style: const TextStyle(
                 color: Colors.black54,
@@ -326,7 +325,13 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
         ),
 
         Container(
-          child: _mapRadiografiasUrlToUi(pedList[index]['radiografias']),
+          child: networkImgRadList.length > 0
+              ? Wrap(
+                  direction: Axis.horizontal,
+                  spacing: 10,
+                  children: networkImgRadList,
+                )
+              : _mapRadiografiasUrlToUi(pedList[index]['radiografias']),
         ),
         const SizedBox(height: 50),
         ElevatedButton.icon(
@@ -398,15 +403,13 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
     BuildContext ctx,
     int index,
     List<dynamic> data,
-    double _sWidth,
-    double _sHeight,
     String codPedido,
   ) {
     //Prevent null bug if connection failed
     if (data == null) {
       return Container(
         width: 300,
-        child: ElevatedButton(
+        child: const ElevatedButton(
           child: const Text(
             'ERRO AO BUSCAR RELATÓRIO',
           ),
@@ -485,8 +488,6 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
   Widget _manageNemoBtn(
     BuildContext ctx,
     int index,
-    double _sWidth,
-    double _sHeight,
   ) {
     if (pedList[index]['modelo_nemo']['modelo_nemo'] == null) {
       return Container(
@@ -516,7 +517,7 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
     }
   }
 
-  Widget _optionsBtns(BuildContext ctx, int index, _sWidth, _sHeight) {
+  Widget _optionsBtns(BuildContext ctx, int index) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Row(
@@ -716,8 +717,6 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                             ctx,
                             index,
                             snapshot.data,
-                            sWidth,
-                            sHeight,
                             pedList[index]['codigo_pedido'],
                           );
                         } else {
@@ -735,8 +734,6 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                       context,
                       index,
                       relatorioData,
-                      sWidth,
-                      sHeight,
                       pedList[index]['codigo_pedido'],
                     ),
                   const SizedBox(height: 20),
@@ -744,20 +741,14 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                     _manageNemoBtn(
                       context,
                       index,
-                      sWidth,
-                      sHeight,
                     ),
                   _optionsBtns(
                     context,
                     index,
-                    sWidth,
-                    sHeight,
                   ),
                   _pedidoUi(
                     pedList,
                     index,
-                    sWidth,
-                    sHeight,
                   ),
                   const SizedBox(height: 40),
                 ],

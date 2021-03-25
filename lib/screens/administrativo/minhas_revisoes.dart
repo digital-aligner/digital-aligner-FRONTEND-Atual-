@@ -9,17 +9,17 @@ import 'package:digital_aligner_app/widgets/lists/meus_setups_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'login_screen.dart';
-import 'meus_pacientes.dart';
+import '../login_screen.dart';
+import '../meus_pacientes.dart';
 
-class MeusSetups extends StatefulWidget {
-  static const routeName = '/meus-setups';
+class MinhasRevisoes extends StatefulWidget {
+  static const routeName = '/minhas-revisoes';
 
   @override
-  _MeusSetupsState createState() => _MeusSetupsState();
+  _MinhasRevisoesState createState() => _MinhasRevisoesState();
 }
 
-class _MeusSetupsState extends State<MeusSetups> {
+class _MinhasRevisoesState extends State<MinhasRevisoes> {
   AuthProvider authStore;
   PedidosListProvider _pedidosListStore;
 
@@ -330,7 +330,7 @@ class _MeusSetupsState extends State<MeusSetups> {
                       children: [
                         const SizedBox(height: 20),
                         Text(
-                          'Meus Setups',
+                          'MINHAS REVISÕES',
                           style: Theme.of(context).textTheme.headline1,
                         ),
                         const SizedBox(height: 40),
@@ -347,7 +347,7 @@ class _MeusSetupsState extends State<MeusSetups> {
                         _pedidosListStore.getPedidosList() == null
                             ? FutureBuilder(
                                 future: _pedidosListStore
-                                    .fetchMeusSetups(authStore.id),
+                                    .fetchMinhasRevisoes(authStore.id),
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.done) {

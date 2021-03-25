@@ -2,10 +2,11 @@ import 'package:digital_aligner_app/providers/cadastro_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/providers/pedidos_list_provider.dart';
 import 'package:digital_aligner_app/providers/relatorio_provider.dart';
+import 'package:digital_aligner_app/screens/administrativo/gerenciar_pacientes.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pedido.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_permissoes.dart';
-import 'package:digital_aligner_app/screens/meus_setups.dart';
-import 'package:digital_aligner_app/screens/minhas_revisoes.dart';
+import 'package:digital_aligner_app/screens/administrativo/meus_setups.dart';
+import 'package:digital_aligner_app/screens/administrativo/minhas_revisoes.dart';
 import 'package:digital_aligner_app/screens/novo_paciente.dart';
 import 'package:digital_aligner_app/screens/perfil.dart';
 
@@ -109,6 +110,15 @@ class _MyDrawerState extends State<MyDrawer> {
                                 Navigator.of(context).pushReplacementNamed(
                                     GerenciarPedidos.routeName);
                               }
+                            } else if (selectedValue == 'Gerenciar Pacientes') {
+                              Route route = ModalRoute.of(context);
+                              final routeName = route.settings.name;
+
+                              if (routeName != null &&
+                                  routeName != '/gerenciar-pacientes') {
+                                Navigator.of(context).pushReplacementNamed(
+                                    GerenciarPacientes.routeName);
+                              }
                             } else if (selectedValue == 'Meus Setups') {
                               Route route = ModalRoute.of(context);
                               final routeName = route.settings.name;
@@ -161,6 +171,16 @@ class _MyDrawerState extends State<MyDrawer> {
                                 ),
                                 value: 'Gerenciar Permissões',
                               ),
+                            PopupMenuItem(
+                              child: const Text(
+                                'Gerenciar Pacientes',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: 'BigNoodleTitling',
+                                ),
+                              ),
+                              value: 'Gerenciar Pacientes',
+                            ),
                             PopupMenuItem(
                               child: const Text(
                                 'Meus Setups',

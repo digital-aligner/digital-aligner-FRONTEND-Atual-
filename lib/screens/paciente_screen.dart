@@ -8,6 +8,7 @@ import 'package:digital_aligner_app/screens/meus_pedidos.dart';
 import 'package:digital_aligner_app/screens/meus_refinamentos.dart';
 import 'package:digital_aligner_app/screens/refinamento_pedido.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -26,6 +27,8 @@ class _PacienteScreenState extends State<PacienteScreen> {
   AuthProvider _authStore;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   var args;
+
+  bool _blockUi = false;
 
   PacientesListProvider _pacienteListStore;
 
@@ -430,6 +433,33 @@ class _PacienteScreenState extends State<PacienteScreen> {
     }
     return Scaffold(
       appBar: SecondaryAppbar(),
+      floatingActionButton: Align(
+        alignment: Alignment(0.03, 0.9),
+        child: authStore.role == 'Administrador' || authStore.role == 'Gerente'
+            ? FloatingActionButton.extended(
+                icon: const Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                ),
+                onPressed: true
+                    ? null
+                    : () {
+                        setState(() {
+                          _blockUi = true;
+                        });
+                      },
+                label: const Text(
+                  'EXCLUIR PACIENTE',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                mouseCursor: SystemMouseCursors.forbidden,
+                backgroundColor: Colors.grey,
+              )
+            : Container(),
+      ),
       body: Scrollbar(
         isAlwaysShown: true,
         thickness: 15,
