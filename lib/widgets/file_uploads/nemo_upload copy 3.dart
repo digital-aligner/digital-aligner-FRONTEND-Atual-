@@ -1,39 +1,34 @@
 import 'dart:convert';
-
+import 'dart:html' as html;
 import 'dart:math';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/providers/s3_delete_provider.dart';
-//import 'package:dio/dio.dart';
-
 import 'package:http/http.dart' as http;
-
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-//import 'package:multipart_request/multipart_request.dart';
 import 'package:provider/provider.dart';
-
+import 'package:universal_io/io.dart';
 import '../../rotas_url.dart';
-
-import 'modelo_superior.dart';
-import 'multipart_request.dart';
+import './multipart_request.dart';
+import 'nemo_model.dart';
 //https://stackoverflow.com/questions/63314063/upload-image-file-to-strapi-flutter-web
 
-class ModeloSuperiorUpload extends StatefulWidget {
+class NemoUpload extends StatefulWidget {
   final bool isEdit;
   final Map pedidoDados;
   final bool blockUi;
-  ModeloSuperiorUpload({
+  NemoUpload({
     this.isEdit,
     this.pedidoDados,
-    @required this.blockUi,
+    this.blockUi,
   });
   @override
-  _ModeloSuperiorUploadState createState() => _ModeloSuperiorUploadState();
+  _NemoUploadState createState() => _NemoUploadState();
 }
 
-class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
-    with AutomaticKeepAliveClientMixin<ModeloSuperiorUpload> {
+class _NemoUploadState extends State<NemoUpload>
+    with AutomaticKeepAliveClientMixin<NemoUpload> {
   @override
   bool get wantKeepAlive => true;
   bool _isFetchEdit = true;
@@ -42,14 +37,14 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
   PedidoProvider _novoPedStore;
   S3DeleteProvider _s3deleteStore;
   //Clear after sending to server
-  List<PlatformFile> _modeloSupsDataList = <PlatformFile>[];
-
-  //New modeloSup object with id and image url from server
-  List<ModeloSuperiorModel> _modeloSupsList = <ModeloSuperiorModel>[];
-
-  Future<dynamic> _deletemodeloSup(_token, modeloSupId) async {
+  List<PlatformFile> _nemoUploadsDataList = <PlatformFile>[];
+  //List<PlatformFile> _nemoUploadsDataList =  List<PlatformFile>();
+  //New nemoUpload object with id and image url from server
+  List<NemoModel> _nemoUploadsList = <NemoModel>[];
+  //List<NemoModel> _nemoUploadsList = List<NemoModel>();
+  Future<dynamic> _deleteNemoUpload(_token, nemoUploadId) async {
     var _response = await http.delete(
-      Uri.parse(RotasUrl.rotaDeleteModeloSup + modeloSupId.toString()),
+      Uri.parse(RotasUrl.rotaDeleteNemoUpload + nemoUploadId.toString()),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -63,46 +58,54 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
   Future<void> _openFileExplorer() async {
     FilePickerResult result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['stl'],
+      allowedExtensions: ['nmz'],
       allowMultiple: false,
+      withReadStream: true,
     );
-    if (result != null && result.files.length + _modeloSupsList.length <= 1) {
-      _modeloSupsDataList = result.files;
+    if (result != null && result.files.length + _nemoUploadsList.length <= 1) {
+      _nemoUploadsDataList = result.files;
     } else {
-      throw ('Excedeu número máximo de modelos');
+      throw ('Excedeu número máximo de modelos do nemo');
     }
   }
 
-  List<Widget> _uiManagemodeloSups(_token) {
+  List<Widget> _uiManagenemoUploads(_token) {
     List<Widget> _ump = <Widget>[];
-    for (var curmodeloSup in _modeloSupsList) {
+    for (var curnemoUpload in _nemoUploadsList) {
       _ump.add(
         Material(
           elevation: 5,
           child: Row(
             children: [
-              curmodeloSup.imageUrl == null
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        value: curmodeloSup.progress,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                      ),
-                    )
-                  : Image(
-                      fit: BoxFit.cover,
-                      width: 100,
-                      image: AssetImage('logos/cubo.jpg'),
-                    ),
-              SizedBox(width: 10),
-              curmodeloSup.fileName == null
-                  ? Text(
+              if (curnemoUpload.id == null)
+                Center(
+                  child: CircularProgressIndicator(
+                    value: curnemoUpload.progress,
+                    valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+                  ),
+                )
+              else if (curnemoUpload.id == -1)
+                Image(
+                  fit: BoxFit.cover,
+                  width: 100,
+                  image: AssetImage('logos/error.png'),
+                )
+              else
+                Image(
+                  fit: BoxFit.cover,
+                  width: 100,
+                  image: AssetImage('logos/nemo_logo.png'),
+                ),
+              const SizedBox(width: 10),
+              curnemoUpload.fileName == null
+                  ? const Text(
                       'Carregando...',
                       style: TextStyle(
                         color: Colors.black38,
                       ),
                     )
                   : Text(
-                      curmodeloSup.fileName,
+                      curnemoUpload.fileName,
                       style: TextStyle(
                         color: Colors.black38,
                       ),
@@ -110,7 +113,7 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
               Expanded(
                 child: Container(),
               ),
-              if (curmodeloSup.id != null)
+              if (curnemoUpload.id != null)
                 IconButton(
                   icon: widget.isEdit == false
                       ? const Icon(Icons.delete)
@@ -119,20 +122,21 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
                       ? null
                       : () {
                           if (widget.isEdit) {
-                            _s3deleteStore.setIdToDelete(curmodeloSup.id);
+                            _s3deleteStore.setIdToDelete(curnemoUpload.id);
                             setState(() {
-                              _modeloSupsList.removeWhere(
-                                (modeloSup) => modeloSup.id == curmodeloSup.id,
+                              _nemoUploadsList.removeWhere(
+                                (nemoUpload) =>
+                                    nemoUpload.id == curnemoUpload.id,
                               );
                             });
                           } else {
-                            _deletemodeloSup(_token, curmodeloSup.id)
+                            _deleteNemoUpload(_token, curnemoUpload.id)
                                 .then((res) {
                               var data = json.decode(res.body);
                               if (data['id'] != null) {
                                 setState(() {
-                                  _modeloSupsList.removeWhere(
-                                    (modeloSup) => modeloSup.id == data['id'],
+                                  _nemoUploadsList.removeWhere(
+                                    (nemoUpload) => nemoUpload.id == data['id'],
                                   );
                                 });
                               }
@@ -140,8 +144,8 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
                           }
                         },
                 ),
-              if (curmodeloSup.id == null) Container(),
-              SizedBox(
+              if (curnemoUpload.id == null) Container(),
+              const SizedBox(
                 width: 20,
               ),
             ],
@@ -150,55 +154,70 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
       );
     }
     //Clear memory of unused byte array
-    _modeloSupsDataList = null;
+    _nemoUploadsDataList = null;
     return _ump;
   }
 
-  Future<void> _sendmodeloSup(_token, _currentmodeloSup) async {
+  Future<void> _sendnemoUpload(_token, PlatformFile _currentnemoUpload) async {
     int min = 100000; //min and max values act as your 6 digit range
     int max = 999999;
     var randomizer = new Random();
     var rNum = min + randomizer.nextInt(max - min);
-    ModeloSuperiorModel pm = ModeloSuperiorModel(listId: rNum);
+    NemoModel pm = NemoModel(listId: rNum);
+
+    int posContainingWidget = 0;
 
     setState(() {
-      _modeloSupsList.add(pm);
+      _nemoUploadsList.add(pm);
+      for (int i = 0; i < _nemoUploadsList.length; i++) {
+        if (_nemoUploadsList[i].listId == rNum) {
+          posContainingWidget = i;
+        }
+      }
     });
 
-    final uri = Uri.parse(RotasUrl.rotaUpload);
-    final request = MultipartRequest(
-      'POST',
-      uri,
-    );
-    request.headers['authorization'] = 'Bearer $_token';
-    request.files.add(http.MultipartFile.fromBytes(
-      'files',
-      _currentmodeloSup.bytes,
-      filename: _currentmodeloSup.name,
-    ));
     try {
-      var response = await request.send();
-      var resStream = await response.stream.bytesToString();
-      var resData = json.decode(resStream);
+      Map<String, String> headers = {
+        'authorization': 'Bearer $_token',
+        'content-type': 'application/octet-stream',
+      };
+
+      http.MultipartFile data = http.MultipartFile(
+        'files',
+        _currentnemoUpload.readStream,
+        _currentnemoUpload.size,
+        filename: _currentnemoUpload.name,
+      );
+
+      var resData = await html.HttpRequest.request(
+        RotasUrl.rotaUpload,
+        method: 'POST',
+        requestHeaders: headers,
+        sendData: data,
+        onProgress: (e) {
+          print(e.loaded.toStringAsFixed(3));
+        },
+      ).then((value) => null).then((value) => json.decode(value));
 
       if (resData[0]['id'] != null) {
-        for (int i = 0; i < _modeloSupsList.length; i++) {
-          if (_modeloSupsList[i].listId == rNum) {
+        for (int i = 0; i < _nemoUploadsList.length; i++) {
+          if (_nemoUploadsList[i].listId == rNum) {
             setState(() {
-              _modeloSupsList[i].id = resData[0]['id'];
-              _modeloSupsList[i].fileName = resData[0]['name'];
-              _modeloSupsList[i].imageUrl = resData[0]['url'];
+              _nemoUploadsList[i].id = resData[0]['id'];
+              _nemoUploadsList[i].fileName = resData[0]['name'];
+              _nemoUploadsList[i].imageUrl = resData[0]['url'];
             });
           }
         }
       }
     } catch (e) {
-      for (int i = 0; i < _modeloSupsList.length; i++) {
-        if (_modeloSupsList[i].listId == rNum) {
+      for (int i = 0; i < _nemoUploadsList.length; i++) {
+        if (_nemoUploadsList[i].listId == rNum) {
           setState(() {
-            _modeloSupsList[i].id = -1;
-            _modeloSupsList[i].fileName = 'Error, por favor tente novamente.';
-            _modeloSupsList[i].imageUrl = '';
+            _nemoUploadsList[i].id = -1;
+            _nemoUploadsList[i].fileName =
+                'Algo deu errado, por favor tente novamente.';
+            _nemoUploadsList[i].imageUrl = '';
           });
         }
       }
@@ -206,33 +225,30 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
     }
   }
 
-  //FOR EDIT SCREEN
-  Future<dynamic> _getModeloSup(_token) async {
-    print(widget.pedidoDados.toString());
-
-    var _response = await http.post(
-      Uri.parse(RotasUrl.rotaModeloSuperiorList),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $_token',
-      },
-      body: json.encode({
-        'modelo_superior': widget.pedidoDados['modelo_superior']
-            ['modelo_superior_id'],
-      }),
-    );
-    var resData = json.decode(_response.body);
-
+//FOR EDIT SCREEN
+  Future<dynamic> _getModeloNemo(_token) async {
+    var resData;
     try {
+      var _response = await http.post(
+        Uri.parse(RotasUrl.rotaModeloNemoList),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $_token',
+        },
+        body: json.encode({
+          'modelo_nemo': widget.pedidoDados['modelo_nemo']['modelo_nemo_id'],
+        }),
+      );
+      resData = json.decode(_response.body);
+
       for (int i = 0; i < resData.length; i++) {
         if (resData[i]['id'] != null) {
-          ModeloSuperiorModel pm =
-              ModeloSuperiorModel(listId: resData[i]['id']);
+          NemoModel pm = NemoModel(listId: resData[i]['id']);
           pm.id = resData[i]['id'];
           pm.fileName = resData[i]['name'];
           pm.imageUrl = resData[i]['url'];
-          _modeloSupsList.add(pm);
+          _nemoUploadsList.add(pm);
         }
       }
       setState(() {
@@ -258,13 +274,13 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
       listen: false,
     );
     if (widget.isEdit && _isFetchEdit) {
-      _getModeloSup(_authStore.token);
+      _getModeloNemo(_authStore.token);
     }
 
-    if (_modeloSupsList.isNotEmpty) {
-      _novoPedStore.setModeloSuperiorList(_modeloSupsList);
+    if (_nemoUploadsList.isNotEmpty) {
+      _novoPedStore.setModeloNemoList(_nemoUploadsList);
     } else {
-      _novoPedStore.setModeloSuperiorList(null);
+      _novoPedStore.setModeloNemoList(null);
     }
 
     return Container(
@@ -291,14 +307,16 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               duration: const Duration(seconds: 8),
-                              content: Text(
-                                  'Enviando modelo superior. Por ser um arquivo grande, por favor aguarde...'),
+                              content: const Text(
+                                'Enviando modelo nemo. Por favor aguarde...',
+                              ),
                             ),
                           );
 
                           Future.delayed(const Duration(milliseconds: 500), () {
-                            for (var modeloSup in _modeloSupsDataList) {
-                              _sendmodeloSup(_authStore.token, modeloSup);
+                            for (PlatformFile nemoUpload
+                                in _nemoUploadsDataList) {
+                              _sendnemoUpload(_authStore.token, nemoUpload);
                             }
                           });
                         }).catchError((e) {
@@ -306,24 +324,24 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               duration: const Duration(seconds: 8),
-                              content: Text('Selecione no máximo 1 modelo!'),
+                              content: Text('Selecione no máximo 1 arquivo!'),
                             ),
                           );
                         });
                       },
                 child: const Text(
-                  'MODELO SUPERIOR',
+                  'MODELO NEMO',
                   style: const TextStyle(
                     color: Colors.white,
                   ),
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             //Showing loaded images, if any.
-            _modeloSupsList != null
+            _nemoUploadsList != null
                 ? Column(
-                    children: _uiManagemodeloSups(_authStore.token),
+                    children: _uiManagenemoUploads(_authStore.token),
                   )
                 : Container(),
           ],

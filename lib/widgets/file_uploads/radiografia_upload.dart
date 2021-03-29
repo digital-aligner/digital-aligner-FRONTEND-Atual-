@@ -95,7 +95,7 @@ class _RadiografiaUploadState extends State<RadiografiaUpload>
       var resStream = await response.stream.bytesToString();
       var resData = json.decode(resStream);
 
-      if (resData[0].containsKey('id')) {
+      if (resData[0]['id'] != null) {
         for (int i = 0; i < _radiografiasList.length; i++) {
           if (_radiografiasList[i].listId == rNum) {
             setState(() {

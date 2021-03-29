@@ -94,11 +94,12 @@ class _PhotoUploadState extends State<PhotoUpload>
       filename: _currentPhoto.name,
     ));
     try {
+      print(request.toString());
       var response = await request.send();
       var resStream = await response.stream.bytesToString();
       var resData = json.decode(resStream);
 
-      if (resData[0].containsKey('id')) {
+      if (resData[0]['id'] != null) {
         for (int i = 0; i < _photosList.length; i++) {
           if (_photosList[i].listId == rNum) {
             setState(() {

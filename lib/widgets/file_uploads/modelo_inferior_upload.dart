@@ -180,7 +180,7 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload>
       var resStream = await response.stream.bytesToString();
       var resData = json.decode(resStream);
 
-      if (resData[0].containsKey('id')) {
+      if (resData[0]['id'] != null) {
         for (int i = 0; i < _modeloInfsList.length; i++) {
           if (_modeloInfsList[i].listId == rNum) {
             setState(() {
