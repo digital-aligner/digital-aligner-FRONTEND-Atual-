@@ -78,6 +78,8 @@ class PedidosListProvider with ChangeNotifier {
       _routeType = RotasUrl.rotaPedidosAprovados;
     } else if (_dropownValue == 'Refinamentos') {
       _routeType = RotasUrl.rotaRefinamentos;
+    } else if (_dropownValue == 'Alterações de Pedidos') {
+      _routeType = RotasUrl.rotaAlteracoesPedidos;
     }
 
     Map<String, String> requestHeaders = {

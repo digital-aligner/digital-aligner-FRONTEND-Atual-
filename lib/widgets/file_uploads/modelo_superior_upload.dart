@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'dart:math';
@@ -16,7 +17,7 @@ import 'package:provider/provider.dart';
 import '../../rotas_url.dart';
 
 import 'modelo_superior.dart';
-import 'multipart_request.dart';
+import 'multipart_request.dart' as mt;
 //https://stackoverflow.com/questions/63314063/upload-image-file-to-strapi-flutter-web
 
 class ModeloSuperiorUpload extends StatefulWidget {
@@ -65,6 +66,7 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
       type: FileType.custom,
       allowedExtensions: ['stl'],
       allowMultiple: false,
+      withReadStream: true,
     );
     if (result != null && result.files.length + _modeloSupsList.length <= 1) {
       _modeloSupsDataList = result.files;
@@ -154,54 +156,99 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
     return _ump;
   }
 
-  Future<void> _sendmodeloSup(_token, _currentmodeloSup) async {
+  Future<void> _sendmodeloSup(
+    String _token,
+    PlatformFile _currentmodeloSup,
+  ) async {
     int min = 100000; //min and max values act as your 6 digit range
     int max = 999999;
     var randomizer = new Random();
     var rNum = min + randomizer.nextInt(max - min);
-    ModeloSuperiorModel pm = ModeloSuperiorModel(listId: rNum);
+
+    ModeloSuperiorModel pm = ModeloSuperiorModel(
+      listId: rNum,
+      progress: 0,
+      fileName: 'Enviando...',
+    );
+
+    int posContainingWidget = 0;
 
     setState(() {
       _modeloSupsList.add(pm);
+      for (int i = 0; i < _modeloSupsList.length; i++) {
+        if (_modeloSupsList[i].listId == rNum) {
+          posContainingWidget = i;
+        }
+      }
     });
 
     final uri = Uri.parse(RotasUrl.rotaUpload);
-    final request = MultipartRequest(
+
+    final request = mt.MultipartRequest(
       'POST',
       uri,
     );
+
     request.headers['authorization'] = 'Bearer $_token';
-    request.files.add(http.MultipartFile.fromBytes(
+
+    request.files.add(http.MultipartFile(
       'files',
-      _currentmodeloSup.bytes,
+      _currentmodeloSup.readStream,
+      _currentmodeloSup.size,
       filename: _currentmodeloSup.name,
     ));
+
     try {
+      //TIMER (for fake ui progress)
+      const oneSec = const Duration(seconds: 2);
+      bool isUploading = true;
+
+      Timer.periodic(oneSec, (Timer t) {
+        if (_modeloSupsList[posContainingWidget].progress < 1 || isUploading) {
+          setState(() {
+            double currentProgess =
+                _modeloSupsList[posContainingWidget].progress;
+            _modeloSupsList[posContainingWidget].progress =
+                currentProgess + 0.01;
+          });
+        } else {
+          t.cancel();
+        }
+      });
+
       var response = await request.send();
       var resStream = await response.stream.bytesToString();
       var resData = json.decode(resStream);
 
       if (resData[0]['id'] != null) {
-        for (int i = 0; i < _modeloSupsList.length; i++) {
-          if (_modeloSupsList[i].listId == rNum) {
-            setState(() {
-              _modeloSupsList[i].id = resData[0]['id'];
-              _modeloSupsList[i].fileName = resData[0]['name'];
-              _modeloSupsList[i].imageUrl = resData[0]['url'];
-            });
-          }
+        //STOP UI PROGRESS IF NOT FINISHED
+        isUploading = false;
+
+        if (_modeloSupsList[posContainingWidget].progress < 0.5) {
+          setState(() {
+            _modeloSupsList[posContainingWidget].progress = 0.70;
+          });
+          await Future.delayed(Duration(seconds: 2));
+          setState(() {
+            _modeloSupsList[posContainingWidget].progress = 1;
+          });
+          await Future.delayed(Duration(seconds: 2));
         }
+
+        setState(() {
+          _modeloSupsList[posContainingWidget].id = resData[0]['id'];
+          _modeloSupsList[posContainingWidget].fileName = resData[0]['name'];
+          _modeloSupsList[posContainingWidget].imageUrl = resData[0]['url'];
+        });
       }
     } catch (e) {
-      for (int i = 0; i < _modeloSupsList.length; i++) {
-        if (_modeloSupsList[i].listId == rNum) {
-          setState(() {
-            _modeloSupsList[i].id = -1;
-            _modeloSupsList[i].fileName = 'Error, por favor tente novamente.';
-            _modeloSupsList[i].imageUrl = '';
-          });
-        }
-      }
+      setState(() {
+        _modeloSupsList[posContainingWidget].id = -1;
+        _modeloSupsList[posContainingWidget].fileName =
+            'Error, por favor tente novamente.';
+        _modeloSupsList[posContainingWidget].imageUrl = '';
+      });
+
       print(e);
     }
   }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -11,7 +12,7 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 import '../../rotas_url.dart';
-import './multipart_request.dart';
+import './multipart_request.dart' as mt;
 
 //https://stackoverflow.com/questions/63314063/upload-image-file-to-strapi-flutter-web
 
@@ -64,6 +65,7 @@ class _RelatorioPdfUploadState extends State<RelatorioPdfUpload>
       type: FileType.custom,
       allowedExtensions: ['pdf'],
       allowMultiple: false,
+      withReadStream: true,
     );
     if (result != null &&
         result.files.length + _relatorioPdfUploadsList.length <= 1) {
@@ -158,44 +160,90 @@ class _RelatorioPdfUploadState extends State<RelatorioPdfUpload>
   }
 
   Future<void> _sendrelatorioPdfUpload(
-      _token, _currentrelatorioPdfUpload) async {
+    String _token,
+    PlatformFile _currentrelatorioPdfUpload,
+  ) async {
     int min = 100000; //min and max values act as your 6 digit range
     int max = 999999;
     var randomizer = new Random();
     var rNum = min + randomizer.nextInt(max - min);
-    RelatorioPdfModel pm = RelatorioPdfModel(listId: rNum);
+
+    RelatorioPdfModel pm = RelatorioPdfModel(
+      listId: rNum,
+      progress: 0,
+      fileName: 'Enviando...',
+    );
+    int posContainingWidget = 0;
+
     setState(() {
       _relatorioPdfUploadsList.add(pm);
+      for (int i = 0; i < _relatorioPdfUploadsList.length; i++) {
+        if (_relatorioPdfUploadsList[i].listId == rNum) {
+          posContainingWidget = i;
+        }
+      }
     });
 
     final uri = Uri.parse(RotasUrl.rotaUpload);
 
-    final request = MultipartRequest(
+    final request = mt.MultipartRequest(
       'POST',
       uri,
     );
 
     request.headers['authorization'] = 'Bearer $_token';
-    request.files.add(http.MultipartFile.fromBytes(
+
+    request.files.add(http.MultipartFile(
       'files',
-      _currentrelatorioPdfUpload.bytes,
+      _currentrelatorioPdfUpload.readStream,
+      _currentrelatorioPdfUpload.size,
       filename: _currentrelatorioPdfUpload.name,
     ));
-    var response = await request.send();
-    var resStream = await response.stream.bytesToString();
-    var resData = json.decode(resStream);
-    if (resData[0]['id'] != null) {
-      _relatorioStore.updateRelatorioPdfS3Urls(resData[0]);
 
-      for (int i = 0; i < _relatorioPdfUploadsList.length; i++) {
-        if (_relatorioPdfUploadsList[i].listId == rNum) {
+    try {
+      //TIMER (for fake ui progress)
+      const oneSec = const Duration(milliseconds: 100);
+      bool isUploading = true;
+
+      Timer.periodic(oneSec, (Timer t) {
+        if (_relatorioPdfUploadsList[posContainingWidget].progress < 1 ||
+            isUploading) {
           setState(() {
-            _relatorioPdfUploadsList[i].id = resData[0]['id'];
-            _relatorioPdfUploadsList[i].fileName = resData[0]['name'];
-            _relatorioPdfUploadsList[i].imageUrl = resData[0]['url'];
+            double currentProgess =
+                _relatorioPdfUploadsList[posContainingWidget].progress;
+            _relatorioPdfUploadsList[posContainingWidget].progress =
+                currentProgess + 0.01;
           });
+        } else {
+          t.cancel();
         }
+      });
+
+      var response = await request.send();
+      var resStream = await response.stream.bytesToString();
+      var resData = json.decode(resStream);
+
+      if (resData[0]['id'] != null) {
+        //STOP UI PROGRESS IF NOT FINISHED
+        isUploading = false;
+
+        _relatorioStore.updateRelatorioPdfS3Urls(resData[0]);
+
+        setState(() {
+          _relatorioPdfUploadsList[posContainingWidget].id = resData[0]['id'];
+          _relatorioPdfUploadsList[posContainingWidget].fileName =
+              resData[0]['name'];
+          _relatorioPdfUploadsList[posContainingWidget].imageUrl =
+              resData[0]['url'];
+        });
       }
+    } catch (e) {
+      setState(() {
+        _relatorioPdfUploadsList[posContainingWidget].id = -1;
+        _relatorioPdfUploadsList[posContainingWidget].fileName =
+            'Algo deu errado, por favor tente novamente.';
+        _relatorioPdfUploadsList[posContainingWidget].imageUrl = '';
+      });
     }
   }
 

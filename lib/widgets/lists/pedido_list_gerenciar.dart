@@ -100,6 +100,17 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
     return _formatedDate;
   }
 
+  String _isoDateToLocal(String isoDateString) {
+    if (isoDateString == null || isoDateString == '') {
+      return '';
+    }
+
+    DateTime _dateTime = DateTime.parse(isoDateString).toLocal();
+    String _formatedDate = DateFormat('dd/MM/yyyy').format(_dateTime);
+
+    return _formatedDate;
+  }
+
   Widget _listItem(int index, double _sWidth, double _sHeight) {
     return Container(
       child: Column(
@@ -152,8 +163,8 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                   ),
                 ),
               ],
-            ),
-          if (_pedidosListStore.getDropdownValue() == 'Pedidos Aprovados')
+            )
+          else if (_pedidosListStore.getDropdownValue() == 'Pedidos Aprovados')
             Row(
               children: [
                 Expanded(
@@ -210,8 +221,8 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                   ),
                 ),
               ],
-            ),
-          if (_pedidosListStore.getDropdownValue() == 'Refinamentos')
+            )
+          else if (_pedidosListStore.getDropdownValue() == 'Refinamentos')
             Row(
               children: [
                 Expanded(
@@ -251,6 +262,62 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                Expanded(
+                  child: _relatorioStatusBtn(
+                    index,
+                    _sWidth,
+                    _sHeight,
+                  ),
+                ),
+              ],
+            )
+          else if (_pedidosListStore.getDropdownValue() ==
+              'Alterações de Pedidos')
+            Row(
+              children: [
+                //Data da alteração
+                Expanded(
+                  child: Text(
+                    _isoDateToLocal(
+                      pedList[index]['hist_alteracao_pedido']['data'] ?? '',
+                    ),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                //código pedido
+                Expanded(
+                  child: Text(
+                    '${pedList[index]['codigo_pedido']}',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                //descrição
+                Expanded(
+                  child: Text(
+                    '${pedList[index]['hist_alteracao_pedido']['info'] ?? ''}',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                //dentista
+                Expanded(
+                  child: Text(
+                    '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                //nome paciente
+                Expanded(
+                  child: Text(
+                    '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                //status relatório
                 Expanded(
                   child: _relatorioStatusBtn(
                     index,

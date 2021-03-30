@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
@@ -11,7 +12,7 @@ import 'package:provider/provider.dart';
 import '../../rotas_url.dart';
 
 import './radiografia_model.dart';
-import './multipart_request.dart';
+import './multipart_request.dart' as mt;
 
 //https://stackoverflow.com/questions/63314063/upload-image-file-to-strapi-flutter-web
 
@@ -56,70 +57,90 @@ class _RadiografiaUploadState extends State<RadiografiaUpload>
     return _response;
   }
 
-  Future<void> _sendRadiografia(_token, _currentRadiografia) async {
+  Future<void> _sendRadiografia(
+    String _token,
+    PlatformFile _currentRadiografia,
+  ) async {
     int min = 100000; //min and max values act as your 6 digit range
     int max = 999999;
     var randomizer = new Random();
     var rNum = min + randomizer.nextInt(max - min);
-    RadiografiaModel pm = RadiografiaModel(listId: rNum);
+
+    RadiografiaModel pm = RadiografiaModel(
+      listId: rNum,
+      progress: 0,
+      fileName: 'Enviando...',
+    );
+
+    int posContainingWidget = 0;
+
     setState(() {
       _radiografiasList.add(pm);
+      for (int i = 0; i < _radiografiasList.length; i++) {
+        if (_radiografiasList[i].listId == rNum) {
+          posContainingWidget = i;
+        }
+      }
     });
 
     final uri = Uri.parse(RotasUrl.rotaUpload);
 
-    final request = MultipartRequest(
+    final request = mt.MultipartRequest(
       'POST',
       uri,
-      onProgress: (int bytes, int total) {
-        final progress = bytes / total;
-        for (int i = 0; i < _radiografiasList.length; i++) {
-          if (_radiografiasList[0].listId == pm.listId) {
-            setState(() {
-              _radiografiasList[0].progress = progress;
-            });
-          }
-        }
-        print('progress: $progress % ($bytes/$total)');
-      },
     );
+
     request.headers['authorization'] = 'Bearer $_token';
 
-    request.files.add(http.MultipartFile.fromBytes(
+    request.files.add(http.MultipartFile(
       'files',
-      _currentRadiografia.bytes,
+      _currentRadiografia.readStream,
+      _currentRadiografia.size,
       filename: _currentRadiografia.name,
     ));
     try {
+      //TIMER (for fake ui progress)
+      const oneSec = const Duration(milliseconds: 100);
+      bool isUploading = true;
+
+      Timer.periodic(oneSec, (Timer t) {
+        if (_radiografiasList[posContainingWidget].progress < 1 ||
+            isUploading) {
+          setState(() {
+            double currentProgess =
+                _radiografiasList[posContainingWidget].progress;
+            _radiografiasList[posContainingWidget].progress =
+                currentProgess + 0.01;
+          });
+        } else {
+          t.cancel();
+        }
+      });
+
       var response = await request.send();
       var resStream = await response.stream.bytesToString();
       var resData = json.decode(resStream);
 
       if (resData[0]['id'] != null) {
-        for (int i = 0; i < _radiografiasList.length; i++) {
-          if (_radiografiasList[i].listId == rNum) {
-            setState(() {
-              _radiografiasList[i].id = resData[0]['id'];
-              _radiografiasList[i].fileName = resData[0]['name'];
-              _radiografiasList[i].imageUrl = resData[0]['url'];
-              _radiografiasList[i].thumbnail =
-                  resData[0]['formats']['thumbnail']['url'];
-            });
-          }
-        }
+        //STOP UI PROGRESS IF NOT FINISHED
+        isUploading = false;
+
+        setState(() {
+          _radiografiasList[posContainingWidget].id = resData[0]['id'];
+          _radiografiasList[posContainingWidget].fileName = resData[0]['name'];
+          _radiografiasList[posContainingWidget].imageUrl = resData[0]['url'];
+          _radiografiasList[posContainingWidget].thumbnail =
+              resData[0]['formats']['thumbnail']['url'];
+        });
       }
     } catch (e) {
-      for (int i = 0; i < _radiografiasList.length; i++) {
-        if (_radiografiasList[i].listId == rNum) {
-          setState(() {
-            _radiografiasList[i].id = -1;
-            _radiografiasList[i].fileName =
-                'Algo deu errado, por favor tente novamente.';
-            _radiografiasList[i].imageUrl = '';
-            _radiografiasList[i].thumbnail = '';
-          });
-        }
-      }
+      setState(() {
+        _radiografiasList[posContainingWidget].id = -1;
+        _radiografiasList[posContainingWidget].fileName =
+            'Algo deu errado, por favor tente novamente.';
+        _radiografiasList[posContainingWidget].imageUrl = '';
+        _radiografiasList[posContainingWidget].thumbnail = '';
+      });
       print(e);
     }
   }
@@ -129,6 +150,7 @@ class _RadiografiaUploadState extends State<RadiografiaUpload>
       type: FileType.custom,
       allowedExtensions: ['jpg', 'jpeg', 'jpe', 'gif', 'png'],
       allowMultiple: true,
+      withReadStream: true,
     );
     if (result != null && result.files.length + _radiografiasList.length <= 4) {
       _radiografiasDataList = result.files;

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
@@ -9,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../rotas_url.dart';
 
-import './multipart_request.dart';
+import './multipart_request.dart' as mt;
 
 import 'modelo_inferior.dart';
 //https://stackoverflow.com/questions/63314063/upload-image-file-to-strapi-flutter-web
@@ -61,6 +62,7 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload>
       type: FileType.custom,
       allowedExtensions: ['stl'],
       allowMultiple: false,
+      withReadStream: true,
     );
     if (result != null && result.files.length + _modeloInfsList.length <= 1) {
       _modeloInfsDataList = result.files;
@@ -151,57 +153,98 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload>
     return _ump;
   }
 
-  Future<void> _sendmodeloInf(_token, _currentmodeloInf) async {
+  Future<void> _sendmodeloInf(
+    String _token,
+    PlatformFile _currentmodeloInf,
+  ) async {
     int min = 100000; //min and max values act as your 6 digit range
     int max = 999999;
     var randomizer = new Random();
     var rNum = min + randomizer.nextInt(max - min);
-    ModeloInferiorModel pm = ModeloInferiorModel(listId: rNum);
+
+    ModeloInferiorModel pm = ModeloInferiorModel(
+      listId: rNum,
+      progress: 0,
+      fileName: 'Enviando...',
+    );
+
+    int posContainingWidget = 0;
+
     setState(() {
       _modeloInfsList.add(pm);
+      for (int i = 0; i < _modeloInfsList.length; i++) {
+        if (_modeloInfsList[i].listId == rNum) {
+          posContainingWidget = i;
+        }
+      }
     });
 
     final uri = Uri.parse(RotasUrl.rotaUpload);
 
-    final request = MultipartRequest(
+    final request = mt.MultipartRequest(
       'POST',
       uri,
     );
 
     request.headers['authorization'] = 'Bearer $_token';
-    request.files.add(http.MultipartFile.fromBytes(
+
+    request.files.add(http.MultipartFile(
       'files',
-      _currentmodeloInf.bytes,
+      _currentmodeloInf.readStream,
+      _currentmodeloInf.size,
       filename: _currentmodeloInf.name,
     ));
 
     try {
+      //TIMER (for fake ui progress)
+      const oneSec = const Duration(seconds: 2);
+      bool isUploading = true;
+
+      Timer.periodic(oneSec, (Timer t) {
+        if (_modeloInfsList[posContainingWidget].progress < 1 || isUploading) {
+          setState(() {
+            double currentProgess =
+                _modeloInfsList[posContainingWidget].progress;
+            _modeloInfsList[posContainingWidget].progress =
+                currentProgess + 0.01;
+          });
+        } else {
+          t.cancel();
+        }
+      });
+
       var response = await request.send();
       var resStream = await response.stream.bytesToString();
       var resData = json.decode(resStream);
 
       if (resData[0]['id'] != null) {
-        for (int i = 0; i < _modeloInfsList.length; i++) {
-          if (_modeloInfsList[i].listId == rNum) {
-            setState(() {
-              _modeloInfsList[i].id = resData[0]['id'];
-              _modeloInfsList[i].fileName = resData[0]['name'];
-              _modeloInfsList[i].imageUrl = resData[0]['url'];
-            });
-          }
+        //STOP UI PROGRESS IF NOT FINISHED
+        isUploading = false;
+
+        if (_modeloInfsList[posContainingWidget].progress < 0.5) {
+          setState(() {
+            _modeloInfsList[posContainingWidget].progress = 0.70;
+          });
+          await Future.delayed(Duration(seconds: 2));
+          setState(() {
+            _modeloInfsList[posContainingWidget].progress = 1;
+          });
+          await Future.delayed(Duration(seconds: 2));
         }
+
+        setState(() {
+          _modeloInfsList[posContainingWidget].id = resData[0]['id'];
+          _modeloInfsList[posContainingWidget].fileName = resData[0]['name'];
+          _modeloInfsList[posContainingWidget].imageUrl = resData[0]['url'];
+        });
       }
     } catch (e) {
-      for (int i = 0; i < _modeloInfsList.length; i++) {
-        if (_modeloInfsList[i].listId == rNum) {
-          setState(() {
-            _modeloInfsList[i].id = -1;
-            _modeloInfsList[i].fileName =
-                'Algo deu errado, por favor tente novamente.';
-            _modeloInfsList[i].imageUrl = '';
-          });
-        }
-      }
+      setState(() {
+        _modeloInfsList[posContainingWidget].id = -1;
+        _modeloInfsList[posContainingWidget].fileName =
+            'Algo deu errado, por favor tente novamente.';
+        _modeloInfsList[posContainingWidget].imageUrl = '';
+      });
     }
   }
 

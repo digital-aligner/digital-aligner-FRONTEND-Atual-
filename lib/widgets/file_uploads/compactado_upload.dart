@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
@@ -8,7 +9,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../rotas_url.dart';
-import './multipart_request.dart';
+import './multipart_request.dart' as mt;
 import 'compactado_model.dart';
 //https://stackoverflow.com/questions/63314063/upload-image-file-to-strapi-flutter-web
 
@@ -59,6 +60,7 @@ class _CompactadoUploadState extends State<CompactadoUpload>
       type: FileType.custom,
       allowedExtensions: ['zip', 'rar'],
       allowMultiple: false,
+      withReadStream: true,
     );
     if (result != null &&
         result.files.length + _compactUploadsList.length <= 1) {
@@ -152,36 +154,86 @@ class _CompactadoUploadState extends State<CompactadoUpload>
     return _ump;
   }
 
-  Future<void> _sendcompactUpload(_token, _currentcompactUpload) async {
+  Future<void> _sendcompactUpload(
+    String _token,
+    PlatformFile _currentcompactUpload,
+  ) async {
     int min = 100000; //min and max values act as your 6 digit range
     int max = 999999;
     var randomizer = new Random();
     var rNum = min + randomizer.nextInt(max - min);
-    CompactadoModel pm = CompactadoModel(listId: rNum);
+
+    CompactadoModel pm = CompactadoModel(
+      listId: rNum,
+      progress: 0,
+      fileName: 'Enviando...',
+    );
+
+    int posContainingWidget = 0;
+
     setState(() {
       _compactUploadsList.add(pm);
+      for (int i = 0; i < _compactUploadsList.length; i++) {
+        if (_compactUploadsList[i].listId == rNum) {
+          posContainingWidget = i;
+        }
+      }
     });
 
     final uri = Uri.parse(RotasUrl.rotaUpload);
 
-    final request = MultipartRequest(
+    final request = mt.MultipartRequest(
       'POST',
       uri,
     );
 
     request.headers['authorization'] = 'Bearer $_token';
-    request.files.add(http.MultipartFile.fromBytes(
+
+    request.files.add(http.MultipartFile(
       'files',
-      _currentcompactUpload.bytes,
+      _currentcompactUpload.readStream,
+      _currentcompactUpload.size,
       filename: _currentcompactUpload.name,
     ));
 
     try {
+      //TIMER (for fake ui progress)
+      const oneSec = const Duration(seconds: 2);
+      bool isUploading = true;
+
+      Timer.periodic(oneSec, (Timer t) {
+        if (_compactUploadsList[posContainingWidget].progress < 1 ||
+            isUploading) {
+          setState(() {
+            double currentProgess =
+                _compactUploadsList[posContainingWidget].progress;
+            _compactUploadsList[posContainingWidget].progress =
+                currentProgess + 0.01;
+          });
+        } else {
+          t.cancel();
+        }
+      });
+
       var response = await request.send();
       var resStream = await response.stream.bytesToString();
       var resData = json.decode(resStream);
 
       if (resData[0]['id'] != null) {
+        //STOP UI PROGRESS IF NOT FINISHED
+        isUploading = false;
+
+        if (_compactUploadsList[posContainingWidget].progress < 0.5) {
+          setState(() {
+            _compactUploadsList[posContainingWidget].progress = 0.70;
+          });
+          await Future.delayed(Duration(seconds: 2));
+          setState(() {
+            _compactUploadsList[posContainingWidget].progress = 1;
+          });
+          await Future.delayed(Duration(seconds: 2));
+        }
+        /*
         for (int i = 0; i < _compactUploadsList.length; i++) {
           if (_compactUploadsList[i].listId == rNum) {
             setState(() {
@@ -190,20 +242,23 @@ class _CompactadoUploadState extends State<CompactadoUpload>
               _compactUploadsList[i].imageUrl = resData[0]['url'];
             });
           }
-        }
+        }*/
+
+        setState(() {
+          _compactUploadsList[posContainingWidget].id = resData[0]['id'];
+          _compactUploadsList[posContainingWidget].fileName =
+              resData[0]['name'];
+          _compactUploadsList[posContainingWidget].imageUrl = resData[0]['url'];
+        });
       }
     } catch (e) {
       print(e);
-      for (int i = 0; i < _compactUploadsList.length; i++) {
-        if (_compactUploadsList[i].listId == rNum) {
-          setState(() {
-            _compactUploadsList[i].id = -1;
-            _compactUploadsList[i].fileName =
-                'Algo deu errado, por favor tente novamente.';
-            _compactUploadsList[i].imageUrl = '';
-          });
-        }
-      }
+      setState(() {
+        _compactUploadsList[posContainingWidget].id = -1;
+        _compactUploadsList[posContainingWidget].fileName =
+            'Algo deu errado, por favor tente novamente.';
+        _compactUploadsList[posContainingWidget].imageUrl = '';
+      });
     }
   }
 

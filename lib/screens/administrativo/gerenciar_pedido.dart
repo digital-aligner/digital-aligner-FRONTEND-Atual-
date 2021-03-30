@@ -122,13 +122,12 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
           const SizedBox(width: 20),
         ],
       );
-    }
-    if (_pedidosListStore.getDropdownValue() == 'Pedidos Aprovados') {
+    } else if (_pedidosListStore.getDropdownValue() == 'Pedidos Aprovados') {
       return Row(
         children: [
           SizedBox(width: 20),
           Expanded(
-            child: Text(
+            child: const Text(
               'Data da Aprovação',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -207,8 +206,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
           const SizedBox(width: 20),
         ],
       );
-    }
-    if (_pedidosListStore.getDropdownValue() == 'Refinamentos') {
+    } else if (_pedidosListStore.getDropdownValue() == 'Refinamentos') {
       return Row(
         children: [
           SizedBox(width: 20),
@@ -281,6 +279,86 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
           const SizedBox(width: 20),
         ],
       );
+    } else if (_pedidosListStore.getDropdownValue() ==
+        'Alterações de Pedidos') {
+      return Row(
+        children: [
+          SizedBox(width: 20),
+          //data alteracao
+          Expanded(
+            child: Text(
+              'Data',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          //código do pedido
+          Expanded(
+            child: Text(
+              'Pedido',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          //descrição
+          Expanded(
+            child: const Text(
+              'Descrição',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          //responsável
+          Expanded(
+            child: const Text(
+              'Responsável',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          //nome paciente
+          Expanded(
+            child: const Text(
+              'Paciente',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          //opções
+          Expanded(
+            child: const Text(
+              'Opções',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 20),
+        ],
+      );
     }
     return Container(child: const Text(''));
   }
@@ -309,6 +387,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
             'Todos',
             'Pedidos Aprovados',
             'Refinamentos',
+            'Alterações de Pedidos'
           ].map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,

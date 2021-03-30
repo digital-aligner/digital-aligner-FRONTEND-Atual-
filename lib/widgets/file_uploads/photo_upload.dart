@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
@@ -12,7 +13,7 @@ import '../../rotas_url.dart';
 
 import './photo_model.dart';
 
-import './multipart_request.dart';
+import './multipart_request.dart' as mt;
 
 //https://stackoverflow.com/questions/63314063/upload-image-file-to-strapi-flutter-web
 
@@ -59,71 +60,88 @@ class _PhotoUploadState extends State<PhotoUpload>
     return _response;
   }
 
-  Future<void> _sendPhoto(_token, _currentPhoto) async {
+  Future<void> _sendPhoto(
+    String _token,
+    PlatformFile _currentPhoto,
+  ) async {
     int min = 100000; //min and max values act as your 6 digit range
     int max = 999999;
     var randomizer = new Random();
     var rNum = min + randomizer.nextInt(max - min);
-    PhotoModel pm = PhotoModel(listId: rNum);
+
+    PhotoModel pm = PhotoModel(
+      listId: rNum,
+      progress: 0,
+      fileName: 'Enviando...',
+    );
+
+    int posContainingWidget = 0;
+
     setState(() {
       _photosList.add(pm);
+      for (int i = 0; i < _photosList.length; i++) {
+        if (_photosList[i].listId == rNum) {
+          posContainingWidget = i;
+        }
+      }
     });
 
     final uri = Uri.parse(RotasUrl.rotaUpload);
 
-    final request = MultipartRequest(
+    final request = mt.MultipartRequest(
       'POST',
       uri,
-      onProgress: (int bytes, int total) {
-        final progress = bytes / total;
-        for (int i = 0; i < _photosList.length; i++) {
-          if (_photosList[0].listId == pm.listId) {
-            setState(() {
-              _photosList[0].progress = progress;
-            });
-          }
-        }
-        print('progress: $progress % ($bytes/$total)');
-      },
     );
 
     request.headers['authorization'] = 'Bearer $_token';
-    request.files.add(http.MultipartFile.fromBytes(
+
+    request.files.add(http.MultipartFile(
       'files',
-      _currentPhoto.bytes,
+      _currentPhoto.readStream,
+      _currentPhoto.size,
       filename: _currentPhoto.name,
     ));
+
     try {
-      print(request.toString());
+      //TIMER (for fake ui progress)
+      const oneSec = const Duration(milliseconds: 100);
+      bool isUploading = true;
+
+      Timer.periodic(oneSec, (Timer t) {
+        if (_photosList[posContainingWidget].progress < 1 || isUploading) {
+          setState(() {
+            double currentProgess = _photosList[posContainingWidget].progress;
+            _photosList[posContainingWidget].progress = currentProgess + 0.01;
+          });
+        } else {
+          t.cancel();
+        }
+      });
+
       var response = await request.send();
       var resStream = await response.stream.bytesToString();
       var resData = json.decode(resStream);
 
       if (resData[0]['id'] != null) {
-        for (int i = 0; i < _photosList.length; i++) {
-          if (_photosList[i].listId == rNum) {
-            setState(() {
-              _photosList[i].id = resData[0]['id'];
-              _photosList[i].fileName = resData[0]['name'];
-              _photosList[i].thumbnail =
-                  resData[0]['formats']['thumbnail']['url'];
-              _photosList[i].imageUrl = resData[0]['url'];
-            });
-          }
-        }
+        //STOP UI PROGRESS IF NOT FINISHED
+        isUploading = false;
+
+        setState(() {
+          _photosList[posContainingWidget].id = resData[0]['id'];
+          _photosList[posContainingWidget].fileName = resData[0]['name'];
+          _photosList[posContainingWidget].thumbnail =
+              resData[0]['formats']['thumbnail']['url'];
+          _photosList[posContainingWidget].imageUrl = resData[0]['url'];
+        });
       }
     } catch (e) {
-      for (int i = 0; i < _photosList.length; i++) {
-        if (_photosList[i].listId == rNum) {
-          setState(() {
-            _photosList[i].id = -1;
-            _photosList[i].fileName =
-                'Algo deu errado, por favor tente novamente.';
-            _photosList[i].thumbnail = '';
-            _photosList[i].imageUrl = '';
-          });
-        }
-      }
+      setState(() {
+        _photosList[posContainingWidget].id = -1;
+        _photosList[posContainingWidget].fileName =
+            'Algo deu errado, por favor tente novamente.';
+        _photosList[posContainingWidget].thumbnail = '';
+        _photosList[posContainingWidget].imageUrl = '';
+      });
       print(e);
     }
   }
@@ -133,6 +151,7 @@ class _PhotoUploadState extends State<PhotoUpload>
       type: FileType.custom,
       allowedExtensions: ['jpg', 'jpeg', 'jpe', 'gif', 'png'],
       allowMultiple: true,
+      withReadStream: true,
     );
     if (result != null && result.files.length + _photosList.length <= 16) {
       _photosDataList = result.files;

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
@@ -162,7 +163,12 @@ class _NemoUploadState extends State<NemoUpload>
     int max = 999999;
     var randomizer = new Random();
     var rNum = min + randomizer.nextInt(max - min);
-    NemoModel pm = NemoModel(listId: rNum);
+
+    NemoModel pm = NemoModel(
+      listId: rNum,
+      progress: 0,
+      fileName: 'Enviando...',
+    );
 
     int posContainingWidget = 0;
 
@@ -180,18 +186,11 @@ class _NemoUploadState extends State<NemoUpload>
     final request = mt.MultipartRequest(
       'POST',
       uri,
-      onProgress: (int bytes, int total) {
-        final progress = bytes / total;
-        setState(() {
-          _nemoUploadsList[posContainingWidget].progress = progress;
-        });
-        print('progress: $progress ($bytes/$total)');
-      },
     );
 
     request.headers['authorization'] = 'Bearer $_token';
 
-    request.files.add(MultipartFile(
+    request.files.add(http.MultipartFile(
       'files',
       _currentnemoUpload.readStream,
       _currentnemoUpload.size,
@@ -199,32 +198,56 @@ class _NemoUploadState extends State<NemoUpload>
     ));
 
     try {
+      //TIMER (for fake ui progress)
+      const oneSec = const Duration(seconds: 2);
+      bool isUploading = true;
+
+      Timer.periodic(oneSec, (Timer t) {
+        if (_nemoUploadsList[posContainingWidget].progress < 1 || isUploading) {
+          setState(() {
+            double currentProgess =
+                _nemoUploadsList[posContainingWidget].progress;
+            _nemoUploadsList[posContainingWidget].progress =
+                currentProgess + 0.01;
+          });
+        } else {
+          t.cancel();
+        }
+      });
+
       var response = await request.send();
       var resStream = await response.stream.bytesToString();
       var resData = json.decode(resStream);
 
       if (resData[0]['id'] != null) {
-        for (int i = 0; i < _nemoUploadsList.length; i++) {
-          if (_nemoUploadsList[i].listId == rNum) {
-            setState(() {
-              _nemoUploadsList[i].id = resData[0]['id'];
-              _nemoUploadsList[i].fileName = resData[0]['name'];
-              _nemoUploadsList[i].imageUrl = resData[0]['url'];
-            });
-          }
+        //STOP UI PROGRESS IF NOT FINISHED
+        isUploading = false;
+
+        if (_nemoUploadsList[posContainingWidget].progress < 0.5) {
+          setState(() {
+            _nemoUploadsList[posContainingWidget].progress = 0.70;
+          });
+          await Future.delayed(Duration(seconds: 2));
+          setState(() {
+            _nemoUploadsList[posContainingWidget].progress = 1;
+          });
+          await Future.delayed(Duration(seconds: 2));
         }
+
+        setState(() {
+          _nemoUploadsList[posContainingWidget].id = resData[0]['id'];
+          _nemoUploadsList[posContainingWidget].fileName = resData[0]['name'];
+          _nemoUploadsList[posContainingWidget].imageUrl = resData[0]['url'];
+        });
       }
     } catch (e) {
-      for (int i = 0; i < _nemoUploadsList.length; i++) {
-        if (_nemoUploadsList[i].listId == rNum) {
-          setState(() {
-            _nemoUploadsList[i].id = -1;
-            _nemoUploadsList[i].fileName =
-                'Algo deu errado, por favor tente novamente.';
-            _nemoUploadsList[i].imageUrl = '';
-          });
-        }
-      }
+      setState(() {
+        _nemoUploadsList[posContainingWidget].id = -1;
+        _nemoUploadsList[posContainingWidget].fileName =
+            'Algo deu errado, por favor tente novamente.';
+        _nemoUploadsList[posContainingWidget].imageUrl = '';
+      });
+
       print(e);
     }
   }

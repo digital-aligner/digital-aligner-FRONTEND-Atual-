@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -11,7 +12,7 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 import '../../rotas_url.dart';
-import './multipart_request.dart';
+import './multipart_request.dart' as mt;
 
 import 'relatorio_ppt_model.dart';
 //https://stackoverflow.com/questions/63314063/upload-image-file-to-strapi-flutter-web
@@ -65,6 +66,7 @@ class _RelatorioPPTUploadState extends State<RelatorioPPTUpload>
       type: FileType.custom,
       allowedExtensions: ['ppt', 'pptx'],
       allowMultiple: false,
+      withReadStream: true,
     );
     if (result != null &&
         result.files.length + _relatorioPPTUploadsList.length <= 1) {
@@ -159,45 +161,91 @@ class _RelatorioPPTUploadState extends State<RelatorioPPTUpload>
   }
 
   Future<void> _sendrelatorioPPTUpload(
-      _token, _currentrelatorioPPTUpload) async {
+    String _token,
+    PlatformFile _currentrelatorioPPTUpload,
+  ) async {
     int min = 100000; //min and max values act as your 6 digit range
     int max = 999999;
     var randomizer = new Random();
     var rNum = min + randomizer.nextInt(max - min);
-    RelatorioPPTModel pm = RelatorioPPTModel(listId: rNum);
+
+    RelatorioPPTModel pm = RelatorioPPTModel(
+      listId: rNum,
+      progress: 0,
+      fileName: 'Enviando...',
+    );
+
+    int posContainingWidget = 0;
+
     setState(() {
       _relatorioPPTUploadsList.add(pm);
+      for (int i = 0; i < _relatorioPPTUploadsList.length; i++) {
+        if (_relatorioPPTUploadsList[i].listId == rNum) {
+          posContainingWidget = i;
+        }
+      }
     });
 
     final uri = Uri.parse(RotasUrl.rotaUpload);
 
-    final request = MultipartRequest(
+    final request = mt.MultipartRequest(
       'POST',
       uri,
     );
 
     request.headers['authorization'] = 'Bearer $_token';
-    request.files.add(http.MultipartFile.fromBytes(
+
+    request.files.add(http.MultipartFile(
       'files',
-      _currentrelatorioPPTUpload.bytes,
+      _currentrelatorioPPTUpload.readStream,
+      _currentrelatorioPPTUpload.size,
       filename: _currentrelatorioPPTUpload.name,
     ));
-    var response = await request.send();
-    var resStream = await response.stream.bytesToString();
-    var resData = json.decode(resStream);
-    print(resData);
 
-    if (resData[0]['id'] != null) {
-      _relatorioStore.updateRelatorioPPTs3Urls(resData[0]);
-      for (int i = 0; i < _relatorioPPTUploadsList.length; i++) {
-        if (_relatorioPPTUploadsList[i].listId == rNum) {
+    try {
+      //TIMER (for fake ui progress)
+      const oneSec = const Duration(milliseconds: 100);
+      bool isUploading = true;
+
+      Timer.periodic(oneSec, (Timer t) {
+        if (_relatorioPPTUploadsList[posContainingWidget].progress < 1 ||
+            isUploading) {
           setState(() {
-            _relatorioPPTUploadsList[i].id = resData[0]['id'];
-            _relatorioPPTUploadsList[i].fileName = resData[0]['name'];
-            _relatorioPPTUploadsList[i].imageUrl = resData[0]['url'];
+            double currentProgess =
+                _relatorioPPTUploadsList[posContainingWidget].progress;
+            _relatorioPPTUploadsList[posContainingWidget].progress =
+                currentProgess + 0.01;
           });
+        } else {
+          t.cancel();
         }
+      });
+
+      var response = await request.send();
+      var resStream = await response.stream.bytesToString();
+      var resData = json.decode(resStream);
+
+      if (resData[0]['id'] != null) {
+        //STOP UI PROGRESS IF NOT FINISHED
+        isUploading = false;
+
+        _relatorioStore.updateRelatorioPPTs3Urls(resData[0]);
+
+        setState(() {
+          _relatorioPPTUploadsList[posContainingWidget].id = resData[0]['id'];
+          _relatorioPPTUploadsList[posContainingWidget].fileName =
+              resData[0]['name'];
+          _relatorioPPTUploadsList[posContainingWidget].imageUrl =
+              resData[0]['url'];
+        });
       }
+    } catch (e) {
+      setState(() {
+        _relatorioPPTUploadsList[posContainingWidget].id = -1;
+        _relatorioPPTUploadsList[posContainingWidget].fileName =
+            'Algo deu errado, por favor tente novamente.';
+        _relatorioPPTUploadsList[posContainingWidget].imageUrl = '';
+      });
     }
   }
 
