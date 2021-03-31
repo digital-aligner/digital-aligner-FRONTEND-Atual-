@@ -319,7 +319,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                       value: 2,
                     ),
                     Text(
-                      'Qto necessário (evitar DIP)',
+                      'Qto necessário',
                       style: TextStyle(
                         color: _novoPedStore.getExpArcoSupApin()
                             ? Colors.black
@@ -413,7 +413,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                     value: 2,
                   ),
                   Text(
-                    'Qto necessário (evitar DIP)',
+                    'Qto necessário',
                     style: TextStyle(
                       color: _novoPedStore.getIncProjArcoSupApin()
                           ? Colors.black
@@ -689,7 +689,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                             value: 3,
                           ),
                           Text(
-                            'Qto necessário (evitar DIP)',
+                            'Qto necessário',
                             style: TextStyle(
                               color:
                                   _novoPedStore.getCorrigirApinSelecionado() &&
@@ -914,7 +914,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                             value: 3,
                           ),
                           Text(
-                            'Qto necessário (evitar DIP)',
+                            'Qto necessário',
                             style: TextStyle(
                               color:
                                   _novoPedStore.getCorrigirApinSelecionado() &&
@@ -1149,7 +1149,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                             value: 3,
                           ),
                           Text(
-                            'Qto necessário (evitar DIP)',
+                            'Qto necessário',
                             style: TextStyle(
                               color:
                                   _novoPedStore.getCorrigirApinSelecionado() &&
@@ -1364,7 +1364,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                         value: 2,
                       ),
                       Text(
-                        'Qto necessário (evitar DIP)',
+                        'Qto necessário',
                         style: TextStyle(
                           color: _novoPedStore.getExpArcoInfApin()
                               ? Colors.black
@@ -1458,7 +1458,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                       value: 2,
                     ),
                     Text(
-                      'Qto necessário (evitar DIP)',
+                      'Qto necessário',
                       style: TextStyle(
                         color: _novoPedStore.getIncProjArcoInfApin()
                             ? Colors.black
@@ -1730,7 +1730,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                               value: 3,
                             ),
                             Text(
-                              'Qto necessário (evitar DIP)',
+                              'Qto necessário',
                               style: TextStyle(
                                 color: _novoPedStore
                                             .getCorrigirApinSelecionado() &&
@@ -1956,7 +1956,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                               value: 3,
                             ),
                             Text(
-                              'Qto necessário (evitar DIP)',
+                              'Qto necessário',
                               style: TextStyle(
                                 color: _novoPedStore
                                             .getCorrigirApinSelecionado() &&
@@ -2192,7 +2192,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                               value: 3,
                             ),
                             Text(
-                              'Qto necessário (evitar DIP)',
+                              'Qto necessário',
                               style: TextStyle(
                                 color: _novoPedStore
                                             .getCorrigirApinSelecionado() &&

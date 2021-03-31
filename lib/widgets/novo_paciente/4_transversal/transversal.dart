@@ -125,9 +125,56 @@ class _TransversalState extends State<Transversal> {
                     child: TextFormField(
                       readOnly: true,
                       validator: (_) {
-                        return _novoPedStore.getMordidaCruzPostRadio() == 0
-                            ? 'Selecione um valor!'
-                            : null;
+                        //If value is corrigir but none selected
+                        if (_novoPedStore.getMordidaCruzPostRadio() == 0) {
+                          return 'Selecione um valor!';
+                        } else if (_novoPedStore.getMordidaCruzPostRadio() ==
+                            1) {
+                          return null;
+                        } else if (_novoPedStore.getMordidaCruzPostRadio() ==
+                            2) {
+                          //if esquerdo or direito not set
+                          if (!_novoPedStore.getEasDireito() &&
+                              !_novoPedStore.getEasEsquerdo() &&
+                              !_novoPedStore.getCaiDireito() &&
+                              !_novoPedStore.getCaiEsquerdo()) {
+                            return 'Selecione um valor!';
+                          } else {
+                            // --------- EXPANSÃO ARCO SUPERIOR ---------
+                            //first lado direito
+                            if (_novoPedStore.getEasDireito()) {
+                              if (!_novoPedStore.getEasMovimentoCorpo() &&
+                                  !_novoPedStore.getEasInclinacaoTorque()) {
+                                return 'Selecione um valor!';
+                              }
+                            }
+
+                            // lado esquerdo
+                            if (_novoPedStore.getEasEsquerdo()) {
+                              if (!_novoPedStore.getEasMovimentoCorpoEsq() &&
+                                  !_novoPedStore.getEasInclinacaoTorqueEsq()) {
+                                return 'Selecione um valor!';
+                              }
+                            }
+                            // --------- CONTRAÇÃO ARCO INFERIOR ---------
+                            //first lado direito
+                            if (_novoPedStore.getCaiDireito()) {
+                              if (!_novoPedStore.getCaiMovimentoCorpo() &&
+                                  !_novoPedStore.getCaiInclinacaoTorque()) {
+                                return 'Selecione um valor!';
+                              }
+                            }
+
+                            // lado esquerdo
+                            if (_novoPedStore.getCaiEsquerdo()) {
+                              if (!_novoPedStore.getCaiMovimentoCorpoEsq() &&
+                                  !_novoPedStore.getCaiInclinacaoTorqueEsq()) {
+                                return 'Selecione um valor!';
+                              }
+                            }
+                          }
+                        }
+                        return null;
                       },
                       decoration: InputDecoration(
                         focusedErrorBorder: OutlineInputBorder(
@@ -332,7 +379,7 @@ class _TransversalState extends State<Transversal> {
                       child: CheckboxListTile(
                         controlAffinity: ListTileControlAffinity.leading,
                         title: Text(
-                          'Inclinação / torque',
+                          'Inclinação',
                           style: TextStyle(
                             color: _novoPedStore.getMordidaCruzPost()
                                 ? Colors.black
@@ -356,7 +403,7 @@ class _TransversalState extends State<Transversal> {
                       child: CheckboxListTile(
                         controlAffinity: ListTileControlAffinity.leading,
                         title: Text(
-                          'Inclinação / torque',
+                          'Inclinação',
                           style: TextStyle(
                             color: _novoPedStore.getMordidaCruzPost()
                                 ? Colors.black
@@ -524,7 +571,7 @@ class _TransversalState extends State<Transversal> {
                       child: CheckboxListTile(
                         controlAffinity: ListTileControlAffinity.leading,
                         title: Text(
-                          'Inclinação / torque',
+                          'Inclinação',
                           style: TextStyle(
                             color: _novoPedStore.getMordidaCruzPost()
                                 ? Colors.black
@@ -548,7 +595,7 @@ class _TransversalState extends State<Transversal> {
                       child: CheckboxListTile(
                         controlAffinity: ListTileControlAffinity.leading,
                         title: Text(
-                          'Inclinação / torque',
+                          'Inclinação',
                           style: TextStyle(
                             color: _novoPedStore.getMordidaCruzPost()
                                 ? Colors.black
@@ -598,7 +645,7 @@ class _TransversalState extends State<Transversal> {
               ),
               Container(
                 height: 35,
-                width: 75,
+                width: 125,
                 child: TextFormField(
                   onChanged: (value) {
                     if (!_novoPedStore.getMcpRecorteElastico()) {
@@ -620,13 +667,14 @@ class _TransversalState extends State<Transversal> {
                     }
                     return null;
                   },
-                  maxLength: 5,
+                  maxLength: 11,
                   controller: _controllerLocalMcpRecElastAlinh,
                   keyboardType: TextInputType.number,
                   inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9,]')),
                   ],
                   decoration: const InputDecoration(
+                    hintText: 'Ex: 18,17,16',
                     //To hide cpf length num
                     counterText: '',
                     //labelText: 'Quantos mm?',
@@ -664,7 +712,7 @@ class _TransversalState extends State<Transversal> {
               ),
               Container(
                 height: 35,
-                width: 75,
+                width: 125,
                 child: TextFormField(
                   onChanged: (value) {
                     if (!_novoPedStore.getMcpRecorteAlinhador()) {
@@ -686,13 +734,14 @@ class _TransversalState extends State<Transversal> {
                     }
                     return null;
                   },
-                  maxLength: 5,
+                  maxLength: 11,
                   controller: _controllerLocalMcpRecAlinhBotao,
                   keyboardType: TextInputType.number,
                   inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9,]')),
                   ],
                   decoration: const InputDecoration(
+                    hintText: 'Ex: 18,17,16',
                     //To hide cpf length num
                     counterText: '',
                     //labelText: 'Quantos mm?',
@@ -767,9 +816,33 @@ class _TransversalState extends State<Transversal> {
                     child: TextFormField(
                       readOnly: true,
                       validator: (_) {
-                        return _novoPedStore.getLinhaMediaSupRadio() == 0
-                            ? 'Selecione um valor!'
-                            : null;
+                        if (_novoPedStore.getLinhaMediaSupRadio() == 0) {
+                          return 'Selecione um valor!';
+                        } else if (_novoPedStore.getLinhaMediaSupRadio() == 1) {
+                          return null;
+                        } else if (_novoPedStore.getLinhaMediaSupRadio() == 2) {
+                          if (_novoPedStore.getLmSupRadioValue(null) == 0) {
+                            return 'Selecione um valor!';
+                          } else {
+                            //--------- SUPERIOR ----------
+                            //mover direita
+                            if (_novoPedStore.getLmSupRadioValue(null) == 1) {
+                              if (_novoPedStore.getLmSupDireitaMm().isEmpty) {
+                                return 'Selecione um valor!';
+                              } else {
+                                return null;
+                              }
+                            } else if (_novoPedStore.getLmSupRadioValue(null) ==
+                                2) {
+                              if (_novoPedStore.getLmSupEsquerdaMm().isEmpty) {
+                                return 'Selecione um valor!';
+                              } else {
+                                return null;
+                              }
+                            }
+                          }
+                        }
+                        return null;
                       },
                       decoration: InputDecoration(
                         focusedErrorBorder: OutlineInputBorder(
@@ -1080,9 +1153,33 @@ class _TransversalState extends State<Transversal> {
                     child: TextFormField(
                       readOnly: true,
                       validator: (_) {
-                        return _novoPedStore.getLinhaMediaInfRadio() == 0
-                            ? 'Selecione um valor!'
-                            : null;
+                        if (_novoPedStore.getLinhaMediaInfRadio() == 0) {
+                          return 'Selecione um valor!';
+                        } else if (_novoPedStore.getLinhaMediaInfRadio() == 1) {
+                          return null;
+                        } else if (_novoPedStore.getLinhaMediaInfRadio() == 2) {
+                          if (_novoPedStore.getLmInfRadioValue(null) == 0) {
+                            return 'Selecione um valor!';
+                          } else {
+                            //--------- SUPERIOR ----------
+                            //mover direita
+                            if (_novoPedStore.getLmInfRadioValue(null) == 1) {
+                              if (_novoPedStore.getLmInfDireitaMm().isEmpty) {
+                                return 'Selecione um valor!';
+                              } else {
+                                return null;
+                              }
+                            } else if (_novoPedStore.getLmInfRadioValue(null) ==
+                                2) {
+                              if (_novoPedStore.getLmInfEsquerdaMm().isEmpty) {
+                                return 'Selecione um valor!';
+                              } else {
+                                return null;
+                              }
+                            }
+                          }
+                        }
+                        return null;
                       },
                       decoration: InputDecoration(
                         focusedErrorBorder: OutlineInputBorder(

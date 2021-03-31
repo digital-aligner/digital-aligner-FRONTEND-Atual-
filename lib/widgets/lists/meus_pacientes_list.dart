@@ -71,8 +71,6 @@ class _MeusPacientesListState extends State<MeusPacientesList> {
                   Expanded(
                     child: ListTile(
                       onTap: () {
-      
-
                         Navigator.of(context).pushNamed(
                           PacienteScreen.routeName,
                           arguments: {
@@ -105,7 +103,7 @@ class _MeusPacientesListState extends State<MeusPacientesList> {
                                   ),
                                   Expanded(
                                     child: Text(
-                                      '${pacList[index]['codigo_paciente']}',
+                                      '${pacList[index]['historico_pacientes'][0]['status'] ?? '-'}',
                                       textAlign: TextAlign.center,
                                       overflow: TextOverflow.ellipsis,
                                     ),

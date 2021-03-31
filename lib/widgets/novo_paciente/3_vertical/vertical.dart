@@ -171,6 +171,7 @@ class _VerticalState extends State<Vertical> {
                             return 'Selecione um valor!';
                           }
                         }
+                        return null;
                       },
                       decoration: InputDecoration(
                         focusedErrorBorder: OutlineInputBorder(
@@ -778,9 +779,58 @@ class _VerticalState extends State<Vertical> {
                     child: TextFormField(
                       readOnly: true,
                       validator: (_) {
-                        return _novoPedStore.getVerticalMaaRadio() == 0
-                            ? 'Selecione um valor!'
-                            : null;
+                        if (_novoPedStore.getVerticalMaaRadio() == 0) {
+                          return 'Selecione um valor!';
+                          //If manter return
+                        } else if (_novoPedStore.getVerticalMaaRadio() == 1) {
+                          return null;
+                          //if corrigir
+                        } else if (_novoPedStore.getVerticalMaaRadio() == 2) {
+                          //check if at least 1 option is selected, else error
+                          if (_novoPedStore
+                                      .getMaaRadioValue('_maaEdaSup') !=
+                                  0 ||
+                              _novoPedStore
+                                      .getMaaRadioValue('_maaEdaInf') !=
+                                  0 ||
+                              _novoPedStore.getMaaRadioValue('_maaIdpSup') !=
+                                  0 ||
+                              _novoPedStore.getMaaRadioValue('_maaIdpInf') !=
+                                  0) {
+                            //1) extr. dentes ant. sup
+                            if (_novoPedStore.getMaaRadioValue('_maaEdaSup') ==
+                                1) {
+                              if (_novoPedStore.getMaaEdaSup().isEmpty) {
+                                return 'Selecione um valor!';
+                              }
+                            }
+                            //2) extr. dentes ant. inf
+                            if (_novoPedStore.getMaaRadioValue('_maaEdaInf') ==
+                                1) {
+                              if (_novoPedStore.getMaaEdaInf().isEmpty) {
+                                return 'Selecione um valor!';
+                              }
+                            }
+                            //3) intru. dos dentes posteriores sup
+                            if (_novoPedStore.getMaaRadioValue('_maaIdpSup') ==
+                                1) {
+                              if (_novoPedStore.getMaaIdpSup().isEmpty) {
+                                return 'Selecione um valor!';
+                              }
+                            }
+                            //4) intru. dos dentes posteriores inf
+                            if (_novoPedStore.getMaaRadioValue('_maaIdpInf') ==
+                                1) {
+                              if (_novoPedStore.getMaaIdpInf().isEmpty) {
+                                return 'Selecione um valor!';
+                              }
+                            }
+                            return null;
+                          } else {
+                            return 'Selecione um valor!';
+                          }
+                        }
+                        return null;
                       },
                       decoration: InputDecoration(
                         focusedErrorBorder: OutlineInputBorder(

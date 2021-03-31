@@ -65,7 +65,7 @@ class _NemoUploadState extends State<NemoUpload>
     if (result != null && result.files.length + _nemoUploadsList.length <= 1) {
       _nemoUploadsDataList = result.files;
     } else {
-      throw ('Excedeu número máximo de modelos do nemo');
+      throw ('Excedeu número máximo de modelos do nmz segmentação');
     }
   }
 
@@ -335,7 +335,7 @@ class _NemoUploadState extends State<NemoUpload>
                             SnackBar(
                               duration: const Duration(seconds: 8),
                               content: const Text(
-                                'Enviando modelo nemo. Por favor aguarde...',
+                                'Enviando nmz segmentação. Por favor aguarde...',
                               ),
                             ),
                           );
@@ -357,7 +357,7 @@ class _NemoUploadState extends State<NemoUpload>
                         });
                       },
                 child: const Text(
-                  'MODELO NEMO',
+                  'NMZ SEGMENTAÇÃO',
                   style: const TextStyle(
                     color: Colors.white,
                   ),

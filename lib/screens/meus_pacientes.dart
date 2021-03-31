@@ -58,7 +58,7 @@ class _MeusPacientesState extends State<MeusPacientes> {
         ),
         Expanded(
           child: Text(
-            'Codigo',
+            'Histórico recente',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontWeight: FontWeight.bold,
