@@ -326,6 +326,71 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                   ),
                 ),
               ],
+            )
+          else if (_pedidosListStore.getDropdownValue() == 'Pedidos Alterados')
+            Row(
+              children: [
+                //Data da alteração
+                Expanded(
+                  child: Text(
+                    _isoDateTimeToLocal(
+                      pedList[index]['updated_at'] ?? '',
+                    ),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                //código pedido
+                Expanded(
+                  child: Text(
+                    '${pedList[index]['codigo_pedido']}',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                //nome paciente
+                Expanded(
+                  child: Text(
+                    '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                //status
+                Expanded(
+                  child: Text(
+                    '${pedList[index]['status_pedido']['status'] ?? '-'}',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                //Data do pedido
+                Expanded(
+                  child: Text(
+                    _isoDateTimeToLocal(
+                      pedList[index]['created_at'] ?? '',
+                    ),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                //dentista
+                Expanded(
+                  child: Text(
+                    '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                //status relatório
+                Expanded(
+                  child: _relatorioStatusBtn(
+                    index,
+                    _sWidth,
+                    _sHeight,
+                  ),
+                ),
+              ],
             ),
         ],
       ),

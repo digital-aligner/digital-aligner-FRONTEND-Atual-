@@ -71,6 +71,8 @@ class _MeusPacientesListState extends State<MeusPacientesList> {
                   Expanded(
                     child: ListTile(
                       onTap: () {
+      
+
                         Navigator.of(context).pushNamed(
                           PacienteScreen.routeName,
                           arguments: {

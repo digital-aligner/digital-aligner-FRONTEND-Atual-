@@ -30,6 +30,9 @@ class _PacienteScreenState extends State<PacienteScreen> {
 
   bool _blockUi = false;
 
+  //For novo pedido and refinamento block
+  bool _pacienteIsMine = false;
+
   PacientesListProvider _pacienteListStore;
 
   String _nomePaciente;
@@ -156,12 +159,14 @@ class _PacienteScreenState extends State<PacienteScreen> {
                     leading: Icon(Icons.assessment_outlined),
                     title: TextButton(
                       child: const Text('Novo Refinamento'),
-                      onPressed: () {
-                        Navigator.of(context).pushNamed(
-                          RefinamentoPedido.routeName,
-                          arguments: args,
-                        );
-                      },
+                      onPressed: _pacienteIsMine
+                          ? () {
+                              Navigator.of(context).pushNamed(
+                                RefinamentoPedido.routeName,
+                                arguments: args,
+                              );
+                            }
+                          : null,
                     ),
                   ),
                 ),
@@ -171,12 +176,14 @@ class _PacienteScreenState extends State<PacienteScreen> {
                     leading: Icon(Icons.add_shopping_cart),
                     title: TextButton(
                       child: const Text('Novo Pedido'),
-                      onPressed: () {
-                        Navigator.of(context).pushNamed(
-                          NovoPedido.routeName,
-                          arguments: args,
-                        );
-                      },
+                      onPressed: _pacienteIsMine
+                          ? () {
+                              Navigator.of(context).pushNamed(
+                                NovoPedido.routeName,
+                                arguments: args,
+                              );
+                            }
+                          : null,
                     ),
                   ),
                 ),
@@ -431,6 +438,11 @@ class _PacienteScreenState extends State<PacienteScreen> {
     if (!authStore.isAuth) {
       return LoginScreen();
     }
+
+    if (args['users_permissions_user'].toInt() == authStore.id) {
+      _pacienteIsMine = true;
+    }
+
     return Scaffold(
       appBar: SecondaryAppbar(),
       floatingActionButton: Align(

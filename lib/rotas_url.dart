@@ -6,6 +6,7 @@ class RotasUrl {
   static const rotaLogin = rotaBase + 'auth/local/';
   static const rotaCadastro = rotaBase + 'users/';
   static const rotaPedidosAprovados = rotaBase + 'pedidos-aprovados/';
+  static const rotaPedidosAlterados = rotaBase + 'pedidos-alterados/';
   static const rotaAlteracoesPedidos = rotaBase + 'alteracoes-pedidos/';
   static const rotaCadistas = rotaBase + 'cadistas/';
   static const rotaRepresentantes = rotaBase + 'representantes/';

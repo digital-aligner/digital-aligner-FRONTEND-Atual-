@@ -57,10 +57,10 @@ class _MyAppBarState extends State<MyAppBar> {
               _navUsuario(context, authStore.name),
               const SizedBox(width: 30),
               _navAdmin(context, authStore.role),
-              const SizedBox(width: 30),
-              _navPainelPacientes(context),
-              const SizedBox(width: 30),
-              _navNovoPaciente(context),
+              if (authStore.role == 'Credenciado') const SizedBox(width: 30),
+              if (authStore.role == 'Credenciado') _navPainelPacientes(context),
+              if (authStore.role == 'Credenciado') const SizedBox(width: 30),
+              if (authStore.role == 'Credenciado') _navNovoPaciente(context),
               const SizedBox(width: 30),
               _midia(context),
               const SizedBox(width: 30),
@@ -379,7 +379,7 @@ class _MyAppBarState extends State<MyAppBar> {
     );
   }
 
-  Widget _sair(context, authStore) {
+  Widget _sair(context, AuthProvider authStore) {
     return TextButton.icon(
       onPressed: () {
         authStore.logout();
@@ -401,9 +401,6 @@ class _MyAppBarState extends State<MyAppBar> {
         _cadastroStore.clearCadastros();
         _pedidosListStore.clearPedidosOnLeave();
         _pedidosListStore.setToken(null);
-        //Force update of old screen
-        //_pedidosListStore.clearPedidosAndUpdate();
-        //_cadastroStore.clearCadastrosAndUpdate();
       },
       icon: const Icon(Icons.sensor_door),
       label: const Text(

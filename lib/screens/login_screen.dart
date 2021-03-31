@@ -1,3 +1,4 @@
+import 'package:digital_aligner_app/screens/administrativo/gerenciar_pedido.dart';
 import 'package:digital_aligner_app/screens/criar_nova_senha.dart';
 import 'package:digital_aligner_app/screens/primeiro_cadastro.dart';
 import 'package:provider/provider.dart';
@@ -426,7 +427,14 @@ class _LoginScreenState extends State<LoginScreen> {
         }
 
         if (authStore.isAuth) {
-          Navigator.of(context).pushReplacementNamed(MeusPacientes.routeName);
+          if (authStore.role == 'Credenciado') {
+            Navigator.of(context).pushReplacementNamed(MeusPacientes.routeName);
+          } else if (authStore.role == 'Administrador' ||
+              authStore.role == 'Gerente') {
+            Navigator.of(context)
+                .pushReplacementNamed(GerenciarPedidos.routeName);
+          }
+
           return;
         } else {
           //Unblock ui for login

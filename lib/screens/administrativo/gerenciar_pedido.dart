@@ -359,6 +359,97 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
           const SizedBox(width: 20),
         ],
       );
+    } else if (_pedidosListStore.getDropdownValue() == 'Pedidos Alterados') {
+      return Row(
+        children: [
+          SizedBox(width: 20),
+          //data alteracao
+          Expanded(
+            child: Text(
+              'Data da Alteração',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          //código do pedido
+          Expanded(
+            child: Text(
+              'Pedido',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          //nome paciente
+          Expanded(
+            child: const Text(
+              'Paciente',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          //status
+          Expanded(
+            child: const Text(
+              'Status',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          //data do pedido
+          Expanded(
+            child: Text(
+              'Data do Pedido',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          //responsável
+          Expanded(
+            child: const Text(
+              'Responsável',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          //opções
+          Expanded(
+            child: const Text(
+              'Opções',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 20),
+        ],
+      );
     }
     return Container(child: const Text(''));
   }
@@ -386,8 +477,9 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
           items: <String>[
             'Todos',
             'Pedidos Aprovados',
+            'Pedidos Alterados',
+            'Alterações de Pedidos',
             'Refinamentos',
-            'Alterações de Pedidos'
           ].map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,

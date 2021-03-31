@@ -1,3 +1,4 @@
+import 'package:digital_aligner_app/page_transition_web.dart';
 import 'package:digital_aligner_app/providers/pacientes_list_provider.dart';
 import 'package:digital_aligner_app/providers/relatorio_provider.dart';
 import 'package:digital_aligner_app/providers/s3_delete_provider.dart';
@@ -100,6 +101,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'Digital Aligner',
           theme: ThemeData(
+            pageTransitionsTheme: PageTransitionWeb(),
             //Primary font for everything
             fontFamily: 'Questrial',
             splashColor: Colors.transparent,
