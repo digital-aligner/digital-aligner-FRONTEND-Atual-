@@ -71,10 +71,10 @@ class AuthProvider with ChangeNotifier {
 
     final prefs = await SharedPreferences.getInstance();
     prefs.remove('digitalAlignerData');
-    notifyListeners();
+    //notifyListeners();
   }
 
-  Future login(String email, String password) async {
+  Future<Map<String, dynamic>> login(String email, String password) async {
     Map<String, String> requestHeaders = {
       'Content-type': 'application/x-www-form-urlencoded',
       'Authorization': ''
@@ -94,11 +94,18 @@ class AuthProvider with ChangeNotifier {
       if (responseData.containsKey('error')) {
         if (responseData['message'][0]['messages'][0]['id'] ==
             'Auth.form.error.blocked') {
-          return 'Seu cadastro está sendo averiguado e será aprovado em até 48h.';
+          return {
+            'message':
+                'Seu cadastro está sendo averiguado e será aprovado em até 48h.',
+            'error': true
+          };
         }
         if (responseData['message'][0]['messages'][0]['id'] ==
             'Auth.form.error.invalid') {
-          return 'Usuário ou senha incorreta.';
+          return {
+            'message': 'Usuário ou senha incorreta.',
+            'error': true,
+          };
         }
       }
 
@@ -112,7 +119,7 @@ class AuthProvider with ChangeNotifier {
       _userName = responseData['user']['nome'];
       _role = responseData['user']['role']['name'];
 
-      notifyListeners();
+      //notifyListeners();
       //Save token in device (web or mobile)
       final prefs = await SharedPreferences.getInstance();
       final userData = json.encode({
@@ -123,10 +130,15 @@ class AuthProvider with ChangeNotifier {
         'expiryDate': _expiryDate.toIso8601String(),
       });
       prefs.setString('digitalAlignerData', userData);
+
+      return {'message': 'login realizado com sucesso!'};
     } catch (error) {
       //If managed to get here, error connecting to strapi server
       print(error);
-      return 'Erro ao se connectar com o servidor.';
+      return {
+        'message': 'Erro ao se connectar com o servidor.',
+        'error': true,
+      };
     }
   }
 

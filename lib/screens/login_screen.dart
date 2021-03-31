@@ -8,6 +8,8 @@ import '../providers/auth_provider.dart';
 import 'meus_pacientes.dart';
 import 'recuperar_senha.dart';
 
+import 'dart:html' as html;
+
 class LoginScreen extends StatefulWidget {
   final Map<String, String> queryStringsForPasswordReset;
   LoginScreen({this.queryStringsForPasswordReset});
@@ -18,8 +20,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
-  bool _blockUi = true;
-  bool _firstRun = true;
+  bool _blockUi = false;
 
   Future<void> _submit(_loginStore, context) async {
     setState(() => _isLoading = true);
@@ -29,21 +30,22 @@ class _LoginScreenState extends State<LoginScreen> {
           .login(_loginStore.email, _loginStore.senha)
           .then(
         (mensagem) {
-          if (mensagem != null) {
+          if (mensagem.containsKey('error')) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               duration: const Duration(seconds: 8),
               content: Text(
-                mensagem.toString(),
+                mensagem['message'].toString(),
                 textAlign: TextAlign.center,
               ),
             ));
+            _loginStore.setSenha('');
+            setState(() => _isLoading = false);
+          } else {
+            html.window.location.reload();
           }
-
-          setState(() => _isLoading = false);
+          //setState(() => _isLoading = false);
         },
       );
-      _loginStore.setEmail('');
-      _loginStore.setSenha('');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         duration: const Duration(seconds: 4),
@@ -412,59 +414,40 @@ class _LoginScreenState extends State<LoginScreen> {
     AuthProvider authStore = Provider.of<AuthProvider>(context);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (_firstRun) {
-        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            duration: const Duration(milliseconds: 1500),
-            content: const Text('Entrando...'),
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
+
+      if (authStore.isAuth) {
+        if (authStore.role == 'Credenciado') {
+          Navigator.of(context).pushReplacementNamed(MeusPacientes.routeName);
+        } else if (authStore.role == 'Administrador' ||
+            authStore.role == 'Gerente') {
+          Navigator.of(context)
+              .pushReplacementNamed(GerenciarPedidos.routeName);
+        }
+      } //If logged out, autologin failed and passed query strings for rest, show reset ui
+      else if (widget.queryStringsForPasswordReset.isNotEmpty) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CriarNovaSenha(
+              queryStringsForPasswordReset: widget.queryStringsForPasswordReset,
+            ),
           ),
         );
-
-        await Future.delayed(Duration(seconds: 2));
-        if (Navigator.canPop(context)) {
-          Navigator.pop(context);
-        }
-
-        if (authStore.isAuth) {
-          if (authStore.role == 'Credenciado') {
-            Navigator.of(context).pushReplacementNamed(MeusPacientes.routeName);
-          } else if (authStore.role == 'Administrador' ||
-              authStore.role == 'Gerente') {
-            Navigator.of(context)
-                .pushReplacementNamed(GerenciarPedidos.routeName);
-          }
-
-          return;
-        } else {
-          //Unblock ui for login
-          setState(() {
-            _blockUi = false;
-            _firstRun = false;
-          });
-          ScaffoldMessenger.of(context).removeCurrentSnackBar();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              duration: const Duration(milliseconds: 1500),
-              content: const Text('Por favor favor entre na sua conta.'),
-            ),
-          );
-
-          //If logged out, autologin failed and passed query strings for rest, show reset ui
-          if (widget.queryStringsForPasswordReset.isNotEmpty) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CriarNovaSenha(
-                  queryStringsForPasswordReset:
-                      widget.queryStringsForPasswordReset,
-                ),
-              ),
-            );
-          }
-        }
       }
     });
+
+    if (authStore.isAuth) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(
+            valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       body: AbsorbPointer(

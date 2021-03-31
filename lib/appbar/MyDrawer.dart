@@ -17,6 +17,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 
 import '../screens/administrativo/gerenciar_cadastro.dart';
+import 'dart:html' as html;
 
 class MyDrawer extends StatefulWidget {
   @override
@@ -207,38 +208,40 @@ class _MyDrawerState extends State<MyDrawer> {
                     ],
                   )
                 : Container(),
-            Divider(),
-            ListTile(
-              leading: const Icon(Icons.shopping_bag_rounded),
-              title: const Text(
-                'Meus Pacientes',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontFamily: 'BigNoodleTitling',
+            if (authStore.role == 'Credenciado') Divider(),
+            if (authStore.role == 'Credenciado')
+              ListTile(
+                leading: const Icon(Icons.shopping_bag_rounded),
+                title: const Text(
+                  'Meus Pacientes',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontFamily: 'BigNoodleTitling',
+                  ),
                 ),
+                onTap: () {
+                  Navigator.of(context).pushReplacementNamed(
+                    MeusPacientes.routeName,
+                  );
+                },
               ),
-              onTap: () {
-                Navigator.of(context).pushReplacementNamed(
-                  MeusPacientes.routeName,
-                );
-              },
-            ),
-            Divider(),
-            ListTile(
-              leading: const Icon(Icons.add),
-              title: const Text(
-                'Novo Paciente',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontFamily: 'BigNoodleTitling',
+            if (authStore.role == 'Credenciado') Divider(),
+            if (authStore.role == 'Credenciado')
+              ListTile(
+                leading: const Icon(Icons.add),
+                title: const Text(
+                  'Novo Paciente',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontFamily: 'BigNoodleTitling',
+                  ),
                 ),
+                onTap: () {
+                  Navigator.of(context).pushReplacementNamed(
+                    NovoPaciente.routeName,
+                  );
+                },
               ),
-              onTap: () {
-                Navigator.of(context).pushReplacementNamed(
-                  NovoPaciente.routeName,
-                );
-              },
-            ),
             Divider(),
             ListTile(
               leading: const Icon(Icons.play_circle_fill),
@@ -263,6 +266,8 @@ class _MyDrawerState extends State<MyDrawer> {
               ),
               onTap: () {
                 authStore.logout();
+                html.window.location.reload();
+                /*
                 PedidosListProvider _pedidosListStore =
                     Provider.of<PedidosListProvider>(
                   context,
@@ -280,7 +285,7 @@ class _MyDrawerState extends State<MyDrawer> {
                 _relatorioStore.clearToken();
                 _cadastroStore.clearCadastros();
                 _pedidosListStore.clearPedidosOnLeave();
-                _pedidosListStore.setToken(null);
+                _pedidosListStore.setToken(null);*/
               },
             ),
             Divider(),

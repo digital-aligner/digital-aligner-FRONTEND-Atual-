@@ -18,6 +18,8 @@ import '../screens/administrativo/gerenciar_cadastro.dart';
 
 import '../providers/auth_provider.dart';
 
+import 'dart:html' as html;
+
 class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double _prefferedHeight = 56.0;
   @override
@@ -383,6 +385,8 @@ class _MyAppBarState extends State<MyAppBar> {
     return TextButton.icon(
       onPressed: () {
         authStore.logout();
+        html.window.location.reload();
+        /*
         PedidosListProvider _pedidosListStore =
             Provider.of<PedidosListProvider>(
           context,
@@ -400,7 +404,7 @@ class _MyAppBarState extends State<MyAppBar> {
         _relatorioStore.clearToken();
         _cadastroStore.clearCadastros();
         _pedidosListStore.clearPedidosOnLeave();
-        _pedidosListStore.setToken(null);
+        _pedidosListStore.setToken(null); */
       },
       icon: const Icon(Icons.sensor_door),
       label: const Text(
