@@ -66,7 +66,7 @@ class _SagitalState extends State<Sagital> {
     );
   }
 
-  Widget _relacaoMolar(var _novoPedStore) {
+  Widget _relacaoMolar(PedidoProvider _novoPedStore) {
     return Column(
       children: <Widget>[
         //Texto: Relação molar
@@ -86,7 +86,7 @@ class _SagitalState extends State<Sagital> {
             ),
           ],
         ),
-        //Error message
+        //Error message (lado direito)
         Column(
           children: [
             const SizedBox(height: 10),
@@ -101,10 +101,35 @@ class _SagitalState extends State<Sagital> {
                     child: TextFormField(
                       readOnly: true,
                       validator: (_) {
-                        return _novoPedStore.getRmRadioValue('_rmLd') == 0 ||
-                                _novoPedStore.getRmRadioValue('_rmLe') == 0
-                            ? 'Selecione um valor!'
-                            : null;
+                        //If any values empty
+                        if (_novoPedStore.getRmRadioValue('_rmLd') == 0 ||
+                            _novoPedStore.getRmRadioValue('_rmLe') == 0) {
+                          return 'Selecione um valor!';
+                          //If both is "manter"
+                        } else if (_novoPedStore.getRmRadioValue('_rmLd') ==
+                                1 &&
+                            _novoPedStore.getRmRadioValue('_rmLe') == 1) {
+                          return null;
+                          //If any value is "corrigir" check both
+                        } else if (_novoPedStore.getRmRadioValue('_rmLd') ==
+                                2 ||
+                            _novoPedStore.getRmRadioValue('_rmLe') == 2) {
+                          //check lado direito (sup dir, inf dir)
+                          if (_novoPedStore.getRmRadioValue('_rmLd') == 2) {
+                            if (_novoPedStore.getRmRadioValue('_rmSd') == 0 ||
+                                _novoPedStore.getRmRadioValue('_rmId') == 0) {
+                              return 'Selecione um valor!';
+                            }
+                          }
+                          //check lado esquerdp (sup esq, inf esq)
+                          if (_novoPedStore.getRmRadioValue('_rmLe') == 2) {
+                            if (_novoPedStore.getRmRadioValue('_rmSe') == 0 ||
+                                _novoPedStore.getRmRadioValue('_rmIe') == 0) {
+                              return 'Selecione um valor!';
+                            }
+                          }
+                        }
+                        return null;
                       },
                       decoration: InputDecoration(
                         focusedErrorBorder: OutlineInputBorder(
@@ -633,10 +658,35 @@ class _SagitalState extends State<Sagital> {
                     child: TextFormField(
                       readOnly: true,
                       validator: (_) {
-                        return _novoPedStore.getRcRadioValue('_rcLd') == 0 ||
-                                _novoPedStore.getRcRadioValue('_rcLe') == 0
-                            ? 'Selecione um valor!'
-                            : null;
+                        //If any values empty
+                        if (_novoPedStore.getRcRadioValue('_rcLd') == 0 ||
+                            _novoPedStore.getRcRadioValue('_rcLe') == 0) {
+                          return 'Selecione um valor!';
+                          //If both is "manter"
+                        } else if (_novoPedStore.getRcRadioValue('_rcLd') ==
+                                1 &&
+                            _novoPedStore.getRcRadioValue('_rcLe') == 1) {
+                          return null;
+                          //If any value is "corrigir" check both
+                        } else if (_novoPedStore.getRcRadioValue('_rcLd') ==
+                                2 ||
+                            _novoPedStore.getRcRadioValue('_rcLe') == 2) {
+                          //check lado direito (sup dir, inf dir)
+                          if (_novoPedStore.getRcRadioValue('_rcLd') == 2) {
+                            if (_novoPedStore.getRcRadioValue('_rcSd') == 0 ||
+                                _novoPedStore.getRcRadioValue('_rcId') == 0) {
+                              return 'Selecione um valor!';
+                            }
+                          }
+                          //check lado esquerdo (sup esq, inf esq)
+                          if (_novoPedStore.getRcRadioValue('_rcLe') == 2) {
+                            if (_novoPedStore.getRcRadioValue('_rcSe') == 0 ||
+                                _novoPedStore.getRcRadioValue('_rcIe') == 0) {
+                              return 'Selecione um valor!';
+                            }
+                          }
+                        }
+                        return null;
                       },
                       decoration: InputDecoration(
                         focusedErrorBorder: OutlineInputBorder(
@@ -1188,7 +1238,7 @@ class _SagitalState extends State<Sagital> {
               ),
               Container(
                 height: 35,
-                width: 75,
+                width: 125,
                 child: TextFormField(
                   onChanged: (value) {
                     if (!_novoPedStore.getSgOpRecorteElastico()) {
@@ -1210,13 +1260,14 @@ class _SagitalState extends State<Sagital> {
                     }
                     return null;
                   },
-                  maxLength: 5,
+                  maxLength: 11,
                   controller: _controllerLocalRecElastAlinh,
                   keyboardType: TextInputType.number,
                   inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9,]')),
                   ],
                   decoration: const InputDecoration(
+                    hintText: 'Ex: 18,17,16',
                     //To hide cpf length num
                     counterText: '',
                     //labelText: 'Quantos mm?',
@@ -1254,7 +1305,7 @@ class _SagitalState extends State<Sagital> {
               ),
               Container(
                 height: 35,
-                width: 75,
+                width: 125,
                 child: TextFormField(
                   onChanged: (value) {
                     if (!_novoPedStore.getSgOpRecorteAlinhador()) {
@@ -1276,13 +1327,14 @@ class _SagitalState extends State<Sagital> {
                     }
                     return null;
                   },
-                  maxLength: 5,
+                  maxLength: 11,
                   controller: _controllerLocalRecAlinhBotao,
                   keyboardType: TextInputType.number,
                   inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9,]')),
                   ],
                   decoration: const InputDecoration(
+                    hintText: 'Ex: 18,17,16',
                     //To hide cpf length num
                     counterText: '',
                     //labelText: 'Quantos mm?',
@@ -1320,7 +1372,7 @@ class _SagitalState extends State<Sagital> {
               ),
               Container(
                 height: 35,
-                width: 75,
+                width: 125,
                 child: TextFormField(
                   onChanged: (value) {
                     if (!_novoPedStore.getSgOpAlivioAlinhador()) {
@@ -1342,13 +1394,14 @@ class _SagitalState extends State<Sagital> {
                     }
                     return null;
                   },
-                  maxLength: 5,
+                  maxLength: 11,
                   controller: _controllerLocalAlivioAlinhador,
                   keyboardType: TextInputType.number,
                   inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9,]')),
                   ],
                   decoration: const InputDecoration(
+                    hintText: 'Ex: 18,17,16',
                     //To hide cpf length num
                     counterText: '',
                     //labelText: 'Quantos mm?',

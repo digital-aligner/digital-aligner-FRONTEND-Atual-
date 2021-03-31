@@ -126,9 +126,51 @@ class _VerticalState extends State<Vertical> {
                     child: TextFormField(
                       readOnly: true,
                       validator: (_) {
-                        return _novoPedStore.getVerticalSbmpRadio() == 0
-                            ? 'Selecione um valor!'
-                            : null;
+                        if (_novoPedStore.getVerticalSbmpRadio() == 0) {
+                          return 'Selecione um valor!';
+                          //If manter return
+                        } else if (_novoPedStore.getVerticalSbmpRadio() == 1) {
+                          return null;
+                          //if corrigir
+                        } else if (_novoPedStore.getVerticalSbmpRadio() == 2) {
+                          //check if at least 1 option is selected, else error
+                          if (_novoPedStore.getSbmpRadioValue('_idaSup') != 0 ||
+                              _novoPedStore.getSbmpRadioValue('_idaInf') != 0 ||
+                              _novoPedStore.getSbmpRadioValue('_edpSup') != 0 ||
+                              _novoPedStore.getSbmpRadioValue('_edpInf') != 0) {
+                            //1) intr dentes ant sup
+                            if (_novoPedStore.getSbmpRadioValue('_idaSup') ==
+                                1) {
+                              if (_novoPedStore.getIdaSup().isEmpty) {
+                                return 'Selecione um valor!';
+                              }
+                            }
+                            //2) intr dentes ant inf
+                            if (_novoPedStore.getSbmpRadioValue('_idaInf') ==
+                                1) {
+                              if (_novoPedStore.getIdaInf().isEmpty) {
+                                return 'Selecione um valor!';
+                              }
+                            }
+                            //3) extrusão dos dentes posteriores sup
+                            if (_novoPedStore.getSbmpRadioValue('_edpSup') ==
+                                1) {
+                              if (_novoPedStore.getEdpSup().isEmpty) {
+                                return 'Selecione um valor!';
+                              }
+                            }
+                            //4) extrusão dos dentes posteriores inf
+                            if (_novoPedStore.getSbmpRadioValue('_edpInf') ==
+                                1) {
+                              if (_novoPedStore.getEdpInf().isEmpty) {
+                                return 'Selecione um valor!';
+                              }
+                            }
+                            return null;
+                          } else {
+                            return 'Selecione um valor!';
+                          }
+                        }
                       },
                       decoration: InputDecoration(
                         focusedErrorBorder: OutlineInputBorder(
