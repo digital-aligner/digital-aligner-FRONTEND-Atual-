@@ -249,6 +249,17 @@ class _RelatorioPdfUploadState extends State<RelatorioPdfUpload>
 
   //FOR EDIT SCREEN
   Future<dynamic> _getPdfs(_token) async {
+    RelatorioPdfModel pm = RelatorioPdfModel(
+      listId: -1,
+      progress: 1,
+      fileName: 'carregando...',
+    );
+
+    setState(() {
+      _relatorioPdfUploadsList = [];
+      _relatorioPdfUploadsList.add(pm);
+    });
+
     var _response = await http.post(
       Uri.parse(RotasUrl.rotaPdfsList),
       headers: {
@@ -264,6 +275,7 @@ class _RelatorioPdfUploadState extends State<RelatorioPdfUpload>
     var resData = json.decode(_response.body);
 
     try {
+      /*
       for (int i = 0; i < resData.length; i++) {
         if (resData[i]['id'] != null) {
           RelatorioPdfModel pm = RelatorioPdfModel(listId: resData[i]['id']);
@@ -273,10 +285,27 @@ class _RelatorioPdfUploadState extends State<RelatorioPdfUpload>
           pm.imageUrl = resData[i]['url'];
           _relatorioPdfUploadsList.add(pm);
         }
-      }
+      }*/
 
-      _isFetchEdit = false;
+      if (resData[0].containsKey('id')) {
+        _relatorioPdfUploadsList = [];
+        RelatorioPdfModel pm = RelatorioPdfModel(listId: resData[0]['id']);
+        pm.id = resData[0]['id'];
+        pm.fileName = resData[0]['name'];
+        //pm.thumbnail = resData[i]['formats']['thumbnail']['url'];
+        pm.imageUrl = resData[0]['url'];
+        _relatorioPdfUploadsList.add(pm);
+      } else {
+        _relatorioPdfUploadsList = [];
+      }
+      setState(() {
+        _isFetchEdit = false;
+      });
     } catch (error) {
+      setState(() {
+        _relatorioPdfUploadsList = [];
+        _isFetchEdit = false;
+      });
       print(error);
     }
 

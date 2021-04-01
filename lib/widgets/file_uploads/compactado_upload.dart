@@ -264,6 +264,17 @@ class _CompactadoUploadState extends State<CompactadoUpload>
 
 //FOR EDIT SCREEN
   Future<dynamic> _getModeloComp(_token) async {
+    CompactadoModel pm = CompactadoModel(
+      listId: -1,
+      progress: 1,
+      fileName: 'carregando...',
+    );
+
+    setState(() {
+      _compactUploadsList = [];
+      _compactUploadsList.add(pm);
+    });
+
     var _response = await http.post(
       Uri.parse(RotasUrl.rotaModeloCompactadoList),
       headers: {
@@ -279,6 +290,7 @@ class _CompactadoUploadState extends State<CompactadoUpload>
     var resData = json.decode(_response.body);
 
     try {
+      /*
       for (int i = 0; i < resData.length; i++) {
         if (resData[i]['id'] != null) {
           CompactadoModel pm = CompactadoModel(listId: resData[i]['id']);
@@ -287,11 +299,26 @@ class _CompactadoUploadState extends State<CompactadoUpload>
           pm.imageUrl = resData[i]['url'];
           _compactUploadsList.add(pm);
         }
+      }*/
+
+      if (resData[0]['id'] != null) {
+        _compactUploadsList = [];
+        CompactadoModel pm = CompactadoModel(listId: resData[0]['id']);
+        pm.id = resData[0]['id'];
+        pm.fileName = resData[0]['name'];
+        pm.imageUrl = resData[0]['url'];
+        _compactUploadsList.add(pm);
+      } else {
+        _compactUploadsList = [];
       }
       setState(() {
         _isFetchEdit = false;
       });
     } catch (error) {
+      setState(() {
+        _compactUploadsList = [];
+        _isFetchEdit = false;
+      });
       print(error);
     }
 

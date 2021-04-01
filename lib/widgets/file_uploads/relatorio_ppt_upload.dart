@@ -251,6 +251,17 @@ class _RelatorioPPTUploadState extends State<RelatorioPPTUpload>
 
   //FOR EDIT SCREEN
   Future<dynamic> _getPpts(_token) async {
+    RelatorioPPTModel pm = RelatorioPPTModel(
+      listId: -1,
+      progress: 1,
+      fileName: 'carregando...',
+    );
+
+    setState(() {
+      _relatorioPPTUploadsList = [];
+      _relatorioPPTUploadsList.add(pm);
+    });
+
     var _response = await http.post(
       Uri.parse(RotasUrl.rotaPptsList),
       headers: {
@@ -266,6 +277,7 @@ class _RelatorioPPTUploadState extends State<RelatorioPPTUpload>
     var resData = json.decode(_response.body);
 
     try {
+      /*
       for (int i = 0; i < resData.length; i++) {
         if (resData[i]['id'] != null) {
           RelatorioPPTModel pm = RelatorioPPTModel(listId: resData[i]['id']);
@@ -274,11 +286,29 @@ class _RelatorioPPTUploadState extends State<RelatorioPPTUpload>
           //pm.thumbnail = resData[i]['formats']['thumbnail']['url'];
           pm.imageUrl = resData[i]['url'];
           _relatorioPPTUploadsList.add(pm);
-        }
-      }
+        } 
+      }*/
 
-      _isFetchEdit = false;
+      if (resData[0].containsKey('id')) {
+        _relatorioPPTUploadsList = [];
+        RelatorioPPTModel pm = RelatorioPPTModel(listId: resData[0]['id']);
+        pm.id = resData[0]['id'];
+        pm.fileName = resData[0]['name'];
+        //pm.thumbnail = resData[i]['formats']['thumbnail']['url'];
+        pm.imageUrl = resData[0]['url'];
+        _relatorioPPTUploadsList.add(pm);
+      } else {
+        _relatorioPPTUploadsList = [];
+      }
+      setState(() {
+        _isFetchEdit = false;
+      });
     } catch (error) {
+      setState(() {
+        _relatorioPPTUploadsList = [];
+        _isFetchEdit = false;
+      });
+
       print(error);
     }
 

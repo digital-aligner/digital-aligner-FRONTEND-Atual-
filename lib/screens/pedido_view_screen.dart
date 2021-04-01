@@ -11,7 +11,7 @@ import 'package:digital_aligner_app/screens/gerar_relatorio_screen.dart';
 import 'package:digital_aligner_app/screens/login_screen.dart';
 
 import 'package:digital_aligner_app/screens/relatorio_view_screen.dart';
-import 'package:digital_aligner_app/screens/view_images_screen.dart';
+import 'package:easy_web_view/easy_web_view.dart';
 
 import 'package:flutter/material.dart';
 
@@ -46,10 +46,10 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
 
   bool relatorioFirstFetch = true;
 
-  bool firstFetch = true;
+  ValueKey key = ValueKey('key_0');
+  ValueKey key1 = ValueKey('key_1');
 
-  List<Widget> networkImgPhotoList = [];
-  List<Widget> networkImgRadList = [];
+  bool modelsVisible = false;
 
   //Set the urls to file on disk (local storage) to be retrieved by
   //html file in web folder
@@ -64,61 +64,15 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
     prefs.setString('modelos_3d_url', modelosData);
   }
 
-  Widget _mapRadiografiasUrlToUi(Map<String, dynamic> radiografias) {
-    for (int i = 1; i <= radiografias.length; i++) {
-      if (radiografias['foto' + i.toString()] != null) {
-        networkImgRadList.add(
-          Card(
-            elevation: 5,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ViewImagesScreen(
-                            imgUrl: radiografias['foto' + i.toString()],
-                          ),
-                        ),
-                      );
-                    },
-                    child: FadeInImage.memoryNetwork(
-                      width: 120,
-                      height: 120,
-                      fit: BoxFit.contain,
-                      image: radiografias['foto' + i.toString()],
-                      placeholder: kTransparentImage,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton.icon(
-                    onPressed: () async {
-                      await launch(radiografias['foto' + i.toString()]);
-                    },
-                    icon: const Icon(Icons.download_done_rounded),
-                    label: const Text('Baixar'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      }
-    }
-    return Wrap(
-      direction: Axis.horizontal,
-      spacing: 10,
-      children: networkImgRadList,
-    );
-  }
+  Widget _mapImagesUrlToUi(
+    BuildContext ctx,
+    Map<String, dynamic> images,
+  ) {
+    List<Widget> networkImgList = [];
 
-  Widget _mapFotografiasUrlToUi(Map<String, dynamic> fotografias) {
-    for (int i = 1; i <= fotografias.length; i++) {
-      if (fotografias['foto' + i.toString()] != null) {
-        networkImgPhotoList.add(
+    for (int i = 1; i <= images.length; i++) {
+      if (images['foto' + i.toString()] != null) {
+        networkImgList.add(
           Card(
             elevation: 5,
             child: Padding(
@@ -127,27 +81,20 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                 children: [
                   InkWell(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ViewImagesScreen(
-                            imgUrl: fotografias['foto' + i.toString()],
-                          ),
-                        ),
-                      );
+                      _viewImage(ctx, images['foto' + i.toString()]);
                     },
                     child: FadeInImage.memoryNetwork(
                       width: 120,
                       height: 120,
                       fit: BoxFit.contain,
-                      image: fotografias['foto' + i.toString()],
+                      image: images['foto' + i.toString()],
                       placeholder: kTransparentImage,
                     ),
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton.icon(
                     onPressed: () async {
-                      await launch(fotografias['foto' + i.toString()]);
+                      await launch(images['foto' + i.toString()]);
                     },
                     icon: const Icon(Icons.download_done_rounded),
                     label: const Text('Baixar'),
@@ -162,11 +109,12 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
     return Wrap(
       direction: Axis.horizontal,
       spacing: 10,
-      children: networkImgPhotoList,
+      children: networkImgList,
     );
   }
 
   Widget _pedidoUi(
+    BuildContext ctx,
     List<dynamic> pedList,
     int index,
   ) {
@@ -189,93 +137,43 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
             ),
           ),
         ),
-        //Modelo Superior
-        Card(
-          elevation: 5,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ViewModelosScreenSup(
-                          modeloSupLink: _modeloSupLink,
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Image(
-                    fit: BoxFit.cover,
-                    width: 100,
-                    image: const AssetImage('logos/cubo.jpg'),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ViewModelosScreenSup(
-                          modeloSupLink: _modeloSupLink,
-                        ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.download_done_rounded),
-                  label: const Text('Visualizar Modelo Superior'),
-                ),
-              ],
-            ),
+        ElevatedButton.icon(
+          onPressed: () async {
+            setState(() {
+              modelsVisible = !modelsVisible;
+            });
+          },
+          icon: modelsVisible
+              ? const Icon(Icons.visibility)
+              : const Icon(Icons.visibility_off),
+          label: modelsVisible ? const Text('Esconder') : const Text('mostrar'),
+        ),
+        Visibility(
+          visible: modelsVisible,
+          maintainState: true,
+          child: Column(
+            children: [
+              //Modelo Superior
+              _modelo3d(
+                key: key,
+                modelUrl: _modeloSupLink,
+                title: 'Modelo Superior',
+                viewer3dUrl:
+                    'https://digital-aligner-e0e72.web.app/stl_viewer/modelo_sup_viewer.html',
+              ),
+              const SizedBox(height: 20),
+              //Modelo Inferior
+              _modelo3d(
+                key: key1,
+                modelUrl: _modeloInfLink,
+                title: 'Modelo Inferior',
+                viewer3dUrl:
+                    'https://digital-aligner-e0e72.web.app/stl_viewer/modelo_inf_viewer.html',
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 20),
-        //Modelo Inferior
-        Card(
-          elevation: 5,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ViewModeloScreenInf(
-                          modeloInfLink: _modeloInfLink,
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Image(
-                    fit: BoxFit.cover,
-                    width: 100,
-                    image: const AssetImage('logos/cubo.jpg'),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ViewModeloScreenInf(
-                          modeloInfLink: _modeloInfLink,
-                        ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.download_done_rounded),
-                  label: const Text('Visualizar Modelo Inferior'),
-                ),
-              ],
-            ),
-          ),
-        ),
+
         //Fotografias
         //text
         const SizedBox(height: 40),
@@ -296,15 +194,10 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
         ),
 
         Container(
-          child: networkImgPhotoList.length > 0
-              ? Wrap(
-                  direction: Axis.horizontal,
-                  spacing: 10,
-                  children: networkImgPhotoList,
-                )
-              : _mapFotografiasUrlToUi(
-                  pedList[index]['fotografias'],
-                ),
+          child: _mapImagesUrlToUi(
+            ctx,
+            pedList[index]['fotografias'],
+          ),
         ),
         //Radiografias
         const SizedBox(height: 40),
@@ -325,13 +218,10 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
         ),
 
         Container(
-          child: networkImgRadList.length > 0
-              ? Wrap(
-                  direction: Axis.horizontal,
-                  spacing: 10,
-                  children: networkImgRadList,
-                )
-              : _mapRadiografiasUrlToUi(pedList[index]['radiografias']),
+          child: _mapImagesUrlToUi(
+            ctx,
+            pedList[index]['radiografias'],
+          ),
         ),
         const SizedBox(height: 50),
         ElevatedButton.icon(
@@ -345,7 +235,53 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
     );
   }
 
-  Future<dynamic> _deletePedidoDialog(BuildContext ctx, int index) async {
+  Widget _modelo3d({
+    String title,
+    String modelUrl,
+    String viewer3dUrl,
+    ValueKey key,
+  }) {
+    //Modelos digitais
+    if (modelUrl == null) {
+      return Center(
+        child: const Text('Sem modelo'),
+      );
+    } else {
+      return Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 50,
+          vertical: 50,
+        ),
+        child: Column(
+          children: [
+            Center(child: Text(title)),
+            Card(
+              elevation: 0,
+              child: EasyWebView(
+                key: key,
+                src: viewer3dUrl,
+                isHtml: false, // Use Html syntax
+                isMarkdown: false, // Use markdown syntax
+                convertToWidgets: false, // Try to convert to flutter widgets
+                onLoaded: () => null,
+                width: 800,
+                height: 500,
+              ),
+            ),
+            ElevatedButton.icon(
+              onPressed: () async {
+                await launch(modelUrl);
+              },
+              icon: const Icon(Icons.download_done_rounded),
+              label: const Text('Baixar'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  Future<bool> _deletePedidoDialog(BuildContext ctx, int index) async {
     return showDialog(
       barrierDismissible: true,
       context: ctx,
@@ -362,6 +298,7 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                         .deletarPedido(pedList[index]['id'])
                         .then((_) {
                       Navigator.of(ctx).pop();
+                      return true;
                     });
                   },
                   child: const Text('Sim'),
@@ -369,12 +306,54 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                 TextButton(
                   onPressed: () {
                     Navigator.of(ctx).pop();
+                    return false;
                   },
                   child: const Text('Não'),
                 ),
               ],
             );
           },
+        );
+      },
+    );
+  }
+
+  Future<void> _viewImage(BuildContext ctx, String imgUrl) async {
+    return showDialog(
+      barrierDismissible: true,
+      context: ctx,
+      builder: (BuildContext ctx2) {
+        return AlertDialog(
+          title: Center(child: const Text('Imagem')),
+          content: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+            child: InteractiveViewer(
+              panEnabled: true, // Set it to false to prevent panning.
+              boundaryMargin: const EdgeInsets.all(80),
+              minScale: 0.5,
+              maxScale: 4,
+              child: Image.network(
+                imgUrl,
+                width: MediaQuery.of(context).size.width,
+                fit: BoxFit.contain,
+                loadingBuilder: (context, child, loadingProgress) {
+                  return loadingProgress == null
+                      ? child
+                      : LinearProgressIndicator();
+                },
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+              child: const Text('Fechar'),
+            ),
+          ],
         );
       },
     );
@@ -394,6 +373,7 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
 
     if (!data[0].containsKey('error')) {
       relatorioData = data;
+      relatorioFirstFetch = false;
     }
 
     return data;
@@ -531,10 +511,14 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                   "EXCLUIR PEDIDO",
                 ),
                 onPressed: () async {
-                  await _deletePedidoDialog(ctx, index);
-                  Navigator.pop(context);
-                  Future.delayed(Duration(milliseconds: 800),
-                      () => _pedidosListStore.clearPedidosAndUpdate());
+                  var didDelete = await _deletePedidoDialog(ctx, index);
+                  if (didDelete) {
+                    Navigator.pop(context);
+                    Future.delayed(
+                      Duration(milliseconds: 800),
+                      () => _pedidosListStore.clearPedidosAndUpdate(),
+                    );
+                  }
                 },
               ),
             ),
@@ -590,8 +574,12 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
   Widget build(BuildContext context) {
     _authStore = Provider.of<AuthProvider>(context);
     _pedidosListStore = Provider.of<PedidosListProvider>(context);
-    pedList = _pedidosListStore.getPedidosList();
+    Map args = ModalRoute.of(context).settings.arguments;
+    if (!_authStore.isAuth) {
+      return LoginScreen();
+    }
 
+    pedList = _pedidosListStore.getPedidosList();
     if (pedList == null) {
       return Container(
         child: Align(
@@ -610,15 +598,6 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
       );
     }
 
-    if (!_authStore.isAuth) {
-      return LoginScreen();
-    }
-
-    final double sWidth = MediaQuery.of(context).size.width;
-    final double sHeight = MediaQuery.of(context).size.height;
-
-    Map args = ModalRoute.of(context).settings.arguments;
-
     index = args['index'];
 
     _setModelosUrlToStorage(
@@ -628,6 +607,9 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
     //Setting modelos links to global var for download btn
     _modeloSupLink = pedList[index]['modelo_superior']['modelo_superior'];
     _modeloInfLink = pedList[index]['modelo_inferior']['modelo_inferior'];
+
+    final double sWidth = MediaQuery.of(context).size.width;
+    final double sHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       appBar: SecondaryAppbar(),
@@ -747,6 +729,7 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                     index,
                   ),
                   _pedidoUi(
+                    context,
                     pedList,
                     index,
                   ),
