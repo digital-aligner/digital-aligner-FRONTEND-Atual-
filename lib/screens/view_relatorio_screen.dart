@@ -21,14 +21,19 @@ class _ViewRelatorioScreenState extends State<ViewRelatorioScreen> {
   PdfController pdfController;
   bool firstFetch = true;
 
-  Future<dynamic> _fetchRelatorioPDF(String url) async {
+  Future<PdfController> _fetchRelatorioPDF(String url) async {
     var response = await http.get(Uri.parse(url));
-    setState(() {
-      firstFetch = false;
-      pdfController = PdfController(
-        document: PdfDocument.openData(response.bodyBytes),
-      );
-    });
+    try {
+      setState(() {
+        firstFetch = false;
+        pdfController = PdfController(
+          document: PdfDocument.openData(response.bodyBytes),
+        );
+      });
+    } catch (e) {
+      print('Erro ao buscar relatório');
+    }
+
     return pdfController;
   }
 

@@ -6,6 +6,7 @@ import 'package:digital_aligner_app/providers/auth_provider.dart';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:native_pdf_view/native_pdf_view.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -33,6 +34,96 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
   //for approving and showing spinner
   bool _sendingAprovacao = false;
 
+  PdfController pdfController;
+  bool firstFetch = true;
+
+  @override
+  void dispose() {
+    pdfController.dispose();
+    super.dispose();
+  }
+
+  Future<PdfController> _fetchRelatorioPDF(String url) async {
+    var response = await http.get(Uri.parse(url));
+    try {
+      setState(() {
+        firstFetch = false;
+        pdfController = PdfController(
+          document: PdfDocument.openData(response.bodyBytes),
+        );
+      });
+    } catch (e) {
+      print('Erro ao buscar relatório');
+    }
+
+    return pdfController;
+  }
+
+  Widget _relatorioView(String url) {
+    if (firstFetch) {
+      _fetchRelatorioPDF(url);
+    }
+
+    if (pdfController == null) {
+      return Center(
+        child: CircularProgressIndicator(
+          valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+        ),
+      );
+    }
+    return Card(
+      elevation: 5,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            Container(
+              width: MediaQuery.of(context).size.width - 60 < 100
+                  ? 100
+                  : MediaQuery.of(context).size.width - 60,
+              height: MediaQuery.of(context).size.height - 200 < 250
+                  ? 200
+                  : MediaQuery.of(context).size.height - 200,
+              child: PdfView(
+                pageSnapping: true,
+                controller: pdfController,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    pdfController.previousPage(
+                      duration: Duration(milliseconds: 250),
+                      curve: Curves.easeOut,
+                    );
+                  },
+                  icon: Icon(Icons.arrow_back),
+                  label: Text('Anterior'),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    pdfController.nextPage(
+                      duration: Duration(milliseconds: 250),
+                      curve: Curves.easeIn,
+                    );
+                  },
+                  icon: Icon(Icons.arrow_forward),
+                  label: Text('Próximo'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  //-------------
   Future<Map<dynamic, dynamic>> _aprovarRelatorio(int id) async {
     var _response = await http.put(Uri.parse(RotasUrl.rotaAprovarRelatorio),
         headers: {
@@ -46,8 +137,6 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
           'pedido': pedido['id'],
           'relatorio': id,
         }));
-
-    print(_response.body);
 
     Map<dynamic, dynamic> _data = json.decode(_response.body);
     return _data;
@@ -433,9 +522,9 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
             ),
             const Divider(thickness: 1),
             //RELATÓRIO PREVIEW (PDF)
-
+            _relatorioView(data[0]['relatorio_pdf']['relatorio1']),
             const SizedBox(
-              height: 50,
+              height: 70,
             ),
             ElevatedButton.icon(
               onPressed: () async {
@@ -471,27 +560,7 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
             const SizedBox(
               height: 50,
             ),
-            data[0]['relatorio_pdf']['relatorio1'] == null
-                ? ElevatedButton.icon(
-                    onPressed: null,
-                    icon: const Icon(Icons.image),
-                    label: const Text('Sem relatório'),
-                  )
-                : ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ViewRelatorioScreen(
-                            relatorioUrl: data[0]['relatorio_pdf']
-                                ['relatorio1'],
-                          ),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.image),
-                    label: const Text('Visualizar relatório'),
-                  ),
+
             if (_authStore.role == 'Administrador' ||
                 _authStore.role == 'Gerente')
               ElevatedButton.icon(
@@ -539,14 +608,14 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
       appBar: SecondaryAppbar(),
       body: Container(
         width: sWidth,
-        height: sHeight,
+        height: sHeight, //aprox. size of relatorio height when loaded
         child: Scrollbar(
           thickness: 15,
           isAlwaysShown: true,
           showTrackOnHover: true,
           child: SingleChildScrollView(
             child: Container(
-              height: 900,
+              height: 1600,
               padding: EdgeInsets.symmetric(
                 horizontal: sWidth > 760 ? 100 : 8,
                 vertical: 50,
