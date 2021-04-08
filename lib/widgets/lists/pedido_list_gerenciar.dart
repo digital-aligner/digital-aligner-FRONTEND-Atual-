@@ -423,49 +423,44 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
       );
     }
 
-    return Scrollbar(
-      thickness: 15,
-      isAlwaysShown: true,
-      showTrackOnHover: true,
-      child: ListView.builder(
-        itemCount: pedList.length,
-        itemBuilder: (ctx, index) {
-          return AbsorbPointer(
-            absorbing: _absorbPointerBool,
-            child: Container(
-              height: 80,
-              child: Card(
-                shadowColor: Colors.grey,
-                margin: EdgeInsets.all(0),
-                color: (index % 2 == 0) ? Colors.white : Color(0xffe3e3e3),
-                elevation: 0.5,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: ListTile(
-                        onTap: () {
-                          Navigator.of(context).pushNamed(
-                            PedidoViewScreen.routeName,
-                            arguments: {'index': index},
-                          );
-                        },
-                        title: Tooltip(
-                          message: 'Visualizar, editar e deletar pedidos',
-                          child: _listItem(
-                            index,
-                            sWidth,
-                            sHeight,
-                          ),
+    return ListView.builder(
+      itemCount: pedList.length,
+      itemBuilder: (ctx, index) {
+        return AbsorbPointer(
+          absorbing: _absorbPointerBool,
+          child: Container(
+            height: 80,
+            child: Card(
+              shadowColor: Colors.grey,
+              margin: EdgeInsets.all(0),
+              color: (index % 2 == 0) ? Colors.white : Color(0xffe3e3e3),
+              elevation: 0.5,
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: ListTile(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(
+                          PedidoViewScreen.routeName,
+                          arguments: {'index': index},
+                        );
+                      },
+                      title: Tooltip(
+                        message: 'Visualizar, editar e deletar pedidos',
+                        child: _listItem(
+                          index,
+                          sWidth,
+                          sHeight,
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

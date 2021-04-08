@@ -102,7 +102,7 @@ class _DadosIniciaisState extends State<DadosIniciais>
                       onChanged: (value) {
                         _novoPedStore.setNomePaciente(value);
                       },
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Nome do Paciente *',
                         //hintText: 'Nome do Paciente *',
                       ),
@@ -199,7 +199,7 @@ class _DadosIniciaisState extends State<DadosIniciais>
             children: [
               const Text(
                 'TRATAR:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               const Text(
                 '*',

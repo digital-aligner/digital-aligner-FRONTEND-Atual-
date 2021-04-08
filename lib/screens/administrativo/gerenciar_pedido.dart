@@ -554,92 +554,100 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
       // *BUG* Verify closing drawer automaticlly when under 1200
       drawer: sWidth < 1200 ? MyDrawer() : null,
 
-      body: Container(
-        padding: const EdgeInsets.symmetric(
-          vertical: 20,
-          horizontal: 50,
-        ),
-        width: sWidth,
-        height: sHeight,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-              colors: [Colors.white, Colors.grey[100]],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter),
-        ),
-        child: authStore.role != 'Credenciado'
-            ? Align(
-                alignment: Alignment.topCenter,
-                child: SingleChildScrollView(
-                  child: Container(
-                    //width: sWidth - 20,
-                    //height: sHeight,
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 20),
-                        Text(
-                          'Gerenciar Pedidos',
-                          style: Theme.of(context).textTheme.headline1,
+      body: Scrollbar(
+        thickness: 15,
+        isAlwaysShown: true,
+        showTrackOnHover: true,
+        child: SingleChildScrollView(
+          child: Container(
+            height: 1300,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 50,
+            ),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  colors: [Colors.white, Colors.grey[100]],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter),
+            ),
+            child: authStore.role != 'Credenciado'
+                ? Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      Text(
+                        'Gerenciar Pedidos',
+                        style: Theme.of(context).textTheme.headline1,
+                      ),
+                      const SizedBox(height: 40),
+                      _searchBox(),
+                      const SizedBox(
+                        height: 50,
+                        child: const Divider(
+                          thickness: 0.5,
                         ),
-                        const SizedBox(height: 40),
-                        _searchBox(),
-                        const SizedBox(
-                          height: 50,
-                          child: const Divider(
-                            thickness: 0.5,
-                          ),
-                        ),
-                        //TOP TEXT
-                        _getHeaders(),
-                        const SizedBox(height: 20),
-                        _pedidosListStore.getPedidosList() == null
-                            ? FutureBuilder(
-                                future: _pedidosListStore.fetchPedidos(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.done) {
-                                    if (snapshot.data == null) {
-                                      return Container(
-                                        child: Text(
-                                            'Erro ao se connectar. Verifique sua conexão ou tente novamente mais tarde.'),
-                                      );
-                                    } else if (snapshot.data[0]
-                                        .containsKey('error')) {
-                                      return Container(
-                                        child: Text(
-                                          snapshot.data[0]['message'],
-                                        ),
-                                      );
-                                    } else {
-                                      return Container(
-                                        width: sWidth - 20,
-                                        height: 300,
-                                        child: PedidoListGerenciar(),
-                                      );
-                                    }
-                                  } else {
-                                    return Center(
-                                      child: CircularProgressIndicator(
-                                        valueColor:
-                                            new AlwaysStoppedAnimation<Color>(
-                                          Colors.blue,
-                                        ),
+                      ),
+                      //TOP TEXT
+                      _getHeaders(),
+                      const SizedBox(height: 20),
+                      _pedidosListStore.getPedidosList() == null
+                          ? FutureBuilder(
+                              future: _pedidosListStore.fetchPedidos(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.done) {
+                                  if (snapshot.data == null) {
+                                    return Container(
+                                      child: Text(
+                                          'Erro ao se connectar. Verifique sua conexão ou tente novamente mais tarde.'),
+                                    );
+                                  } else if (snapshot.data[0]
+                                      .containsKey('error')) {
+                                    return Container(
+                                      child: Text(
+                                        snapshot.data[0]['message'],
                                       ),
                                     );
+                                  } else {
+                                    return Expanded(
+                                      child: PedidoListGerenciar(),
+                                    );
                                   }
-                                },
-                              )
-                            : Container(
-                                width: sWidth - 20,
-                                height: 300,
-                                child: PedidoListGerenciar(),
-                              ),
-                      ],
-                    ),
-                  ),
-                ),
-              )
-            : Container(),
+                                } else {
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      valueColor:
+                                          new AlwaysStoppedAnimation<Color>(
+                                        Colors.blue,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                            )
+                          : Expanded(child: PedidoListGerenciar()),
+                      const SizedBox(height: 100),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: () async {},
+                            icon: const Icon(Icons.arrow_back),
+                            label: const Text('Anterior'),
+                          ),
+                          const SizedBox(width: 200),
+                          ElevatedButton.icon(
+                            onPressed: () async {},
+                            icon: const Icon(Icons.arrow_forward),
+                            label: const Text('Próximo'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 100),
+                    ],
+                  )
+                : Container(),
+          ),
+        ),
       ),
     );
   }
