@@ -36,8 +36,6 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
 
   //For page managmente (0-10-20 equals page 0,1,2)
   int _startPage = 0;
-  bool _blockPageBtns = true;
-  bool _blockForwardBtn = true;
 
   @override
   void dispose() {
@@ -530,33 +528,12 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
   }
 
   @override
-  void didChangeDependencies() {
-    if (_startPage < 0) {
-      _startPage = 0;
-    }
-
-    super.didChangeDependencies();
+  Widget build(BuildContext context) {
     authStore = Provider.of<AuthProvider>(context);
 
     _pedidosListStore = Provider.of<PedidosListProvider>(context);
     _pedidosListStore.setToken(authStore.token);
 
-    _pedidosListStore.fetchPedidos(_startPage).then((List<dynamic> pedidos) {
-      if (pedidos.length <= 0) {
-        _blockForwardBtn = true;
-      } else if (pedidos[0].containsKey('error')) {
-        _blockForwardBtn = true;
-      } else {
-        _blockForwardBtn = false;
-      }
-      setState(() {
-        _blockPageBtns = false;
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     if (!authStore.isAuth) {
       return LoginScreen();
     }
@@ -619,60 +596,73 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                       //TOP TEXT
                       _getHeaders(),
                       const SizedBox(height: 20),
-                      if (_pedidosListStore.getPedidosList() == null)
-                        Center(
-                          child: CircularProgressIndicator(
-                            valueColor: new AlwaysStoppedAnimation<Color>(
-                              Colors.blue,
-                            ),
-                          ),
-                        )
-                      else if (_pedidosListStore
-                          .getPedidosList()[0]
-                          .containsKey('error'))
-                        Container(
-                          child: Text(
-                            _pedidosListStore.getPedidosList()[0]['message'],
-                          ),
-                        )
-                      else
-                        Expanded(
-                          child: PedidoListGerenciar(),
-                        ),
+                      _pedidosListStore.getPedidosList() == null
+                          ? FutureBuilder(
+                              future:
+                                  _pedidosListStore.fetchPedidos(_startPage),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.done) {
+                                  if (snapshot.data == null) {
+                                    return Container(
+                                      child: Text(
+                                          'Erro ao se connectar. Verifique sua conexão ou tente novamente mais tarde.'),
+                                    );
+                                  } else if (snapshot.data[0]
+                                      .containsKey('error')) {
+                                    return Container(
+                                      child: Text(
+                                        snapshot.data[0]['message'],
+                                      ),
+                                    );
+                                  } else {
+                                    return Expanded(
+                                      child: PedidoListGerenciar(),
+                                    );
+                                  }
+                                } else {
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      valueColor:
+                                          new AlwaysStoppedAnimation<Color>(
+                                        Colors.blue,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                            )
+                          : Expanded(child: PedidoListGerenciar()),
                       const SizedBox(height: 100),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           ElevatedButton.icon(
-                            onPressed: _startPage <= 0 || _blockPageBtns
-                                ? null
-                                : () async {
+                            onPressed: _startPage > 0
+                                ? () async {
                                     if (_startPage <= 0) {
                                       setState(() {
                                         _startPage = 0;
                                       });
                                     } else {
                                       setState(() {
-                                        _blockPageBtns = true;
                                         _startPage = _startPage - 10;
                                       });
                                     }
                                     _pedidosListStore.clearPedidosAndUpdate();
-                                  },
+                                  }
+                                : null,
                             icon: const Icon(Icons.arrow_back),
                             label: const Text('Anterior'),
                           ),
                           const SizedBox(width: 200),
                           ElevatedButton.icon(
-                            onPressed: _blockPageBtns || _blockForwardBtn
-                                ? null
-                                : () async {
-                                    setState(() {
-                                      _blockPageBtns = true;
-                                      _startPage = _startPage + 10;
-                                    });
-                                    _pedidosListStore.clearPedidosAndUpdate();
-                                  },
+                            onPressed: () async {
+                              setState(() {
+                                _startPage = _startPage + 10;
+                              });
+                              _pedidosListStore.clearPedidosAndUpdate();
+                            },
                             icon: const Icon(Icons.arrow_forward),
                             label: const Text('Próximo'),
                           ),
