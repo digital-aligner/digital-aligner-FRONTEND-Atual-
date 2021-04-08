@@ -23,6 +23,8 @@ class GerenciarPedidos extends StatefulWidget {
 }
 
 class _GerenciarPedidosState extends State<GerenciarPedidos> {
+  bool firstFetch = true;
+
   AuthProvider authStore;
   PedidosListProvider _pedidosListStore;
 
@@ -31,6 +33,9 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
   Timer searchOnStoppedTyping;
 
   final TextEditingController _searchField = TextEditingController();
+
+  //For page managmente (0-10-20 equals page 0,1,2)
+  int _startPage = 0;
 
   @override
   void dispose() {
@@ -470,6 +475,8 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
           onChanged: (String newValue) {
             _pedidosListStore.clearPedidosOnLeave();
             setState(() {
+              //page to 0 before fetch
+              _startPage = 0;
               _pedidosListStore.setDropdownValue(newValue);
               _searchField.text = '';
             });
@@ -496,6 +503,8 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
             ),
             controller: _searchField,
             onChanged: (value) async {
+              //page to 0 before fetch
+              _startPage = 0;
               const duration = Duration(milliseconds: 500);
               if (searchOnStoppedTyping != null) {
                 setState(() => searchOnStoppedTyping.cancel());
@@ -517,8 +526,6 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
     _pedidosListStore.setQuery(value);
     _pedidosListStore.clearPedidosAndUpdate();
   }
-
-  bool firstFetch = true;
 
   @override
   Widget build(BuildContext context) {
@@ -591,7 +598,8 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                       const SizedBox(height: 20),
                       _pedidosListStore.getPedidosList() == null
                           ? FutureBuilder(
-                              future: _pedidosListStore.fetchPedidos(),
+                              future:
+                                  _pedidosListStore.fetchPedidos(_startPage),
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.done) {
@@ -630,13 +638,31 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           ElevatedButton.icon(
-                            onPressed: () async {},
+                            onPressed: _startPage > 0
+                                ? () async {
+                                    if (_startPage <= 0) {
+                                      setState(() {
+                                        _startPage = 0;
+                                      });
+                                    } else {
+                                      setState(() {
+                                        _startPage = _startPage - 10;
+                                      });
+                                    }
+                                    _pedidosListStore.clearPedidosAndUpdate();
+                                  }
+                                : null,
                             icon: const Icon(Icons.arrow_back),
                             label: const Text('Anterior'),
                           ),
                           const SizedBox(width: 200),
                           ElevatedButton.icon(
-                            onPressed: () async {},
+                            onPressed: () async {
+                              setState(() {
+                                _startPage = _startPage + 10;
+                              });
+                              _pedidosListStore.clearPedidosAndUpdate();
+                            },
                             icon: const Icon(Icons.arrow_forward),
                             label: const Text('Próximo'),
                           ),

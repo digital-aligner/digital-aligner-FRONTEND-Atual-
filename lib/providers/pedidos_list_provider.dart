@@ -69,7 +69,7 @@ class PedidosListProvider with ChangeNotifier {
     }
   }
 
-  Future<List<dynamic>> fetchPedidos() async {
+  Future<List<dynamic>> fetchPedidos(int startPage) async {
     //Check dropdown to change route: Todos, pedidos aprovados, etc.
     String _routeType;
     if (_dropownValue == 'Todos') {
@@ -92,13 +92,19 @@ class PedidosListProvider with ChangeNotifier {
 
     try {
       final response = await http.get(
-        Uri.parse(_routeType + '?queryString=' + _queryString),
+        Uri.parse(
+          _routeType +
+              '?queryString=' +
+              _queryString +
+              '&startPage=' +
+              startPage.toString(),
+        ),
         headers: requestHeaders,
       );
       _pedidos = json.decode(response.body);
       print(_pedidos);
       //Clearing query string
-      _queryString = '';
+      //_queryString = '';
       return _pedidos;
     } catch (error) {
       print(error);
