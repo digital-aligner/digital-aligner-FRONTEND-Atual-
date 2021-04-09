@@ -1,12 +1,11 @@
 import 'package:digital_aligner_app/providers/auth_provider.dart';
-import 'package:digital_aligner_app/screens/editar_relatorio_screen.dart';
+
 import 'package:digital_aligner_app/screens/gerar_relatorio_screen.dart';
 
 import 'package:digital_aligner_app/screens/pedido_view_screen.dart';
-import 'package:digital_aligner_app/screens/view_relatorio_screen.dart';
+import 'package:digital_aligner_app/screens/relatorio_view_screen.dart';
 
 import 'package:flutter/rendering.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../providers/pedidos_list_provider.dart';
 
@@ -18,14 +17,15 @@ import 'package:flutter/material.dart';
 //import 'dart:html' as html;
 
 class MeusSetupsList extends StatefulWidget {
+  final Function fetchDataHandler;
+
+  MeusSetupsList({this.fetchDataHandler});
   @override
   _MeusSetupsListState createState() => _MeusSetupsListState();
 }
 
 class _MeusSetupsListState extends State<MeusSetupsList> {
   PedidosListProvider _pedidosListStore;
-
-  AuthProvider _authStore;
 
   List<dynamic> pedList;
 
@@ -55,10 +55,19 @@ class _MeusSetupsListState extends State<MeusSetupsList> {
                 'pacienteId': pedList[index]['paciente']['id']
               },
             ).then((didUpdate) {
-              Future.delayed(Duration(milliseconds: 800), () {
-                _pedidosListStore.clearPedidosAndUpdate();
-                _absorbPointerBool = false;
-              });
+              if (didUpdate == null) {
+                setState(() {
+                  _absorbPointerBool = false;
+                });
+              }
+
+              if (didUpdate) {
+                Future.delayed(Duration(milliseconds: 800), () {
+                  widget.fetchDataHandler(true);
+                  _absorbPointerBool = false;
+                  _pedidosListStore.clearPedidosAndUpdate();
+                });
+              }
             });
           },
         ),
@@ -74,171 +83,33 @@ class _MeusSetupsListState extends State<MeusSetupsList> {
             ),
           ),
           onPressed: () {
-            _visualizarRelatorioDialog(
-              context,
-              _sWidth,
-              _sHeight,
-              pedList[index]['relatorios'],
-              pedList[index]['codigo_pedido'],
-              index,
-            );
+            setState(() {
+              _absorbPointerBool = true;
+            });
+
+            Navigator.of(context).pushNamed(
+              RelatorioViewScreen.routeName,
+              arguments: {
+                'pedido': pedList[index],
+              },
+            ).then((didUpdate) {
+              if (didUpdate == null) {
+                setState(() {
+                  _absorbPointerBool = false;
+                });
+              }
+              if (didUpdate) {
+                Future.delayed(Duration(milliseconds: 800), () {
+                  widget.fetchDataHandler(true);
+                  _absorbPointerBool = false;
+                  _pedidosListStore.clearPedidosAndUpdate();
+                });
+              }
+            });
           },
         ),
       );
     }
-  }
-
-  Future<dynamic> _visualizarRelatorioDialog(
-    BuildContext ctx,
-    double _sWidth,
-    double _sHeight,
-    List<dynamic> data,
-    String codPedido,
-    int index,
-  ) async {
-    return showDialog(
-      barrierDismissible: false,
-      context: ctx,
-      builder: (BuildContext ctx2) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Container(
-                width: _sWidth - 20,
-                height: _sHeight - 200,
-                child: Scrollbar(
-                  thickness: 15,
-                  isAlwaysShown: true,
-                  showTrackOnHover: true,
-                  child: ListView.builder(
-                    itemCount: 1,
-                    itemExtent: null,
-                    itemBuilder: (context, index2) {
-                      return _relatorioUi(data, codPedido);
-                    },
-                  ),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  child: Text("Editar Relatorio"),
-                  onPressed: () {
-                    setState(() {
-                      _absorbPointerBool = true;
-                    });
-                    //To pop popup before pushing route
-                    Navigator.of(ctx2).pop();
-                    Navigator.of(ctx2).pushNamed(
-                      EditarRelatorioScreen.routeName,
-                      arguments: {
-                        'pedidoId': pedList[index]['id'],
-                        'pacienteId': pedList[index]['paciente']['id'],
-                        'relatorioData': data[0],
-                      },
-                    ).then((didUpdate) {
-                      Future.delayed(Duration(milliseconds: 800), () {
-                        _pedidosListStore.clearPedidosAndUpdate();
-                        _absorbPointerBool = false;
-                      });
-                    });
-                  },
-                ),
-                TextButton(
-                  child: Text("Fechar"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _relatorioUi(List<dynamic> data, String codPedido) {
-    return Wrap(
-      alignment: WrapAlignment.center,
-      direction: Axis.horizontal,
-      spacing: 20,
-      runSpacing: 20,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: <Widget>[
-        Text(
-          'RELATÓRIO DO PEDIDO: ' + codPedido,
-          style: TextStyle(
-            fontSize: 35,
-            //fontFamily: 'BigNoodleTitling',
-            color: Colors.grey,
-          ),
-        ),
-        Divider(thickness: 1),
-        //RELATÓRIO PREVIEW (PDF)
-
-        const SizedBox(
-          height: 50,
-        ),
-        ElevatedButton.icon(
-          onPressed: () async {
-            Navigator.pop(context);
-            await launch(data[0]['relatorio_pdf']['relatorio1']);
-          },
-          icon: const Icon(Icons.download_done_rounded),
-          label: const Text('Baixar relatório em PDF'),
-        ),
-        const SizedBox(
-          height: 50,
-        ),
-        ElevatedButton.icon(
-          onPressed: () async {
-            Navigator.pop(context);
-            await launch(data[0]['relatorio_ppt']['relatorio1']);
-          },
-          icon: const Icon(Icons.download_done_rounded),
-          label: const Text('Baixar relatório em PPT'),
-        ),
-        const SizedBox(
-          height: 50,
-        ),
-        ElevatedButton.icon(
-          onPressed: () async {
-            String link = data[0]['visualizador_3d'];
-            if (!link.contains('http://') && !link.contains('https://')) {
-              link = 'http://' + link;
-            }
-            Navigator.pop(context);
-            await launch(link);
-          },
-          icon: const Icon(Icons.link),
-          label: const Text('Link do visualizador 3d'),
-        ),
-        const SizedBox(
-          height: 50,
-        ),
-        data[0]['relatorio_pdf'].isEmpty
-            ? ElevatedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.image),
-                label: const Text('Sem relatório'),
-              )
-            : ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ViewRelatorioScreen(
-                        relatorioUrl: data[0]['relatorio_pdf']['relatorio1'],
-                      ),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.image),
-                label: const Text('Visualizar relatório'),
-              ),
-      ],
-    );
   }
 
   String _isoDateTimeToLocal(String isoDateString) {
@@ -371,7 +242,6 @@ class _MeusSetupsListState extends State<MeusSetupsList> {
   @override
   Widget build(BuildContext context) {
     _pedidosListStore = Provider.of<PedidosListProvider>(context);
-    _authStore = Provider.of<AuthProvider>(context);
 
     pedList = _pedidosListStore.getPedidosList();
     final double sWidth = MediaQuery.of(context).size.width;
@@ -395,49 +265,60 @@ class _MeusSetupsListState extends State<MeusSetupsList> {
       );
     }
 
-    return Scrollbar(
-      thickness: 15,
-      isAlwaysShown: true,
-      showTrackOnHover: true,
-      child: ListView.builder(
-        itemCount: pedList.length,
-        itemBuilder: (ctx, index) {
-          return AbsorbPointer(
-            absorbing: _absorbPointerBool,
-            child: Container(
-              height: 80,
-              child: Card(
-                shadowColor: Colors.grey,
-                margin: EdgeInsets.all(0),
-                color: (index % 2 == 0) ? Colors.white : Color(0xffe3e3e3),
-                elevation: 0.5,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: ListTile(
-                        onTap: () {
-                          Navigator.of(context).pushNamed(
-                            PedidoViewScreen.routeName,
-                            arguments: {'index': index},
-                          );
-                        },
-                        title: Tooltip(
-                          message: 'Visualizar, editar e deletar pedidos',
-                          child: _listItem(
-                            index,
-                            sWidth,
-                            sHeight,
-                          ),
+    return ListView.builder(
+      itemCount: pedList.length,
+      itemBuilder: (ctx, index) {
+        return AbsorbPointer(
+          absorbing: _absorbPointerBool,
+          child: Container(
+            height: 80,
+            child: Card(
+              shadowColor: Colors.grey,
+              margin: EdgeInsets.all(0),
+              color: (index % 2 == 0) ? Colors.white : Color(0xffe3e3e3),
+              elevation: 0.5,
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: ListTile(
+                      onTap: () {
+                        setState(() {
+                          _absorbPointerBool = true;
+                        });
+                        Navigator.of(context).pushNamed(
+                          PedidoViewScreen.routeName,
+                          arguments: {'index': index},
+                        ).then((didUpdate) {
+                          if (didUpdate == null) {
+                            setState(() {
+                              _absorbPointerBool = false;
+                            });
+                          }
+                          if (didUpdate) {
+                            Future.delayed(Duration(milliseconds: 800), () {
+                              widget.fetchDataHandler(true);
+                              _absorbPointerBool = false;
+                              _pedidosListStore.clearPedidosAndUpdate();
+                            });
+                          }
+                        });
+                      },
+                      title: Tooltip(
+                        message: 'Visualizar, editar e deletar pedidos',
+                        child: _listItem(
+                          index,
+                          sWidth,
+                          sHeight,
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

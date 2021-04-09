@@ -137,7 +137,7 @@ class PedidosListProvider with ChangeNotifier {
     }
   }
 
-  Future<List<dynamic>> fetchMeusSetups(int id) async {
+  Future<List<dynamic>> fetchMeusSetups(int startPage, int id) async {
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
       'Accept': 'application/json',
@@ -146,11 +146,15 @@ class PedidosListProvider with ChangeNotifier {
 
     try {
       final response = await http.get(
-        Uri.parse(RotasUrl.rotaMeusSetups +
-            '?userId=' +
-            id.toString() +
-            '&queryString=' +
-            _queryString),
+        Uri.parse(
+          RotasUrl.rotaMeusSetups +
+              '?userId=' +
+              id.toString() +
+              '&queryString=' +
+              _queryString +
+              '&startPage=' +
+              startPage.toString(),
+        ),
         headers: requestHeaders,
       );
       _pedidos = json.decode(response.body);
@@ -158,11 +162,11 @@ class PedidosListProvider with ChangeNotifier {
       return _pedidos;
     } catch (error) {
       print(error);
-      return error;
+      return [];
     }
   }
 
-  Future<List<dynamic>> fetchMinhasRevisoes(int id) async {
+  Future<List<dynamic>> fetchMinhasRevisoes(int startPage, int id) async {
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
       'Accept': 'application/json',
@@ -171,11 +175,15 @@ class PedidosListProvider with ChangeNotifier {
 
     try {
       final response = await http.get(
-        Uri.parse(RotasUrl.rotaMinhasRevisoes +
-            '?userId=' +
-            id.toString() +
-            '&queryString=' +
-            _queryString),
+        Uri.parse(
+          RotasUrl.rotaMinhasRevisoes +
+              '?userId=' +
+              id.toString() +
+              '&queryString=' +
+              _queryString +
+              '&startPage=' +
+              startPage.toString(),
+        ),
         headers: requestHeaders,
       );
       _pedidos = json.decode(response.body);
@@ -183,7 +191,7 @@ class PedidosListProvider with ChangeNotifier {
       return _pedidos;
     } catch (error) {
       print(error);
-      return error;
+      return [];
     }
   }
 

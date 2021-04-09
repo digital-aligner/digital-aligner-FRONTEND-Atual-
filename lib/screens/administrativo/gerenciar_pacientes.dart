@@ -15,6 +15,7 @@ import '../../providers/auth_provider.dart';
 import '../../widgets/lists/meus_pacientes_list.dart';
 
 import '../login_screen.dart';
+import '../meus_pacientes.dart';
 
 class GerenciarPacientes extends StatefulWidget {
   static const routeName = '/gerenciar-pacientes';
@@ -24,6 +25,8 @@ class GerenciarPacientes extends StatefulWidget {
 }
 
 class _GerenciarPacientesState extends State<GerenciarPacientes> {
+  bool fetchData = true;
+
   AuthProvider authStore;
   PacientesListProvider _pacientesListStore;
 
@@ -33,12 +36,15 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
 
   Timer searchOnStoppedTyping;
 
-  @override
-  void deactivate() {
-    _pacientesListStore.clearPacientes();
-    //_pacientesListStore.clearSelectedPed();
+  //For page managmente (0-10-20 equals page 0,1,2)
+  int _startPage = 0;
+  bool _blockPageBtns = true;
+  bool _blockForwardBtn = true;
 
-    super.deactivate();
+  @override
+  void dispose() {
+    _pacientesListStore.clearPacientes();
+    super.dispose();
   }
 
   Widget _getHeaders() {
@@ -86,8 +92,15 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
   Widget _searchBox() {
     return Row(
       children: [
-        Expanded(child: TextField(
+        Expanded(
+            child: TextField(
+          decoration: InputDecoration(
+            hintText: 'Nome do Paciente',
+          ),
           onChanged: (value) async {
+            //page to 0 before fetch
+            _startPage = 0;
+            fetchData = true;
             const duration = Duration(milliseconds: 500);
             if (searchOnStoppedTyping != null) {
               setState(() => searchOnStoppedTyping.cancel());
@@ -109,119 +122,160 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
     _pacientesListStore.clearPacientesAndUpdate();
   }
 
-  bool firstFetch = true;
-  /*
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    firstFetch = true;
-  }
-*/
-  @override
-  Widget build(BuildContext context) {
+
+    if (_startPage < 0) {
+      _startPage = 0;
+    }
+
     authStore = Provider.of<AuthProvider>(context);
 
     _pacientesListStore = Provider.of<PacientesListProvider>(context);
     _pacientesListStore.setToken(authStore.token);
     _pacientesListStore.setUserId(authStore.id);
 
+    if (fetchData) {
+      _pacientesListStore
+          .fetchAllPacientes(_startPage)
+          .then((List<dynamic> cadastros) {
+        if (cadastros.length <= 0) {
+          _blockForwardBtn = true;
+        } else if (cadastros[0].containsKey('error')) {
+          _blockForwardBtn = true;
+        } else {
+          _blockForwardBtn = false;
+        }
+        setState(() {
+          fetchData = false;
+          _blockPageBtns = false;
+        });
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     if (!authStore.isAuth) {
       return LoginScreen();
     }
 
-    //To fix list not fetching bug
-    if (firstFetch) {
-      _pacientesListStore.clearPacientes();
-      firstFetch = false;
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (authStore.role == 'Credenciado') {
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          MeusPacientes.routeName,
+          (Route<dynamic> route) => false,
+        );
+      }
+    });
 
     final double sWidth = MediaQuery.of(context).size.width;
-    final double sHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       appBar: MyAppBar(),
       // *BUG* Verify closing drawer automaticlly when under 1200
       drawer: sWidth < 1200 ? MyDrawer() : null,
-      body: Container(
-        padding: const EdgeInsets.symmetric(
-          vertical: 20,
-          horizontal: 50,
-        ),
-        width: sWidth,
-        height: sHeight,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-              colors: [Colors.white, Colors.grey[100]],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter),
-        ),
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: SingleChildScrollView(
-            child: Container(
-              //width: sWidth - 20,
-              //height: sHeight,
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  Text(
-                    'GERENCIAR PACIENTES',
-                    style: Theme.of(context).textTheme.headline1,
+      body: Scrollbar(
+        thickness: 15,
+        isAlwaysShown: true,
+        showTrackOnHover: true,
+        child: SingleChildScrollView(
+          child: Container(
+            height: 1350,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 50,
+            ),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  colors: [Colors.white, Colors.grey[100]],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter),
+            ),
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                Text(
+                  'GERENCIAR PACIENTES',
+                  style: Theme.of(context).textTheme.headline1,
+                ),
+                const SizedBox(height: 40),
+                _searchBox(),
+                const SizedBox(
+                  height: 50,
+                  child: const Divider(
+                    thickness: 0.5,
                   ),
-                  const SizedBox(height: 40),
-                  _searchBox(),
-                  const SizedBox(
-                    height: 50,
-                    child: const Divider(
-                      thickness: 0.5,
+                ),
+                //TOP TEXT
+                _getHeaders(),
+                const SizedBox(height: 20),
+                if (_pacientesListStore.getPacientesList() == null)
+                  Center(
+                    child: CircularProgressIndicator(
+                      valueColor: new AlwaysStoppedAnimation<Color>(
+                        Colors.blue,
+                      ),
                     ),
+                  )
+                else if (_pacientesListStore
+                    .getPacientesList()[0]
+                    .containsKey('error'))
+                  Container(
+                    child: Text(
+                      _pacientesListStore.getPacientesList()[0]['message'] ??
+                          '',
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: MeusPacientesList(),
                   ),
-                  //TOP TEXT
-                  _getHeaders(),
-                  const SizedBox(height: 20),
-                  _pacientesListStore.getPacientesList() == null
-                      ? FutureBuilder(
-                          future: _pacientesListStore.fetchAllPacientes(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.done) {
-                              if (snapshot.data == null) {
-                                return Container(
-                                  child: Text(
-                                      'Erro ao se connectar. Verifique sua conexão ou tente novamente mais tarde.'),
-                                );
-                              } else if (snapshot.data[0]
-                                  .containsKey('error')) {
-                                return Container(
-                                  child: Text(
-                                    snapshot.data[0]['message'],
-                                  ),
-                                );
+                const SizedBox(height: 100),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: _startPage <= 0 || _blockPageBtns
+                          ? null
+                          : () async {
+                              if (_startPage <= 0) {
+                                setState(() {
+                                  _startPage = 0;
+                                });
                               } else {
-                                return Container(
-                                  width: sWidth - 20,
-                                  height: 300,
-                                  child: MeusPacientesList(),
-                                );
+                                //fetchData before set state (fixes not updating bug)
+                                fetchData = true;
+                                setState(() {
+                                  _blockPageBtns = true;
+                                  _startPage = _startPage - 10;
+                                });
                               }
-                            } else {
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  valueColor: new AlwaysStoppedAnimation<Color>(
-                                    Colors.blue,
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                        )
-                      : Container(
-                          width: sWidth - 20,
-                          height: 300,
-                          child: MeusPacientesList(),
-                        ),
-                ],
-              ),
+                              _pacientesListStore.clearPacientesAndUpdate();
+                            },
+                      icon: const Icon(Icons.arrow_back),
+                      label: const Text('Anterior'),
+                    ),
+                    const SizedBox(width: 200),
+                    ElevatedButton.icon(
+                      onPressed: _blockPageBtns || _blockForwardBtn
+                          ? null
+                          : () async {
+                              //fetchData before set state (fixes not updating bug)
+                              fetchData = true;
+                              setState(() {
+                                _blockPageBtns = true;
+                                _startPage = _startPage + 10;
+                              });
+                              _pacientesListStore.clearPacientesAndUpdate();
+                            },
+                      icon: const Icon(Icons.arrow_forward),
+                      label: const Text('Próximo'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 100),
+              ],
             ),
           ),
         ),

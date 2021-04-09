@@ -33,15 +33,6 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
   bool _blockPageBtns = true;
   bool _blockForwardBtn = true;
 
-/*
-  @override
-  void deactivate() {
-    cadastroStore.clearCadastros();
-    cadastroStore.clearSelectedCad();
-    super.deactivate();
-  }
-*/
-
   void fetchDataHandler(bool value) {
     fetchData = value;
   }
@@ -73,6 +64,7 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
               _startPage = 0;
               cadastroStore.setCadDropdownValue(newValue);
               _searchField.text = '';
+              cadastroStore.setQuery('');
             });
             //fetchData before set state (fixes not updating bug)
             fetchData = true;

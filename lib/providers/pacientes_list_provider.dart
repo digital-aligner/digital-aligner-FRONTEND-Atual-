@@ -41,7 +41,7 @@ class PacientesListProvider with ChangeNotifier {
     return _pacientes;
   }
 
-  Future<List<dynamic>> fetchPacientes() async {
+  Future<List<dynamic>> fetchPacientes(int startPage) async {
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
       'Accept': 'application/json',
@@ -50,11 +50,15 @@ class PacientesListProvider with ChangeNotifier {
 
     try {
       final response = await http.get(
-        Uri.parse(RotasUrl.rotaMeusPacientes +
-            '?id=' +
-            _id.toString() +
-            '&queryString=' +
-            _queryString),
+        Uri.parse(
+          RotasUrl.rotaMeusPacientes +
+              '?id=' +
+              _id.toString() +
+              '&queryString=' +
+              _queryString +
+              '&startPage=' +
+              startPage.toString(),
+        ),
         headers: requestHeaders,
       );
       _pacientes = json.decode(response.body);
@@ -66,7 +70,7 @@ class PacientesListProvider with ChangeNotifier {
     }
   }
 
-  Future<List<dynamic>> fetchAllPacientes() async {
+  Future<List<dynamic>> fetchAllPacientes(int startPage) async {
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
       'Accept': 'application/json',
@@ -76,7 +80,11 @@ class PacientesListProvider with ChangeNotifier {
     try {
       final response = await http.get(
         Uri.parse(
-          RotasUrl.rotaGerenciarPacientes + '?queryString=' + _queryString,
+          RotasUrl.rotaGerenciarPacientes +
+              '?queryString=' +
+              _queryString +
+              '&startPage=' +
+              startPage.toString(),
         ),
         headers: requestHeaders,
       );
@@ -85,7 +93,7 @@ class PacientesListProvider with ChangeNotifier {
       return _pacientes;
     } catch (error) {
       print(error);
-      return error;
+      return [];
     }
   }
 }

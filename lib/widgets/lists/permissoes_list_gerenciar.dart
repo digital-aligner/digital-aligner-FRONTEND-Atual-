@@ -15,6 +15,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class PermissoesListGerenciar extends StatefulWidget {
+  final Function fetchDataHandler;
+
+  PermissoesListGerenciar({this.fetchDataHandler});
   @override
   _PermissoesListGerenciarState createState() =>
       _PermissoesListGerenciarState();
@@ -24,6 +27,8 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
   CadastroProvider cadastroStore;
   List<dynamic> cadList;
   AuthProvider authStore;
+
+  bool _absorbPointerBool = false;
 
   Future<dynamic> mudarPermissao(int _id, int _idPerm, String _token) async {
     String url = RotasUrl.rotaCadastro + _id.toString();
@@ -436,9 +441,9 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
                             content: Text('Permissão alterada!'),
                           ),
                         );
+                        Navigator.of(ctx).pop(true);
                       }
                     });
-                    Navigator.of(ctx).pop();
                   },
                 ),
                 TextButton(
@@ -467,9 +472,9 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
                             content: Text('Permissão alterada!'),
                           ),
                         );
+                        Navigator.of(ctx).pop(true);
                       }
                     });
-                    Navigator.of(ctx).pop();
                   },
                 ),
                 TextButton(
@@ -498,9 +503,9 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
                             content: Text('Permissão alterada!'),
                           ),
                         );
+                        Navigator.of(ctx).pop(true);
                       }
                     });
-                    Navigator.of(ctx).pop();
                   },
                 ),
                 TextButton(
@@ -579,65 +584,76 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
       );
     }
 
-    return Scrollbar(
-      thickness: 15,
-      isAlwaysShown: true,
-      showTrackOnHover: true,
-      child: ListView.builder(
-        addAutomaticKeepAlives: true,
-        itemCount: cadList.length,
-        itemBuilder: (ctx, index) {
-          if (cadList[index]['id'] == authStore.id) {
-            return Container(
-              height: 80,
-              child: Card(
-                shadowColor: Colors.grey,
-                margin: EdgeInsets.all(0),
-                color: Colors.lightBlue.withOpacity(0.3),
-                elevation: 0.5,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: ListTile(
-                        onTap: () {
-                          //_dialog(ctx, index);
-                        },
-                        title: Tooltip(
-                          message: 'Você não pode alterar suas permissões',
-                          child: _listItem(index),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
+    return ListView.builder(
+      addAutomaticKeepAlives: true,
+      itemCount: cadList.length,
+      itemBuilder: (ctx, index) {
+        if (cadList[index]['id'] == authStore.id) {
           return Container(
             height: 80,
             child: Card(
               shadowColor: Colors.grey,
               margin: EdgeInsets.all(0),
-              color: (index % 2 == 0) ? Colors.white : Color(0xffe3e3e3),
+              color: Colors.lightBlue.withOpacity(0.3),
               elevation: 0.5,
               child: Row(
                 children: <Widget>[
                   Expanded(
                     child: ListTile(
                       onTap: () {
-                        _dialog(ctx, index);
+                        //_dialog(ctx, index);
                       },
                       title: Tooltip(
-                          message: 'Alterar permissões de usuários',
-                          child: _listItem(index)),
+                        message: 'Você não pode alterar suas permissões',
+                        child: _listItem(index),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
           );
-        },
-      ),
+        }
+        return Container(
+          height: 80,
+          child: Card(
+            shadowColor: Colors.grey,
+            margin: EdgeInsets.all(0),
+            color: (index % 2 == 0) ? Colors.white : Color(0xffe3e3e3),
+            elevation: 0.5,
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: ListTile(
+                    onTap: () {
+                      setState(() {
+                        _absorbPointerBool = true;
+                      });
+                      _dialog(ctx, index).then((didUpdate) {
+                        if (didUpdate == null) {
+                          setState(() {
+                            _absorbPointerBool = false;
+                          });
+                        }
+                        if (didUpdate) {
+                          Future.delayed(Duration(milliseconds: 800), () {
+                            widget.fetchDataHandler(true);
+                            _absorbPointerBool = false;
+                            cadastroStore.clearCadastrosAndUpdate();
+                          });
+                        }
+                      });
+                    },
+                    title: Tooltip(
+                        message: 'Alterar permissões de usuários',
+                        child: _listItem(index)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

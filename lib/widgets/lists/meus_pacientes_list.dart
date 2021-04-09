@@ -51,84 +51,77 @@ class _MeusPacientesListState extends State<MeusPacientesList> {
         ),
       );
     }
-    return Scrollbar(
-      thickness: 15,
-      isAlwaysShown: true,
-      showTrackOnHover: true,
-      child: ListView.builder(
-        itemCount: pacList.length,
-        itemBuilder: (ctx, index) {
-          return Container(
-            margin: EdgeInsets.all(2),
-            height: 80,
-            child: Card(
-              shadowColor: Colors.grey,
-              margin: EdgeInsets.all(0),
-              color: (index % 2 == 0) ? Colors.white : Color(0xffe3e3e3),
-              elevation: 0.5,
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: ListTile(
-                      onTap: () {
-                        Navigator.of(context).pushNamed(
-                          PacienteScreen.routeName,
-                          arguments: {
-                            'id': pacList[index]['id'],
-                            'nome_paciente': pacList[index]['nome_paciente'],
-                            'codigo_paciente': pacList[index]
-                                ['codigo_paciente'],
-                            'data_nascimento': pacList[index]
-                                ['data_nascimento'],
-                            'users_permissions_user': pacList[index]
-                                ['users_permissions_user'],
-                          },
-                        );
-                      },
-                      title: Tooltip(
-                        message: 'Visualizar e editar seus pacientes',
-                        child: Container(
-                          child: Column(
-                            children: <Widget>[
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      _isoDateTimeToLocal(
-                                        pacList[index]['created_at'],
-                                      ),
-                                      textAlign: TextAlign.center,
-                                      overflow: TextOverflow.ellipsis,
+    return ListView.builder(
+      itemCount: pacList.length,
+      itemBuilder: (ctx, index) {
+        return Container(
+          margin: EdgeInsets.all(2),
+          height: 80,
+          child: Card(
+            shadowColor: Colors.grey,
+            margin: EdgeInsets.all(0),
+            color: (index % 2 == 0) ? Colors.white : Color(0xffe3e3e3),
+            elevation: 0.5,
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: ListTile(
+                    onTap: () {
+                      Navigator.of(context).pushNamed(
+                        PacienteScreen.routeName,
+                        arguments: {
+                          'id': pacList[index]['id'],
+                          'nome_paciente': pacList[index]['nome_paciente'],
+                          'codigo_paciente': pacList[index]['codigo_paciente'],
+                          'data_nascimento': pacList[index]['data_nascimento'],
+                          'users_permissions_user': pacList[index]
+                              ['users_permissions_user'],
+                        },
+                      );
+                    },
+                    title: Tooltip(
+                      message: 'Visualizar e editar seus pacientes',
+                      child: Container(
+                        child: Column(
+                          children: <Widget>[
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    _isoDateTimeToLocal(
+                                      pacList[index]['created_at'],
                                     ),
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  Expanded(
-                                    child: Text(
-                                      '${pacList[index]['historico_pacientes'][0]['status'] ?? '-'}',
-                                      textAlign: TextAlign.center,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    '${pacList[index]['historico_pacientes'][0]['status'] ?? '-'}',
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  Expanded(
-                                    child: Text(
-                                      '${pacList[index]['nome_paciente']}',
-                                      textAlign: TextAlign.center,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    '${pacList[index]['nome_paciente']}',
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ],
-                              ),
-                            ],
-                          ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

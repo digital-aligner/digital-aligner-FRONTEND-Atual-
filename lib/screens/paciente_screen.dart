@@ -253,11 +253,14 @@ class _PacienteScreenState extends State<PacienteScreen> {
                             }
                             return Container(
                               height: 300,
-                              child: ListView(
-                                children: ListTile.divideTiles(
-                                  context: context,
-                                  tiles: _listUi(snapshot.data),
-                                ).toList(),
+                              child: Scrollbar(
+                                isAlwaysShown: true,
+                                child: ListView(
+                                  children: ListTile.divideTiles(
+                                    context: context,
+                                    tiles: _listUi(snapshot.data),
+                                  ).toList(),
+                                ),
                               ),
                             );
                           } else {

@@ -46,15 +46,6 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
     super.dispose();
   }
 
-  /*
-  @override
-  void deactivate() {
-    _pedidosListStore.clearPedidosOnLeave();
-    //_pedidosListStore.clearSelectedPed();
-
-    super.deactivate();
-  }*/
-
   void fetchDataHandler(bool value) {
     fetchData = value;
   }
@@ -485,6 +476,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
               _startPage = 0;
               _pedidosListStore.setDropdownValue(newValue);
               _searchField.text = '';
+              _pedidosListStore.setQuery('');
             });
             //fetchData before set state (fixes not updating bug)
             fetchData = true;
