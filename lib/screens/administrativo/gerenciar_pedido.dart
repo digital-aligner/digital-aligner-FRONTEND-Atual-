@@ -23,7 +23,7 @@ class GerenciarPedidos extends StatefulWidget {
 }
 
 class _GerenciarPedidosState extends State<GerenciarPedidos> {
-  bool firstFetch = true;
+  bool fetchData = true;
 
   AuthProvider authStore;
   PedidosListProvider _pedidosListStore;
@@ -42,6 +42,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
   @override
   void dispose() {
     _searchField.dispose();
+    _pedidosListStore.clearPedidosOnLeave();
     super.dispose();
   }
 
@@ -53,6 +54,10 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
 
     super.deactivate();
   }*/
+
+  void fetchDataHandler(bool value) {
+    fetchData = value;
+  }
 
   Widget _getHeaders() {
     //Will be used to check and change ui based on search
@@ -475,13 +480,15 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
             color: Colors.deepPurpleAccent,
           ),
           onChanged: (String newValue) {
-            _pedidosListStore.clearPedidosOnLeave();
             setState(() {
               //page to 0 before fetch
               _startPage = 0;
               _pedidosListStore.setDropdownValue(newValue);
               _searchField.text = '';
             });
+            //fetchData before set state (fixes not updating bug)
+            fetchData = true;
+            _pedidosListStore.clearPedidosAndUpdate();
           },
           items: <String>[
             'Todos',
@@ -507,6 +514,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
             onChanged: (value) async {
               //page to 0 before fetch
               _startPage = 0;
+              fetchData = true;
               const duration = Duration(milliseconds: 500);
               if (searchOnStoppedTyping != null) {
                 setState(() => searchOnStoppedTyping.cancel());
@@ -531,28 +539,32 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
 
   @override
   void didChangeDependencies() {
+    super.didChangeDependencies();
+
     if (_startPage < 0) {
       _startPage = 0;
     }
 
-    super.didChangeDependencies();
     authStore = Provider.of<AuthProvider>(context);
 
     _pedidosListStore = Provider.of<PedidosListProvider>(context);
     _pedidosListStore.setToken(authStore.token);
 
-    _pedidosListStore.fetchPedidos(_startPage).then((List<dynamic> pedidos) {
-      if (pedidos.length <= 0) {
-        _blockForwardBtn = true;
-      } else if (pedidos[0].containsKey('error')) {
-        _blockForwardBtn = true;
-      } else {
-        _blockForwardBtn = false;
-      }
-      setState(() {
-        _blockPageBtns = false;
+    if (fetchData) {
+      _pedidosListStore.fetchPedidos(_startPage).then((List<dynamic> pedidos) {
+        if (pedidos.length <= 0) {
+          _blockForwardBtn = true;
+        } else if (pedidos[0].containsKey('error')) {
+          _blockForwardBtn = true;
+        } else {
+          _blockForwardBtn = false;
+        }
+        setState(() {
+          fetchData = false;
+          _blockPageBtns = false;
+        });
       });
-    });
+    }
   }
 
   @override
@@ -570,14 +582,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
       }
     });
 
-    //To fix list not fetching bug
-    if (firstFetch) {
-      _pedidosListStore.clearPedidosOnLeave();
-      firstFetch = false;
-    }
-
     final double sWidth = MediaQuery.of(context).size.width;
-    final double sHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       appBar: MyAppBar(),
@@ -637,7 +642,9 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                         )
                       else
                         Expanded(
-                          child: PedidoListGerenciar(),
+                          child: PedidoListGerenciar(
+                            fetchDataHandler: fetchDataHandler,
+                          ),
                         ),
                       const SizedBox(height: 100),
                       Row(
@@ -652,6 +659,8 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                                         _startPage = 0;
                                       });
                                     } else {
+                                      //fetchData before set state (fixes not updating bug)
+                                      fetchData = true;
                                       setState(() {
                                         _blockPageBtns = true;
                                         _startPage = _startPage - 10;
@@ -667,6 +676,8 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                             onPressed: _blockPageBtns || _blockForwardBtn
                                 ? null
                                 : () async {
+                                    //fetchData before set state (fixes not updating bug)
+                                    fetchData = true;
                                     setState(() {
                                       _blockPageBtns = true;
                                       _startPage = _startPage + 10;

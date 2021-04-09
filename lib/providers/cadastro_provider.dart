@@ -110,10 +110,7 @@ class CadastroProvider with ChangeNotifier {
     return _cadastros;
   }
 
-  Future<List<dynamic>> fetchCadastros() async {
-    if (_cadastros != null && !_cadastros[0].containsKey('error')) {
-      return _cadastros;
-    }
+  Future<List<dynamic>> fetchCadastros(int startPage) async {
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
       'Accept': 'application/json',
@@ -140,17 +137,23 @@ class CadastroProvider with ChangeNotifier {
 
     try {
       final response = await http.get(
-        Uri.parse(_routeType + '?queryString=' + _queryString),
+        Uri.parse(
+          _routeType +
+              '?queryString=' +
+              _queryString +
+              '&startPage=' +
+              startPage.toString(),
+        ),
         headers: requestHeaders,
       );
       _cadastros = json.decode(response.body);
       //Clearing query string
-      _queryString = '';
+      //_queryString = '';
       return _cadastros;
     } catch (error) {
-      print('Ops, error occurred! Status code: ' + error.toString());
+      print(error);
+      return [];
     }
-    return _cadastros;
   }
 
   Future<List<dynamic>> fetchCadastrosPerm() async {

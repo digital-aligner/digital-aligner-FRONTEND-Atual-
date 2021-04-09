@@ -21,9 +21,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'editar_pedido.dart';
 
-import 'view_modelo_screen_inf.dart';
-import 'view_modelo_screen_sup.dart';
-
 import 'package:transparent_image/transparent_image.dart';
 
 class PedidoViewScreen extends StatefulWidget {
@@ -297,16 +294,14 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                     _pedidosListStore
                         .deletarPedido(pedList[index]['id'])
                         .then((_) {
-                      Navigator.of(ctx).pop();
-                      return true;
+                      Navigator.of(ctx).pop(true);
                     });
                   },
                   child: const Text('Sim'),
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(ctx).pop();
-                    return false;
+                    Navigator.of(ctx).pop(false);
                   },
                   child: const Text('Não'),
                 ),
@@ -453,11 +448,10 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
               arguments: {
                 'pedido': pedList[index],
               },
-            ).then((_) {
-              Navigator.pop(context);
-              Future.delayed(Duration(milliseconds: 800), () {
-                _pedidosListStore.clearPedidosAndUpdate();
-              });
+            ).then((didUpdate) {
+              if (didUpdate) {
+                Navigator.pop(context, true);
+              }
             });
           },
         ),
@@ -513,11 +507,7 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                 onPressed: () async {
                   var didDelete = await _deletePedidoDialog(ctx, index);
                   if (didDelete) {
-                    Navigator.pop(context);
-                    Future.delayed(
-                      Duration(milliseconds: 800),
-                      () => _pedidosListStore.clearPedidosAndUpdate(),
-                    );
+                    Navigator.pop(context, true);
                   }
                 },
               ),
@@ -670,13 +660,9 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                                 ['id'],
                             'pedidoDados': pedList[index],
                           },
-                        ).then((value) {
-                          if (value) {
-                            Navigator.pop(context);
-                            Future.delayed(
-                              Duration(milliseconds: 200),
-                              () => _pedidosListStore.clearPedidosAndUpdate(),
-                            );
+                        ).then((needsUpdate) {
+                          if (needsUpdate) {
+                            Navigator.pop(context, true);
                           }
                         });
                       },

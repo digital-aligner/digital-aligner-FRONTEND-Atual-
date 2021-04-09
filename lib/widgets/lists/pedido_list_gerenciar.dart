@@ -15,6 +15,10 @@ import 'package:flutter/material.dart';
 //import 'dart:html' as html;
 
 class PedidoListGerenciar extends StatefulWidget {
+  final Function fetchDataHandler;
+
+  PedidoListGerenciar({this.fetchDataHandler});
+
   @override
   _PedidoListGerenciarState createState() => _PedidoListGerenciarState();
 }
@@ -49,10 +53,19 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                 'pacienteId': pedList[index]['paciente']['id']
               },
             ).then((didUpdate) {
-              Future.delayed(Duration(milliseconds: 800), () {
-                _pedidosListStore.clearPedidosAndUpdate();
-                _absorbPointerBool = false;
-              });
+              if (didUpdate == null) {
+                setState(() {
+                  _absorbPointerBool = false;
+                });
+              }
+
+              if (didUpdate) {
+                Future.delayed(Duration(milliseconds: 800), () {
+                  widget.fetchDataHandler(true);
+                  _absorbPointerBool = false;
+                  _pedidosListStore.clearPedidosAndUpdate();
+                });
+              }
             });
           },
         ),
@@ -77,11 +90,19 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
               arguments: {
                 'pedido': pedList[index],
               },
-            ).then((_) {
-              Future.delayed(Duration(milliseconds: 800), () {
-                _pedidosListStore.clearPedidosAndUpdate();
-                _absorbPointerBool = false;
-              });
+            ).then((didUpdate) {
+              if (didUpdate == null) {
+                setState(() {
+                  _absorbPointerBool = false;
+                });
+              }
+              if (didUpdate) {
+                Future.delayed(Duration(milliseconds: 800), () {
+                  widget.fetchDataHandler(true);
+                  _absorbPointerBool = false;
+                  _pedidosListStore.clearPedidosAndUpdate();
+                });
+              }
             });
           },
         ),
@@ -440,10 +461,26 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                   Expanded(
                     child: ListTile(
                       onTap: () {
+                        setState(() {
+                          _absorbPointerBool = true;
+                        });
                         Navigator.of(context).pushNamed(
                           PedidoViewScreen.routeName,
                           arguments: {'index': index},
-                        );
+                        ).then((didUpdate) {
+                          if (didUpdate == null) {
+                            setState(() {
+                              _absorbPointerBool = false;
+                            });
+                          }
+                          if (didUpdate) {
+                            Future.delayed(Duration(milliseconds: 800), () {
+                              widget.fetchDataHandler(true);
+                              _absorbPointerBool = false;
+                              _pedidosListStore.clearPedidosAndUpdate();
+                            });
+                          }
+                        });
                       },
                       title: Tooltip(
                         message: 'Visualizar, editar e deletar pedidos',

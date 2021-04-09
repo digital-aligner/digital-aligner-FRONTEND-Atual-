@@ -21,10 +21,18 @@ class GerenciarCadastros extends StatefulWidget {
 }
 
 class _GerenciarCadastrosState extends State<GerenciarCadastros> {
+  bool fetchData = true;
+
   CadastroProvider cadastroStore;
   AuthProvider authStore;
 
   Timer searchOnStoppedTyping;
+
+  //For page managmente (0-10-20 equals page 0,1,2)
+  int _startPage = 0;
+  bool _blockPageBtns = true;
+  bool _blockForwardBtn = true;
+
 /*
   @override
   void deactivate() {
@@ -33,10 +41,16 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
     super.deactivate();
   }
 */
+
+  void fetchDataHandler(bool value) {
+    fetchData = value;
+  }
+
   final TextEditingController _searchField = TextEditingController();
   @override
   void dispose() {
     _searchField.dispose();
+    cadastroStore.clearCadastros();
     super.dispose();
   }
 
@@ -54,11 +68,15 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
             color: Colors.deepPurpleAccent,
           ),
           onChanged: (String newValue) {
-            cadastroStore.clearCadastros();
             setState(() {
+              //page to 0 before fetch
+              _startPage = 0;
               cadastroStore.setCadDropdownValue(newValue);
               _searchField.text = '';
             });
+            //fetchData before set state (fixes not updating bug)
+            fetchData = true;
+            cadastroStore.clearCadastrosAndUpdate();
           },
           items: <String>[
             'Todos',
@@ -80,6 +98,9 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
           ),
           controller: _searchField,
           onChanged: (value) async {
+            //page to 0 before fetch
+            _startPage = 0;
+            fetchData = true;
             const duration = Duration(milliseconds: 500);
             if (searchOnStoppedTyping != null) {
               setState(() => searchOnStoppedTyping.cancel());
@@ -150,20 +171,37 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
     cadastroStore.clearCadastrosAndUpdate();
   }
 
-  bool firstFetch = true;
-
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_startPage < 0) {
+      _startPage = 0;
+    }
+
     cadastroStore = Provider.of<CadastroProvider>(context);
     authStore = Provider.of<AuthProvider>(context);
     cadastroStore.setToken(authStore.token);
 
-    //To fix list not fetching bug
-    if (firstFetch) {
-      cadastroStore.clearCadastros();
-      firstFetch = false;
+    if (fetchData) {
+      cadastroStore.fetchCadastros(_startPage).then((List<dynamic> cadastros) {
+        if (cadastros.length <= 0) {
+          _blockForwardBtn = true;
+        } else if (cadastros[0].containsKey('error')) {
+          _blockForwardBtn = true;
+        } else {
+          _blockForwardBtn = false;
+        }
+        setState(() {
+          fetchData = false;
+          _blockPageBtns = false;
+        });
+      });
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     if (!authStore.isAuth) {
       return LoginScreen();
     }
@@ -178,97 +216,118 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
     });
 
     final double sWidth = MediaQuery.of(context).size.width;
-    final double sHeight = MediaQuery.of(context).size.height;
+    //final double sHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       appBar: MyAppBar(),
       // *BUG* Verify closing drawer automaticlly when under 1200
       drawer: sWidth < 1200 ? MyDrawer() : null,
-      body: Container(
-        width: sWidth,
-        height: sHeight,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-              colors: [Colors.white, Colors.grey[100]],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter),
-        ),
-        child: authStore.role != 'Credenciado'
-            ? Align(
-                alignment: Alignment.topCenter,
-                child: SingleChildScrollView(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 20,
-                      horizontal: 50,
-                    ),
-                    width: sWidth,
-                    height: sHeight,
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 20),
-                        Text(
-                          'Gerenciar Cadastros',
-                          style: Theme.of(context).textTheme.headline1,
+      body: Scrollbar(
+        thickness: 15,
+        isAlwaysShown: true,
+        showTrackOnHover: true,
+        child: SingleChildScrollView(
+          child: Container(
+            height: 1300,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 50,
+            ),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  colors: [Colors.white, Colors.grey[100]],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter),
+            ),
+            child: authStore.role != 'Credenciado'
+                ? Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      Text(
+                        'Gerenciar Cadastros',
+                        style: Theme.of(context).textTheme.headline1,
+                      ),
+                      const SizedBox(height: 40),
+                      _searchBox(),
+                      const SizedBox(
+                        height: 50,
+                        child: const Divider(
+                          thickness: 0.5,
                         ),
-                        const SizedBox(height: 40),
-                        _searchBox(),
-                        const SizedBox(
-                          height: 50,
-                          child: const Divider(
-                            thickness: 0.5,
+                      ),
+                      //TOP TEXT
+                      _getHeaders(),
+                      const SizedBox(height: 20),
+                      if (cadastroStore.getCadastros() == null)
+                        Center(
+                          child: CircularProgressIndicator(
+                            valueColor: new AlwaysStoppedAnimation<Color>(
+                              Colors.blue,
+                            ),
+                          ),
+                        )
+                      else if (cadastroStore
+                          .getCadastros()[0]
+                          .containsKey('error'))
+                        Container(
+                          child: Text(
+                            cadastroStore.getCadastros()[0]['message'] ?? '',
+                          ),
+                        )
+                      else
+                        Expanded(
+                          child: CadastroListGerenciar(
+                            fetchDataHandler: fetchDataHandler,
                           ),
                         ),
-                        //TOP TEXT
-                        _getHeaders(),
-                        const SizedBox(height: 20),
-                        cadastroStore.getCadastros() == null
-                            ? FutureBuilder(
-                                future: cadastroStore.fetchCadastros(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.done) {
-                                    if (snapshot.data == null) {
-                                      return Container(
-                                        child: Text(
-                                            'Erro ao se connectar. Verifique sua conexão ou tente novamente mais tarde.'),
-                                      );
-                                    } else if (snapshot.data[0]
-                                        .containsKey('error')) {
-                                      return Container(
-                                        child: Text(
-                                          snapshot.data[0]['message'] ?? '',
-                                        ),
-                                      );
+                      const SizedBox(height: 100),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: _startPage <= 0 || _blockPageBtns
+                                ? null
+                                : () async {
+                                    if (_startPage <= 0) {
+                                      setState(() {
+                                        _startPage = 0;
+                                      });
                                     } else {
-                                      return Container(
-                                        width: sWidth - 20,
-                                        height: 300,
-                                        child: CadastroListGerenciar(),
-                                      );
+                                      //fetchData before set state (fixes not updating bug)
+                                      fetchData = true;
+                                      setState(() {
+                                        _blockPageBtns = true;
+                                        _startPage = _startPage - 10;
+                                      });
                                     }
-                                  } else {
-                                    return Center(
-                                      child: CircularProgressIndicator(
-                                        valueColor:
-                                            new AlwaysStoppedAnimation<Color>(
-                                                Colors.blue),
-                                      ),
-                                    );
-                                  }
-                                },
-                              )
-                            : Container(
-                                width: sWidth - 20,
-                                height: 300,
-                                child: CadastroListGerenciar(),
-                              ),
-                      ],
-                    ),
-                  ),
-                ),
-              )
-            : Container(),
+                                    cadastroStore.clearCadastrosAndUpdate();
+                                  },
+                            icon: const Icon(Icons.arrow_back),
+                            label: const Text('Anterior'),
+                          ),
+                          const SizedBox(width: 200),
+                          ElevatedButton.icon(
+                            onPressed: _blockPageBtns || _blockForwardBtn
+                                ? null
+                                : () async {
+                                    //fetchData before set state (fixes not updating bug)
+                                    fetchData = true;
+                                    setState(() {
+                                      _blockPageBtns = true;
+                                      _startPage = _startPage + 10;
+                                    });
+                                    cadastroStore.clearCadastrosAndUpdate();
+                                  },
+                            icon: const Icon(Icons.arrow_forward),
+                            label: const Text('Próximo'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 100),
+                    ],
+                  )
+                : Container(),
+          ),
+        ),
       ),
     );
   }

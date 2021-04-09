@@ -35,8 +35,6 @@ class _GerarRelatorioScreenState extends State<GerarRelatorioScreen> {
   final _visualizador3d = TextEditingController();
   final _visualizador3d2 = TextEditingController();
 
-  String _token;
-
   bool _fetchData = true;
 
   void dispose() {
@@ -277,8 +275,7 @@ class _GerarRelatorioScreenState extends State<GerarRelatorioScreen> {
                                     ),
                                   );
                                   if (!data.containsKey('error')) {
-                                    Navigator.pop(context);
-                                    return true;
+                                    Navigator.pop(context, true);
                                   }
                                 });
                               }

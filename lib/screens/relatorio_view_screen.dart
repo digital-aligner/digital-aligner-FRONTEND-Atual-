@@ -13,7 +13,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../rotas_url.dart';
 import 'editar_relatorio_screen.dart';
 import 'login_screen.dart';
-import 'view_relatorio_screen.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -239,7 +238,7 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
                         );
                         if (result.containsKey('statusCode')) {
                           if (result['statusCode'] == 200) {
-                            Navigator.pop(context);
+                            Navigator.pop(context, true);
                           }
                         }
                       }
@@ -280,7 +279,7 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
                 onPressed: () {
                   _solicitarAlteracaoDialog(context).then((needsPop) {
                     if (needsPop) {
-                      Navigator.pop(context);
+                      Navigator.pop(context, true);
                     }
                   });
                 },
@@ -576,7 +575,7 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
                     },
                   ).then((didUpdateNeedsPop) {
                     if (didUpdateNeedsPop) {
-                      Navigator.pop(context);
+                      Navigator.pop(context, true);
                     }
                   });
                 },

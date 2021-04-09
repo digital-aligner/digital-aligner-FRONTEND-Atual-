@@ -10,6 +10,10 @@ import '../../screens/editar_cadastro.dart';
 import 'package:flutter/material.dart';
 
 class CadastroListGerenciar extends StatefulWidget {
+  final Function fetchDataHandler;
+
+  CadastroListGerenciar({this.fetchDataHandler});
+
   @override
   _CadastroListGerenciarState createState() => _CadastroListGerenciarState();
 }
@@ -20,6 +24,8 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
   AuthProvider authStore;
   bool _dialogOpen = false;
   bool _sendingCadastro = false;
+
+  bool _absorbPointerBool = false;
 
   String _isoDateTimeToLocal(String isoDateString) {
     DateTime _dateTime = DateTime.parse(isoDateString).toLocal();
@@ -445,6 +451,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                                       ),
                               ),
                             );
+                            Navigator.pop(context, true);
                           } else {
                             ScaffoldMessenger.of(context)
                                 .removeCurrentSnackBar();
@@ -487,6 +494,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                                       ),
                               ),
                             );
+                            Navigator.pop(context, true);
                           } else {
                             ScaffoldMessenger.of(context)
                                 .removeCurrentSnackBar();
@@ -529,6 +537,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                                       ),
                               ),
                             );
+                            Navigator.pop(context, true);
                           } else {
                             ScaffoldMessenger.of(context)
                                 .removeCurrentSnackBar();
@@ -570,6 +579,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                                   content: Text('Cadastro aprovado!'),
                                 ),
                               );
+                              Navigator.pop(context, true);
                             } else {
                               ScaffoldMessenger.of(context)
                                   .removeCurrentSnackBar();
@@ -603,23 +613,20 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                               .pushNamed(
                             EditarCadastro.routeName,
                           )
-                              .then((value) {
-                            if (value) {
-                              Navigator.pop(context);
-                              Future.delayed(Duration(milliseconds: 600)).then(
-                                  (value) =>
-                                      cadastroStore.clearCadastrosAndUpdate());
+                              .then((didUpdate) {
+                            if (didUpdate) {
+                              _dialogOpen = false;
+                              Future.delayed(Duration(milliseconds: 800), () {
+                                widget.fetchDataHandler(true);
+                                _absorbPointerBool = false;
+                                cadastroStore.clearCadastrosAndUpdate();
+                              });
                             }
                           });
                         }
                       : null,
                 ),
-                TextButton(
-                  child: Text("Excluir"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
+                TextButton(child: Text("Excluir"), onPressed: null),
                 TextButton(
                   child: Text("Fechar"),
                   onPressed: () {
@@ -663,41 +670,39 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
         ),
       );
     }
-    return Scrollbar(
-      thickness: 15,
-      isAlwaysShown: true,
-      showTrackOnHover: true,
-      child: ListView.builder(
-        addAutomaticKeepAlives: true,
-        itemCount: cadList.length,
-        itemBuilder: (ctx, index) {
-          if (cadList[index]['id'] == authStore.id) {
-            return Container(
-              height: 80,
-              child: Card(
-                shadowColor: Colors.grey,
-                margin: EdgeInsets.all(0),
-                color: Colors.lightBlue.withOpacity(0.3),
-                elevation: 0.5,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: ListTile(
-                        onTap: () {
-                          //_dialog(ctx, index).then((_) => _dialogOpen = false);
-                        },
-                        title: Tooltip(
-                          message: 'Altere seu cadastro pelo perfil',
-                          child: _listItem(index),
-                        ),
+    return ListView.builder(
+      //addAutomaticKeepAlives: true,
+      itemCount: cadList.length,
+      itemBuilder: (ctx, index) {
+        if (cadList[index]['id'] == authStore.id) {
+          return Container(
+            height: 80,
+            child: Card(
+              shadowColor: Colors.grey,
+              margin: EdgeInsets.all(0),
+              color: Colors.lightBlue.withOpacity(0.3),
+              elevation: 0.5,
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: ListTile(
+                      onTap: () {
+                        //_dialog(ctx, index).then((_) => _dialogOpen = false);
+                      },
+                      title: Tooltip(
+                        message: 'Altere seu cadastro pelo perfil',
+                        child: _listItem(index),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            );
-          }
-          return Container(
+            ),
+          );
+        }
+        return AbsorbPointer(
+          absorbing: _absorbPointerBool,
+          child: Container(
             height: 80,
             child: Card(
               margin: EdgeInsets.all(0),
@@ -708,7 +713,21 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                   Expanded(
                     child: ListTile(
                       onTap: () {
-                        _dialog(ctx, index).then((_) => _dialogOpen = false);
+                        _dialog(ctx, index).then((didUpdate) {
+                          if (didUpdate == null) {
+                            setState(() {
+                              _absorbPointerBool = false;
+                            });
+                          }
+                          if (didUpdate) {
+                            _dialogOpen = false;
+                            Future.delayed(Duration(milliseconds: 800), () {
+                              widget.fetchDataHandler(true);
+                              _absorbPointerBool = false;
+                              cadastroStore.clearCadastrosAndUpdate();
+                            });
+                          }
+                        });
                       },
                       title: Tooltip(
                         message: 'Visualizar e editar cadastro',
@@ -719,9 +738,9 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                 ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

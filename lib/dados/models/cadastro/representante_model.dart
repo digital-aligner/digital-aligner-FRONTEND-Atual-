@@ -17,6 +17,24 @@ class RepresentanteModel {
   });
 
   factory RepresentanteModel.fromJson(Map<String, dynamic> data) {
+    if (data.isEmpty) {
+      data = {
+        'id': -1,
+        'username': '',
+        'email': '',
+        'blocked': false,
+        'role': {'id': -1, 'name': ''},
+        'nome': '',
+        'sobrenome': '',
+        'cro_uf': '',
+        'cro_num': '',
+        'data_nasc': '',
+        'telefone': '',
+        'celular': '',
+        'aprovacao_usuario': {'id': -1, 'status': ''},
+      };
+    }
+
     return RepresentanteModel(
       id: data['id'],
       usernameCpf: data['username'],

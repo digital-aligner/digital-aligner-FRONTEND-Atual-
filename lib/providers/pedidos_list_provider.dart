@@ -102,7 +102,7 @@ class PedidosListProvider with ChangeNotifier {
         headers: requestHeaders,
       );
       _pedidos = json.decode(response.body);
-      print(_pedidos);
+
       //Clearing query string
       //_queryString = '';
       return _pedidos;

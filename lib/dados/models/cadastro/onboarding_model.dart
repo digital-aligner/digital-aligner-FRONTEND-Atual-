@@ -5,6 +5,12 @@ class OnboardingModel {
   OnboardingModel({this.id, this.onboarding});
 
   factory OnboardingModel.fromJson(Map<String, dynamic> data) {
+    if (data.isEmpty) {
+      data = {
+        'id': -1,
+        'onboarding': '',
+      };
+    }
     return OnboardingModel(
       id: data['id'],
       onboarding: data['onboarding'],
