@@ -154,7 +154,7 @@ class _MeusSetupsListState extends State<MeusSetupsList> {
                 ),
                 Expanded(
                   child: Text(
-                    '${pedList[index]['status_pedido'] != null ? pedList[index]['status_pedido']['status'] : '-'}',
+                    '${pedList[index]['status_pedido'] != null && pedList[index]['status_pedido'].length > 0 ? pedList[index]['status_pedido']['status'] : '-'}',
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),

@@ -140,12 +140,36 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
             Row(
               children: [
                 Expanded(
-                  child: Text(
-                    _isoDateTimeToLocal(
-                      pedList[index]['created_at'],
-                    ),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Text(
+                        _isoDateTimeToLocal(
+                          pedList[index]['created_at'],
+                        ),
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (pedList[index]['visualizado'] == false)
+                        Positioned(
+                          top: -20,
+                          right: -30,
+                          child: const SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: ClipOval(
+                              child: Material(
+                                color: Colors.blue,
+                                child: const Center(
+                                    child: const Text(
+                                  'NOVO!',
+                                  style: const TextStyle(color: Colors.white),
+                                )),
+                              ),
+                            ),
+                          ),
+                        )
+                    ],
                   ),
                 ),
                 Expanded(
@@ -164,7 +188,7 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                 ),
                 Expanded(
                   child: Text(
-                    '${pedList[index]['status_pedido'] != null ? pedList[index]['status_pedido']['status'] : '-'}',
+                    '${pedList[index]['status_pedido'] != null && pedList[index]['status_pedido'].length > 0 ? pedList[index]['status_pedido']['status'] : '-'}',
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -213,7 +237,7 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                 ),
                 Expanded(
                   child: Text(
-                    '${pedList[index]['status_pedido'] != null ? pedList[index]['status_pedido']['status'] : '-'}',
+                    '${pedList[index]['status_pedido'] != null && pedList[index]['status_pedido'].length > 0 ? pedList[index]['status_pedido']['status'] : '-'}',
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -271,7 +295,7 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                 ),
                 Expanded(
                   child: Text(
-                    '${pedList[index]['status_pedido'] != null ? pedList[index]['status_pedido']['status'] : '-'}',
+                    '${pedList[index]['status_pedido'] != null && pedList[index]['status_pedido'].length > 0 ? pedList[index]['status_pedido']['status'] : '-'}',
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -380,7 +404,7 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                 //status
                 Expanded(
                   child: Text(
-                    '${pedList[index]['status_pedido'] != null ? pedList[index]['status_pedido']['status'] : '-'}',
+                    '${pedList[index]['status_pedido'] != null && pedList[index]['status_pedido'].length > 0 ? pedList[index]['status_pedido']['status'] : '-'}',
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
