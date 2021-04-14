@@ -112,7 +112,7 @@ class PedidosListProvider with ChangeNotifier {
     }
   }
 
-  Future<List<dynamic>> fetchMeusPedidos(int id) async {
+  Future<List<dynamic>> fetchMeusPedidos(int id, int startPage) async {
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
       'Accept': 'application/json',
@@ -121,11 +121,15 @@ class PedidosListProvider with ChangeNotifier {
 
     try {
       final response = await http.get(
-        Uri.parse(RotasUrl.rotaMeusPedidos +
-            '?pacienteId=' +
-            id.toString() +
-            '&queryString=' +
-            _queryString),
+        Uri.parse(
+          RotasUrl.rotaMeusPedidos +
+              '?pacienteId=' +
+              id.toString() +
+              '&queryString=' +
+              _queryString +
+              '&startPage=' +
+              startPage.toString(),
+        ),
         headers: requestHeaders,
       );
       _pedidos = json.decode(response.body);
@@ -133,7 +137,7 @@ class PedidosListProvider with ChangeNotifier {
       return _pedidos;
     } catch (error) {
       print(error);
-      return error;
+      return [];
     }
   }
 

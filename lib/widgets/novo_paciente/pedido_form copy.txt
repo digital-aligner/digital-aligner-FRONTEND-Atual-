@@ -410,25 +410,18 @@ class _PedidoFormState extends State<PedidoForm> {
         thickness: 15,
         isAlwaysShown: true,
         showTrackOnHover: true,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              _pedidoFormUi1(
-                _authStore,
-                _novoPedStore,
-                _pedidosListStore,
-                _sWidth,
-                _sHeight,
-              ),
-              _pedidoFormUi2(
-                _authStore,
-                _novoPedStore,
-                _pedidosListStore,
-                _sWidth,
-                _sHeight,
-              ),
-            ],
-          ),
+        child: ListView.builder(
+          itemCount: 2,
+          itemExtent: null,
+          itemBuilder: (context, index2) {
+            return _formList[index2](
+              _authStore,
+              _novoPedStore,
+              _pedidosListStore,
+              _sWidth,
+              _sHeight,
+            );
+          },
         ),
       ),
     );

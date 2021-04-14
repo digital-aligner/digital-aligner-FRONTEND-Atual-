@@ -16,6 +16,9 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
 class MeusPedidosList extends StatefulWidget {
+  final Function fetchDataHandler;
+
+  MeusPedidosList({this.fetchDataHandler});
   @override
   _MeusPedidosListState createState() => _MeusPedidosListState();
 }
@@ -28,8 +31,7 @@ class _MeusPedidosListState extends State<MeusPedidosList> {
   bool _absorbPointerBool = false;
 
   Widget _relatorioStatusBtn(int index, double _sWidth, double _sHeight) {
-    if (pedList[index]['status_pedido']['id'] == 2 ||
-        pedList[index]['relatorios'].length == 0) {
+    if (pedList[index]['relatorios'].length == 0) {
       return Container(
         height: 80,
         child: TextButton(
@@ -116,7 +118,7 @@ class _MeusPedidosListState extends State<MeusPedidosList> {
               if (_authStore.role != 'Credenciado')
                 Expanded(
                   child: Text(
-                    '${pedList[index]['status_pedido']['status'] ?? '-'}',
+                    '${pedList[index]['status_pedido'] != null ? pedList[index]['status_pedido']['status'] : '-'}',
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -195,7 +197,15 @@ class _MeusPedidosListState extends State<MeusPedidosList> {
                           Navigator.of(context).pushNamed(
                             PedidoViewScreen.routeName,
                             arguments: {'index': index},
-                          );
+                          ).then((didUpdate) {
+                            if (didUpdate) {
+                              Future.delayed(Duration(milliseconds: 800), () {
+                                widget.fetchDataHandler(true);
+
+                                _pedidosListStore.clearPedidosAndUpdate();
+                              });
+                            }
+                          });
                         },
                         title: Tooltip(
                           message: 'Visualizar e editar seus pedidos',

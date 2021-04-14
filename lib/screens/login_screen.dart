@@ -99,6 +99,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: 10,
                     ),
                     TextFormField(
+                      onFieldSubmitted: (value) {
+                        _submit(_loginStore, context);
+                      },
                       obscureText: true,
                       initialValue: _loginStore.senha,
                       onChanged: (value) {
@@ -469,7 +472,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: const Text(
-                  'V1.07',
+                  'V1.10',
                   style: TextStyle(
                     color: Colors.black45,
                   ),

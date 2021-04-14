@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:html' as html;
 
 import '../rotas_url.dart';
 
@@ -58,16 +59,18 @@ class _CriarNovaSenhaState extends State<CriarNovaSenha> {
                   Map result = await _sendPassword();
                   if (result.containsKey('statusCode')) {
                     if (result['statusCode'] == 200) {
-                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: const Duration(seconds: 3),
+                          content: Text(result['message']),
+                        ),
+                      );
+                      await Future.delayed(Duration(seconds: 3));
+                      html.window.location.reload();
                     }
                   }
-                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(seconds: 5),
-                      content: Text(result['message']),
-                    ),
-                  );
+
                   setState(() {
                     _sendingRequest = false;
                   });

@@ -164,7 +164,7 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                 ),
                 Expanded(
                   child: Text(
-                    '${pedList[index]['status_pedido']['status'] ?? '-'}',
+                    '${pedList[index]['status_pedido'] != null ? pedList[index]['status_pedido']['status'] : '-'}',
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -213,7 +213,7 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                 ),
                 Expanded(
                   child: Text(
-                    '${pedList[index]['status_pedido']['status']}',
+                    '${pedList[index]['status_pedido'] != null ? pedList[index]['status_pedido']['status'] : '-'}',
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -271,7 +271,7 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                 ),
                 Expanded(
                   child: Text(
-                    '${pedList[index]['status_pedido']['status'] ?? '-'}',
+                    '${pedList[index]['status_pedido'] != null ? pedList[index]['status_pedido']['status'] : '-'}',
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -380,7 +380,7 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                 //status
                 Expanded(
                   child: Text(
-                    '${pedList[index]['status_pedido']['status'] ?? '-'}',
+                    '${pedList[index]['status_pedido'] != null ? pedList[index]['status_pedido']['status'] : '-'}',
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),

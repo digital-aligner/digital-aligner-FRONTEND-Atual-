@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:digital_aligner_app/dados/country.dart';
 import 'package:digital_aligner_app/dados/state.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
@@ -42,11 +43,19 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
   final _controllerCEP = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+  // --- For Country/state variables and fields ------
+  final _country = COUNTRY.country;
+  //Depends on country
+  List<String> _state;
+
+  String _selectedCountry;
+  //String _selectedState;
+
   // -------------- End manage fields and buttons --------------------
 
   //To controle when to fetch data
   bool _fetchData = true;
-  bool _refresh = false;
+
   //List enderecos from db string (for ui list only)
   List<String> _enderecoUiList = [];
   //The actual list from the db (map)
@@ -58,19 +67,7 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
   //Selected value for dropbox (for inicial value and state change)
   String _dropboxValue;
 
-  //-------------- Country/state manage fields --------------------
-  List<dynamic> _stateCountryData;
-
-  //For ui
-  List<String> _countries;
-  List<String> _states;
-
-  void _restartInicialValues() {
-    //Values to initial values
-    _fetchData = true;
-    _dropboxValue = '';
-    _stateCountryData = null;
-  }
+  //int _idEnderecoUsuario;
 
   void _clearInputFields() {
     setState(() {
@@ -91,7 +88,6 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
     if (_enderecosData.isNotEmpty && !_enderecosData[0].containsKey('error')) {
       //Server always returns first entry as endereco principal
       _enderecoUiList.add('Endereço principal');
-      _dropboxValue = _enderecoUiList[0];
       // **FOR EDITAR PEDIDO
       //THE ID PASSED AS PROPS FROM PARENT
       _selectedEndId = widget.idEndereco;
@@ -142,6 +138,14 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
     });
   }
 
+  void _mapCountryToStateValues() {
+    if (_selectedCountry == 'Brasil') {
+      _state = STATE.st_br;
+    } else if (_selectedCountry == 'Portugal') {
+      _state = STATE.st_pt;
+    }
+  }
+
   Future<dynamic> _getEndereco() async {
     try {
       if (_fetchData) {
@@ -176,37 +180,25 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
   }
 
   @override
-  void didChangeDependencies() async {
-    super.didChangeDependencies();
-
-    if (_fetchData) {
-      _getAllData();
+  void initState() {
+    super.initState();
+    //Some verification of the current country of the user
+    if (true) {
+      _selectedCountry = 'Brasil';
+      _mapCountryToStateValues();
     }
-  }
+    _controllerNUM.text = '';
+    _controllerCEP.text = '';
 
-  Future<void> _getAllData() async {
-    _novoPedStore = Provider.of<PedidoProvider>(context, listen: false);
-    _authStore = Provider.of<AuthProvider>(context, listen: false);
-    await _getEndereco();
-    _mapEndDataToUiList();
-    _mapEndDataToUiFields();
-
-    //GET THE COUNTRY AND STATE VALUES FROM DB
-    _stateCountryData = await _authStore.getCountryAndStateData();
-    //Map countries to ui
-    _countries = _authStore.mapCountriesDataToUiList(_stateCountryData);
-    //Map initial states (will be null to fetch pt-br)
-    _states = _authStore.mapCountryToStatesToUiList(
-      local: _stateCountryData,
-      selectedCountry: _pais.text,
-    );
-
-    _fetchData = false;
-    setState(() {});
+    _pais.text = 'Escolher País';
+    _uf.text = 'Escolher UF';
+    _dropboxValue = 'Endereço Principal';
   }
 
   Widget build(BuildContext context) {
     super.build(context);
+    _authStore = Provider.of<AuthProvider>(context, listen: false);
+    _novoPedStore = Provider.of<PedidoProvider>(context, listen: false);
 
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -215,65 +207,55 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            //Endereço selection]
-            if (!_fetchData && _stateCountryData != null)
-              DropdownSearch<String>(
-                  enabled: !widget.blockUi,
-                  dropdownSearchDecoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                  ),
-                  mode: Mode.MENU,
-                  maxHeight: 350,
-                  showSearchBox: true,
-                  showSelectedItem: true,
-                  items: _enderecoUiList,
-                  //label: 'UF: *',
-                  //hint: 'UF: *',
-                  popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
-                  onChanged: (value) {
-                    //_dropboxValue = value;
-                    //_mapUiListToData(value);
-                    //_mapEndDataToUiFields();
-
-                    _refresh = true;
-                    _dropboxValue = value;
-
-                    _mapUiListToData(value);
-
-                    setState(() {
-                      _states = _authStore.mapCountryToStatesToUiList(
-                        local: _stateCountryData,
-                        selectedCountry: _pais.text,
-                      );
-                    });
-                    Future.delayed(Duration(milliseconds: 100)).then(
-                      (_) => setState(() => _refresh = false),
-                    );
-                  },
-                  selectedItem: _dropboxValue),
-            //Progress bar
-            if (_fetchData && _stateCountryData == null)
-              Column(
-                children: [
-                  ElevatedButton.icon(
-                    label: const Text('Atualizar'),
-                    icon: const Icon(Icons.refresh),
-                    onPressed: () {
-                      _restartInicialValues();
-                      _clearInputFields();
-                      _getAllData();
-                    },
-                  ),
-                  Center(
-                    child: CircularProgressIndicator(
-                      valueColor:
-                          new AlwaysStoppedAnimation<Color>(Colors.blue),
+            FutureBuilder(
+              future: _getEndereco(),
+              builder: (ctx, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return DropdownSearch<String>(
+                      enabled: !widget.blockUi,
+                      dropdownSearchDecoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                      ),
+                      mode: Mode.MENU,
+                      maxHeight: 350,
+                      showSearchBox: true,
+                      showSelectedItem: true,
+                      items: _enderecoUiList,
+                      //label: 'UF: *',
+                      //hint: 'UF: *',
+                      popupItemDisabled:
+                          (String s) => /*s.startsWith('I')*/ null,
+                      onChanged: (value) {
+                        _dropboxValue = value;
+                        _mapUiListToData(value);
+                        _mapEndDataToUiFields();
+                      },
+                      selectedItem: _dropboxValue);
+                } else {
+                  return Center(
+                    child: Column(
+                      children: [
+                        ElevatedButton.icon(
+                          label: const Text('Atualizar'),
+                          icon: const Icon(Icons.refresh),
+                          onPressed: () {
+                            _getEndereco();
+                          },
+                        ),
+                        CircularProgressIndicator(
+                          valueColor:
+                              new AlwaysStoppedAnimation<Color>(Colors.blue),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-            const SizedBox(height: 25),
+                  );
+                }
+              },
+            ),
+            SizedBox(
+              height: 25,
+            ),
             Container(
               margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
               height: 80,
@@ -392,56 +374,40 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
                 ),
               ),
             ),
-            if (!_fetchData && _stateCountryData != null && !_refresh)
-              Container(
-                height: 80,
-                child: DropdownSearch<String>(
-                  enabled: false,
-                  dropdownBuilder: (context, selectedItem, itemAsString) {
-                    return Text(_pais.text);
-                  },
-                  onSaved: (String value) {
-                    _pais.text = value;
-                  },
-                  validator: (String value) {
-                    return value.isEmpty ? 'Campo vazio' : null;
-                  },
-                  dropdownSearchDecoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                  ),
-                  mode: Mode.MENU,
-                  showSearchBox: true,
-                  showSelectedItem: true,
-                  items: _countries,
-                  //label: 'País: *',
-                  hint: 'País: *',
-                  popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
-                  onChanged: (value) {
-                    setState(() {
-                      _pais.text = value;
-                      _states = _authStore.mapCountryToStatesToUiList(
-                        local: _stateCountryData,
-                        selectedCountry: _pais.text,
-                      );
-                    });
-                  },
-                  selectedItem: _pais.text,
+            Container(
+              height: 80,
+              child: DropdownSearch<String>(
+                enabled: false,
+                dropdownBuilder: (context, selectedItem, itemAsString) {
+                  return Text(_pais.text);
+                },
+                onSaved: (String value) {
+                  _pais.text = value;
+                },
+                validator: (String value) {
+                  return value.isEmpty ? 'Campo vazio' : null;
+                },
+                dropdownSearchDecoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
                 ),
+                mode: Mode.MENU,
+                showSearchBox: true,
+                showSelectedItem: true,
+                items: _country,
+                //label: 'País: *',
+                hint: 'País: *',
+                popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
+                onChanged: (value) {
+                  setState(() {
+                    _pais.text = value;
+                    _selectedCountry = value;
+                    _mapCountryToStateValues();
+                  });
+                },
+                selectedItem: _pais.text,
               ),
-            //Progress bar
-            if (_fetchData && _stateCountryData == null)
-              Column(
-                children: [
-                  const SizedBox(height: 50),
-                  CircularProgressIndicator(
-                    valueColor: new AlwaysStoppedAnimation<Color>(
-                      Colors.blue,
-                    ),
-                  ),
-                ],
-              ),
-
+            ),
             Row(
               children: [
                 Expanded(
@@ -466,52 +432,40 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
                   ),
                 ),
                 const SizedBox(width: 20),
-                if (!_fetchData && _stateCountryData != null && !_refresh)
-                  Expanded(
-                    child: Container(
-                      height: 80,
-                      child: DropdownSearch<String>(
-                          enabled: false,
-                          dropdownBuilder:
-                              (context, selectedItem, itemAsString) {
-                            return Text(_uf.text);
-                          },
-                          onSaved: (String value) {
-                            _uf.text = value;
-                          },
-                          validator: (String value) {
-                            return value.isEmpty ? 'Campo vazio' : null;
-                          },
-                          dropdownSearchDecoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                          ),
-                          mode: Mode.MENU,
-                          showSearchBox: true,
-                          showSelectedItem: true,
-                          items: _states,
-                          label: 'UF: *',
-                          //hint: 'country in menu mode',
-                          popupItemDisabled:
-                              (String s) => /*s.startsWith('I')*/ null,
-                          onChanged: (value) {
-                            _uf.text = value;
-                          },
-                          selectedItem: _uf.text),
-                    ),
-                  ),
-                //Progress bar
-                if (_fetchData && _stateCountryData == null)
-                  Column(
-                    children: [
-                      const SizedBox(height: 50),
-                      CircularProgressIndicator(
-                        valueColor: new AlwaysStoppedAnimation<Color>(
-                          Colors.blue,
+                Expanded(
+                  child: Container(
+                    height: 80,
+                    child: DropdownSearch<String>(
+                        enabled: false,
+                        dropdownBuilder: (context, selectedItem, itemAsString) {
+                          return Text(_uf.text);
+                        },
+                        onSaved: (String value) {
+                          _uf.text = value;
+                        },
+                        validator: (String value) {
+                          return value.isEmpty ? 'Campo vazio' : null;
+                        },
+                        dropdownSearchDecoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
                         ),
-                      ),
-                    ],
+                        mode: Mode.MENU,
+                        showSearchBox: true,
+                        showSelectedItem: true,
+                        items: _state,
+                        label: 'UF: *',
+                        //hint: 'country in menu mode',
+                        popupItemDisabled:
+                            (String s) => /*s.startsWith('I')*/ null,
+                        onChanged: (value) {
+                          setState(() {
+                            _uf.text = value;
+                          });
+                        },
+                        selectedItem: _uf.text),
                   ),
+                ),
               ],
             ),
           ],

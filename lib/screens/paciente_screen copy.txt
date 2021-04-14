@@ -72,9 +72,6 @@ class _PacienteScreenState extends State<PacienteScreen> {
   }
 
   Future<List<dynamic>> _fetchHistory(args) async {
-    if (!fetchData) {
-      return _historico;
-    }
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
       'Accept': 'application/json',
@@ -86,14 +83,13 @@ class _PacienteScreenState extends State<PacienteScreen> {
         Uri.parse(RotasUrl.rotaMeuHistorico + '?id=' + args['id'].toString()),
         headers: requestHeaders,
       );
-
-      _historico = json.decode(response.body);
+      setState(() {
+        _historico = json.decode(response.body);
+      });
 
       if (_historico[0].containsKey('error')) {
         throw _historico[0]['error'];
       }
-
-      fetchData = false;
 
       return _historico;
     } catch (error) {
@@ -199,17 +195,10 @@ class _PacienteScreenState extends State<PacienteScreen> {
                       child: const Text('Novo Pedido'),
                       onPressed: _pacienteIsMine
                           ? () {
-                              Navigator.of(context)
-                                  .pushNamed(
+                              Navigator.of(context).pushNamed(
                                 NovoPedido.routeName,
                                 arguments: args,
-                              )
-                                  .then((value) {
-                                setState(() {
-                                  _historico = null;
-                                  fetchData = true;
-                                });
-                              });
+                              );
                             }
                           : null,
                     ),
@@ -222,17 +211,10 @@ class _PacienteScreenState extends State<PacienteScreen> {
                     title: TextButton(
                       child: const Text('Visualizar Pedidos'),
                       onPressed: () {
-                        Navigator.of(context)
-                            .pushNamed(
+                        Navigator.of(context).pushNamed(
                           MeusPedidos.routeName,
                           arguments: args,
-                        )
-                            .then((value) {
-                          setState(() {
-                            _historico = null;
-                            fetchData = true;
-                          });
-                        });
+                        );
                       },
                     ),
                   ),
@@ -244,17 +226,10 @@ class _PacienteScreenState extends State<PacienteScreen> {
                     title: TextButton(
                       child: const Text('Visualizar Refinamentos'),
                       onPressed: () {
-                        Navigator.of(context)
-                            .pushNamed(
+                        Navigator.of(context).pushNamed(
                           MeusRefinamentos.routeName,
                           arguments: args,
-                        )
-                            .then((value) {
-                          setState(() {
-                            _historico = null;
-                            fetchData = true;
-                          });
-                        });
+                        );
                       },
                     ),
                   ),
@@ -283,38 +258,31 @@ class _PacienteScreenState extends State<PacienteScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      FutureBuilder(
-                        future: _fetchHistory(args),
-                        builder: (ctx, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            if (snapshot.data.length == 0) {
-                              return Container(
-                                child: const Text('Nenhum Histórico.'),
-                              );
-                            } else {
-                              return Container(
-                                height: 300,
-                                child: Scrollbar(
-                                  isAlwaysShown: true,
-                                  child: ListView(
-                                    children: ListTile.divideTiles(
-                                      context: context,
-                                      tiles: _listUi(snapshot.data),
-                                    ).toList(),
-                                  ),
-                                ),
-                              );
-                            }
-                          } else {
-                            return CircularProgressIndicator(
-                              valueColor: new AlwaysStoppedAnimation<Color>(
-                                Colors.blue,
-                              ),
-                            );
-                          }
-                        },
-                      ),
+                      if (_historico == null)
+                        Center(
+                          child: CircularProgressIndicator(
+                            valueColor: new AlwaysStoppedAnimation<Color>(
+                              Colors.blue,
+                            ),
+                          ),
+                        )
+                      else if (_historico.length == 0)
+                        Container(
+                          child: const Text('Nenhum Histórico.'),
+                        )
+                      else
+                        Container(
+                          height: 300,
+                          child: Scrollbar(
+                            isAlwaysShown: true,
+                            child: ListView(
+                              children: ListTile.divideTiles(
+                                context: context,
+                                tiles: _listUi(_historico),
+                              ).toList(),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -469,11 +437,22 @@ class _PacienteScreenState extends State<PacienteScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _pacienteListStore = Provider.of<PacientesListProvider>(context);
     _authStore = Provider.of<AuthProvider>(context);
     args = ModalRoute.of(context).settings.arguments;
+    if (fetchData) {
+      _fetchHistory(args).then(
+        (_) => setState(() {
+          fetchData = false;
+        }),
+      );
+    }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     if (!_authStore.isAuth) {
       return LoginScreen();
     }

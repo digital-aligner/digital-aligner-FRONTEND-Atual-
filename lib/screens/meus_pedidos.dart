@@ -20,6 +20,7 @@ class MeusPedidos extends StatefulWidget {
 }
 
 class _MeusPedidosState extends State<MeusPedidos> {
+  bool fetchData = true;
   AuthProvider authStore;
   PedidosListProvider _pedidosListStore;
 
@@ -29,12 +30,28 @@ class _MeusPedidosState extends State<MeusPedidos> {
 
   Timer searchOnStoppedTyping;
 
+  //For page managmente (0-10-20 equals page 0,1,2)
+  int _startPage = 0;
+  bool _blockPageBtns = true;
+  bool _blockForwardBtn = true;
+
+  /*
   @override
   void deactivate() {
     _pedidosListStore.clearPedidosOnLeave();
     //_pedidosListStore.clearSelectedPed();
 
     super.deactivate();
+  }*/
+
+  void fetchDataHandler(bool value) {
+    fetchData = value;
+  }
+
+  @override
+  void dispose() {
+    _pedidosListStore.clearPedidosOnLeave();
+    super.dispose();
   }
 
   Widget _getHeaders() {
@@ -155,6 +172,9 @@ class _MeusPedidosState extends State<MeusPedidos> {
           ),
           maxLength: 255,
           onChanged: (value) async {
+            //page to 0 before fetch
+            _startPage = 0;
+            fetchData = true;
             const duration = Duration(milliseconds: 500);
             if (searchOnStoppedTyping != null) {
               setState(() => searchOnStoppedTyping.cancel());
@@ -176,122 +196,154 @@ class _MeusPedidosState extends State<MeusPedidos> {
     _pedidosListStore.clearPedidosAndUpdate();
   }
 
-  bool firstFetch = true;
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_startPage < 0) {
+      _startPage = 0;
+    }
+
     authStore = Provider.of<AuthProvider>(context);
-    final Map args = ModalRoute.of(context).settings.arguments;
+
     _pedidosListStore = Provider.of<PedidosListProvider>(context);
     _pedidosListStore.setToken(authStore.token);
+    final Map args = ModalRoute.of(context).settings.arguments;
 
+    if (fetchData) {
+      _pedidosListStore
+          .fetchMeusPedidos(args['id'], _startPage)
+          .then((List<dynamic> pedidos) {
+        if (pedidos.length <= 0) {
+          _blockForwardBtn = true;
+        } else if (pedidos[0].containsKey('error')) {
+          _blockForwardBtn = true;
+        } else {
+          _blockForwardBtn = false;
+        }
+        setState(() {
+          fetchData = false;
+          _blockPageBtns = false;
+        });
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     if (!authStore.isAuth) {
       return LoginScreen();
     }
-
-    //To fix list not fetching bug
-    if (firstFetch) {
-      _pedidosListStore.clearPedidosOnLeave();
-      firstFetch = false;
-    }
-
-    //Direct acess to url, pop page to remove duplicate.
-    //WidgetsBinding.instance.addPostFrameCallback((_) {
-    //  if (Navigator.canPop(context)) {
-    //    Navigator.pop(context);
-    //  }
-    //});
-    final double sWidth = MediaQuery.of(context).size.width;
-    final double sHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       appBar: SecondaryAppbar(),
       // *BUG* Verify closing drawer automaticlly when under 1200
       //drawer: sWidth < 1200 ? MyDrawer() : null,
-      body: Container(
-          padding: const EdgeInsets.symmetric(
-            vertical: 20,
-            horizontal: 50,
-          ),
-          width: sWidth,
-          height: sHeight,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-                colors: [Colors.white, Colors.grey[100]],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter),
-          ),
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: SingleChildScrollView(
-              child: Container(
-                //width: sWidth - 20,
-                //height: sHeight,
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
-                    Text(
-                      'Meus Pedidos',
-                      style: Theme.of(context).textTheme.headline1,
-                    ),
-                    const SizedBox(height: 40),
-                    _searchBox(),
-                    const SizedBox(
-                      height: 50,
-                      child: const Divider(
-                        thickness: 0.5,
+      body: Scrollbar(
+        thickness: 15,
+        isAlwaysShown: true,
+        showTrackOnHover: true,
+        child: SingleChildScrollView(
+          child: Container(
+            height: 1300,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 50,
+            ),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  colors: [Colors.white, Colors.grey[100]],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter),
+            ),
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                Text(
+                  'Meus Pedidos',
+                  style: Theme.of(context).textTheme.headline1,
+                ),
+                const SizedBox(height: 40),
+                _searchBox(),
+                const SizedBox(
+                  height: 50,
+                  child: const Divider(
+                    thickness: 0.5,
+                  ),
+                ),
+                //TOP TEXT
+                _getHeaders(),
+                const SizedBox(height: 20),
+                if (_pedidosListStore.getPedidosList() == null)
+                  Center(
+                    child: CircularProgressIndicator(
+                      valueColor: new AlwaysStoppedAnimation<Color>(
+                        Colors.blue,
                       ),
                     ),
-                    //TOP TEXT
-                    _getHeaders(),
-                    const SizedBox(height: 20),
-                    _pedidosListStore.getPedidosList() == null
-                        ? FutureBuilder(
-                            future:
-                                _pedidosListStore.fetchMeusPedidos(args['id']),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.done) {
-                                if (snapshot.data == null) {
-                                  return Container(
-                                    child: const Text(
-                                        'Erro ao se connectar. Verifique sua conexão ou tente novamente mais tarde.'),
-                                  );
-                                } else if (snapshot.data[0]
-                                    .containsKey('error')) {
-                                  return Container(
-                                    child: Text(
-                                      snapshot.data[0]['message'],
-                                    ),
-                                  );
-                                } else {
-                                  return Container(
-                                    width: sWidth - 20,
-                                    height: 300,
-                                    child: MeusPedidosList(),
-                                  );
-                                }
+                  )
+                else if (_pedidosListStore
+                    .getPedidosList()[0]
+                    .containsKey('error'))
+                  Container(
+                    child: Text(
+                      _pedidosListStore.getPedidosList()[0]['message'],
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: MeusPedidosList(
+                      fetchDataHandler: fetchDataHandler,
+                    ),
+                  ),
+                const SizedBox(height: 100),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: _startPage <= 0 || _blockPageBtns
+                          ? null
+                          : () async {
+                              if (_startPage <= 0) {
+                                setState(() {
+                                  _startPage = 0;
+                                });
                               } else {
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    valueColor:
-                                        new AlwaysStoppedAnimation<Color>(
-                                      Colors.blue,
-                                    ),
-                                  ),
-                                );
+                                //fetchData before set state (fixes not updating bug)
+                                fetchData = true;
+                                setState(() {
+                                  _blockPageBtns = true;
+                                  _startPage = _startPage - 10;
+                                });
                               }
+                              _pedidosListStore.clearPedidosAndUpdate();
                             },
-                          )
-                        : Container(
-                            width: sWidth - 20,
-                            height: 300,
-                            child: MeusPedidosList(),
-                          ),
+                      icon: const Icon(Icons.arrow_back),
+                      label: const Text('Anterior'),
+                    ),
+                    const SizedBox(width: 200),
+                    ElevatedButton.icon(
+                      onPressed: _blockPageBtns || _blockForwardBtn
+                          ? null
+                          : () async {
+                              //fetchData before set state (fixes not updating bug)
+                              fetchData = true;
+                              setState(() {
+                                _blockPageBtns = true;
+                                _startPage = _startPage + 10;
+                              });
+                              _pedidosListStore.clearPedidosAndUpdate();
+                            },
+                      icon: const Icon(Icons.arrow_forward),
+                      label: const Text('Próximo'),
+                    ),
                   ],
                 ),
-              ),
+                const SizedBox(height: 100),
+              ],
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 }

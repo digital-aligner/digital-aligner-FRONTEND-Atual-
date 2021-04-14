@@ -28,8 +28,7 @@ class _MeusRefinamentosListState extends State<MeusRefinamentosList> {
   bool _absorbPointerBool = false;
 
   Widget _relatorioStatusBtn(int index, double _sWidth, double _sHeight) {
-    if (pedList[index]['status_pedido']['id'] == 2 ||
-        pedList[index]['relatorios'].length == 0) {
+    if (pedList[index]['relatorios'].length == 0) {
       return Container(
         height: 80,
         child: TextButton(
@@ -113,7 +112,7 @@ class _MeusRefinamentosListState extends State<MeusRefinamentosList> {
               if (authStore.role != 'Credenciado')
                 Expanded(
                   child: Text(
-                    '${pedList[index]['status_pedido']['status'] ?? '-'}',
+                    '${pedList[index]['status_pedido'] != null ? pedList[index]['status_pedido']['status'] : '-'}',
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),

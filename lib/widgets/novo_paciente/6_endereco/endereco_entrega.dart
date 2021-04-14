@@ -455,6 +455,15 @@ class _EnderecoEntregaState extends State<EnderecoEntrega> {
                 if (_fetchData && _stateCountryData == null)
                   Column(
                     children: [
+                      ElevatedButton.icon(
+                        label: const Text('Atualizar'),
+                        icon: const Icon(Icons.refresh),
+                        onPressed: () {
+                          _restartInicialValues();
+                          _clearInputFields();
+                          _getAllData();
+                        },
+                      ),
                       const SizedBox(height: 50),
                       CircularProgressIndicator(
                         valueColor: new AlwaysStoppedAnimation<Color>(

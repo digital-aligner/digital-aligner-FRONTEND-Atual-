@@ -4507,8 +4507,10 @@ class PedidoProvider with ChangeNotifier {
     _didFetchStatusPedido = false;
 
     // Selected status is always "id 1: aguardando relatório" for new Pedidos.
-    _currentStatus = ped['status_pedido']['status'];
-    _statusId = ped['status_pedido']['id'];
+    _currentStatus =
+        ped['status_pedido'] != null ? ped['status_pedido']['status'] : null;
+    _statusId =
+        ped['status_pedido'] != null ? ped['status_pedido']['id'] : null;
   }
 
   //CLEAR FULL FORM (STILL CODING)

@@ -17,14 +17,11 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/link.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'editar_pedido.dart';
 
-import 'dart:html' as html;
-
-//import 'package:transparent_image/transparent_image.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class PedidoViewScreen extends StatefulWidget {
   static const routeName = '/pedido-view';
@@ -77,37 +74,20 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                Tooltip(
-                  message: 'Visualizar',
-                  child: GestureDetector(
-                    onTap: () {
-                      _viewImage(ctx, images['foto' + i.toString()]);
-                    },
-                    child: Image.network(
-                      images['foto' + i.toString()],
-                      height: 300,
-                      width: 300,
-                      fit: BoxFit.contain,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        return loadingProgress == null
-                            ? child
-                            : CircularProgressIndicator(
-                                valueColor: new AlwaysStoppedAnimation<Color>(
-                                    Colors.blue),
-                              );
-                      },
-                    ),
+                InkWell(
+                  onTap: () {
+                    _viewImage(ctx, images['foto' + i.toString()]);
+                  },
+                  child: FadeInImage.memoryNetwork(
+                    imageScale: 0.5,
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.contain,
+                    image: images['foto' + i.toString()],
+                    placeholder: kTransparentImage,
                   ),
                 ),
-                Link(
-                    uri: Uri.parse(images['foto' + i.toString()]),
-                    builder: (context, followLink) {
-                      return TextButton(
-                        onPressed: followLink,
-                        child: const Text('Baixar'),
-                      );
-                    }),
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -276,14 +256,13 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                 height: 500,
               ),
             ),
-            Link(
-                uri: Uri.parse(modelUrl),
-                builder: (context, followLink) {
-                  return TextButton(
-                    onPressed: followLink,
-                    child: const Text('Baixar'),
-                  );
-                }),
+            ElevatedButton.icon(
+              onPressed: () async {
+                await launch(modelUrl);
+              },
+              icon: const Icon(Icons.download_done_rounded),
+              label: const Text('Baixar'),
+            ),
           ],
         ),
       );
@@ -555,43 +534,30 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
     );
     //Download all photoss
     await pedList[index]['fotografias'].forEach((key, foto) async {
-      try {
-        if (foto.contains('http')) {
-          html.window.location.href = foto;
-        }
-      } catch (e) {}
+      if (foto.contains('http')) {
+        launch(foto);
+      }
     });
 
     //Download all radiografias
     await pedList[index]['radiografias'].forEach((key, foto) async {
-      try {
-        if (foto.contains('http')) {
-          html.window.location.href = foto;
-        }
-      } catch (e) {}
+      if (foto.contains('http')) {
+        launch(foto);
+      }
     });
 
     //Download modelo superior
-    try {
-      if (pedList[index]['modelo_superior']['modelo_superior']
-          .contains('http')) {
-        await Future.delayed(Duration(seconds: 1), () async {
-          html.window.location.href =
-              pedList[index]['modelo_superior']['modelo_superior'];
-        });
-      }
-    } catch (e) {}
-
+    if (pedList[index]['modelo_superior']['modelo_superior'].contains('http')) {
+      await Future.delayed(Duration(seconds: 1), () async {
+        await launch(pedList[index]['modelo_superior']['modelo_superior']);
+      });
+    }
     //Download modelo inferior
-    try {
-      if (pedList[index]['modelo_inferior']['modelo_inferior']
-          .contains('http')) {
-        await Future.delayed(Duration(seconds: 1), () async {
-          html.window.location.href =
-              pedList[index]['modelo_inferior']['modelo_inferior'];
-        });
-      }
-    } catch (e) {}
+    if (pedList[index]['modelo_inferior']['modelo_inferior'].contains('http')) {
+      await Future.delayed(Duration(seconds: 1), () async {
+        await launch(pedList[index]['modelo_inferior']['modelo_inferior']);
+      });
+    }
   }
 
   @override
