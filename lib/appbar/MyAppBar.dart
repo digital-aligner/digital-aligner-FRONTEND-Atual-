@@ -38,10 +38,12 @@ class _MyAppBarState extends State<MyAppBar> {
       await checkDataStore.checkNovosPedidoCount();
       if (novosPedidosCount > 0 &&
           novosPedidosCount < checkDataStore.novosPedidosCount) {
+        novosPedidosCount = checkDataStore.novosPedidosCount;
+
         ScaffoldMessenger.of(context).removeCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            duration: const Duration(seconds: 8),
+            duration: const Duration(seconds: 10),
             content: const Text(
               'Novo(s) pedido(s) recebido! Atualize a página ou acesse Gerenciar Pedidos.',
               textAlign: TextAlign.center,
