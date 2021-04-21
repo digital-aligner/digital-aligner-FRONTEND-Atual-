@@ -1,3 +1,4 @@
+import 'package:digital_aligner_app/providers/check_new_data_provider.dart';
 import 'package:digital_aligner_app/screens/gerar_relatorio_screen.dart';
 
 import 'package:digital_aligner_app/screens/pedido_view_screen.dart';
@@ -25,9 +26,10 @@ class PedidoListGerenciar extends StatefulWidget {
 
 class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
   PedidosListProvider _pedidosListStore;
-
+  CheckNewDataProvider checkDataStore;
   List<dynamic> pedList;
-
+  List<bool> pedListViewed;
+  CheckNewDataProvider _cndp;
   bool _absorbPointerBool = false;
 
   Widget _relatorioStatusBtn(int index, double _sWidth, double _sHeight) {
@@ -150,7 +152,7 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      if (pedList[index]['visualizado'] == false)
+                      if (pedListViewed[index] == false)
                         Positioned(
                           top: -20,
                           right: -30,
@@ -445,8 +447,16 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
   @override
   Widget build(BuildContext context) {
     _pedidosListStore = Provider.of<PedidosListProvider>(context);
-
+    checkDataStore = Provider.of<CheckNewDataProvider>(context, listen: false);
+    _cndp = Provider.of<CheckNewDataProvider>(
+      context,
+      listen: false,
+    );
     pedList = _pedidosListStore.getPedidosList();
+    pedListViewed = [];
+    pedList.forEach((pedido) {
+      pedListViewed.add(pedido['visualizado']);
+    });
     final double sWidth = MediaQuery.of(context).size.width;
     final double sHeight = MediaQuery.of(context).size.height;
 
@@ -485,6 +495,12 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                   Expanded(
                     child: ListTile(
                       onTap: () {
+                        if (pedListViewed[index] == false) {
+                          _cndp.pedidoVisualizado(pedList[index]['id'], true);
+                          setState(() {
+                            pedList[index]['visualizado'] = true;
+                          });
+                        }
                         setState(() {
                           _absorbPointerBool = true;
                         });

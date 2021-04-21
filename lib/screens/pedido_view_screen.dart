@@ -88,14 +88,6 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                       height: 300,
                       width: 300,
                       fit: BoxFit.contain,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        return loadingProgress == null
-                            ? child
-                            : CircularProgressIndicator(
-                                valueColor: new AlwaysStoppedAnimation<Color>(
-                                    Colors.blue),
-                              );
-                      },
                     ),
                   ),
                 ),
@@ -345,20 +337,6 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                 imgUrl,
                 width: MediaQuery.of(context).size.width,
                 fit: BoxFit.contain,
-                loadingBuilder: (context, child, loadingProgress) {
-                  return loadingProgress == null
-                      ? child
-                      : Center(
-                          child: Container(
-                            width: 300,
-                            height: 300,
-                            child: CircularProgressIndicator(
-                              valueColor: new AlwaysStoppedAnimation<Color>(
-                                  Colors.blue),
-                            ),
-                          ),
-                        );
-                },
               ),
             ),
           ),

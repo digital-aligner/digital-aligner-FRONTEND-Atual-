@@ -1,4 +1,5 @@
 import 'package:digital_aligner_app/page_transition_web.dart';
+import 'package:digital_aligner_app/providers/check_new_data_provider.dart';
 import 'package:digital_aligner_app/providers/pacientes_list_provider.dart';
 import 'package:digital_aligner_app/providers/relatorio_provider.dart';
 import 'package:digital_aligner_app/providers/s3_delete_provider.dart';
@@ -87,6 +88,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (ctx) => S3RelatorioDeleteProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => CheckNewDataProvider(),
         ),
       ],
       child: Consumer<AuthProvider>(

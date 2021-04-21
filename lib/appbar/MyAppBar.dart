@@ -1,7 +1,4 @@
-import 'package:digital_aligner_app/providers/cadastro_provider.dart';
-import 'package:digital_aligner_app/providers/pedido_provider.dart';
-import 'package:digital_aligner_app/providers/pedidos_list_provider.dart';
-import 'package:digital_aligner_app/providers/relatorio_provider.dart';
+import 'package:digital_aligner_app/providers/check_new_data_provider.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pacientes.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pedido.dart';
 import 'package:digital_aligner_app/screens/administrativo/meus_setups.dart';
@@ -29,10 +26,53 @@ class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _MyAppBarState extends State<MyAppBar> {
+  CheckNewDataProvider checkDataStore;
+  AuthProvider authStore;
+  int novosPedidosCount = -1;
+  bool timerBlock = false;
+
+  Future<void> checkForNewPedidosTimer() async {
+    timerBlock = true;
+    while (true) {
+      await Future.delayed(Duration(seconds: 20));
+      await checkDataStore.checkNovosPedidoCount();
+      if (novosPedidosCount > 0 &&
+          novosPedidosCount < checkDataStore.novosPedidosCount) {
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: const Duration(seconds: 8),
+            content: const Text(
+              'Novo(s) pedido(s) recebido! Atualize a página ou acesse Gerenciar Pedidos.',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  void didChangeDependencies() async {
+    authStore = Provider.of<AuthProvider>(context);
+    checkDataStore = Provider.of<CheckNewDataProvider>(context);
+    novosPedidosCount = checkDataStore.novosPedidosCount;
+    if (checkDataStore.getFetchDataBool()) {
+      checkDataStore.setfetchDataBool(false);
+      checkDataStore.setToken(authStore.token);
+      await checkDataStore.fetchNovoPedidoCount();
+      novosPedidosCount = checkDataStore.novosPedidosCount;
+    }
+    if (timerBlock == false) {
+      checkForNewPedidosTimer();
+    }
+
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     final sWidth = MediaQuery.of(context).size.width;
-    final authStore = Provider.of<AuthProvider>(context);
 
     return AppBar(
       centerTitle: sWidth > 1200 ? false : true,
@@ -150,6 +190,7 @@ class _MyAppBarState extends State<MyAppBar> {
               tooltip: 'Mostrar mais!',
               onSelected: (selectedValue) {
                 if (selectedValue == 'Gerenciar Cadastros') {
+                  checkDataStore.setfetchDataBool(true);
                   Route route = ModalRoute.of(context);
                   final routeName = route.settings.name;
                   if (routeName != null &&
@@ -158,6 +199,7 @@ class _MyAppBarState extends State<MyAppBar> {
                         .pushReplacementNamed(GerenciarCadastros.routeName);
                   }
                 } else if (selectedValue == 'Gerenciar Permissões') {
+                  checkDataStore.setfetchDataBool(true);
                   Route route = ModalRoute.of(context);
                   final routeName = route.settings.name;
                   if (routeName != null &&
@@ -166,6 +208,7 @@ class _MyAppBarState extends State<MyAppBar> {
                         .pushReplacementNamed(GerenciarPermissoes.routeName);
                   }
                 } else if (selectedValue == 'Gerenciar Pedidos') {
+                  checkDataStore.setfetchDataBool(true);
                   Route route = ModalRoute.of(context);
                   final routeName = route.settings.name;
 
@@ -174,15 +217,18 @@ class _MyAppBarState extends State<MyAppBar> {
                         .pushReplacementNamed(GerenciarPedidos.routeName);
                   }
                 } else if (selectedValue == 'Gerenciar Pacientes') {
+                  checkDataStore.setfetchDataBool(true);
                   Route route = ModalRoute.of(context);
                   final routeName = route.settings.name;
 
                   if (routeName != null &&
                       routeName != '/gerenciar-pacientes') {
+                    checkDataStore.setfetchDataBool(true);
                     Navigator.of(context)
                         .pushReplacementNamed(GerenciarPacientes.routeName);
                   }
                 } else if (selectedValue == 'Meus Setups') {
+                  checkDataStore.setfetchDataBool(true);
                   Route route = ModalRoute.of(context);
                   final routeName = route.settings.name;
 
@@ -191,10 +237,12 @@ class _MyAppBarState extends State<MyAppBar> {
                         .pushReplacementNamed(MeusSetups.routeName);
                   }
                 } else if (selectedValue == 'Minhas Revisões') {
+                  checkDataStore.setfetchDataBool(true);
                   Route route = ModalRoute.of(context);
                   final routeName = route.settings.name;
 
                   if (routeName != null && routeName != '/minhas-revisoes') {
+                    checkDataStore.setfetchDataBool(true);
                     Navigator.of(context)
                         .pushReplacementNamed(MinhasRevisoes.routeName);
                   }
@@ -202,12 +250,48 @@ class _MyAppBarState extends State<MyAppBar> {
               },
               itemBuilder: (_) => [
                 PopupMenuItem(
-                  child: const Text(
-                    'Gerenciar Pedidos',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontFamily: 'BigNoodleTitling',
-                    ),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      const Text(
+                        'Gerenciar Pedidos',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'BigNoodleTitling',
+                        ),
+                      ),
+                      if (novosPedidosCount > 0)
+                        Positioned(
+                          top: -15,
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: ClipOval(
+                              child: Material(
+                                color: Colors.blue,
+                                child: Center(
+                                    child: Text(
+                                  novosPedidosCount.toString(),
+                                  style: const TextStyle(color: Colors.white),
+                                )),
+                              ),
+                            ),
+                          ),
+                        )
+                      else if (novosPedidosCount == -1)
+                        Positioned(
+                          top: -15,
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              valueColor: new AlwaysStoppedAnimation<Color>(
+                                Colors.blue,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                   value: 'Gerenciar Pedidos',
                 ),
