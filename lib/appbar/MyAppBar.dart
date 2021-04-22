@@ -5,6 +5,7 @@ import 'package:digital_aligner_app/screens/administrativo/meus_setups.dart';
 import 'package:digital_aligner_app/screens/administrativo/minhas_revisoes.dart';
 import 'package:digital_aligner_app/screens/novo_paciente.dart';
 import 'package:digital_aligner_app/screens/perfil.dart';
+import 'package:just_audio/just_audio.dart';
 
 import '../screens/administrativo/gerenciar_permissoes.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,9 @@ class _MyAppBarState extends State<MyAppBar> {
   AuthProvider authStore;
   int novosPedidosCount = -1;
   bool timerBlock = false;
+  //NEW AUDIO FEATURE
+  AudioPlayer player;
+  var duration;
 
   Future<void> checkForNewPedidosTimer() async {
     timerBlock = true;
@@ -39,7 +43,7 @@ class _MyAppBarState extends State<MyAppBar> {
       if (novosPedidosCount > 0 &&
           novosPedidosCount < checkDataStore.novosPedidosCount) {
         novosPedidosCount = checkDataStore.novosPedidosCount;
-
+        player.play();
         ScaffoldMessenger.of(context).removeCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -52,6 +56,17 @@ class _MyAppBarState extends State<MyAppBar> {
         );
       }
     }
+  }
+
+  Future<void> initializeAudioPlayerDuration() async {
+    duration = await player.setAsset('audios/notification_sound.mp3');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    player = AudioPlayer();
+    initializeAudioPlayerDuration();
   }
 
   @override

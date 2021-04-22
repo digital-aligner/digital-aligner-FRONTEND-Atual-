@@ -31,12 +31,17 @@ class ViewImagesScreen extends StatelessWidget {
             child: Image.network(
               imgUrl,
               width: MediaQuery.of(context).size.width,
-              //height: 200,
               fit: BoxFit.contain,
               loadingBuilder: (context, child, loadingProgress) {
                 return loadingProgress == null
                     ? child
-                    : LinearProgressIndicator();
+                    : Center(
+                        child: CircularProgressIndicator(
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                            Colors.blue,
+                          ),
+                        ),
+                      );
               },
             ),
           ),

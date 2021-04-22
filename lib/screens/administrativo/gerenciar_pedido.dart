@@ -50,6 +50,19 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
     fetchData = value;
   }
 
+  void refreshPageFetchNewList() {
+    setState(() {
+      //page to 0 before fetch
+      _startPage = 0;
+      _pedidosListStore.setDropdownValue('Todos');
+      _searchField.text = '';
+      _pedidosListStore.setQuery('');
+    });
+    //fetchData before set state (fixes not updating bug)
+    fetchData = true;
+    _pedidosListStore.clearPedidosAndUpdate();
+  }
+
   Widget _getHeaders() {
     //Will be used to check and change ui based on search
     if (_pedidosListStore.getDropdownValue() == 'Todos') {
@@ -587,7 +600,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
         showTrackOnHover: true,
         child: SingleChildScrollView(
           child: Container(
-            height: 1300,
+            height: 1350,
             padding: const EdgeInsets.symmetric(
               horizontal: 50,
             ),
@@ -604,6 +617,14 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                       Text(
                         'Gerenciar Pedidos',
                         style: Theme.of(context).textTheme.headline1,
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          refreshPageFetchNewList();
+                        },
+                        label: const Text('Atualizar'),
+                        icon: Icon(Icons.refresh),
                       ),
                       const SizedBox(height: 40),
                       _searchBox(),

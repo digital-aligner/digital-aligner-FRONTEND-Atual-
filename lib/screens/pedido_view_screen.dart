@@ -11,6 +11,7 @@ import 'package:digital_aligner_app/screens/gerar_relatorio_screen.dart';
 import 'package:digital_aligner_app/screens/login_screen.dart';
 
 import 'package:digital_aligner_app/screens/relatorio_view_screen.dart';
+import 'package:digital_aligner_app/screens/view_images_screen.dart';
 import 'package:easy_web_view/easy_web_view.dart';
 
 import 'package:flutter/material.dart';
@@ -64,6 +65,18 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
     prefs.setString('modelos_3d_url', modelosData);
   }
 
+  //For fetching the small amazon img version, insert "small_" before img name.
+  String _smallImgUrlFormat(String url) {
+    int originalIndex = url.indexOf('.com/');
+    int insertIndex = originalIndex + 5;
+
+    String firstHalf = url.substring(0, insertIndex);
+    String secondHalf = url.substring(insertIndex, url.length);
+
+    String complete = firstHalf + 'small_' + secondHalf;
+    return complete;
+  }
+
   Widget _mapImagesUrlToUi(
     BuildContext ctx,
     Map<String, dynamic> images,
@@ -72,6 +85,9 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
 
     for (int i = 1; i <= images.length; i++) {
       if (images['foto' + i.toString()] != null) {
+        String photoFullQualityUrl = images['foto' + i.toString()];
+        String photoSmallUrl = _smallImgUrlFormat(photoFullQualityUrl);
+
         networkImgList.add(
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -81,10 +97,18 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                   message: 'Visualizar',
                   child: GestureDetector(
                     onTap: () {
-                      _viewImage(ctx, images['foto' + i.toString()]);
+                      //_viewImage(ctx, photoFullQualityUrl);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ViewImagesScreen(
+                            imgUrl: photoFullQualityUrl,
+                          ),
+                        ),
+                      );
                     },
                     child: Image.network(
-                      images['foto' + i.toString()],
+                      photoSmallUrl,
                       height: 300,
                       width: 300,
                       fit: BoxFit.contain,
@@ -92,7 +116,7 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                   ),
                 ),
                 Link(
-                    uri: Uri.parse(images['foto' + i.toString()]),
+                    uri: Uri.parse(photoFullQualityUrl),
                     builder: (context, followLink) {
                       return TextButton(
                         onPressed: followLink,
@@ -337,6 +361,18 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                 imgUrl,
                 width: MediaQuery.of(context).size.width,
                 fit: BoxFit.contain,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  }
+                  return Center(
+                    child: CircularProgressIndicator(
+                      valueColor: new AlwaysStoppedAnimation<Color>(
+                        Colors.blue,
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ),
