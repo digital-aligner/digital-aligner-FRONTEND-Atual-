@@ -83,29 +83,36 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
           elevation: 5,
           child: Row(
             children: [
-              curmodeloSup.imageUrl == null
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        value: curmodeloSup.progress,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                      ),
-                    )
-                  : Image(
-                      fit: BoxFit.cover,
-                      width: 100,
-                      image: AssetImage('logos/cubo.jpg'),
-                    ),
-              SizedBox(width: 10),
+              if (curmodeloSup.imageUrl == null)
+                Center(
+                  child: CircularProgressIndicator(
+                    value: curmodeloSup.progress,
+                    valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+                  ),
+                )
+              else if (curmodeloSup.id < 0)
+                const Image(
+                  fit: BoxFit.cover,
+                  width: 100,
+                  image: const AssetImage('logos/error.jpg'),
+                )
+              else
+                const Image(
+                  fit: BoxFit.cover,
+                  width: 100,
+                  image: const AssetImage('logos/cubo.jpg'),
+                ),
+              const SizedBox(width: 10),
               curmodeloSup.fileName == null
-                  ? Text(
+                  ? const Text(
                       'Carregando...',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black38,
                       ),
                     )
                   : Text(
                       curmodeloSup.fileName,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black38,
                       ),
                     ),
@@ -121,24 +128,43 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
                       ? null
                       : () {
                           if (widget.isEdit) {
-                            _s3deleteStore.setIdToDelete(curmodeloSup.id);
-                            setState(() {
-                              _modeloSupsList.removeWhere(
-                                (modeloSup) => modeloSup.id == curmodeloSup.id,
-                              );
-                            });
+                            //If negitive, error ocurred só delete only from list
+                            if (curmodeloSup.id < 0) {
+                              setState(() {
+                                _modeloSupsList.removeWhere(
+                                  (photo) => photo.id == curmodeloSup.id,
+                                );
+                              });
+                            } else {
+                              _s3deleteStore.setIdToDelete(curmodeloSup.id);
+                              setState(() {
+                                _modeloSupsList.removeWhere(
+                                  (modeloSup) =>
+                                      modeloSup.id == curmodeloSup.id,
+                                );
+                              });
+                            }
                           } else {
-                            _deletemodeloSup(_token, curmodeloSup.id)
-                                .then((res) {
-                              var data = json.decode(res.body);
-                              if (data['id'] != null) {
-                                setState(() {
-                                  _modeloSupsList.removeWhere(
-                                    (modeloSup) => modeloSup.id == data['id'],
-                                  );
-                                });
-                              }
-                            });
+                            //If negitive, error ocurred só delete only from list
+                            if (curmodeloSup.id < 0) {
+                              setState(() {
+                                _modeloSupsList.removeWhere(
+                                  (photo) => photo.id == curmodeloSup.id,
+                                );
+                              });
+                            } else {
+                              _deletemodeloSup(_token, curmodeloSup.id)
+                                  .then((res) {
+                                var data = json.decode(res.body);
+                                if (data['id'] != null) {
+                                  setState(() {
+                                    _modeloSupsList.removeWhere(
+                                      (modeloSup) => modeloSup.id == data['id'],
+                                    );
+                                  });
+                                }
+                              });
+                            }
                           }
                         },
                 ),
@@ -151,8 +177,7 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
         ),
       );
     }
-    //Clear memory of unused byte array
-    _modeloSupsDataList = null;
+
     return _ump;
   }
 
@@ -245,7 +270,7 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
       setState(() {
         _modeloSupsList[posContainingWidget].id = -1;
         _modeloSupsList[posContainingWidget].fileName =
-            'Error, por favor tente novamente.';
+            'Erro de conexão. Por favor tente novamente.';
         _modeloSupsList[posContainingWidget].imageUrl = '';
       });
 
@@ -338,14 +363,15 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               duration: const Duration(seconds: 8),
-                              content: Text(
-                                  'Enviando modelo superior. Por ser um arquivo grande, por favor aguarde...'),
+                              content: Text('Enviando modelo superior...'),
                             ),
                           );
 
                           Future.delayed(const Duration(milliseconds: 500), () {
                             for (var modeloSup in _modeloSupsDataList) {
                               _sendmodeloSup(_authStore.token, modeloSup);
+                              //Clear memory of unused byte array
+                              //_modeloSupsDataList = null;
                             }
                           });
                         }).catchError((e) {
@@ -353,7 +379,8 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               duration: const Duration(seconds: 8),
-                              content: Text('Selecione no máximo 1 modelo!'),
+                              content:
+                                  const Text('Selecione no máximo 1 modelo!'),
                             ),
                           );
                         });
@@ -366,7 +393,7 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             //Showing loaded images, if any.
             _modeloSupsList != null
                 ? Column(

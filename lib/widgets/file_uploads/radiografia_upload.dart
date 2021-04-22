@@ -135,9 +135,9 @@ class _RadiografiaUploadState extends State<RadiografiaUpload>
       }
     } catch (e) {
       setState(() {
-        _radiografiasList[posContainingWidget].id = -1;
+        _radiografiasList[posContainingWidget].id = -rNum;
         _radiografiasList[posContainingWidget].fileName =
-            'Algo deu errado, por favor tente novamente.';
+            'Erro de conexão. Por favor tente novamente.';
         _radiografiasList[posContainingWidget].imageUrl = '';
         _radiografiasList[posContainingWidget].thumbnail = '';
       });
@@ -167,31 +167,37 @@ class _RadiografiaUploadState extends State<RadiografiaUpload>
           elevation: 5,
           child: Row(
             children: [
-              curRadiografia.thumbnail == null
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        value: curRadiografia.progress,
-                        valueColor:
-                            new AlwaysStoppedAnimation<Color>(Colors.blue),
-                      ),
-                    )
-                  : Image.network(
-                      curRadiografia.imageUrl,
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    ),
-              SizedBox(width: 10),
+              if (curRadiografia.thumbnail == null)
+                Center(
+                  child: CircularProgressIndicator(
+                    value: curRadiografia.progress,
+                    valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+                  ),
+                )
+              else if (curRadiografia.id < 0)
+                const Image(
+                  fit: BoxFit.cover,
+                  width: 100,
+                  image: const AssetImage('logos/error.jpg'),
+                )
+              else
+                Image.network(
+                  curRadiografia.imageUrl,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                ),
+              const SizedBox(width: 10),
               curRadiografia.fileName == null
-                  ? Text(
+                  ? const Text(
                       'Carregando...',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black38,
                       ),
                     )
                   : Text(
                       curRadiografia.fileName,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black38,
                       ),
                     ),
@@ -207,31 +213,51 @@ class _RadiografiaUploadState extends State<RadiografiaUpload>
                       ? null
                       : () {
                           if (widget.isEdit) {
-                            _s3deleteStore.setIdToDelete(curRadiografia.id);
-                            setState(() {
-                              _radiografiasList.removeWhere(
-                                (radiografia) =>
-                                    radiografia.id == curRadiografia.id,
-                              );
-                            });
+                            //If negitive, error ocurred só delete only from list
+                            if (curRadiografia.id < 0) {
+                              setState(() {
+                                _radiografiasList.removeWhere(
+                                  (radiografia) =>
+                                      radiografia.id == curRadiografia.id,
+                                );
+                              });
+                            } else {
+                              _s3deleteStore.setIdToDelete(curRadiografia.id);
+                              setState(() {
+                                _radiografiasList.removeWhere(
+                                  (radiografia) =>
+                                      radiografia.id == curRadiografia.id,
+                                );
+                              });
+                            }
                           } else {
-                            _deleteRadiografia(_token, curRadiografia.id)
-                                .then((res) {
-                              var data = json.decode(res.body);
-                              if (data['id'] != null) {
-                                setState(() {
-                                  _radiografiasList.removeWhere(
-                                    (radiografia) =>
-                                        radiografia.id == data['id'],
-                                  );
-                                });
-                              }
-                            });
+                            //If negitive, error ocurred só delete only from list
+                            if (curRadiografia.id < 0) {
+                              setState(() {
+                                _radiografiasList.removeWhere(
+                                  (radiografia) =>
+                                      radiografia.id == curRadiografia.id,
+                                );
+                              });
+                            } else {
+                              _deleteRadiografia(_token, curRadiografia.id)
+                                  .then((res) {
+                                var data = json.decode(res.body);
+                                if (data['id'] != null) {
+                                  setState(() {
+                                    _radiografiasList.removeWhere(
+                                      (radiografia) =>
+                                          radiografia.id == data['id'],
+                                    );
+                                  });
+                                }
+                              });
+                            }
                           }
                         },
                 ),
               if (curRadiografia.id == null) Container(),
-              SizedBox(
+              const SizedBox(
                 width: 20,
               ),
             ],
@@ -239,8 +265,7 @@ class _RadiografiaUploadState extends State<RadiografiaUpload>
         ),
       );
     }
-    //Clear memory of unused byte array
-    _radiografiasDataList = null;
+
     return _ump;
   }
 
@@ -337,6 +362,8 @@ class _RadiografiaUploadState extends State<RadiografiaUpload>
                           Future.delayed(const Duration(milliseconds: 500), () {
                             for (var radiografia in _radiografiasDataList) {
                               _sendRadiografia(_authStore.token, radiografia);
+                              //Clear memory of unused byte array
+                              //_radiografiasDataList = null;
                             }
                           });
                         }).catchError((e) {
@@ -344,8 +371,8 @@ class _RadiografiaUploadState extends State<RadiografiaUpload>
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               duration: const Duration(seconds: 8),
-                              content:
-                                  Text('Selecione no máximo 4 radiografias!'),
+                              content: const Text(
+                                  'Selecione no máximo 4 radiografias!'),
                             ),
                           );
                         });
@@ -358,7 +385,7 @@ class _RadiografiaUploadState extends State<RadiografiaUpload>
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             //Showing loaded images, if any.
             _radiografiasList != null
                 ? Column(

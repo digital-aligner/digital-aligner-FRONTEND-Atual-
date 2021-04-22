@@ -185,21 +185,21 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                   child: Text(
                     '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
                     textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                    //overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Expanded(
                   child: Text(
                     '${pedList[index]['status_pedido'] != null && pedList[index]['status_pedido'].length > 0 ? pedList[index]['status_pedido']['status'] : '-'}',
                     textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                    //overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Expanded(
                   child: Text(
                     '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
                     textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                    //overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Expanded(

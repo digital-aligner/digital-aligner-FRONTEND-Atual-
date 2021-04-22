@@ -79,20 +79,26 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload>
           elevation: 5,
           child: Row(
             children: [
-              curmodeloInf.imageUrl == null
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        value: curmodeloInf.progress,
-                        valueColor:
-                            new AlwaysStoppedAnimation<Color>(Colors.blue),
-                      ),
-                    )
-                  : Image(
-                      fit: BoxFit.cover,
-                      width: 100,
-                      image: AssetImage('logos/cubo.jpg'),
-                    ),
-              SizedBox(width: 10),
+              if (curmodeloInf.imageUrl == null)
+                Center(
+                  child: CircularProgressIndicator(
+                    value: curmodeloInf.progress,
+                    valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+                  ),
+                )
+              else if (curmodeloInf.id < 0)
+                const Image(
+                  fit: BoxFit.cover,
+                  width: 100,
+                  image: const AssetImage('logos/error.jpg'),
+                )
+              else
+                const Image(
+                  fit: BoxFit.cover,
+                  width: 100,
+                  image: const AssetImage('logos/cubo.jpg'),
+                ),
+              const SizedBox(width: 10),
               curmodeloInf.fileName == null
                   ? Text(
                       'Carregando...',
@@ -118,29 +124,48 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload>
                       ? null
                       : () {
                           if (widget.isEdit) {
-                            _s3deleteStore.setIdToDelete(curmodeloInf.id);
-                            setState(() {
-                              _modeloInfsList.removeWhere(
-                                (modeloInf) => modeloInf.id == curmodeloInf.id,
-                              );
-                            });
+                            //If negitive, error ocurred só delete only from list
+                            if (curmodeloInf.id < 0) {
+                              setState(() {
+                                _modeloInfsList.removeWhere(
+                                  (photo) => photo.id == curmodeloInf.id,
+                                );
+                              });
+                            } else {
+                              _s3deleteStore.setIdToDelete(curmodeloInf.id);
+                              setState(() {
+                                _modeloInfsList.removeWhere(
+                                  (modeloInf) =>
+                                      modeloInf.id == curmodeloInf.id,
+                                );
+                              });
+                            }
                           } else {
-                            _deletemodeloInf(_token, curmodeloInf.id)
-                                .then((res) {
-                              var data = json.decode(res.body);
-                              if (data['id'] != null) {
-                                setState(() {
-                                  _modeloInfsList.removeWhere(
-                                    (modeloInf) => modeloInf.id == data['id'],
-                                  );
-                                });
-                              }
-                            });
+                            //If negitive, error ocurred só delete only from list
+                            if (curmodeloInf.id < 0) {
+                              setState(() {
+                                _modeloInfsList.removeWhere(
+                                  (photo) => photo.id == curmodeloInf.id,
+                                );
+                              });
+                            } else {
+                              _deletemodeloInf(_token, curmodeloInf.id)
+                                  .then((res) {
+                                var data = json.decode(res.body);
+                                if (data['id'] != null) {
+                                  setState(() {
+                                    _modeloInfsList.removeWhere(
+                                      (modeloInf) => modeloInf.id == data['id'],
+                                    );
+                                  });
+                                }
+                              });
+                            }
                           }
                         },
                 ),
               if (curmodeloInf.id == null) Container(),
-              SizedBox(
+              const SizedBox(
                 width: 20,
               ),
             ],
@@ -148,8 +173,7 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload>
         ),
       );
     }
-    //Clear memory of unused byte array
-    _modeloInfsDataList = null;
+
     return _ump;
   }
 
@@ -242,7 +266,7 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload>
       setState(() {
         _modeloInfsList[posContainingWidget].id = -1;
         _modeloInfsList[posContainingWidget].fileName =
-            'Algo deu errado, por favor tente novamente.';
+            'Erro de conexão. Por favor tente novamente.';
         _modeloInfsList[posContainingWidget].imageUrl = '';
       });
     }
@@ -332,7 +356,7 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload>
                             SnackBar(
                               duration: const Duration(seconds: 8),
                               content: Text(
-                                'Enviando modelo inferior. Por ser um arquivo grande, por favor aguarde...',
+                                'Enviando modelo inferior...',
                               ),
                             ),
                           );
@@ -340,6 +364,8 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload>
                           Future.delayed(const Duration(milliseconds: 500), () {
                             for (var modeloInf in _modeloInfsDataList) {
                               _sendmodeloInf(_authStore.token, modeloInf);
+                              //Clear memory of unused byte array
+                              //_modeloInfsDataList = null;
                             }
                           });
                         }).catchError((e) {

@@ -38,6 +38,8 @@ class CheckNewDataProvider with ChangeNotifier {
 
       if (data is int) {
         novosPedidosCount = data;
+      } else {
+        novosPedidosCount = 0;
       }
       notifyListeners();
     } catch (error) {
@@ -61,6 +63,8 @@ class CheckNewDataProvider with ChangeNotifier {
 
       if (data is int) {
         novosPedidosCount = data;
+      } else {
+        novosPedidosCount = 0;
       }
     } catch (error) {
       print(error);

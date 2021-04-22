@@ -78,20 +78,26 @@ class _CompactadoUploadState extends State<CompactadoUpload>
           elevation: 5,
           child: Row(
             children: [
-              curcompactUpload.imageUrl == null
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        value: curcompactUpload.progress,
-                        valueColor:
-                            new AlwaysStoppedAnimation<Color>(Colors.blue),
-                      ),
-                    )
-                  : Image(
-                      fit: BoxFit.cover,
-                      width: 100,
-                      image: AssetImage('logos/comp.jpg'),
-                    ),
-              SizedBox(width: 10),
+              if (curcompactUpload.imageUrl == null)
+                Center(
+                  child: CircularProgressIndicator(
+                    value: curcompactUpload.progress,
+                    valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+                  ),
+                )
+              else if (curcompactUpload.id < 0)
+                const Image(
+                  fit: BoxFit.cover,
+                  width: 100,
+                  image: const AssetImage('logos/error.jpg'),
+                )
+              else
+                const Image(
+                  fit: BoxFit.cover,
+                  width: 100,
+                  image: const AssetImage('logos/comp.jpg'),
+                ),
+              const SizedBox(width: 10),
               curcompactUpload.fileName == null
                   ? Text(
                       'Carregando...',
@@ -117,26 +123,44 @@ class _CompactadoUploadState extends State<CompactadoUpload>
                       ? null
                       : () {
                           if (widget.isEdit) {
-                            _s3deleteStore.setIdToDelete(curcompactUpload.id);
-                            setState(() {
-                              _compactUploadsList.removeWhere(
-                                (compactUpload) =>
-                                    compactUpload.id == curcompactUpload.id,
-                              );
-                            });
+                            //If negitive, error ocurred só delete only from list
+                            if (curcompactUpload.id < 0) {
+                              setState(() {
+                                _compactUploadsList.removeWhere(
+                                  (photo) => photo.id == curcompactUpload.id,
+                                );
+                              });
+                            } else {
+                              _s3deleteStore.setIdToDelete(curcompactUpload.id);
+                              setState(() {
+                                _compactUploadsList.removeWhere(
+                                  (compactUpload) =>
+                                      compactUpload.id == curcompactUpload.id,
+                                );
+                              });
+                            }
                           } else {
-                            _deletecompactUpload(_token, curcompactUpload.id)
-                                .then((res) {
-                              var data = json.decode(res.body);
-                              if (data['id'] != null) {
-                                setState(() {
-                                  _compactUploadsList.removeWhere(
-                                    (compactUpload) =>
-                                        compactUpload.id == data['id'],
-                                  );
-                                });
-                              }
-                            });
+                            //If negitive, error ocurred só delete only from list
+                            if (curcompactUpload.id < 0) {
+                              setState(() {
+                                _compactUploadsList.removeWhere(
+                                  (photo) => photo.id == curcompactUpload.id,
+                                );
+                              });
+                            } else {
+                              _deletecompactUpload(_token, curcompactUpload.id)
+                                  .then((res) {
+                                var data = json.decode(res.body);
+                                if (data['id'] != null) {
+                                  setState(() {
+                                    _compactUploadsList.removeWhere(
+                                      (compactUpload) =>
+                                          compactUpload.id == data['id'],
+                                    );
+                                  });
+                                }
+                              });
+                            }
                           }
                         },
                 ),
@@ -149,8 +173,7 @@ class _CompactadoUploadState extends State<CompactadoUpload>
         ),
       );
     }
-    //Clear memory of unused byte array
-    _compactUploadsDataList = null;
+
     return _ump;
   }
 
@@ -256,7 +279,7 @@ class _CompactadoUploadState extends State<CompactadoUpload>
       setState(() {
         _compactUploadsList[posContainingWidget].id = -1;
         _compactUploadsList[posContainingWidget].fileName =
-            'Algo deu errado, por favor tente novamente.';
+            'Erro de conexão. Por favor tente novamente.';
         _compactUploadsList[posContainingWidget].imageUrl = '';
       });
     }
@@ -372,7 +395,7 @@ class _CompactadoUploadState extends State<CompactadoUpload>
                             SnackBar(
                               duration: const Duration(seconds: 8),
                               content: const Text(
-                                'Enviando modelos compactado. Por ser um arquivo grande, por favor aguarde...',
+                                'Enviando modelos compactado...',
                               ),
                             ),
                           );
@@ -381,6 +404,8 @@ class _CompactadoUploadState extends State<CompactadoUpload>
                             for (var compactUpload in _compactUploadsDataList) {
                               _sendcompactUpload(
                                   _authStore.token, compactUpload);
+                              //Clear memory of unused byte array
+                              //_compactUploadsDataList = null;
                             }
                           });
                         }).catchError((e) {
@@ -388,7 +413,8 @@ class _CompactadoUploadState extends State<CompactadoUpload>
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               duration: const Duration(seconds: 8),
-                              content: Text('Selecione no máximo 1 arquivo!'),
+                              content:
+                                  const Text('Selecione no máximo 1 arquivo!'),
                             ),
                           );
                         });

@@ -84,20 +84,26 @@ class _RelatorioPPTUploadState extends State<RelatorioPPTUpload>
           elevation: 5,
           child: Row(
             children: [
-              currelatorioPPTUpload.imageUrl == null
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        value: currelatorioPPTUpload.progress,
-                        valueColor:
-                            new AlwaysStoppedAnimation<Color>(Colors.blue),
-                      ),
-                    )
-                  : Image(
-                      fit: BoxFit.cover,
-                      width: 100,
-                      image: AssetImage('logos/ppt.png'),
-                    ),
-              SizedBox(width: 10),
+              if (currelatorioPPTUpload.imageUrl == null)
+                Center(
+                  child: CircularProgressIndicator(
+                    value: currelatorioPPTUpload.progress,
+                    valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+                  ),
+                )
+              else if (currelatorioPPTUpload.id == -1)
+                Image(
+                  fit: BoxFit.cover,
+                  width: 100,
+                  image: AssetImage('logos/error.jpg'),
+                )
+              else
+                Image(
+                  fit: BoxFit.cover,
+                  width: 100,
+                  image: AssetImage('logos/ppt.png'),
+                ),
+              const SizedBox(width: 10),
               currelatorioPPTUpload.fileName == null
                   ? Text(
                       'Carregando...',
@@ -119,35 +125,53 @@ class _RelatorioPPTUploadState extends State<RelatorioPPTUpload>
                       icon: Icon(Icons.delete),
                       onPressed: () {
                         if (widget.isEdit) {
-                          _s3RelatorioDeleteStore.setIdToDelete(
-                            currelatorioPPTUpload.id,
-                          );
-                          setState(() {
-                            _relatorioPPTUploadsList.removeWhere(
-                              (relatorioPPTUpload) =>
-                                  relatorioPPTUpload.id ==
-                                  currelatorioPPTUpload.id,
+                          //If negitive, error ocurred só delete only from list
+                          if (currelatorioPPTUpload.id < 0) {
+                            setState(() {
+                              _relatorioPPTUploadsList.removeWhere(
+                                (photo) => photo.id == currelatorioPPTUpload.id,
+                              );
+                            });
+                          } else {
+                            _s3RelatorioDeleteStore.setIdToDelete(
+                              currelatorioPPTUpload.id,
                             );
-                          });
+                            setState(() {
+                              _relatorioPPTUploadsList.removeWhere(
+                                (relatorioPPTUpload) =>
+                                    relatorioPPTUpload.id ==
+                                    currelatorioPPTUpload.id,
+                              );
+                            });
+                          }
                         } else {
-                          _deleterelatorioPPTUpload(
-                                  _token, currelatorioPPTUpload.id)
-                              .then((res) {
-                            var data = json.decode(res.body);
-                            if (data['id'] != null) {
-                              setState(() {
-                                _relatorioPPTUploadsList.removeWhere(
-                                  (relatorioPPTUpload) =>
-                                      relatorioPPTUpload.id == data['id'],
-                                );
-                              });
-                            }
-                          });
+                          //If negitive, error ocurred só delete only from list
+                          if (currelatorioPPTUpload.id < 0) {
+                            setState(() {
+                              _relatorioPPTUploadsList.removeWhere(
+                                (photo) => photo.id == currelatorioPPTUpload.id,
+                              );
+                            });
+                          } else {
+                            _deleterelatorioPPTUpload(
+                                    _token, currelatorioPPTUpload.id)
+                                .then((res) {
+                              var data = json.decode(res.body);
+                              if (data['id'] != null) {
+                                setState(() {
+                                  _relatorioPPTUploadsList.removeWhere(
+                                    (relatorioPPTUpload) =>
+                                        relatorioPPTUpload.id == data['id'],
+                                  );
+                                });
+                              }
+                            });
+                          }
                         }
                       },
                     )
                   : Container(),
-              SizedBox(
+              const SizedBox(
                 width: 20,
               ),
             ],
@@ -155,8 +179,7 @@ class _RelatorioPPTUploadState extends State<RelatorioPPTUpload>
         ),
       );
     }
-    //Clear memory of unused byte array
-    _relatorioPPTUploadsDataList = null;
+
     return _ump;
   }
 
@@ -243,7 +266,7 @@ class _RelatorioPPTUploadState extends State<RelatorioPPTUpload>
       setState(() {
         _relatorioPPTUploadsList[posContainingWidget].id = -1;
         _relatorioPPTUploadsList[posContainingWidget].fileName =
-            'Algo deu errado, por favor tente novamente.';
+            'Erro de conexão. Por favor tente novamente.';
         _relatorioPPTUploadsList[posContainingWidget].imageUrl = '';
       });
     }
@@ -362,6 +385,8 @@ class _RelatorioPPTUploadState extends State<RelatorioPPTUpload>
                           in _relatorioPPTUploadsDataList) {
                         _sendrelatorioPPTUpload(
                             _authStore.token, relatorioPPTUpload);
+                        //Clear memory of unused byte array
+                        //_relatorioPPTUploadsDataList = null;
                       }
                     });
                   }).catchError((e) {

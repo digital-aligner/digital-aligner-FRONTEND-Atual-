@@ -119,6 +119,7 @@ class _PhotoUploadState extends State<PhotoUpload>
       });
 
       var response = await request.send();
+
       var resStream = await response.stream.bytesToString();
       var resData = json.decode(resStream);
 
@@ -136,10 +137,10 @@ class _PhotoUploadState extends State<PhotoUpload>
       }
     } catch (e) {
       setState(() {
-        _photosList[posContainingWidget].id = -1;
+        _photosList[posContainingWidget].id = -rNum;
         _photosList[posContainingWidget].fileName =
-            'Algo deu errado, por favor tente novamente.';
-        _photosList[posContainingWidget].thumbnail = '';
+            'Erro de conexão. Por favor tente novamente.';
+        _photosList[posContainingWidget].thumbnail = 'logos/error.jpg';
         _photosList[posContainingWidget].imageUrl = '';
       });
       print(e);
@@ -168,23 +169,29 @@ class _PhotoUploadState extends State<PhotoUpload>
           elevation: 5,
           child: Row(
             children: [
-              curPhoto.thumbnail == null
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        value: curPhoto.progress,
-                        valueColor:
-                            new AlwaysStoppedAnimation<Color>(Colors.blue),
-                      ),
-                    )
-                  : Image.network(
-                      curPhoto.imageUrl,
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    ),
-              SizedBox(width: 10),
+              if (curPhoto.thumbnail == null)
+                Center(
+                  child: CircularProgressIndicator(
+                    value: curPhoto.progress,
+                    valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+                  ),
+                )
+              else if (curPhoto.id < 0)
+                const Image(
+                  fit: BoxFit.cover,
+                  width: 100,
+                  image: const AssetImage('logos/error.jpg'),
+                )
+              else
+                Image.network(
+                  curPhoto.imageUrl,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                ),
+              const SizedBox(width: 10),
               curPhoto.fileName == null
-                  ? Text(
+                  ? const Text(
                       'Carregando...',
                       style: TextStyle(
                         color: Colors.black38,
@@ -192,7 +199,7 @@ class _PhotoUploadState extends State<PhotoUpload>
                     )
                   : Text(
                       curPhoto.fileName,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black38,
                       ),
                     ),
@@ -208,23 +215,40 @@ class _PhotoUploadState extends State<PhotoUpload>
                       ? null
                       : () {
                           if (widget.isEdit) {
-                            _s3deleteStore.setIdToDelete(curPhoto.id);
-                            setState(() {
-                              _photosList.removeWhere(
-                                (photo) => photo.id == curPhoto.id,
-                              );
-                            });
+                            //If negitive, error ocurred só delete only from list
+                            if (curPhoto.id < 0) {
+                              setState(() {
+                                _photosList.removeWhere(
+                                  (photo) => photo.id == curPhoto.id,
+                                );
+                              });
+                            } else {
+                              _s3deleteStore.setIdToDelete(curPhoto.id);
+                              setState(() {
+                                _photosList.removeWhere(
+                                  (photo) => photo.id == curPhoto.id,
+                                );
+                              });
+                            }
                           } else {
-                            _deletePhoto(_token, curPhoto.id).then((res) {
-                              var data = json.decode(res.body);
-                              if (data['id'] != null) {
-                                setState(() {
-                                  _photosList.removeWhere(
-                                    (photo) => photo.id == data['id'],
-                                  );
-                                });
-                              }
-                            });
+                            if (curPhoto.id < 0) {
+                              setState(() {
+                                _photosList.removeWhere(
+                                  (photo) => photo.id == curPhoto.id,
+                                );
+                              });
+                            } else {
+                              _deletePhoto(_token, curPhoto.id).then((res) {
+                                var data = json.decode(res.body);
+                                if (data['id'] != null) {
+                                  setState(() {
+                                    _photosList.removeWhere(
+                                      (photo) => photo.id == data['id'],
+                                    );
+                                  });
+                                }
+                              });
+                            }
                           }
                         },
                 ),
@@ -237,8 +261,7 @@ class _PhotoUploadState extends State<PhotoUpload>
         ),
       );
     }
-    //Clear memory of unused byte array
-    _photosDataList = null;
+
     return _ump;
   }
 
@@ -345,8 +368,10 @@ class _PhotoUploadState extends State<PhotoUpload>
 
                           Future.delayed(const Duration(milliseconds: 500), () {
                             for (var photo in _photosDataList) {
-                              _sendPhoto(_authStore.token, photo)
-                                  .then((value) {});
+                              _sendPhoto(_authStore.token, photo).then((value) {
+                                //Clear memory of unused byte array
+                                //_photosDataList = <PlatformFile>[];
+                              });
                             }
                           });
                         }).catchError((e) {

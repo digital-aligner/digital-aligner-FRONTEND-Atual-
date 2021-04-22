@@ -83,19 +83,25 @@ class _RelatorioPdfUploadState extends State<RelatorioPdfUpload>
           elevation: 5,
           child: Row(
             children: [
-              currelatorioPdfUpload.imageUrl == null
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        value: currelatorioPdfUpload.progress,
-                        valueColor:
-                            new AlwaysStoppedAnimation<Color>(Colors.blue),
-                      ),
-                    )
-                  : Image(
-                      fit: BoxFit.cover,
-                      width: 100,
-                      image: AssetImage('logos/pdf.png'),
-                    ),
+              if (currelatorioPdfUpload.imageUrl == null)
+                Center(
+                  child: CircularProgressIndicator(
+                    value: currelatorioPdfUpload.progress,
+                    valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+                  ),
+                )
+              else if (currelatorioPdfUpload.id == -1)
+                Image(
+                  fit: BoxFit.cover,
+                  width: 100,
+                  image: AssetImage('logos/error.jpg'),
+                )
+              else
+                Image(
+                  fit: BoxFit.cover,
+                  width: 100,
+                  image: AssetImage('logos/pdf.png'),
+                ),
               const SizedBox(width: 10),
               currelatorioPdfUpload.fileName == null
                   ? Text(
@@ -118,35 +124,53 @@ class _RelatorioPdfUploadState extends State<RelatorioPdfUpload>
                       icon: Icon(Icons.delete),
                       onPressed: () {
                         if (widget.isEdit) {
-                          _s3RelatorioDeleteStore.setIdToDelete(
-                            currelatorioPdfUpload.id,
-                          );
-                          setState(() {
-                            _relatorioPdfUploadsList.removeWhere(
-                              (relatorioPdfUpload) =>
-                                  relatorioPdfUpload.id ==
-                                  currelatorioPdfUpload.id,
+                          //If negitive, error ocurred só delete only from list
+                          if (currelatorioPdfUpload.id < 0) {
+                            setState(() {
+                              _relatorioPdfUploadsList.removeWhere(
+                                (photo) => photo.id == currelatorioPdfUpload.id,
+                              );
+                            });
+                          } else {
+                            _s3RelatorioDeleteStore.setIdToDelete(
+                              currelatorioPdfUpload.id,
                             );
-                          });
+                            setState(() {
+                              _relatorioPdfUploadsList.removeWhere(
+                                (relatorioPdfUpload) =>
+                                    relatorioPdfUpload.id ==
+                                    currelatorioPdfUpload.id,
+                              );
+                            });
+                          }
                         } else {
-                          _deleterelatorioPdfUpload(
-                                  _token, currelatorioPdfUpload.id)
-                              .then((res) {
-                            var data = json.decode(res.body);
-                            if (data['id'] != null) {
-                              setState(() {
-                                _relatorioPdfUploadsList.removeWhere(
-                                  (relatorioPdfUpload) =>
-                                      relatorioPdfUpload.id == data['id'],
-                                );
-                              });
-                            }
-                          });
+                          //If negitive, error ocurred só delete only from list
+                          if (currelatorioPdfUpload.id < 0) {
+                            setState(() {
+                              _relatorioPdfUploadsList.removeWhere(
+                                (photo) => photo.id == currelatorioPdfUpload.id,
+                              );
+                            });
+                          } else {
+                            _deleterelatorioPdfUpload(
+                                    _token, currelatorioPdfUpload.id)
+                                .then((res) {
+                              var data = json.decode(res.body);
+                              if (data['id'] != null) {
+                                setState(() {
+                                  _relatorioPdfUploadsList.removeWhere(
+                                    (relatorioPdfUpload) =>
+                                        relatorioPdfUpload.id == data['id'],
+                                  );
+                                });
+                              }
+                            });
+                          }
                         }
                       },
                     )
                   : Container(),
-              SizedBox(
+              const SizedBox(
                 width: 20,
               ),
             ],
@@ -154,8 +178,7 @@ class _RelatorioPdfUploadState extends State<RelatorioPdfUpload>
         ),
       );
     }
-    //Clear memory of unused byte array
-    _relatorioPdfUploadsDataList = null;
+
     return _ump;
   }
 
@@ -241,7 +264,7 @@ class _RelatorioPdfUploadState extends State<RelatorioPdfUpload>
       setState(() {
         _relatorioPdfUploadsList[posContainingWidget].id = -1;
         _relatorioPdfUploadsList[posContainingWidget].fileName =
-            'Algo deu errado, por favor tente novamente.';
+            'Erro de conexão. Por favor tente novamente.';
         _relatorioPdfUploadsList[posContainingWidget].imageUrl = '';
       });
     }
@@ -367,6 +390,8 @@ class _RelatorioPdfUploadState extends State<RelatorioPdfUpload>
                           in _relatorioPdfUploadsDataList) {
                         _sendrelatorioPdfUpload(
                             _authStore.token, relatorioPdfUpload);
+                        //Clear memory of unused byte array
+                        //_relatorioPdfUploadsDataList = null;
                       }
                     });
                   }).catchError((e) {

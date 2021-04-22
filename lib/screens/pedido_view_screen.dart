@@ -15,6 +15,7 @@ import 'package:digital_aligner_app/screens/view_images_screen.dart';
 import 'package:easy_web_view/easy_web_view.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -84,7 +85,8 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
     List<Widget> networkImgList = [];
 
     for (int i = 1; i <= images.length; i++) {
-      if (images['foto' + i.toString()] != null) {
+      if (images['foto' + i.toString()] != null &&
+          images['foto' + i.toString()].length > 60) {
         String photoFullQualityUrl = images['foto' + i.toString()];
         String photoSmallUrl = _smallImgUrlFormat(photoFullQualityUrl);
 
@@ -536,8 +538,15 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
             Container(
               width: 300,
               child: ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                      return Colors.red; // Use the component's default.
+                    },
+                  ),
+                ),
                 child: const Text(
-                  "EXCLUIR PEDIDO",
+                  'EXCLUIR PEDIDO',
                 ),
                 onPressed: () async {
                   var didDelete = await _deletePedidoDialog(ctx, index);
@@ -758,10 +767,66 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                       context,
                       index,
                     ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Obs: exigirá confirmação.',
+                  ),
                   _optionsBtns(
                     context,
                     index,
                   ),
+                  if (pedList[index]['link_modelos'] != null &&
+                      pedList[index]['link_modelos'].length > 0)
+                    Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        Card(
+                          elevation: 5,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 15.0,
+                              horizontal: 30,
+                            ),
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                const Text(
+                                  'Link dos modelos (clique para copiar)',
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                                const SizedBox(height: 20),
+                                InkWell(
+                                  onTap: () {
+                                    Clipboard.setData(
+                                      ClipboardData(
+                                          text: pedList[index]['link_modelos']),
+                                    );
+                                    ScaffoldMessenger.of(context)
+                                        .removeCurrentSnackBar();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        duration: const Duration(seconds: 3),
+                                        content: const Text('Link copiado!'),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    pedList[index]['link_modelos'] ?? '',
+                                    style: const TextStyle(fontSize: 18),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
                   _pedidoUi(
                     context,
                     pedList,

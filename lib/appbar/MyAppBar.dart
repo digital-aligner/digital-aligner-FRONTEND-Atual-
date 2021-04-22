@@ -38,7 +38,7 @@ class _MyAppBarState extends State<MyAppBar> {
   Future<void> checkForNewPedidosTimer() async {
     timerBlock = true;
     while (true) {
-      await Future.delayed(Duration(seconds: 20));
+      await Future.delayed(Duration(seconds: 60));
       await checkDataStore.checkNovosPedidoCount();
       if (novosPedidosCount > 0 &&
           novosPedidosCount < checkDataStore.novosPedidosCount) {

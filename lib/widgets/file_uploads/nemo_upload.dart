@@ -88,7 +88,7 @@ class _NemoUploadState extends State<NemoUpload>
                 Image(
                   fit: BoxFit.cover,
                   width: 100,
-                  image: AssetImage('logos/error.png'),
+                  image: AssetImage('logos/error.jpg'),
                 )
               else
                 Image(
@@ -122,25 +122,43 @@ class _NemoUploadState extends State<NemoUpload>
                       ? null
                       : () {
                           if (widget.isEdit) {
-                            _s3deleteStore.setIdToDelete(curnemoUpload.id);
-                            setState(() {
-                              _nemoUploadsList.removeWhere(
-                                (nemoUpload) =>
-                                    nemoUpload.id == curnemoUpload.id,
-                              );
-                            });
+                            //If negitive, error ocurred só delete only from list
+                            if (curnemoUpload.id < 0) {
+                              setState(() {
+                                _nemoUploadsList.removeWhere(
+                                  (photo) => photo.id == curnemoUpload.id,
+                                );
+                              });
+                            } else {
+                              _s3deleteStore.setIdToDelete(curnemoUpload.id);
+                              setState(() {
+                                _nemoUploadsList.removeWhere(
+                                  (nemoUpload) =>
+                                      nemoUpload.id == curnemoUpload.id,
+                                );
+                              });
+                            }
                           } else {
-                            _deleteNemoUpload(_token, curnemoUpload.id)
-                                .then((res) {
-                              var data = json.decode(res.body);
-                              if (data['id'] != null) {
-                                setState(() {
-                                  _nemoUploadsList.removeWhere(
-                                    (nemoUpload) => nemoUpload.id == data['id'],
-                                  );
-                                });
-                              }
-                            });
+                            if (curnemoUpload.id < 0) {
+                              setState(() {
+                                _nemoUploadsList.removeWhere(
+                                  (photo) => photo.id == curnemoUpload.id,
+                                );
+                              });
+                            } else {
+                              _deleteNemoUpload(_token, curnemoUpload.id)
+                                  .then((res) {
+                                var data = json.decode(res.body);
+                                if (data['id'] != null) {
+                                  setState(() {
+                                    _nemoUploadsList.removeWhere(
+                                      (nemoUpload) =>
+                                          nemoUpload.id == data['id'],
+                                    );
+                                  });
+                                }
+                              });
+                            }
                           }
                         },
                 ),
@@ -153,8 +171,7 @@ class _NemoUploadState extends State<NemoUpload>
         ),
       );
     }
-    //Clear memory of unused byte array
-    _nemoUploadsDataList = null;
+
     return _ump;
   }
 
@@ -244,7 +261,7 @@ class _NemoUploadState extends State<NemoUpload>
       setState(() {
         _nemoUploadsList[posContainingWidget].id = -1;
         _nemoUploadsList[posContainingWidget].fileName =
-            'Algo deu errado, por favor tente novamente.';
+            'Erro de conexão. Por favor tente novamente.';
         _nemoUploadsList[posContainingWidget].imageUrl = '';
       });
 
@@ -335,7 +352,7 @@ class _NemoUploadState extends State<NemoUpload>
                             SnackBar(
                               duration: const Duration(seconds: 8),
                               content: const Text(
-                                'Enviando nmz segmentação. Por favor aguarde...',
+                                'Enviando nmz segmentação...',
                               ),
                             ),
                           );
@@ -344,6 +361,8 @@ class _NemoUploadState extends State<NemoUpload>
                             for (PlatformFile nemoUpload
                                 in _nemoUploadsDataList) {
                               _sendnemoUpload(_authStore.token, nemoUpload);
+                              //Clear memory of unused byte array
+                              //_nemoUploadsDataList = null;
                             }
                           });
                         }).catchError((e) {
