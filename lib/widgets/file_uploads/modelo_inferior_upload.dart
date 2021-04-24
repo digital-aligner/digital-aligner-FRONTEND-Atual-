@@ -64,7 +64,7 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload> {
     if (result != null && result.files.length + _modeloInfsList.length <= 1) {
       _modeloInfsDataList = result.files;
     } else {
-      throw ('Excedeu número máximo de modelos');
+      throw ('Selecione apenas 1 modelo.');
     }
   }
 
@@ -128,6 +128,8 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload> {
                                   (photo) => photo.id == curmodeloInf.id,
                                 );
                               });
+                              //Block send button in pedido_form
+                              _doesListHaveErrors();
                             } else {
                               _s3deleteStore.setIdToDelete(curmodeloInf.id);
                               setState(() {
@@ -136,6 +138,8 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload> {
                                       modeloInf.id == curmodeloInf.id,
                                 );
                               });
+                              //Block send button in pedido_form
+                              _doesListHaveErrors();
                             }
                           } else {
                             //If negitive, error ocurred só delete only from list
@@ -145,6 +149,8 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload> {
                                   (photo) => photo.id == curmodeloInf.id,
                                 );
                               });
+                              //Block send button in pedido_form
+                              _doesListHaveErrors();
                             } else {
                               _deletemodeloInf(_token, curmodeloInf.id)
                                   .then((res) {
@@ -155,6 +161,8 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload> {
                                       (modeloInf) => modeloInf.id == data['id'],
                                     );
                                   });
+                                  //Block send button in pedido_form
+                                  _doesListHaveErrors();
                                 }
                               });
                             }
@@ -266,6 +274,8 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload> {
             'Erro de conexão. Por favor tente novamente.';
         _modeloInfsList[posContainingWidget].imageUrl = '';
       });
+      //For send btn block
+      _novoPedStore.setFstMInfError(true);
     }
   }
 
@@ -304,6 +314,21 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload> {
     }
 
     return resData;
+  }
+
+  //CHECK FOR ERRORS IN LIST
+  void _doesListHaveErrors() {
+    if (_modeloInfsList.length > 0) {
+      _modeloInfsList.forEach((photo) {
+        if (photo.id != null) {
+          if (photo.id < 0) {
+            _novoPedStore.setFstMInfError(true);
+            return;
+          }
+        }
+      });
+      _novoPedStore.setFstMInfError(false);
+    }
   }
 
   @override
@@ -384,13 +409,14 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload> {
                           );
 
                           _openFileExplorer().then((_) {
+                            //Change btn states/block ui while sending
+                            _novoPedStore.setFstSendState(
+                              fstSendValue: _novoPedStore.getFstMInf(),
+                            );
                             Future.delayed(const Duration(seconds: 1),
                                 () async {
                               int count = 1;
-                              //Change btn states/block ui while sending
-                              _novoPedStore.setFstSendState(
-                                fstSendValue: _novoPedStore.getFstMInf(),
-                              );
+
                               for (var modeloInf in _modeloInfsDataList) {
                                 ScaffoldMessenger.of(context)
                                     .removeCurrentSnackBar();
@@ -416,12 +442,17 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload> {
                                   .removeCurrentSnackBar();
                             });
                           }).catchError((e) {
+                            //Unblock when finished
+                            _novoPedStore.setFstSendState(
+                              fstSendValue:
+                                  _novoPedStore.getFstNotSendingState(),
+                            );
                             ScaffoldMessenger.of(context)
                                 .removeCurrentSnackBar();
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 duration: const Duration(seconds: 8),
-                                content: Text('Selecione no máximo 1 modelo!'),
+                                content: Text(e),
                               ),
                             );
                           });

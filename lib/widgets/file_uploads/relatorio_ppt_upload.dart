@@ -72,7 +72,7 @@ class _RelatorioPPTUploadState extends State<RelatorioPPTUpload>
         result.files.length + _relatorioPPTUploadsList.length <= 1) {
       _relatorioPPTUploadsDataList = result.files;
     } else {
-      throw ('Excedeu número máximo de relatórios em PPT!');
+      throw ('Selecione apenas 1 arquivo PPT.');
     }
   }
 
@@ -344,7 +344,7 @@ class _RelatorioPPTUploadState extends State<RelatorioPPTUpload>
     super.build(context);
 
     AuthProvider _authStore = Provider.of<AuthProvider>(context);
-    _relatorioStore = Provider.of<RelatorioProvider>(context, listen: false);
+    _relatorioStore = Provider.of<RelatorioProvider>(context);
 
     _s3RelatorioDeleteStore = Provider.of<S3RelatorioDeleteProvider>(
       context,
@@ -360,54 +360,106 @@ class _RelatorioPPTUploadState extends State<RelatorioPPTUpload>
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              width: 300,
-              child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(seconds: 8),
-                      content: const Text('Aguarde...'),
+            //If sending, but not this (ppt)
+            if (_relatorioStore.getFstSendingState() !=
+                    _relatorioStore.getFstNotSendingState() &&
+                _relatorioStore.getFstSendingState() !=
+                    _relatorioStore.getFstRelPpt())
+              Container(
+                width: 300,
+                child: const ElevatedButton(
+                  onPressed: null,
+                  child: const Text(
+                    'AGUARDE...',
+                    style: const TextStyle(
+                      color: Colors.white,
                     ),
-                  );
-                  _openFileExplorer().then((_) {
+                  ),
+                ),
+              )
+            //If sending, and is this
+            else if (_relatorioStore.getFstSendingState() !=
+                    _relatorioStore.getFstNotSendingState() &&
+                _relatorioStore.getFstSendingState() ==
+                    _relatorioStore.getFstRelPpt())
+              Container(
+                width: 300,
+                child: ElevatedButton(
+                  onPressed: null,
+                  child: const Text(
+                    'ENVIANDO...',
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              )
+            else
+              Container(
+                width: 300,
+                child: ElevatedButton(
+                  onPressed: () {
                     ScaffoldMessenger.of(context).removeCurrentSnackBar();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         duration: const Duration(seconds: 8),
-                        content: const Text('Enviando relatório PDF'),
+                        content: const Text('Aguarde...'),
                       ),
                     );
+                    _openFileExplorer().then((_) {
+                      //Change btn states/block ui while sending
+                      _relatorioStore.setFstSendState(
+                        fstSendValue: _relatorioStore.getFstRelPpt(),
+                      );
+                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: const Duration(seconds: 10),
+                          content: const Text('Enviando relatório PPT...'),
+                        ),
+                      );
 
-                    Future.delayed(const Duration(milliseconds: 500), () {
-                      for (var relatorioPPTUpload
-                          in _relatorioPPTUploadsDataList) {
-                        _sendrelatorioPPTUpload(
-                            _authStore.token, relatorioPPTUpload);
-                        //Clear memory of unused byte array
-                        //_relatorioPPTUploadsDataList = null;
-                      }
+                      Future.delayed(
+                        const Duration(seconds: 1),
+                        () async {
+                          for (var relatorioPPTUpload
+                              in _relatorioPPTUploadsDataList) {
+                            await _sendrelatorioPPTUpload(
+                              _authStore.token,
+                              relatorioPPTUpload,
+                            );
+                          }
+                          //Unblock when finished
+                          _relatorioStore.setFstSendState(
+                            fstSendValue:
+                                _relatorioStore.getFstNotSendingState(),
+                          );
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                        },
+                      );
+                    }).catchError((e) {
+                      //Unblock when finished
+                      _relatorioStore.setFstSendState(
+                        fstSendValue: _relatorioStore.getFstNotSendingState(),
+                      );
+                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: const Duration(seconds: 8),
+                          content: Text(e),
+                        ),
+                      );
                     });
-                  }).catchError((e) {
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 8),
-                        content: const Text('Selecione no máximo 1 arquivo!'),
-                      ),
-                    );
-                  });
-                },
-                child: const Text(
-                  'RELATÓRIO PPT',
-                  style: const TextStyle(
-                    color: Colors.white,
+                  },
+                  child: const Text(
+                    'RELATÓRIO PPT',
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             //Showing loaded images, if any.
             _relatorioPPTUploadsList != null
                 ? Column(

@@ -62,7 +62,7 @@ class _NemoUploadState extends State<NemoUpload> {
     if (result != null && result.files.length + _nemoUploadsList.length <= 1) {
       _nemoUploadsDataList = result.files;
     } else {
-      throw ('Excedeu número máximo de modelos do nmz segmentação');
+      throw ('Selecione apenas 1 nmz segmentação.');
     }
   }
 
@@ -126,6 +126,8 @@ class _NemoUploadState extends State<NemoUpload> {
                                   (photo) => photo.id == curnemoUpload.id,
                                 );
                               });
+                              //Block send button in pedido_form
+                              _doesListHaveErrors();
                             } else {
                               _s3deleteStore.setIdToDelete(curnemoUpload.id);
                               setState(() {
@@ -134,6 +136,8 @@ class _NemoUploadState extends State<NemoUpload> {
                                       nemoUpload.id == curnemoUpload.id,
                                 );
                               });
+                              //Block send button in pedido_form
+                              _doesListHaveErrors();
                             }
                           } else {
                             if (curnemoUpload.id < 0) {
@@ -142,6 +146,8 @@ class _NemoUploadState extends State<NemoUpload> {
                                   (photo) => photo.id == curnemoUpload.id,
                                 );
                               });
+                              //Block send button in pedido_form
+                              _doesListHaveErrors();
                             } else {
                               _deleteNemoUpload(_token, curnemoUpload.id)
                                   .then((res) {
@@ -153,6 +159,8 @@ class _NemoUploadState extends State<NemoUpload> {
                                           nemoUpload.id == data['id'],
                                     );
                                   });
+                                  //Block send button in pedido_form
+                                  _doesListHaveErrors();
                                 }
                               });
                             }
@@ -261,7 +269,8 @@ class _NemoUploadState extends State<NemoUpload> {
             'Erro de conexão. Por favor tente novamente.';
         _nemoUploadsList[posContainingWidget].imageUrl = '';
       });
-
+      //For send btn block
+      _novoPedStore.setFstNemoError(true);
       print(e);
     }
   }
@@ -324,6 +333,21 @@ class _NemoUploadState extends State<NemoUpload> {
     }
   }
 
+  //CHECK FOR ERRORS IN LIST
+  void _doesListHaveErrors() {
+    if (_nemoUploadsList.length > 0) {
+      _nemoUploadsList.forEach((photo) {
+        if (photo.id != null) {
+          if (photo.id < 0) {
+            _novoPedStore.setFstNemoError(true);
+            return;
+          }
+        }
+      });
+      _novoPedStore.setFstNemoError(false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -347,9 +371,9 @@ class _NemoUploadState extends State<NemoUpload> {
                     ),
                   ),
                 ),
-              ),
-            //If sending, but not this (modelo nemo)
-            if (_novoPedStore.getFstSendingState() !=
+              )
+            //If sending and is this
+            else if (_novoPedStore.getFstSendingState() !=
                     _novoPedStore.getFstNotSendingState() &&
                 _novoPedStore.getFstSendingState() ==
                     _novoPedStore.getFstNemo())
@@ -381,13 +405,14 @@ class _NemoUploadState extends State<NemoUpload> {
                           );
 
                           _openFileExplorer().then((_) {
+                            //Change btn states/block ui while sending
+                            _novoPedStore.setFstSendState(
+                              fstSendValue: _novoPedStore.getFstNemo(),
+                            );
                             Future.delayed(const Duration(seconds: 1),
                                 () async {
                               int count = 1;
-                              //Change btn states/block ui while sending
-                              _novoPedStore.setFstSendState(
-                                fstSendValue: _novoPedStore.getFstNemo(),
-                              );
+
                               for (PlatformFile nemoUpload
                                   in _nemoUploadsDataList) {
                                 ScaffoldMessenger.of(context)
@@ -414,12 +439,17 @@ class _NemoUploadState extends State<NemoUpload> {
                                   .removeCurrentSnackBar();
                             });
                           }).catchError((e) {
+                            //Unblock when finished
+                            _novoPedStore.setFstSendState(
+                              fstSendValue:
+                                  _novoPedStore.getFstNotSendingState(),
+                            );
                             ScaffoldMessenger.of(context)
                                 .removeCurrentSnackBar();
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 duration: const Duration(seconds: 8),
-                                content: Text('Selecione no máximo 1 arquivo!'),
+                                content: Text(e),
                               ),
                             );
                           });

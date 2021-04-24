@@ -68,7 +68,7 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload> {
     if (result != null && result.files.length + _modeloSupsList.length <= 1) {
       _modeloSupsDataList = result.files;
     } else {
-      throw ('Excedeu número máximo de modelos');
+      throw ('Selecione apenas 1 modelo.');
     }
   }
 
@@ -132,6 +132,8 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload> {
                                   (photo) => photo.id == curmodeloSup.id,
                                 );
                               });
+                              //Block send button in pedido_form
+                              _doesListHaveErrors();
                             } else {
                               _s3deleteStore.setIdToDelete(curmodeloSup.id);
                               setState(() {
@@ -140,6 +142,8 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload> {
                                       modeloSup.id == curmodeloSup.id,
                                 );
                               });
+                              //Block send button in pedido_form
+                              _doesListHaveErrors();
                             }
                           } else {
                             //If negitive, error ocurred só delete only from list
@@ -149,6 +153,8 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload> {
                                   (photo) => photo.id == curmodeloSup.id,
                                 );
                               });
+                              //Block send button in pedido_form
+                              _doesListHaveErrors();
                             } else {
                               _deletemodeloSup(_token, curmodeloSup.id)
                                   .then((res) {
@@ -159,6 +165,8 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload> {
                                       (modeloSup) => modeloSup.id == data['id'],
                                     );
                                   });
+                                  //Block send button in pedido_form
+                                  _doesListHaveErrors();
                                 }
                               });
                             }
@@ -270,7 +278,8 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload> {
             'Erro de conexão. Por favor tente novamente.';
         _modeloSupsList[posContainingWidget].imageUrl = '';
       });
-
+      //For send btn block
+      _novoPedStore.setFstMSupError(true);
       print(e);
     }
   }
@@ -312,6 +321,21 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload> {
     }
 
     return resData;
+  }
+
+  //CHECK FOR ERRORS IN LIST
+  void _doesListHaveErrors() {
+    if (_modeloSupsList.length > 0) {
+      _modeloSupsList.forEach((photo) {
+        if (photo.id != null) {
+          if (photo.id < 0) {
+            _novoPedStore.setFstMSupError(true);
+            return;
+          }
+        }
+      });
+      _novoPedStore.setFstMSupError(false);
+    }
   }
 
   @override
@@ -392,13 +416,14 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload> {
                           );
 
                           _openFileExplorer().then((_) {
+                            //Change btn states/block ui while sending
+                            _novoPedStore.setFstSendState(
+                              fstSendValue: _novoPedStore.getFstMSup(),
+                            );
                             Future.delayed(const Duration(seconds: 1),
                                 () async {
                               int count = 1;
-                              //Change btn states/block ui while sending
-                              _novoPedStore.setFstSendState(
-                                fstSendValue: _novoPedStore.getFstMSup(),
-                              );
+
                               for (var modeloSup in _modeloSupsDataList) {
                                 ScaffoldMessenger.of(context)
                                     .removeCurrentSnackBar();
@@ -424,13 +449,17 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload> {
                                   .removeCurrentSnackBar();
                             });
                           }).catchError((e) {
+                            //Unblock when finished
+                            _novoPedStore.setFstSendState(
+                              fstSendValue:
+                                  _novoPedStore.getFstNotSendingState(),
+                            );
                             ScaffoldMessenger.of(context)
                                 .removeCurrentSnackBar();
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 duration: const Duration(seconds: 8),
-                                content:
-                                    const Text('Selecione no máximo 1 modelo!'),
+                                content: Text(e),
                               ),
                             );
                           });

@@ -63,7 +63,7 @@ class _CompactadoUploadState extends State<CompactadoUpload> {
         result.files.length + _compactUploadsList.length <= 1) {
       _compactUploadsDataList = result.files;
     } else {
-      throw ('Excedeu número máximo de modelos compactados');
+      throw ('Selecione apenas 1 compactado');
     }
   }
 
@@ -127,6 +127,8 @@ class _CompactadoUploadState extends State<CompactadoUpload> {
                                   (photo) => photo.id == curcompactUpload.id,
                                 );
                               });
+                              //Block send button in pedido_form
+                              _doesListHaveErrors();
                             } else {
                               _s3deleteStore.setIdToDelete(curcompactUpload.id);
                               setState(() {
@@ -135,6 +137,8 @@ class _CompactadoUploadState extends State<CompactadoUpload> {
                                       compactUpload.id == curcompactUpload.id,
                                 );
                               });
+                              //Block send button in pedido_form
+                              _doesListHaveErrors();
                             }
                           } else {
                             //If negitive, error ocurred só delete only from list
@@ -144,6 +148,8 @@ class _CompactadoUploadState extends State<CompactadoUpload> {
                                   (photo) => photo.id == curcompactUpload.id,
                                 );
                               });
+                              //Block send button in pedido_form
+                              _doesListHaveErrors();
                             } else {
                               _deletecompactUpload(_token, curcompactUpload.id)
                                   .then((res) {
@@ -155,6 +161,8 @@ class _CompactadoUploadState extends State<CompactadoUpload> {
                                           compactUpload.id == data['id'],
                                     );
                                   });
+                                  //Block send button in pedido_form
+                                  _doesListHaveErrors();
                                 }
                               });
                             }
@@ -162,7 +170,7 @@ class _CompactadoUploadState extends State<CompactadoUpload> {
                         },
                 ),
               if (curcompactUpload.id == null) Container(),
-              SizedBox(
+              const SizedBox(
                 width: 20,
               ),
             ],
@@ -272,13 +280,14 @@ class _CompactadoUploadState extends State<CompactadoUpload> {
         });
       }
     } catch (e) {
-      print(e);
       setState(() {
         _compactUploadsList[posContainingWidget].id = -1;
         _compactUploadsList[posContainingWidget].fileName =
             'Erro de conexão. Por favor tente novamente.';
         _compactUploadsList[posContainingWidget].imageUrl = '';
       });
+      //For send btn block
+      _novoPedStore.setFstCompError(true);
     }
   }
 
@@ -339,10 +348,26 @@ class _CompactadoUploadState extends State<CompactadoUpload> {
         _compactUploadsList = [];
         _isFetchEdit = false;
       });
+
       print(error);
     }
 
     return resData;
+  }
+
+  //CHECK FOR ERRORS IN LIST
+  void _doesListHaveErrors() {
+    if (_compactUploadsList.length > 0) {
+      _compactUploadsList.forEach((photo) {
+        if (photo.id != null) {
+          if (photo.id < 0) {
+            _novoPedStore.setFstCompError(true);
+            return;
+          }
+        }
+      });
+      _novoPedStore.setFstCompError(false);
+    }
   }
 
   @override
@@ -423,13 +448,14 @@ class _CompactadoUploadState extends State<CompactadoUpload> {
                           );
 
                           _openFileExplorer().then((_) {
+                            //Change btn states/block ui while sending
+                            _novoPedStore.setFstSendState(
+                              fstSendValue: _novoPedStore.getFstComp(),
+                            );
                             Future.delayed(const Duration(seconds: 1),
                                 () async {
                               int count = 1;
-                              //Change btn states/block ui while sending
-                              _novoPedStore.setFstSendState(
-                                fstSendValue: _novoPedStore.getFstComp(),
-                              );
+
                               for (var compactUpload
                                   in _compactUploadsDataList) {
                                 ScaffoldMessenger.of(context)
@@ -456,13 +482,17 @@ class _CompactadoUploadState extends State<CompactadoUpload> {
                                   .removeCurrentSnackBar();
                             });
                           }).catchError((e) {
+                            //Unblock when finished
+                            _novoPedStore.setFstSendState(
+                              fstSendValue:
+                                  _novoPedStore.getFstNotSendingState(),
+                            );
                             ScaffoldMessenger.of(context)
                                 .removeCurrentSnackBar();
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 duration: const Duration(seconds: 8),
-                                content: const Text(
-                                    'Selecione no máximo 1 arquivo!'),
+                                content: Text(e),
                               ),
                             );
                           });

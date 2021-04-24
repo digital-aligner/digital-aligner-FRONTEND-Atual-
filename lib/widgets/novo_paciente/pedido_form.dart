@@ -738,264 +738,304 @@ class _PedidoFormState extends State<PedidoForm> {
                   ),
                 const SizedBox(height: 20),
                 //Enviar
-                Row(
-                  children: [
-                    Expanded(child: Container()),
-                    //Atualizar pedido btn
-                    if (widget.isEditarPedido && widget.blockUi)
-                      Container(
-                        width: 300,
-                        child: ElevatedButton(
-                          onPressed: null,
-                          child: const Text(
-                            'ATUALIZAR PEDIDO',
-                            style: const TextStyle(
-                              color: Colors.white,
+                //If sending files, block btn
+                if (_novoPedStore.getFstSendingState() !=
+                    _novoPedStore.getFstNotSendingState())
+                  Container(
+                    width: 300,
+                    child: ElevatedButton(
+                      onPressed: null,
+                      child: const Text(
+                        'AGUARDE...',
+                        style: const TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  )
+                else if (_novoPedStore.getFstFilesErrors())
+                  Container(
+                    width: 300,
+                    child: ElevatedButton(
+                      onPressed: null,
+                      child: const Text(
+                        'ERRO',
+                        style: const TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  Row(
+                    children: [
+                      Expanded(child: Container()),
+                      //Atualizar pedido btn
+                      if (widget.isEditarPedido && widget.blockUi)
+                        Container(
+                          width: 300,
+                          child: ElevatedButton(
+                            onPressed: null,
+                            child: const Text(
+                              'ATUALIZAR PEDIDO',
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
-                      ),
 
-                    if (widget.isEditarPedido && !widget.blockUi)
-                      Container(
-                        width: 300,
-                        child: ElevatedButton(
-                          onPressed: !_sendingPedido
-                              ? () {
-                                  if (_formKey.currentState.validate()) {
-                                    _formKey.currentState.save();
-                                    setState(() {
-                                      _sendingPedido = true;
-                                    });
+                      if (widget.isEditarPedido && !widget.blockUi)
+                        Container(
+                          width: 300,
+                          child: ElevatedButton(
+                            onPressed: !_sendingPedido
+                                ? () {
+                                    if (_formKey.currentState.validate()) {
+                                      _formKey.currentState.save();
+                                      setState(() {
+                                        _sendingPedido = true;
+                                      });
 
-                                    //Get token from auth provider
-                                    //and send to pedido provider
-                                    _novoPedStore.setToken(_authStore.token);
-                                    _novoPedStore
-                                        .atualizarPedido(
-                                            widget.pedidoDados['id'])
-                                        .then((data) {
-                                      setState(() {
-                                        _sendingPedido = false;
-                                      });
-                                      //Delete from s3 if pedido is deleted
-                                      _s3deleteStore.batchDeleteFiles();
-                                      ScaffoldMessenger.of(context)
-                                          .removeCurrentSnackBar();
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          duration: const Duration(seconds: 8),
-                                          content: Text(data[0]['message']),
-                                        ),
-                                      );
-                                      if (!data[0].containsKey('error')) {
-                                        Navigator.pop(context, true);
-                                      }
-                                    });
-                                  } else {
-                                    ScaffoldMessenger.of(context)
-                                        .removeCurrentSnackBar();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        duration: const Duration(seconds: 8),
-                                        content: const Text(
-                                          'Por favor preencha os campos obrigatórios!',
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                }
-                              : null,
-                          child: !_sendingPedido
-                              ? const Text(
-                                  'ATUALIZAR PEDIDO',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : CircularProgressIndicator(
-                                  valueColor: new AlwaysStoppedAnimation<Color>(
-                                    Colors.blue,
-                                  ),
-                                ),
-                        ),
-                      ),
-                    //Novo paciente
-                    if (widget.isNovoPaciente)
-                      Container(
-                        width: 300,
-                        child: ElevatedButton(
-                          onPressed: !_sendingPedido
-                              ? () {
-                                  if (_formKey.currentState.validate()) {
-                                    _formKey.currentState.save();
-                                    setState(() {
-                                      _sendingPedido = true;
-                                    });
-                                    //Get token from auth provider
-                                    //and send to pedido provider
-                                    _novoPedStore.setToken(_authStore.token);
-                                    _novoPedStore.enviarPaciente().then((data) {
-                                      setState(() {
-                                        _sendingPedido = false;
-                                      });
-                                      ScaffoldMessenger.of(context)
-                                          .removeCurrentSnackBar();
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          duration: const Duration(seconds: 8),
-                                          content: Text(data[0]['message']),
-                                        ),
-                                      );
-                                      if (!data[0].containsKey('error')) {
-                                        Navigator.of(context)
-                                            .pushReplacementNamed(
-                                          MeusPacientes.routeName,
+                                      //Get token from auth provider
+                                      //and send to pedido provider
+                                      _novoPedStore.setToken(_authStore.token);
+                                      _novoPedStore
+                                          .atualizarPedido(
+                                              widget.pedidoDados['id'])
+                                          .then((data) {
+                                        setState(() {
+                                          _sendingPedido = false;
+                                        });
+                                        //Delete from s3 if pedido is deleted
+                                        _s3deleteStore.batchDeleteFiles();
+                                        ScaffoldMessenger.of(context)
+                                            .removeCurrentSnackBar();
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            duration:
+                                                const Duration(seconds: 8),
+                                            content: Text(data[0]['message']),
+                                          ),
                                         );
-                                      }
-                                    });
-                                  } else {
-                                    ScaffoldMessenger.of(context)
-                                        .removeCurrentSnackBar();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        duration: const Duration(seconds: 8),
-                                        content: const Text(
-                                          'Por favor preencha os campos obrigatórios!',
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                }
-                              : null,
-                          child: !_sendingPedido
-                              ? const Text(
-                                  'ENVIAR NOVO PACIENTE',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : CircularProgressIndicator(
-                                  valueColor: new AlwaysStoppedAnimation<Color>(
-                                    Colors.blue,
-                                  ),
-                                ),
-                        ),
-                      ),
-                    //Novo pedido
-                    if (widget.isNovoPedido)
-                      Container(
-                        width: 300,
-                        child: ElevatedButton(
-                          onPressed: !_sendingPedido
-                              ? () {
-                                  if (_formKey.currentState.validate()) {
-                                    _formKey.currentState.save();
-                                    setState(() {
-                                      _sendingPedido = true;
-                                    });
-                                    //Get token from auth provider
-                                    //and send to pedido provider
-                                    _novoPedStore.setToken(_authStore.token);
-                                    _novoPedStore
-                                        .enviarNovoPedido()
-                                        .then((data) {
-                                      setState(() {
-                                        _sendingPedido = false;
+                                        if (!data[0].containsKey('error')) {
+                                          Navigator.pop(context, true);
+                                        }
                                       });
+                                    } else {
                                       ScaffoldMessenger.of(context)
                                           .removeCurrentSnackBar();
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(
                                           duration: const Duration(seconds: 8),
-                                          content: Text(data[0]['message']),
+                                          content: const Text(
+                                            'Por favor preencha os campos obrigatórios!',
+                                          ),
                                         ),
                                       );
-                                      if (!data[0].containsKey('error')) {
-                                        Navigator.pop(context);
-                                      }
-                                    });
-                                  } else {
-                                    ScaffoldMessenger.of(context)
-                                        .removeCurrentSnackBar();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        duration: const Duration(seconds: 8),
-                                        content: const Text(
-                                          'Por favor preencha os campos obrigatórios!',
-                                        ),
-                                      ),
-                                    );
+                                    }
                                   }
-                                }
-                              : null,
-                          child: !_sendingPedido
-                              ? const Text(
-                                  'ENVIAR NOVO PEDIDO',
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                : null,
+                            child: !_sendingPedido
+                                ? const Text(
+                                    'ATUALIZAR PEDIDO',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : CircularProgressIndicator(
+                                    valueColor:
+                                        new AlwaysStoppedAnimation<Color>(
+                                      Colors.blue,
+                                    ),
                                   ),
-                                )
-                              : CircularProgressIndicator(
-                                  valueColor: new AlwaysStoppedAnimation<Color>(
-                                    Colors.blue,
-                                  ),
-                                ),
+                          ),
                         ),
-                      ),
-                    //Novo refinamento
-                    if (widget.isNovoRefinamento)
-                      Container(
-                        width: 300,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState.validate()) {
-                              _formKey.currentState.save();
-                              //Get token from auth provider
-                              //and send to pedido provider
-                              _novoPedStore.setToken(_authStore.token);
-                              _novoPedStore
-                                  .enviarNovoRefinamento()
-                                  .then((data) {
+                      //Novo paciente
+                      if (widget.isNovoPaciente)
+                        Container(
+                          width: 300,
+                          child: ElevatedButton(
+                            onPressed: !_sendingPedido
+                                ? () {
+                                    if (_formKey.currentState.validate()) {
+                                      _formKey.currentState.save();
+                                      setState(() {
+                                        _sendingPedido = true;
+                                      });
+                                      //Get token from auth provider
+                                      //and send to pedido provider
+                                      _novoPedStore.setToken(_authStore.token);
+                                      _novoPedStore
+                                          .enviarPaciente()
+                                          .then((data) {
+                                        setState(() {
+                                          _sendingPedido = false;
+                                        });
+                                        ScaffoldMessenger.of(context)
+                                            .removeCurrentSnackBar();
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            duration:
+                                                const Duration(seconds: 8),
+                                            content: Text(data[0]['message']),
+                                          ),
+                                        );
+                                        if (!data[0].containsKey('error')) {
+                                          Navigator.of(context)
+                                              .pushReplacementNamed(
+                                            MeusPacientes.routeName,
+                                          );
+                                        }
+                                      });
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .removeCurrentSnackBar();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          duration: const Duration(seconds: 8),
+                                          content: const Text(
+                                            'Por favor preencha os campos obrigatórios!',
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  }
+                                : null,
+                            child: !_sendingPedido
+                                ? const Text(
+                                    'ENVIAR NOVO PACIENTE',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : CircularProgressIndicator(
+                                    valueColor:
+                                        new AlwaysStoppedAnimation<Color>(
+                                      Colors.blue,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      //Novo pedido
+                      if (widget.isNovoPedido)
+                        Container(
+                          width: 300,
+                          child: ElevatedButton(
+                            onPressed: !_sendingPedido
+                                ? () {
+                                    if (_formKey.currentState.validate()) {
+                                      _formKey.currentState.save();
+                                      setState(() {
+                                        _sendingPedido = true;
+                                      });
+                                      //Get token from auth provider
+                                      //and send to pedido provider
+                                      _novoPedStore.setToken(_authStore.token);
+                                      _novoPedStore
+                                          .enviarNovoPedido()
+                                          .then((data) {
+                                        setState(() {
+                                          _sendingPedido = false;
+                                        });
+                                        ScaffoldMessenger.of(context)
+                                            .removeCurrentSnackBar();
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            duration:
+                                                const Duration(seconds: 8),
+                                            content: Text(data[0]['message']),
+                                          ),
+                                        );
+                                        if (!data[0].containsKey('error')) {
+                                          Navigator.pop(context);
+                                        }
+                                      });
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .removeCurrentSnackBar();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          duration: const Duration(seconds: 8),
+                                          content: const Text(
+                                            'Por favor preencha os campos obrigatórios!',
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  }
+                                : null,
+                            child: !_sendingPedido
+                                ? const Text(
+                                    'ENVIAR NOVO PEDIDO',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : CircularProgressIndicator(
+                                    valueColor:
+                                        new AlwaysStoppedAnimation<Color>(
+                                      Colors.blue,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      //Novo refinamento
+                      if (widget.isNovoRefinamento)
+                        Container(
+                          width: 300,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState.validate()) {
+                                _formKey.currentState.save();
+                                //Get token from auth provider
+                                //and send to pedido provider
+                                _novoPedStore.setToken(_authStore.token);
+                                _novoPedStore
+                                    .enviarNovoRefinamento()
+                                    .then((data) {
+                                  ScaffoldMessenger.of(context)
+                                      .removeCurrentSnackBar();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      duration: const Duration(seconds: 8),
+                                      content: Text(data[0]['message']),
+                                    ),
+                                  );
+                                  if (!data[0].containsKey('error')) {
+                                    Navigator.pop(context);
+                                  }
+                                });
+                              } else {
                                 ScaffoldMessenger.of(context)
                                     .removeCurrentSnackBar();
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     duration: const Duration(seconds: 8),
-                                    content: Text(data[0]['message']),
+                                    content: const Text(
+                                      'Por favor preencha os campos obrigatórios!',
+                                    ),
                                   ),
                                 );
-                                if (!data[0].containsKey('error')) {
-                                  Navigator.pop(context);
-                                }
-                              });
-                            } else {
-                              ScaffoldMessenger.of(context)
-                                  .removeCurrentSnackBar();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  duration: const Duration(seconds: 8),
-                                  content: const Text(
-                                    'Por favor preencha os campos obrigatórios!',
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                          child: const Text(
-                            'ENVIAR NOVO REFINAMENTO',
-                            style: const TextStyle(
-                              color: Colors.white,
+                              }
+                            },
+                            child: const Text(
+                              'ENVIAR NOVO REFINAMENTO',
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    Expanded(child: Container()),
-                  ],
-                ),
+                      Expanded(child: Container()),
+                    ],
+                  ),
                 const SizedBox(height: 160),
               ],
             ),

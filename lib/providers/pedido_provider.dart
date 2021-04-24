@@ -4980,9 +4980,22 @@ class PedidoProvider with ChangeNotifier {
     _orientacoesEsp = '';
     //SENDING MANAGE
     _fstSending = 0;
+    _fstFotoError = false;
+    _fstRadioError = false;
+    _fstMSupError = false;
+    _fstMInfError = false;
+    _fstCompError = false;
+    _fstNemoError = false;
   }
 
   //MANAGE PHOTOS, IMAGES, MODELS SEND STATE
+
+  bool _fstFotoError = false;
+  bool _fstRadioError = false;
+  bool _fstMSupError = false;
+  bool _fstMInfError = false;
+  bool _fstCompError = false;
+  bool _fstNemoError = false;
 
   static const int _fstNotSending = 0;
   static const int _fstFoto = 1;
@@ -4994,6 +5007,48 @@ class PedidoProvider with ChangeNotifier {
 
   //The main sending variable (if != 0, sending a file)
   int _fstSending = 0;
+
+  bool setFstFotoError(bool value) {
+    _fstFotoError = value;
+    notifyListeners();
+  }
+
+  bool setFstRadioError(bool value) {
+    _fstRadioError = value;
+    notifyListeners();
+  }
+
+  bool setFstMSupError(bool value) {
+    _fstMSupError = value;
+    notifyListeners();
+  }
+
+  bool setFstMInfError(bool value) {
+    _fstMInfError = value;
+    notifyListeners();
+  }
+
+  bool setFstCompError(bool value) {
+    _fstCompError = value;
+    notifyListeners();
+  }
+
+  bool setFstNemoError(bool value) {
+    _fstNemoError = value;
+    notifyListeners();
+  }
+
+  bool getFstFilesErrors() {
+    if (_fstFotoError ||
+        _fstRadioError ||
+        _fstMSupError ||
+        _fstMInfError ||
+        _fstCompError ||
+        _fstNemoError) {
+      return true;
+    }
+    return false;
+  }
 
   void setFstSendState({int fstSendValue}) {
     switch (fstSendValue) {

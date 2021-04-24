@@ -138,6 +138,8 @@ class _RadiografiaUploadState extends State<RadiografiaUpload> {
         _radiografiasList[posContainingWidget].imageUrl = '';
         _radiografiasList[posContainingWidget].thumbnail = '';
       });
+      //For send btn block
+      _novoPedStore.setFstRadioError(true);
       print(e);
     }
   }
@@ -152,7 +154,7 @@ class _RadiografiaUploadState extends State<RadiografiaUpload> {
     if (result != null && result.files.length + _radiografiasList.length <= 4) {
       _radiografiasDataList = result.files;
     } else {
-      throw ('Excedeu número máximo de radiografias');
+      throw ('Selecione até 4 radiografias.');
     }
   }
 
@@ -218,6 +220,8 @@ class _RadiografiaUploadState extends State<RadiografiaUpload> {
                                       radiografia.id == curRadiografia.id,
                                 );
                               });
+                              //Block send button in pedido_form
+                              _doesListHaveErrors();
                             } else {
                               _s3deleteStore.setIdToDelete(curRadiografia.id);
                               setState(() {
@@ -226,6 +230,8 @@ class _RadiografiaUploadState extends State<RadiografiaUpload> {
                                       radiografia.id == curRadiografia.id,
                                 );
                               });
+                              //Block send button in pedido_form
+                              _doesListHaveErrors();
                             }
                           } else {
                             //If negitive, error ocurred só delete only from list
@@ -236,6 +242,8 @@ class _RadiografiaUploadState extends State<RadiografiaUpload> {
                                       radiografia.id == curRadiografia.id,
                                 );
                               });
+                              //Block send button in pedido_form
+                              _doesListHaveErrors();
                             } else {
                               _deleteRadiografia(_token, curRadiografia.id)
                                   .then((res) {
@@ -247,6 +255,8 @@ class _RadiografiaUploadState extends State<RadiografiaUpload> {
                                           radiografia.id == data['id'],
                                     );
                                   });
+                                  //Block send button in pedido_form
+                                  _doesListHaveErrors();
                                 }
                               });
                             }
@@ -303,6 +313,21 @@ class _RadiografiaUploadState extends State<RadiografiaUpload> {
     }
 
     return resData;
+  }
+
+  //CHECK FOR ERRORS IN LIST
+  void _doesListHaveErrors() {
+    if (_radiografiasList.length > 0) {
+      _radiografiasList.forEach((photo) {
+        if (photo.id != null) {
+          if (photo.id < 0) {
+            _novoPedStore.setFstRadioError(true);
+            return;
+          }
+        }
+      });
+      _novoPedStore.setFstRadioError(false);
+    }
   }
 
   @override
@@ -385,6 +410,10 @@ class _RadiografiaUploadState extends State<RadiografiaUpload> {
                           );
 
                           _openFileExplorer().then((_) {
+                            //Change btn states/block ui while sending
+                            _novoPedStore.setFstSendState(
+                              fstSendValue: _novoPedStore.getFstRadio(),
+                            );
                             ScaffoldMessenger.of(context)
                                 .removeCurrentSnackBar();
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -393,14 +422,9 @@ class _RadiografiaUploadState extends State<RadiografiaUpload> {
                                 content: Text('Enviando radiografias...'),
                               ),
                             );
-
                             Future.delayed(const Duration(seconds: 1),
                                 () async {
                               int count = 1;
-                              //Change btn states/block ui while sending
-                              _novoPedStore.setFstSendState(
-                                fstSendValue: _novoPedStore.getFstRadio(),
-                              );
                               for (var radiografia in _radiografiasDataList) {
                                 ScaffoldMessenger.of(context)
                                     .removeCurrentSnackBar();
@@ -424,13 +448,17 @@ class _RadiografiaUploadState extends State<RadiografiaUpload> {
                                   .removeCurrentSnackBar();
                             });
                           }).catchError((e) {
+                            //Unblock when finished
+                            _novoPedStore.setFstSendState(
+                              fstSendValue:
+                                  _novoPedStore.getFstNotSendingState(),
+                            );
                             ScaffoldMessenger.of(context)
                                 .removeCurrentSnackBar();
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 duration: const Duration(seconds: 8),
-                                content: const Text(
-                                    'Selecione no máximo 4 radiografias!'),
+                                content: Text(e),
                               ),
                             );
                           });

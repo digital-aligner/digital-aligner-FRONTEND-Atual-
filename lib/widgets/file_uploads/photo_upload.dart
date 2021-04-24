@@ -139,6 +139,8 @@ class _PhotoUploadState extends State<PhotoUpload> {
         _photosList[posContainingWidget].thumbnail = 'logos/error.jpg';
         _photosList[posContainingWidget].imageUrl = '';
       });
+      //For send btn block
+      _novoPedStore.setFstFotoError(true);
       print(e);
     }
   }
@@ -150,10 +152,14 @@ class _PhotoUploadState extends State<PhotoUpload> {
       allowMultiple: true,
       withReadStream: true,
     );
-    if (result != null && result.files.length + _photosList.length <= 16) {
-      _photosDataList = result.files;
+    if (result != null) {
+      if (result.files.length + _photosList.length <= 16) {
+        _photosDataList = result.files;
+      } else {
+        throw ('Selecione até 16 fotografias.');
+      }
     } else {
-      throw ('Excedeu número máximo de imagens');
+      throw ('Nenhum arquivo escolhido.');
     }
   }
 
@@ -218,6 +224,8 @@ class _PhotoUploadState extends State<PhotoUpload> {
                                   (photo) => photo.id == curPhoto.id,
                                 );
                               });
+                              //Block send button in pedido_form
+                              _doesListHaveErrors();
                             } else {
                               _s3deleteStore.setIdToDelete(curPhoto.id);
                               setState(() {
@@ -225,6 +233,8 @@ class _PhotoUploadState extends State<PhotoUpload> {
                                   (photo) => photo.id == curPhoto.id,
                                 );
                               });
+                              //Block send button in pedido_form
+                              _doesListHaveErrors();
                             }
                           } else {
                             if (curPhoto.id < 0) {
@@ -233,6 +243,8 @@ class _PhotoUploadState extends State<PhotoUpload> {
                                   (photo) => photo.id == curPhoto.id,
                                 );
                               });
+                              //Block send button in pedido_form
+                              _doesListHaveErrors();
                             } else {
                               _deletePhoto(_token, curPhoto.id).then((res) {
                                 var data = json.decode(res.body);
@@ -242,6 +254,8 @@ class _PhotoUploadState extends State<PhotoUpload> {
                                       (photo) => photo.id == data['id'],
                                     );
                                   });
+                                  //Block send button in pedido_form
+                                  _doesListHaveErrors();
                                 }
                               });
                             }
@@ -310,6 +324,21 @@ class _PhotoUploadState extends State<PhotoUpload> {
     }
 
     return resData;
+  }
+
+  //CHECK FOR ERRORS IN LIST
+  void _doesListHaveErrors() {
+    if (_photosList.length > 0) {
+      _photosList.forEach((photo) {
+        if (photo.id != null) {
+          if (photo.id < 0) {
+            _novoPedStore.setFstFotoError(true);
+            return;
+          }
+        }
+      });
+      _novoPedStore.setFstFotoError(false);
+    }
   }
 
   @override
@@ -391,13 +420,13 @@ class _PhotoUploadState extends State<PhotoUpload> {
                           );
 
                           _openFileExplorer().then((_) {
+                            //Change btn states/block ui while sending
+                            _novoPedStore.setFstSendState(
+                              fstSendValue: _novoPedStore.getFstFoto(),
+                            );
                             Future.delayed(const Duration(seconds: 1),
                                 () async {
                               int count = 1;
-                              //Change btn states/block ui while sending
-                              _novoPedStore.setFstSendState(
-                                fstSendValue: _novoPedStore.getFstFoto(),
-                              );
                               for (var photo in _photosDataList) {
                                 ScaffoldMessenger.of(context)
                                     .removeCurrentSnackBar();
@@ -422,13 +451,17 @@ class _PhotoUploadState extends State<PhotoUpload> {
                                   .removeCurrentSnackBar();
                             });
                           }).catchError((e) {
+                            //Unblock when finished
+                            _novoPedStore.setFstSendState(
+                              fstSendValue:
+                                  _novoPedStore.getFstNotSendingState(),
+                            );
                             ScaffoldMessenger.of(context)
                                 .removeCurrentSnackBar();
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 duration: const Duration(seconds: 8),
-                                content:
-                                    Text('Selecione no máximo 16 imagens!'),
+                                content: Text(e),
                               ),
                             );
                           });

@@ -22,6 +22,8 @@ class _EditarRelatorioScreenState extends State<EditarRelatorioScreen> {
   RelatorioProvider _relatorioStore;
   S3RelatorioDeleteProvider _s3RelatorioDeleteStore;
 
+  bool runOnce = true;
+
   final _numeroPedido = TextEditingController();
   final _nome = TextEditingController();
   final _sobrenome = TextEditingController();
@@ -75,24 +77,27 @@ class _EditarRelatorioScreenState extends State<EditarRelatorioScreen> {
 
   @override
   void didChangeDependencies() {
-    super.didChangeDependencies();
     _authStore = Provider.of<AuthProvider>(context);
-    _relatorioStore = Provider.of<RelatorioProvider>(context, listen: false);
-    _relatorioStore.clearSelectedRelatorio();
-    _relatorioStore.setToken(_authStore.token);
-    _argMap = ModalRoute.of(context).settings.arguments;
+    if (runOnce) {
+      _relatorioStore = Provider.of<RelatorioProvider>(context);
+      _relatorioStore.clearSelectedRelatorio();
+      _relatorioStore.setToken(_authStore.token);
+      _argMap = ModalRoute.of(context).settings.arguments;
 
-    if (_fetchData && _argMap != null) {
-      _relatorioStore
-          .fetchMyRelatorio(
-        _argMap['pedidoId'],
-      )
-          .then((_) {
-        _mapDataToFields();
+      if (_fetchData && _argMap != null) {
+        _relatorioStore
+            .fetchMyRelatorio(
+          _argMap['pedidoId'],
+        )
+            .then((_) {
+          _mapDataToFields();
 
-        _fetchData = false;
-      });
+          _fetchData = false;
+        });
+      }
+      runOnce = false;
     }
+    super.didChangeDependencies();
   }
 
   @override
@@ -285,58 +290,73 @@ class _EditarRelatorioScreenState extends State<EditarRelatorioScreen> {
                             ),
                           ),
                           //ENVIAR (atualizar)
-                          Container(
-                            width: 300,
-                            child: ElevatedButton(
-                              onPressed: !_sendingRelatorio
-                                  ? () {
-                                      if (_formKey.currentState.validate()) {
-                                        _formKey.currentState.save();
-                                        setState(() {
-                                          _sendingRelatorio = true;
-                                        });
-                                        _relatorioStore
-                                            .atualizarRelatorio()
-                                            .then((res) {
-                                          //Delete from s3 if pedido is deleted
-                                          _s3RelatorioDeleteStore
-                                              .batchDeleteFiles();
-                                          ScaffoldMessenger.of(context)
-                                              .removeCurrentSnackBar();
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              duration:
-                                                  const Duration(seconds: 8),
-                                              content: Text(res['message']),
-                                            ),
-                                          );
-                                          if (res['statusCode'] == 200) {
-                                            _didUpdate = true;
-                                            Navigator.pop(context, true);
-                                          }
+                          if (_relatorioStore.getFstSendingState() !=
+                              _relatorioStore.getFstNotSendingState())
+                            Container(
+                              width: 300,
+                              child: ElevatedButton(
+                                onPressed: null,
+                                child: const Text(
+                                  'AGUARDE...',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            )
+                          else
+                            Container(
+                              width: 300,
+                              child: ElevatedButton(
+                                onPressed: !_sendingRelatorio
+                                    ? () {
+                                        if (_formKey.currentState.validate()) {
+                                          _formKey.currentState.save();
                                           setState(() {
-                                            _sendingRelatorio = false;
+                                            _sendingRelatorio = true;
                                           });
-                                        });
+                                          _relatorioStore
+                                              .atualizarRelatorio()
+                                              .then((res) {
+                                            //Delete from s3 if pedido is deleted
+                                            _s3RelatorioDeleteStore
+                                                .batchDeleteFiles();
+                                            ScaffoldMessenger.of(context)
+                                                .removeCurrentSnackBar();
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                duration:
+                                                    const Duration(seconds: 8),
+                                                content: Text(res['message']),
+                                              ),
+                                            );
+                                            if (res['statusCode'] == 200) {
+                                              _didUpdate = true;
+                                              Navigator.pop(context, true);
+                                            }
+                                            setState(() {
+                                              _sendingRelatorio = false;
+                                            });
+                                          });
+                                        }
                                       }
-                                    }
-                                  : null,
-                              child: !_sendingRelatorio
-                                  ? const Text(
-                                      'ATUALIZAR',
-                                      style: const TextStyle(
-                                        color: Colors.white,
+                                    : null,
+                                child: !_sendingRelatorio
+                                    ? const Text(
+                                        'ATUALIZAR',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : CircularProgressIndicator(
+                                        valueColor:
+                                            new AlwaysStoppedAnimation<Color>(
+                                          Colors.blue,
+                                        ),
                                       ),
-                                    )
-                                  : CircularProgressIndicator(
-                                      valueColor:
-                                          new AlwaysStoppedAnimation<Color>(
-                                        Colors.blue,
-                                      ),
-                                    ),
+                              ),
                             ),
-                          ),
                           const SizedBox(
                             height: 60,
                           ),

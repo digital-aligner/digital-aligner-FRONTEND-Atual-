@@ -24,7 +24,8 @@ class _GerarRelatorioScreenState extends State<GerarRelatorioScreen> {
   final _formKey = GlobalKey<FormState>();
   AuthProvider _authStore;
   RelatorioProvider _relatorioStore;
-  PedidosListProvider _pedidosListStore;
+
+  bool runOnce = true;
 
   final _numeroPedido = TextEditingController();
   final _nome = TextEditingController();
@@ -64,28 +65,28 @@ class _GerarRelatorioScreenState extends State<GerarRelatorioScreen> {
 
   @override
   void didChangeDependencies() {
-    super.didChangeDependencies();
     _authStore = Provider.of<AuthProvider>(context);
-    _relatorioStore = Provider.of<RelatorioProvider>(context, listen: false);
-    _pedidosListStore = Provider.of<PedidosListProvider>(
-      context,
-      listen: false,
-    );
-    _relatorioStore.clearSelectedRelatorio();
-    _relatorioStore.setToken(_authStore.token);
-    final Map _argMap = ModalRoute.of(context).settings.arguments;
+    if (runOnce) {
+      _relatorioStore = Provider.of<RelatorioProvider>(context);
+      _relatorioStore.clearSelectedRelatorio();
+      _relatorioStore.setToken(_authStore.token);
+      final Map _argMap = ModalRoute.of(context).settings.arguments;
 
-    if (_fetchData && _argMap != null) {
-      _relatorioStore
-          .fetchRelatorioBaseData(
-        _argMap['pedidoId'],
-        _argMap['pacienteId'],
-      )
-          .then((_) {
-        _mapDataToFields();
-        _fetchData = false;
-      });
+      if (_fetchData && _argMap != null) {
+        _relatorioStore
+            .fetchRelatorioBaseData(
+          _argMap['pedidoId'],
+          _argMap['pacienteId'],
+        )
+            .then((_) {
+          _mapDataToFields();
+          _fetchData = false;
+        });
+      }
+
+      runOnce = false;
     }
+    super.didChangeDependencies();
   }
 
   @override
@@ -258,36 +259,53 @@ class _GerarRelatorioScreenState extends State<GerarRelatorioScreen> {
                           ),
                         ),
                         //ENVIAR
-                        Container(
-                          width: 300,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState.validate()) {
-                                _formKey.currentState.save();
+                        if (_relatorioStore.getFstSendingState() !=
+                            _relatorioStore.getFstNotSendingState())
+                          Container(
+                            width: 300,
+                            child: ElevatedButton(
+                              onPressed: null,
+                              child: const Text(
+                                'AGUARDE...',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          )
+                        else
+                          Container(
+                            width: 300,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                if (_formKey.currentState.validate()) {
+                                  _formKey.currentState.save();
 
-                                _relatorioStore.enviarRelatorio().then((data) {
-                                  ScaffoldMessenger.of(context)
-                                      .removeCurrentSnackBar();
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      duration: const Duration(seconds: 8),
-                                      content: Text(data['message']),
-                                    ),
-                                  );
-                                  if (!data.containsKey('error')) {
-                                    Navigator.pop(context, true);
-                                  }
-                                });
-                              }
-                            },
-                            child: const Text(
-                              'ENVIAR',
-                              style: const TextStyle(
-                                color: Colors.white,
+                                  _relatorioStore
+                                      .enviarRelatorio()
+                                      .then((data) {
+                                    ScaffoldMessenger.of(context)
+                                        .removeCurrentSnackBar();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        duration: const Duration(seconds: 8),
+                                        content: Text(data['message']),
+                                      ),
+                                    );
+                                    if (!data.containsKey('error')) {
+                                      Navigator.pop(context, true);
+                                    }
+                                  });
+                                }
+                              },
+                              child: const Text(
+                                'ENVIAR',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
-                        ),
                         const SizedBox(
                           height: 60,
                         ),
