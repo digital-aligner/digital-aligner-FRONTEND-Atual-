@@ -1084,7 +1084,32 @@ class _PedidoFormState extends State<PedidoForm> {
     );
   }
 
-  Widget _manageModelType(_novoPedStore) {
+  Widget _manageModelType(PedidoProvider _novoPedStore) {
+    //Show other blocked btn if sending files
+    if (_novoPedStore.getFstSendingState() !=
+        _novoPedStore.getFstNotSendingState()) {
+      //Digital ou Gesso
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Radio(
+            activeColor: Colors.blue,
+            groupValue: _novoPedStore.getFormatoModelos(),
+            onChanged: null,
+            value: 1,
+          ),
+          const Text('Digital'),
+          Radio(
+            activeColor: Colors.blue,
+            groupValue: _novoPedStore.getFormatoModelos(),
+            onChanged: null,
+            value: 2,
+          ),
+          const Text('Gesso'),
+        ],
+      );
+    }
+
     //Digital ou Gesso
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

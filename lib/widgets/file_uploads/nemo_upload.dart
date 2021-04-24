@@ -27,10 +27,7 @@ class NemoUpload extends StatefulWidget {
   _NemoUploadState createState() => _NemoUploadState();
 }
 
-class _NemoUploadState extends State<NemoUpload>
-    with AutomaticKeepAliveClientMixin<NemoUpload> {
-  @override
-  bool get wantKeepAlive => true;
+class _NemoUploadState extends State<NemoUpload> {
   bool _isFetchEdit = true;
 
   AuthProvider _authStore;
@@ -306,9 +303,8 @@ class _NemoUploadState extends State<NemoUpload>
   }
 
   @override
-  Widget build(BuildContext context) {
-    //For the "wantToKeepAlive" mixin
-    super.build(context);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
     _authStore = Provider.of<AuthProvider>(context);
     _novoPedStore = Provider.of<PedidoProvider>(context);
@@ -326,63 +322,117 @@ class _NemoUploadState extends State<NemoUpload>
     } else {
       _novoPedStore.setModeloNemoList(null);
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: 600,
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              width: 300,
-              child: ElevatedButton(
-                onPressed: widget.blockUi
-                    ? null
-                    : () {
-                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            duration: const Duration(seconds: 8),
-                            content: const Text('Aguarde...'),
-                          ),
-                        );
-
-                        _openFileExplorer().then((_) {
-                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              duration: const Duration(seconds: 8),
-                              content: const Text(
-                                'Enviando nmz segmentação...',
-                              ),
-                            ),
-                          );
-
-                          Future.delayed(const Duration(milliseconds: 500), () {
-                            for (PlatformFile nemoUpload
-                                in _nemoUploadsDataList) {
-                              _sendnemoUpload(_authStore.token, nemoUpload);
-                              //Clear memory of unused byte array
-                              //_nemoUploadsDataList = null;
-                            }
-                          });
-                        }).catchError((e) {
-                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              duration: const Duration(seconds: 8),
-                              content: Text('Selecione no máximo 1 arquivo!'),
-                            ),
-                          );
-                        });
-                      },
-                child: const Text(
-                  'NMZ SEGMENTAÇÃO',
-                  style: const TextStyle(
-                    color: Colors.white,
+            //If sending, but not this (modelo nemo)
+            if (_novoPedStore.getFstSendingState() !=
+                    _novoPedStore.getFstNotSendingState() &&
+                _novoPedStore.getFstSendingState() !=
+                    _novoPedStore.getFstNemo())
+              Container(
+                width: 300,
+                child: ElevatedButton(
+                  onPressed: null,
+                  child: const Text(
+                    'AGUARDE...',
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-            ),
+            //If sending, but not this (modelo nemo)
+            if (_novoPedStore.getFstSendingState() !=
+                    _novoPedStore.getFstNotSendingState() &&
+                _novoPedStore.getFstSendingState() ==
+                    _novoPedStore.getFstNemo())
+              Container(
+                width: 300,
+                child: ElevatedButton(
+                  onPressed: null,
+                  child: const Text(
+                    'ENVIANDO...',
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              )
+            else
+              Container(
+                width: 300,
+                child: ElevatedButton(
+                  onPressed: widget.blockUi
+                      ? null
+                      : () {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 8),
+                              content: const Text('Aguarde...'),
+                            ),
+                          );
+
+                          _openFileExplorer().then((_) {
+                            Future.delayed(const Duration(seconds: 1),
+                                () async {
+                              int count = 1;
+                              //Change btn states/block ui while sending
+                              _novoPedStore.setFstSendState(
+                                fstSendValue: _novoPedStore.getFstNemo(),
+                              );
+                              for (PlatformFile nemoUpload
+                                  in _nemoUploadsDataList) {
+                                ScaffoldMessenger.of(context)
+                                    .removeCurrentSnackBar();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    duration: const Duration(minutes: 3),
+                                    content: Text(
+                                        'Enviando nemo ${count.toString()} de ${_nemoUploadsDataList.length.toString()}.'),
+                                  ),
+                                );
+                                await _sendnemoUpload(
+                                  _authStore.token,
+                                  nemoUpload,
+                                );
+                                count++;
+                              }
+                              //Unblock when finished
+                              _novoPedStore.setFstSendState(
+                                fstSendValue:
+                                    _novoPedStore.getFstNotSendingState(),
+                              );
+                              ScaffoldMessenger.of(context)
+                                  .removeCurrentSnackBar();
+                            });
+                          }).catchError((e) {
+                            ScaffoldMessenger.of(context)
+                                .removeCurrentSnackBar();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 8),
+                                content: Text('Selecione no máximo 1 arquivo!'),
+                              ),
+                            );
+                          });
+                        },
+                  child: const Text(
+                    'NMZ SEGMENTAÇÃO',
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+
             const SizedBox(height: 20),
             //Showing loaded images, if any.
             _nemoUploadsList != null

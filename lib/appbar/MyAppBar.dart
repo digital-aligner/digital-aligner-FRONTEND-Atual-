@@ -147,6 +147,8 @@ class _MyAppBarState extends State<MyAppBar> {
         Route route = ModalRoute.of(context);
         final routeName = route.settings.name;
         if (routeName != null && routeName != '/perfil') {
+          //Remove any messages (if any) on changing routes
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
           Navigator.of(context).pushReplacementNamed(Perfil.routeName);
         }
       },
@@ -212,6 +214,8 @@ class _MyAppBarState extends State<MyAppBar> {
                   final routeName = route.settings.name;
                   if (routeName != null &&
                       routeName != '/gerenciar-cadastros') {
+                    //Remove any messages (if any) on changing routes
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
                     Navigator.of(context)
                         .pushReplacementNamed(GerenciarCadastros.routeName);
                   }
@@ -221,6 +225,8 @@ class _MyAppBarState extends State<MyAppBar> {
                   final routeName = route.settings.name;
                   if (routeName != null &&
                       routeName != '/gerenciar-permissoes') {
+                    //Remove any messages (if any) on changing routes
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
                     Navigator.of(context)
                         .pushReplacementNamed(GerenciarPermissoes.routeName);
                   }
@@ -230,6 +236,8 @@ class _MyAppBarState extends State<MyAppBar> {
                   final routeName = route.settings.name;
 
                   if (routeName != null && routeName != '/gerenciar-pedidos') {
+                    //Remove any messages (if any) on changing routes
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
                     Navigator.of(context)
                         .pushReplacementNamed(GerenciarPedidos.routeName);
                   }
@@ -240,20 +248,29 @@ class _MyAppBarState extends State<MyAppBar> {
 
                   if (routeName != null &&
                       routeName != '/gerenciar-pacientes') {
+                    //Remove any messages (if any) on changing routes
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
                     checkDataStore.setfetchDataBool(true);
+
                     Navigator.of(context)
                         .pushReplacementNamed(GerenciarPacientes.routeName);
                   }
                 } else if (selectedValue == 'Meus Setups') {
+                  //Remove any messages (if any) on changing routes
+                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
                   checkDataStore.setfetchDataBool(true);
                   Route route = ModalRoute.of(context);
                   final routeName = route.settings.name;
 
                   if (routeName != null && routeName != '/meus-setups') {
+                    //Remove any messages (if any) on changing routes
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
                     Navigator.of(context)
                         .pushReplacementNamed(MeusSetups.routeName);
                   }
                 } else if (selectedValue == 'Minhas Revisões') {
+                  //Remove any messages (if any) on changing routes
+                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
                   checkDataStore.setfetchDataBool(true);
                   Route route = ModalRoute.of(context);
                   final routeName = route.settings.name;
@@ -376,6 +393,8 @@ class _MyAppBarState extends State<MyAppBar> {
         final routeName = route.settings.name;
         print(routeName);
         if (routeName != null && routeName != '/meus-pacientes') {
+          //Remove any messages (if any) on changing routes
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
           Navigator.of(context).pushReplacementNamed(MeusPacientes.routeName);
         }
       },
@@ -409,6 +428,7 @@ class _MyAppBarState extends State<MyAppBar> {
     );
   }
 
+  //when making these futures routes, remember to pop snackbars
   Widget _navNovoPaciente(context) {
     return TextButton.icon(
       onPressed: () {

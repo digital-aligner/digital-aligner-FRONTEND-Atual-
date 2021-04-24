@@ -12,6 +12,52 @@ import 'package:http/http.dart' as http;
 import '../rotas_url.dart';
 
 class RelatorioProvider with ChangeNotifier {
+  //MANAGE PPT,PDF SEND STATE
+
+  static const int _fstNotSending = 0;
+  static const int _fstRelPdf = 1;
+  static const int _fstRelPpt = 2;
+
+  //The main sending variable (if != 0, sending a file)
+  int _fstSending = 0;
+
+  void setFstSendState({int fstSendValue}) {
+    switch (fstSendValue) {
+      case _fstNotSending:
+        _fstSending = _fstNotSending;
+        notifyListeners();
+        break;
+      case _fstRelPdf:
+        _fstSending = _fstRelPdf;
+        notifyListeners();
+        break;
+      case _fstRelPpt:
+        _fstSending = _fstRelPpt;
+        notifyListeners();
+        break;
+      default:
+        _fstSending = _fstNotSending;
+        notifyListeners();
+        break;
+    }
+  }
+
+  int getFstSendingState() {
+    return _fstSending;
+  }
+
+  int getFstNotSendingState() {
+    return _fstNotSending;
+  }
+
+  int getFstRelPdf() {
+    return _fstRelPdf;
+  }
+
+  int getFstRelPpt() {
+    return _fstRelPpt;
+  }
+
   //Currently selected relatorio obj
   Relatorio _selectedRelatorio = Relatorio(
     relatorioPdf: RelatorioPdf(),
@@ -26,6 +72,7 @@ class RelatorioProvider with ChangeNotifier {
   }
 
   void clearSelectedRelatorio() {
+    _fstSending = 0;
     _selectedRelatorio = Relatorio(
       relatorioPdf: RelatorioPdf(),
       relatorioPPT: RelatorioPPT(),
@@ -175,7 +222,7 @@ class RelatorioProvider with ChangeNotifier {
       _selectedRelatorio.relatorioPPT.relatorio1Id =
           _data[0]['relatorio_ppt']['relatorio1_id'];
           */
-      print(_selectedRelatorio.toJson().toString());
+
     } catch (error) {
       print('Error! ' + error.toString());
       return error;

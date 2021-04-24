@@ -27,10 +27,7 @@ class CompactadoUpload extends StatefulWidget {
   _CompactadoUploadState createState() => _CompactadoUploadState();
 }
 
-class _CompactadoUploadState extends State<CompactadoUpload>
-    with AutomaticKeepAliveClientMixin<CompactadoUpload> {
-  @override
-  bool get wantKeepAlive => true;
+class _CompactadoUploadState extends State<CompactadoUpload> {
   bool _isFetchEdit = true;
 
   AuthProvider _authStore;
@@ -349,10 +346,8 @@ class _CompactadoUploadState extends State<CompactadoUpload>
   }
 
   @override
-  Widget build(BuildContext context) {
-    //For the "wantToKeepAlive" mixin
-    super.build(context);
-
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _authStore = Provider.of<AuthProvider>(context);
     _novoPedStore = Provider.of<PedidoProvider>(context);
     //Don't need to listen to changes, just delete on s3
@@ -369,65 +364,119 @@ class _CompactadoUploadState extends State<CompactadoUpload>
     } else {
       _novoPedStore.setModeloCompactadoList(null);
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: 600,
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              width: 300,
-              child: ElevatedButton(
-                onPressed: widget.blockUi
-                    ? null
-                    : () {
-                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            duration: const Duration(seconds: 8),
-                            content: const Text('Aguarde...'),
-                          ),
-                        );
-
-                        _openFileExplorer().then((_) {
+            //If sending, but not this (modelo compactado)
+            if (_novoPedStore.getFstSendingState() !=
+                    _novoPedStore.getFstNotSendingState() &&
+                _novoPedStore.getFstSendingState() !=
+                    _novoPedStore.getFstComp())
+              Container(
+                width: 300,
+                child: ElevatedButton(
+                  onPressed: null,
+                  child: const Text(
+                    'AGUARDE...',
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              )
+            //If sending and this
+            else if (_novoPedStore.getFstSendingState() !=
+                    _novoPedStore.getFstNotSendingState() &&
+                _novoPedStore.getFstSendingState() ==
+                    _novoPedStore.getFstComp())
+              Container(
+                width: 300,
+                child: ElevatedButton(
+                  onPressed: null,
+                  child: const Text(
+                    'ENVIANDO...',
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              )
+            else
+              Container(
+                width: 300,
+                child: ElevatedButton(
+                  onPressed: widget.blockUi
+                      ? null
+                      : () {
                           ScaffoldMessenger.of(context).removeCurrentSnackBar();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               duration: const Duration(seconds: 8),
-                              content: const Text(
-                                'Enviando modelos compactado...',
+                              content: const Text('Aguarde...'),
+                            ),
+                          );
+
+                          _openFileExplorer().then((_) {
+                            Future.delayed(const Duration(seconds: 1),
+                                () async {
+                              int count = 1;
+                              //Change btn states/block ui while sending
+                              _novoPedStore.setFstSendState(
+                                fstSendValue: _novoPedStore.getFstComp(),
+                              );
+                              for (var compactUpload
+                                  in _compactUploadsDataList) {
+                                ScaffoldMessenger.of(context)
+                                    .removeCurrentSnackBar();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    duration: const Duration(minutes: 3),
+                                    content: Text(
+                                        'Enviando compactado ${count.toString()} de ${_compactUploadsDataList.length.toString()}.'),
+                                  ),
+                                );
+                                await _sendcompactUpload(
+                                  _authStore.token,
+                                  compactUpload,
+                                );
+                                count++;
+                              }
+                              //Unblock when finished
+                              _novoPedStore.setFstSendState(
+                                fstSendValue:
+                                    _novoPedStore.getFstNotSendingState(),
+                              );
+                              ScaffoldMessenger.of(context)
+                                  .removeCurrentSnackBar();
+                            });
+                          }).catchError((e) {
+                            ScaffoldMessenger.of(context)
+                                .removeCurrentSnackBar();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 8),
+                                content: const Text(
+                                    'Selecione no máximo 1 arquivo!'),
                               ),
-                            ),
-                          );
-
-                          Future.delayed(const Duration(milliseconds: 500), () {
-                            for (var compactUpload in _compactUploadsDataList) {
-                              _sendcompactUpload(
-                                  _authStore.token, compactUpload);
-                              //Clear memory of unused byte array
-                              //_compactUploadsDataList = null;
-                            }
+                            );
                           });
-                        }).catchError((e) {
-                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              duration: const Duration(seconds: 8),
-                              content:
-                                  const Text('Selecione no máximo 1 arquivo!'),
-                            ),
-                          );
-                        });
-                      },
-                child: const Text(
-                  'MODELOS COMPACTADO',
-                  style: const TextStyle(
-                    color: Colors.white,
+                        },
+                  child: const Text(
+                    'MODELOS COMPACTADO',
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: 20),
+
+            const SizedBox(height: 20),
             //Showing loaded images, if any.
             _compactUploadsList != null
                 ? Column(

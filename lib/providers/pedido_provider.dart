@@ -4978,5 +4978,89 @@ class PedidoProvider with ChangeNotifier {
 
     // ORIENTAÇÕES ESPECIFICAS
     _orientacoesEsp = '';
+    //SENDING MANAGE
+    _fstSending = 0;
+  }
+
+  //MANAGE PHOTOS, IMAGES, MODELS SEND STATE
+
+  static const int _fstNotSending = 0;
+  static const int _fstFoto = 1;
+  static const int _fstRadio = 2;
+  static const int _fstMSup = 3;
+  static const int _fstMInf = 4;
+  static const int _fstComp = 5;
+  static const int _fstNemo = 6;
+
+  //The main sending variable (if != 0, sending a file)
+  int _fstSending = 0;
+
+  void setFstSendState({int fstSendValue}) {
+    switch (fstSendValue) {
+      case _fstNotSending:
+        _fstSending = _fstNotSending;
+        notifyListeners();
+        break;
+      case _fstFoto:
+        _fstSending = _fstFoto;
+        notifyListeners();
+        break;
+      case _fstRadio:
+        _fstSending = _fstRadio;
+        notifyListeners();
+        break;
+      case _fstMSup:
+        _fstSending = _fstMSup;
+        notifyListeners();
+        break;
+      case _fstMInf:
+        _fstSending = _fstMInf;
+        notifyListeners();
+        break;
+      case _fstComp:
+        _fstSending = _fstComp;
+        notifyListeners();
+        break;
+      case _fstNemo:
+        _fstSending = _fstNemo;
+        notifyListeners();
+        break;
+      default:
+        _fstSending = _fstNotSending;
+        notifyListeners();
+        break;
+    }
+  }
+
+  int getFstSendingState() {
+    return _fstSending;
+  }
+
+  int getFstNotSendingState() {
+    return _fstNotSending;
+  }
+
+  int getFstFoto() {
+    return _fstFoto;
+  }
+
+  int getFstRadio() {
+    return _fstRadio;
+  }
+
+  int getFstMSup() {
+    return _fstMSup;
+  }
+
+  int getFstMInf() {
+    return _fstMInf;
+  }
+
+  int getFstComp() {
+    return _fstComp;
+  }
+
+  int getFstNemo() {
+    return _fstNemo;
   }
 }

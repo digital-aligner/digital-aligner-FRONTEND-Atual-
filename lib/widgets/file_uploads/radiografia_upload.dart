@@ -30,10 +30,7 @@ class RadiografiaUpload extends StatefulWidget {
   _RadiografiaUploadState createState() => _RadiografiaUploadState();
 }
 
-class _RadiografiaUploadState extends State<RadiografiaUpload>
-    with AutomaticKeepAliveClientMixin<RadiografiaUpload> {
-  @override
-  bool get wantKeepAlive => true;
+class _RadiografiaUploadState extends State<RadiografiaUpload> {
   bool _isFetchEdit = true;
   AuthProvider _authStore;
   PedidoProvider _novoPedStore;
@@ -309,9 +306,8 @@ class _RadiografiaUploadState extends State<RadiografiaUpload>
   }
 
   @override
-  Widget build(BuildContext context) {
-    //For the "wantToKeepAlive" mixin
-    super.build(context);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _authStore = Provider.of<AuthProvider>(context);
     _novoPedStore = Provider.of<PedidoProvider>(context);
 
@@ -330,61 +326,123 @@ class _RadiografiaUploadState extends State<RadiografiaUpload>
     } else {
       _novoPedStore.setRadiografiasList(null);
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: 600,
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              width: 300,
-              child: ElevatedButton(
-                onPressed: widget.blockUi
-                    ? null
-                    : () {
-                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            duration: const Duration(seconds: 8),
-                            content: const Text('Aguarde...'),
-                          ),
-                        );
-
-                        _openFileExplorer().then((_) {
+            //If sending, but not this (radio)
+            if (_novoPedStore.getFstSendingState() !=
+                    _novoPedStore.getFstNotSendingState() &&
+                _novoPedStore.getFstSendingState() !=
+                    _novoPedStore.getFstRadio())
+              Container(
+                width: 300,
+                child: ElevatedButton(
+                  onPressed: null,
+                  child: const Text(
+                    'AGUARDE...',
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              )
+            //If sending and is this
+            else if (_novoPedStore.getFstSendingState() !=
+                    _novoPedStore.getFstNotSendingState() &&
+                _novoPedStore.getFstSendingState() ==
+                    _novoPedStore.getFstRadio())
+              Container(
+                width: 300,
+                child: ElevatedButton(
+                  onPressed: null,
+                  child: const Text(
+                    'ENVIANDO...',
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              )
+            else
+              Container(
+                width: 300,
+                child: ElevatedButton(
+                  onPressed: widget.blockUi
+                      ? null
+                      : () {
                           ScaffoldMessenger.of(context).removeCurrentSnackBar();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               duration: const Duration(seconds: 8),
-                              content: Text('Enviando radiografias...'),
+                              content: const Text('Aguarde...'),
                             ),
                           );
 
-                          Future.delayed(const Duration(milliseconds: 500), () {
-                            for (var radiografia in _radiografiasDataList) {
-                              _sendRadiografia(_authStore.token, radiografia);
-                              //Clear memory of unused byte array
-                              //_radiografiasDataList = null;
-                            }
+                          _openFileExplorer().then((_) {
+                            ScaffoldMessenger.of(context)
+                                .removeCurrentSnackBar();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 8),
+                                content: Text('Enviando radiografias...'),
+                              ),
+                            );
+
+                            Future.delayed(const Duration(seconds: 1),
+                                () async {
+                              int count = 1;
+                              //Change btn states/block ui while sending
+                              _novoPedStore.setFstSendState(
+                                fstSendValue: _novoPedStore.getFstRadio(),
+                              );
+                              for (var radiografia in _radiografiasDataList) {
+                                ScaffoldMessenger.of(context)
+                                    .removeCurrentSnackBar();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    duration: const Duration(minutes: 3),
+                                    content: Text(
+                                        'Enviando imagem ${count.toString()} de ${_radiografiasDataList.length.toString()}.'),
+                                  ),
+                                );
+                                await _sendRadiografia(
+                                    _authStore.token, radiografia);
+                                count++;
+                              }
+                              //Unblock when finished
+                              _novoPedStore.setFstSendState(
+                                fstSendValue:
+                                    _novoPedStore.getFstNotSendingState(),
+                              );
+                              ScaffoldMessenger.of(context)
+                                  .removeCurrentSnackBar();
+                            });
+                          }).catchError((e) {
+                            ScaffoldMessenger.of(context)
+                                .removeCurrentSnackBar();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 8),
+                                content: const Text(
+                                    'Selecione no máximo 4 radiografias!'),
+                              ),
+                            );
                           });
-                        }).catchError((e) {
-                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              duration: const Duration(seconds: 8),
-                              content: const Text(
-                                  'Selecione no máximo 4 radiografias!'),
-                            ),
-                          );
-                        });
-                      },
-                child: const Text(
-                  'CARREGAR RADIOGRAFIAS',
-                  style: const TextStyle(
-                    color: Colors.white,
+                        },
+                  child: const Text(
+                    'CARREGAR RADIOGRAFIAS',
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-            ),
             const SizedBox(height: 20),
             //Showing loaded images, if any.
             _radiografiasList != null

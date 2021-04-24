@@ -33,10 +33,7 @@ class ModeloSuperiorUpload extends StatefulWidget {
   _ModeloSuperiorUploadState createState() => _ModeloSuperiorUploadState();
 }
 
-class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
-    with AutomaticKeepAliveClientMixin<ModeloSuperiorUpload> {
-  @override
-  bool get wantKeepAlive => true;
+class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload> {
   bool _isFetchEdit = true;
 
   AuthProvider _authStore;
@@ -318,10 +315,8 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
   }
 
   @override
-  Widget build(BuildContext context) {
-    //For the "wantToKeepAlive" mixin
-    super.build(context);
-
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _authStore = Provider.of<AuthProvider>(context);
     _novoPedStore = Provider.of<PedidoProvider>(context);
     //Don't need to listen to changes, just delete on s3
@@ -338,61 +333,116 @@ class _ModeloSuperiorUploadState extends State<ModeloSuperiorUpload>
     } else {
       _novoPedStore.setModeloSuperiorList(null);
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: 600,
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              width: 300,
-              child: ElevatedButton(
-                onPressed: widget.blockUi
-                    ? null
-                    : () {
-                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            duration: const Duration(seconds: 8),
-                            content: const Text('Aguarde...'),
-                          ),
-                        );
-
-                        _openFileExplorer().then((_) {
+            //If sending, but not this (modelo sup)
+            if (_novoPedStore.getFstSendingState() !=
+                    _novoPedStore.getFstNotSendingState() &&
+                _novoPedStore.getFstSendingState() !=
+                    _novoPedStore.getFstMSup())
+              Container(
+                width: 300,
+                child: ElevatedButton(
+                  onPressed: null,
+                  child: const Text(
+                    'AGUARDE...',
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              )
+            //If sending and is this
+            else if (_novoPedStore.getFstSendingState() !=
+                    _novoPedStore.getFstNotSendingState() &&
+                _novoPedStore.getFstSendingState() ==
+                    _novoPedStore.getFstMSup())
+              Container(
+                width: 300,
+                child: ElevatedButton(
+                  onPressed: null,
+                  child: const Text(
+                    'ENVIANDO...',
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              )
+            else
+              Container(
+                width: 300,
+                child: ElevatedButton(
+                  onPressed: widget.blockUi
+                      ? null
+                      : () {
                           ScaffoldMessenger.of(context).removeCurrentSnackBar();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               duration: const Duration(seconds: 8),
-                              content: Text('Enviando modelo superior...'),
+                              content: const Text('Aguarde...'),
                             ),
                           );
 
-                          Future.delayed(const Duration(milliseconds: 500), () {
-                            for (var modeloSup in _modeloSupsDataList) {
-                              _sendmodeloSup(_authStore.token, modeloSup);
-                              //Clear memory of unused byte array
-                              //_modeloSupsDataList = null;
-                            }
+                          _openFileExplorer().then((_) {
+                            Future.delayed(const Duration(seconds: 1),
+                                () async {
+                              int count = 1;
+                              //Change btn states/block ui while sending
+                              _novoPedStore.setFstSendState(
+                                fstSendValue: _novoPedStore.getFstMSup(),
+                              );
+                              for (var modeloSup in _modeloSupsDataList) {
+                                ScaffoldMessenger.of(context)
+                                    .removeCurrentSnackBar();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    duration: const Duration(minutes: 3),
+                                    content: Text(
+                                        'Enviando modelo superior ${count.toString()} de ${_modeloSupsDataList.length.toString()}.'),
+                                  ),
+                                );
+                                await _sendmodeloSup(
+                                  _authStore.token,
+                                  modeloSup,
+                                );
+                                count++;
+                              }
+                              //Unblock when finished
+                              _novoPedStore.setFstSendState(
+                                fstSendValue:
+                                    _novoPedStore.getFstNotSendingState(),
+                              );
+                              ScaffoldMessenger.of(context)
+                                  .removeCurrentSnackBar();
+                            });
+                          }).catchError((e) {
+                            ScaffoldMessenger.of(context)
+                                .removeCurrentSnackBar();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 8),
+                                content:
+                                    const Text('Selecione no máximo 1 modelo!'),
+                              ),
+                            );
                           });
-                        }).catchError((e) {
-                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              duration: const Duration(seconds: 8),
-                              content:
-                                  const Text('Selecione no máximo 1 modelo!'),
-                            ),
-                          );
-                        });
-                      },
-                child: const Text(
-                  'MODELO SUPERIOR',
-                  style: const TextStyle(
-                    color: Colors.white,
+                        },
+                  child: const Text(
+                    'MODELO SUPERIOR',
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-            ),
             const SizedBox(height: 20),
             //Showing loaded images, if any.
             _modeloSupsList != null
