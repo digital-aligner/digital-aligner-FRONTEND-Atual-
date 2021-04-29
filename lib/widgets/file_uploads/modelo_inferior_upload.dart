@@ -208,7 +208,7 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload> {
       }
     });
 
-    final uri = Uri.parse(RotasUrl.rotaUpload);
+    final uri = Uri.parse(RotasUrl.rotaUploads3Custom);
 
     final request = mt.MultipartRequest(
       'POST',
@@ -245,6 +245,11 @@ class _ModeloInferiorUploadState extends State<ModeloInferiorUpload> {
       var response = await request.send();
       var resStream = await response.stream.bytesToString();
       var resData = json.decode(resStream);
+
+      //if server returned any errors
+      if (resData[0].containsKey('error')) {
+        throw resData[0]['error'];
+      }
 
       if (resData[0]['id'] != null) {
         //STOP UI PROGRESS IF NOT FINISHED

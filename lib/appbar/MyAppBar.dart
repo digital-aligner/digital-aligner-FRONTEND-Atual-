@@ -73,17 +73,18 @@ class _MyAppBarState extends State<MyAppBar> {
   void didChangeDependencies() async {
     authStore = Provider.of<AuthProvider>(context);
     checkDataStore = Provider.of<CheckNewDataProvider>(context);
-    novosPedidosCount = checkDataStore.novosPedidosCount;
-    if (checkDataStore.getFetchDataBool()) {
-      checkDataStore.setfetchDataBool(false);
-      checkDataStore.setToken(authStore.token);
-      await checkDataStore.fetchNovoPedidoCount();
+    if (authStore.role == 'Administrador' || authStore.role == 'Gerente') {
       novosPedidosCount = checkDataStore.novosPedidosCount;
+      if (checkDataStore.getFetchDataBool()) {
+        checkDataStore.setfetchDataBool(false);
+        checkDataStore.setToken(authStore.token);
+        await checkDataStore.fetchNovoPedidoCount();
+        novosPedidosCount = checkDataStore.novosPedidosCount;
+      }
+      if (timerBlock == false) {
+        checkForNewPedidosTimer();
+      }
     }
-    if (timerBlock == false) {
-      checkForNewPedidosTimer();
-    }
-
     super.didChangeDependencies();
   }
 

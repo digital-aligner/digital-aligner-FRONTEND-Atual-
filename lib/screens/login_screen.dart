@@ -296,6 +296,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ],
                           ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'V1.20',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -391,6 +398,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'V1.20',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -464,18 +478,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 image: DecorationImage(
                   fit: BoxFit.cover,
                   image: new AssetImage('assets/backgrounds/login_screen.jpg'),
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: const Text(
-                  'V1.19',
-                  style: TextStyle(
-                    color: Colors.black45,
-                  ),
                 ),
               ),
             ),
