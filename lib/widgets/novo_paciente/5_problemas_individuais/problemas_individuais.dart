@@ -247,7 +247,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                       child: CheckboxListTile(
                         controlAffinity: ListTileControlAffinity.leading,
                         title: Text(
-                          'Expansão (Transversal)',
+                          'Desgastes interproximais',
                           style: TextStyle(
                             color: _novoPedStore.getCorrigirApinSelecionado()
                                 ? Colors.black
@@ -1290,7 +1290,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                         child: CheckboxListTile(
                           controlAffinity: ListTileControlAffinity.leading,
                           title: Text(
-                            'Expansão (Transversal)',
+                            'Desgastes interproximais',
                             style: TextStyle(
                               color: _novoPedStore.getCorrigirApinSelecionado()
                                   ? Colors.black

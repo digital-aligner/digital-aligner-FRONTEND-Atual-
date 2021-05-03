@@ -1,6 +1,8 @@
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
+import 'package:digital_aligner_app/screens/termos_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/link.dart';
 
 class Termos extends StatefulWidget {
   final bool blockUi;
@@ -74,29 +76,51 @@ class _TermosState extends State<Termos> {
           ),
 
           //Termos
-          CheckboxListTile(
-            controlAffinity: ListTileControlAffinity.leading,
-            title: const Text(
-              'Li e estou de acordo com os termos de uso.',
-            ),
-            value: _novoPedStore.getTermos(),
-            onChanged: widget.blockUi
-                ? null
-                : (value) {
-                    /*
-              if (_novoPedStore.getCorrigirApinSelecionado()) {
-                _novoPedStore.setExpArcoSupApin(value);
-                if (value == false) {
-                  _novoPedStore.clearExpArcoSupFields(
-                      clearParentCheckbox: false);
-                }
-              }
-              */
-                    _removeFocus(context);
-                    _novoPedStore.setTermos(value);
+          Row(
+            children: [
+              Expanded(
+                child: CheckboxListTile(
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: const Text(
+                    'Li e estou de acordo com os termos de uso.',
+                  ),
+                  value: _novoPedStore.getTermos(),
+                  onChanged: widget.blockUi
+                      ? null
+                      : (value) {
+                          /*
+                    if (_novoPedStore.getCorrigirApinSelecionado()) {
+                      _novoPedStore.setExpArcoSupApin(value);
+                      if (value == false) {
+                        _novoPedStore.clearExpArcoSupFields(
+                            clearParentCheckbox: false);
+                      }
+                    }
+                    */
+                          _removeFocus(context);
+                          _novoPedStore.setTermos(value);
+                        },
+                  activeColor: Colors.black12,
+                  checkColor: Colors.blue,
+                ),
+              ),
+              Expanded(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => TermosScreen()),
+                    );
                   },
-            activeColor: Colors.black12,
-            checkColor: Colors.blue,
+                  child: const Text(
+                    "Visualizar Termos",
+                    style: TextStyle(
+                      color: Colors.lightBlue,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
 
           const SizedBox(height: 20),

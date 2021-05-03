@@ -659,8 +659,9 @@ class _PedidoFormState extends State<PedidoForm> {
                     onChanged: (value) {
                       _novoPedStore.setLinkModelos(value);
                     },
-                    decoration: InputDecoration(
-                      labelText: 'Link dos modelos *',
+                    decoration: const InputDecoration(
+                      labelText:
+                          'Link para envio de documentação complementar: modelos digitais, fotos e radiografias',
                       hintText:
                           'Caso tenha problema em carregar os arquivos, compartilhe no We Transfer, One Drive, Google Drive, copie e cole o link aqui',
                     ),

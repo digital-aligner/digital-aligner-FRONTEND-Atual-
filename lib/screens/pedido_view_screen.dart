@@ -67,14 +67,14 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
   }
 
   //For fetching the small amazon img version, insert "small_" before img name.
-  String _smallImgUrlFormat(String url) {
+  String _thumbImgUrlFormat(String url) {
     int originalIndex = url.indexOf('.com/');
     int insertIndex = originalIndex + 5;
 
     String firstHalf = url.substring(0, insertIndex);
     String secondHalf = url.substring(insertIndex, url.length);
 
-    String complete = firstHalf + 'small_' + secondHalf;
+    String complete = firstHalf + 'thumbnail_' + secondHalf;
     return complete;
   }
 
@@ -88,7 +88,7 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
       if (images['foto' + i.toString()] != null &&
           images['foto' + i.toString()].length > 60) {
         String photoFullQualityUrl = images['foto' + i.toString()];
-        String photoSmallUrl = _smallImgUrlFormat(photoFullQualityUrl);
+        String photoSmallUrl = _thumbImgUrlFormat(photoFullQualityUrl);
 
         networkImgList.add(
           Padding(
@@ -111,8 +111,8 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                     },
                     child: Image.network(
                       photoSmallUrl,
-                      height: 300,
-                      width: 300,
+                      height: 200,
+                      width: 200,
                       fit: BoxFit.contain,
                     ),
                   ),
