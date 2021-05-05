@@ -47,6 +47,7 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
   int index;
 
   bool relatorioFirstFetch = true;
+  bool fetchingZip = false;
 
   ValueKey key = ValueKey('key_0');
   ValueKey key1 = ValueKey('key_1');
@@ -250,13 +251,14 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
           ),
         ),
         const SizedBox(height: 50),
+        /*
         ElevatedButton.icon(
           onPressed: () async {
             _downloadAll();
           },
           icon: const Icon(Icons.download_done_rounded),
           label: const Text('Baixar Tudo'),
-        ),
+        ),*/
       ],
     );
   }
@@ -343,6 +345,42 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
     );
   }
 
+  /*
+  Future<bool> _gerarZipDialog(BuildContext ctx, int index) async {
+    return showDialog(
+      barrierDismissible: true,
+      context: ctx,
+      builder: (BuildContext ctx2) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Baixar todo tratamento'),
+              content: const Text(
+                  '1) Baixa o último compactado gerado. 2) Gera um compactado atualizado'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    //Navigator.of(ctx).pop(true);
+                  },
+                  child: const Text('1) Baixar .zip'),
+                ),
+                Expanded(
+                  child: Container(),
+                ),
+                TextButton(
+                  onPressed: () {
+                    //Navigator.of(ctx).pop(false);
+                  },
+                  child: const Text('2) Gerar .zip atualizado'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+*/
   Future<void> _viewImage(BuildContext ctx, String imgUrl) async {
     return showDialog(
       barrierDismissible: true,
@@ -406,6 +444,27 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
     if (!data[0].containsKey('error')) {
       relatorioData = data;
       relatorioFirstFetch = false;
+    }
+
+    return data;
+  }
+
+  Future<List<dynamic>> _fetchZip(int pedidoId) async {
+    var _response = await http.get(
+      Uri.parse(RotasUrl.rotaUploads3CustomZip +
+          '?queryString=' +
+          pedidoId.toString()),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ${_authStore.token}'
+      },
+    );
+
+    List<dynamic> data = json.decode(_response.body);
+
+    if (data[0].containsKey('error')) {
+      return [];
     }
 
     return data;
@@ -768,9 +827,73 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                       index,
                     ),
                   const SizedBox(height: 20),
-                  const Text(
-                    'Obs: exigirá confirmação.',
-                  ),
+                  //LINK .ZIP
+                  if (_authStore.role != 'Credenciado')
+                    Container(
+                      width: 300,
+                      child: ElevatedButton(
+                        child: !fetchingZip
+                            ? const Text(
+                                'BAIXAR TODO TRATAMENTO',
+                              )
+                            : Center(
+                                child: CircularProgressIndicator(
+                                  valueColor: new AlwaysStoppedAnimation<Color>(
+                                    Colors.blue,
+                                  ),
+                                ),
+                              ),
+                        onPressed: !fetchingZip
+                            ? () async {
+                                //_gerarZipDialog(context, index);
+                                if (pedList[index]['link_tratamento_zip'] ==
+                                    null) {
+                                  setState(() {
+                                    fetchingZip = true;
+                                  });
+                                  List<dynamic> data =
+                                      await _fetchZip(pedList[index]['id']);
+
+                                  if (data[0].containsKey('url')) {
+                                    await launch(data[0]['url']);
+                                    Navigator.of(context).pop(true);
+                                    Future.delayed(Duration(milliseconds: 800),
+                                        () {
+                                      _pedidosListStore.clearPedidosOnLeave();
+                                      _pedidosListStore.clearPedidosAndUpdate();
+                                    });
+                                  } else {
+                                    setState(() {
+                                      fetchingZip = false;
+                                    });
+                                    ScaffoldMessenger.of(context)
+                                        .removeCurrentSnackBar();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        duration: const Duration(seconds: 5),
+                                        content: const Text('Algo deu errado'),
+                                      ),
+                                    );
+                                  }
+                                } else {
+                                  setState(() {
+                                    fetchingZip = true;
+                                  });
+                                  await launch(
+                                      pedList[index]['link_tratamento_zip']);
+                                  setState(() {
+                                    fetchingZip = false;
+                                  });
+                                }
+                              }
+                            : null,
+                      ),
+                    ),
+                  const SizedBox(height: 20),
+                  if (_authStore.role != 'Credenciado')
+                    const Text(
+                      'Obs: exigirá confirmação.',
+                    ),
                   _optionsBtns(
                     context,
                     index,

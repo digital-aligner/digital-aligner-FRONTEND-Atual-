@@ -21,8 +21,21 @@ class _TermosScreenState extends State<TermosScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: SecondaryAppbar(),
-      body: Container(
-        child: Text(termos),
+      body: Scrollbar(
+        thickness: 15,
+        isAlwaysShown: true,
+        showTrackOnHover: true,
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(20, 20, 30, 20),
+            height: 2000,
+            child: Column(
+              children: [
+                Text(termos),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -27,6 +27,7 @@ class RotasUrl {
   static const rotaNovoRefinamento = rotaBase + 'novo-refinamento/';
   static const rotaUpload = rotaBase + 'upload/';
   static const rotaUploads3Custom = rotaBase + 'dig-align-s-3-uploads/';
+  static const rotaUploads3CustomZip = rotaBase + 'dig-align-s-3-uploads-get-zip/';
   static const rotaUserMe = rotaBase + 'users/me';
   static const rotaStatusPedido = rotaBase + 'status-pedidos/';
   static const rotaPedidos = rotaBase + 'pedidos/';

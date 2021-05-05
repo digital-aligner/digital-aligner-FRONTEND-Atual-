@@ -350,6 +350,31 @@ class _SagitalState extends State<Sagital> {
                                           : Colors.grey.withOpacity(0.5),
                                     ),
                                   ),
+                                  Radio(
+                                    activeColor: Colors.blue,
+                                    groupValue:
+                                        _novoPedStore.getRmRadioValue('_rmSd'),
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            if (_novoPedStore.getRmLdState()) {
+                                              _novoPedStore.setRmRadio(
+                                                value,
+                                                '_rmSd',
+                                              );
+                                            }
+                                          },
+                                    value: 3,
+                                  ),
+                                  Text(
+                                    'Manter',
+                                    style: TextStyle(
+                                      color: _novoPedStore.getRmLdState()
+                                          ? Colors.black
+                                          : Colors.grey.withOpacity(0.5),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ],
@@ -422,6 +447,31 @@ class _SagitalState extends State<Sagital> {
                                   ),
                                   Text(
                                     'Mesialize',
+                                    style: TextStyle(
+                                      color: _novoPedStore.getRmLeState()
+                                          ? Colors.black
+                                          : Colors.grey.withOpacity(0.5),
+                                    ),
+                                  ),
+                                  Radio(
+                                    activeColor: Colors.blue,
+                                    groupValue:
+                                        _novoPedStore.getRmRadioValue('_rmSe'),
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            if (_novoPedStore.getRmLeState()) {
+                                              _novoPedStore.setRmRadio(
+                                                value,
+                                                '_rmSe',
+                                              );
+                                            }
+                                          },
+                                    value: 3,
+                                  ),
+                                  Text(
+                                    'Manter',
                                     style: TextStyle(
                                       color: _novoPedStore.getRmLeState()
                                           ? Colors.black
@@ -512,6 +562,31 @@ class _SagitalState extends State<Sagital> {
                                           : Colors.grey.withOpacity(0.5),
                                     ),
                                   ),
+                                  Radio(
+                                    activeColor: Colors.blue,
+                                    groupValue:
+                                        _novoPedStore.getRmRadioValue('_rmId'),
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            if (_novoPedStore.getRmLdState()) {
+                                              _novoPedStore.setRmRadio(
+                                                value,
+                                                '_rmId',
+                                              );
+                                            }
+                                          },
+                                    value: 3,
+                                  ),
+                                  Text(
+                                    'Manter',
+                                    style: TextStyle(
+                                      color: _novoPedStore.getRmLdState()
+                                          ? Colors.black
+                                          : Colors.grey.withOpacity(0.5),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ],
@@ -584,6 +659,31 @@ class _SagitalState extends State<Sagital> {
                                   ),
                                   Text(
                                     'Mesialize',
+                                    style: TextStyle(
+                                      color: _novoPedStore.getRmLeState()
+                                          ? Colors.black
+                                          : Colors.grey.withOpacity(0.5),
+                                    ),
+                                  ),
+                                  Radio(
+                                    activeColor: Colors.blue,
+                                    groupValue:
+                                        _novoPedStore.getRmRadioValue('_rmIe'),
+                                    onChanged: widget.blockUi
+                                        ? null
+                                        : (value) {
+                                            _removeFocus(context);
+                                            if (_novoPedStore.getRmLeState()) {
+                                              _novoPedStore.setRmRadio(
+                                                value,
+                                                '_rmIe',
+                                              );
+                                            }
+                                          },
+                                    value: 3,
+                                  ),
+                                  Text(
+                                    'Manter',
                                     style: TextStyle(
                                       color: _novoPedStore.getRmLeState()
                                           ? Colors.black
@@ -913,6 +1013,32 @@ class _SagitalState extends State<Sagital> {
                                             : Colors.grey.withOpacity(0.5),
                                       ),
                                     ),
+                                    Radio(
+                                      activeColor: Colors.blue,
+                                      groupValue: _novoPedStore
+                                          .getRcRadioValue('_rcSd'),
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              if (_novoPedStore
+                                                  .getRcLdState()) {
+                                                _novoPedStore.setRcRadio(
+                                                  value,
+                                                  '_rcSd',
+                                                );
+                                              }
+                                            },
+                                      value: 3,
+                                    ),
+                                    Text(
+                                      'Manter',
+                                      style: TextStyle(
+                                        color: _novoPedStore.getRcLdState()
+                                            ? Colors.black
+                                            : Colors.grey.withOpacity(0.5),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -987,6 +1113,32 @@ class _SagitalState extends State<Sagital> {
                                     ),
                                     Text(
                                       'Mesialize',
+                                      style: TextStyle(
+                                        color: _novoPedStore.getRcLeState()
+                                            ? Colors.black
+                                            : Colors.grey.withOpacity(0.5),
+                                      ),
+                                    ),
+                                    Radio(
+                                      activeColor: Colors.blue,
+                                      groupValue: _novoPedStore
+                                          .getRcRadioValue('_rcSe'),
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              if (_novoPedStore
+                                                  .getRcLeState()) {
+                                                _novoPedStore.setRcRadio(
+                                                  value,
+                                                  '_rcSe',
+                                                );
+                                              }
+                                            },
+                                      value: 3,
+                                    ),
+                                    Text(
+                                      'Manter',
                                       style: TextStyle(
                                         color: _novoPedStore.getRcLeState()
                                             ? Colors.black
@@ -1079,6 +1231,32 @@ class _SagitalState extends State<Sagital> {
                                             : Colors.grey.withOpacity(0.5),
                                       ),
                                     ),
+                                    Radio(
+                                      activeColor: Colors.blue,
+                                      groupValue: _novoPedStore
+                                          .getRcRadioValue('_rcId'),
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              if (_novoPedStore
+                                                  .getRcLdState()) {
+                                                _novoPedStore.setRcRadio(
+                                                  value,
+                                                  '_rcId',
+                                                );
+                                              }
+                                            },
+                                      value: 3,
+                                    ),
+                                    Text(
+                                      'Manter',
+                                      style: TextStyle(
+                                        color: _novoPedStore.getRcLdState()
+                                            ? Colors.black
+                                            : Colors.grey.withOpacity(0.5),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -1153,6 +1331,32 @@ class _SagitalState extends State<Sagital> {
                                     ),
                                     Text(
                                       'Mesialize',
+                                      style: TextStyle(
+                                        color: _novoPedStore.getRcLeState()
+                                            ? Colors.black
+                                            : Colors.grey.withOpacity(0.5),
+                                      ),
+                                    ),
+                                    Radio(
+                                      activeColor: Colors.blue,
+                                      groupValue: _novoPedStore
+                                          .getRcRadioValue('_rcIe'),
+                                      onChanged: widget.blockUi
+                                          ? null
+                                          : (value) {
+                                              _removeFocus(context);
+                                              if (_novoPedStore
+                                                  .getRcLeState()) {
+                                                _novoPedStore.setRcRadio(
+                                                  value,
+                                                  '_rcIe',
+                                                );
+                                              }
+                                            },
+                                      value: 3,
+                                    ),
+                                    Text(
+                                      'Manter',
                                       style: TextStyle(
                                         color: _novoPedStore.getRcLeState()
                                             ? Colors.black
