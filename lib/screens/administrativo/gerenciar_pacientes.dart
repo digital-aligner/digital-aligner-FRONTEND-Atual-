@@ -47,6 +47,17 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
     super.dispose();
   }
 
+  void refreshPageFetchNewList() {
+    setState(() {
+      //page to 0 before fetch
+      _startPage = 0;
+      _pacientesListStore.setQuery('');
+    });
+    //fetchData before set state (fixes not updating bug)
+    fetchData = true;
+    _pacientesListStore.clearPacientesAndUpdate();
+  }
+
   Widget _getHeaders() {
     return Row(
       children: [
@@ -198,6 +209,14 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
                 Text(
                   'GERENCIAR PACIENTES',
                   style: Theme.of(context).textTheme.headline1,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    refreshPageFetchNewList();
+                  },
+                  label: const Text('Atualizar'),
+                  icon: Icon(Icons.refresh),
                 ),
                 const SizedBox(height: 40),
                 _searchBox(),

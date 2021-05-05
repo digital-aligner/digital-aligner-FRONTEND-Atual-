@@ -218,8 +218,8 @@ class PedidoProvider with ChangeNotifier {
         ),
         expansaoArcoSuperior: ExpansaoArcoSuperior(
           id: null,
-          direito: _easDireito,
-          esquerdo: _easEsquerdo,
+          direito: null,
+          esquerdo: null,
           movimentoDeCorpo: _easMovimentoCorpo,
           inclinacaoTorque: _easInclinacaoTorque,
           movimentoDeCorpoEsq: _easMovimentoCorpoEsq,
@@ -227,8 +227,8 @@ class PedidoProvider with ChangeNotifier {
         ),
         contracaoArcoInferior: ContracaoArcoInferior(
           id: null,
-          direito: _caiDireito,
-          esquerdo: _caiEsquerdo,
+          direito: null,
+          esquerdo: null,
           movimentoDeCorpo: _caiMovimentoCorpo,
           inclinacaoTorque: _caiInclinacaoTorque,
           movimentoDeCorpoEsq: _caiMovimentoCorpoEsq,
@@ -3958,8 +3958,8 @@ class PedidoProvider with ChangeNotifier {
       _mordidaCruzPostRadio = 2;
 
       // expransão arco superior
-      _easDireito = ped['expansao_arco_superior']['direito'];
-      _easEsquerdo = ped['expansao_arco_superior']['esquerdo'];
+      //_easDireito = ped['expansao_arco_superior']['direito'];
+      //_easEsquerdo = ped['expansao_arco_superior']['esquerdo'];
       _easMovimentoCorpo = ped['expansao_arco_superior']['movimento_de_corpo'];
       _easInclinacaoTorque = ped['expansao_arco_superior']['inclinacao_torque'];
       _easMovimentoCorpoEsq =
@@ -3967,8 +3967,8 @@ class PedidoProvider with ChangeNotifier {
       _easInclinacaoTorqueEsq =
           ped['expansao_arco_superior']['inclinacao_torque_esq'];
       //contração arco inferior
-      _caiDireito = ped['contracao_arco_inferior']['direito'];
-      _caiEsquerdo = ped['contracao_arco_inferior']['esquerdo'];
+      //_caiDireito = ped['contracao_arco_inferior']['direito'];
+      //_caiEsquerdo = ped['contracao_arco_inferior']['esquerdo'];
       _caiMovimentoCorpo = ped['contracao_arco_inferior']['movimento_de_corpo'];
       _caiInclinacaoTorque =
           ped['contracao_arco_inferior']['inclinacao_torque'];

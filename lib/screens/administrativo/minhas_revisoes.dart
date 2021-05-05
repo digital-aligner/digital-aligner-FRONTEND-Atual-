@@ -42,6 +42,19 @@ class _MinhasRevisoesState extends State<MinhasRevisoes> {
     super.dispose();
   }
 
+  void refreshPageFetchNewList() {
+    setState(() {
+      //page to 0 before fetch
+      _startPage = 0;
+      _pedidosListStore.setDropdownValue('Todos');
+      _searchField.text = '';
+      _pedidosListStore.setQuery('');
+    });
+    //fetchData before set state (fixes not updating bug)
+    fetchData = true;
+    _pedidosListStore.clearPedidosAndUpdate();
+  }
+
   void fetchDataHandler(bool value) {
     fetchData = value;
   }
@@ -352,6 +365,14 @@ class _MinhasRevisoesState extends State<MinhasRevisoes> {
                       Text(
                         'MINHAS REVISÕES',
                         style: Theme.of(context).textTheme.headline1,
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          refreshPageFetchNewList();
+                        },
+                        label: const Text('Atualizar'),
+                        icon: Icon(Icons.refresh),
                       ),
                       const SizedBox(height: 40),
                       _searchBox(),

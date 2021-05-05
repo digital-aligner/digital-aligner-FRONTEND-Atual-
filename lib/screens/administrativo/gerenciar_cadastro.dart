@@ -45,6 +45,19 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
     super.dispose();
   }
 
+  void refreshPageFetchNewList() {
+    setState(() {
+      //page to 0 before fetch
+      _startPage = 0;
+      cadastroStore.setCadDropdownValue('Todos');
+      _searchField.text = '';
+      cadastroStore.setQuery('');
+    });
+    //fetchData before set state (fixes not updating bug)
+    fetchData = true;
+    cadastroStore.clearCadastrosAndUpdate();
+  }
+
   Widget _searchBox() {
     return Row(
       children: [
@@ -237,6 +250,14 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
                       Text(
                         'Gerenciar Cadastros',
                         style: Theme.of(context).textTheme.headline1,
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          refreshPageFetchNewList();
+                        },
+                        label: const Text('Atualizar'),
+                        icon: Icon(Icons.refresh),
                       ),
                       const SizedBox(height: 40),
                       _searchBox(),

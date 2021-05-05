@@ -133,45 +133,33 @@ class _TransversalState extends State<Transversal> {
                           return null;
                         } else if (_novoPedStore.getMordidaCruzPostRadio() ==
                             2) {
-                          //if esquerdo or direito not set
-                          if (!_novoPedStore.getEasDireito() &&
-                              !_novoPedStore.getEasEsquerdo() &&
-                              !_novoPedStore.getCaiDireito() &&
-                              !_novoPedStore.getCaiEsquerdo()) {
+                          // --------- EXPANSÃO ARCO SUPERIOR ---------
+                          //first lado direito
+
+                          if (!_novoPedStore.getEasMovimentoCorpo() &&
+                              !_novoPedStore.getEasInclinacaoTorque()) {
                             return 'Selecione um valor!';
-                          } else {
-                            // --------- EXPANSÃO ARCO SUPERIOR ---------
-                            //first lado direito
-                            if (_novoPedStore.getEasDireito()) {
-                              if (!_novoPedStore.getEasMovimentoCorpo() &&
-                                  !_novoPedStore.getEasInclinacaoTorque()) {
-                                return 'Selecione um valor!';
-                              }
-                            }
+                          }
 
-                            // lado esquerdo
-                            if (_novoPedStore.getEasEsquerdo()) {
-                              if (!_novoPedStore.getEasMovimentoCorpoEsq() &&
-                                  !_novoPedStore.getEasInclinacaoTorqueEsq()) {
-                                return 'Selecione um valor!';
-                              }
-                            }
-                            // --------- CONTRAÇÃO ARCO INFERIOR ---------
-                            //first lado direito
-                            if (_novoPedStore.getCaiDireito()) {
-                              if (!_novoPedStore.getCaiMovimentoCorpo() &&
-                                  !_novoPedStore.getCaiInclinacaoTorque()) {
-                                return 'Selecione um valor!';
-                              }
-                            }
+                          // lado esquerdo
+                          if (!_novoPedStore.getEasMovimentoCorpoEsq() &&
+                              !_novoPedStore.getEasInclinacaoTorqueEsq()) {
+                            return 'Selecione um valor!';
+                          }
 
-                            // lado esquerdo
-                            if (_novoPedStore.getCaiEsquerdo()) {
-                              if (!_novoPedStore.getCaiMovimentoCorpoEsq() &&
-                                  !_novoPedStore.getCaiInclinacaoTorqueEsq()) {
-                                return 'Selecione um valor!';
-                              }
-                            }
+                          // --------- CONTRAÇÃO ARCO INFERIOR ---------
+                          //first lado direito
+
+                          if (!_novoPedStore.getCaiMovimentoCorpo() &&
+                              !_novoPedStore.getCaiInclinacaoTorque()) {
+                            return 'Selecione um valor!';
+                          }
+
+                          // lado esquerdo
+
+                          if (!_novoPedStore.getCaiMovimentoCorpoEsq() &&
+                              !_novoPedStore.getCaiInclinacaoTorqueEsq()) {
+                            return 'Selecione um valor!';
                           }
                         }
                         return null;
@@ -266,59 +254,37 @@ class _TransversalState extends State<Transversal> {
             padding: const EdgeInsets.symmetric(vertical: 20),
             child: Column(
               children: [
+                const SizedBox(height: 20),
                 //Direito / esquerdo
                 Row(
                   children: [
+                    const SizedBox(width: 68),
                     Expanded(
-                      child: CheckboxListTile(
-                        controlAffinity: ListTileControlAffinity.leading,
-                        title: Text(
-                          'Direito',
-                          style: TextStyle(
-                            color: _novoPedStore.getMordidaCruzPost()
-                                ? Colors.black
-                                : Colors.grey.withOpacity(0.5),
-                          ),
+                      child: Text(
+                        'Direito',
+                        style: TextStyle(
+                          color: _novoPedStore.getMordidaCruzPost()
+                              ? Colors.black
+                              : Colors.grey.withOpacity(0.5),
+                          fontSize: 16,
                         ),
-                        value: _novoPedStore.getEasDireito(),
-                        onChanged: widget.blockUi
-                            ? null
-                            : (value) {
-                                _removeFocus(context);
-                                if (_novoPedStore.getMordidaCruzPost()) {
-                                  _novoPedStore.setEasDireito(value);
-                                }
-                              },
-                        activeColor: Colors.black12,
-                        checkColor: Colors.blue,
                       ),
                     ),
+                    const SizedBox(width: 68),
                     Expanded(
-                      child: CheckboxListTile(
-                        controlAffinity: ListTileControlAffinity.leading,
-                        title: Text(
-                          'Esquerdo',
-                          style: TextStyle(
-                            color: _novoPedStore.getMordidaCruzPost()
-                                ? Colors.black
-                                : Colors.grey.withOpacity(0.5),
-                          ),
+                      child: Text(
+                        'Esquerdo',
+                        style: TextStyle(
+                          color: _novoPedStore.getMordidaCruzPost()
+                              ? Colors.black
+                              : Colors.grey.withOpacity(0.5),
+                          fontSize: 16,
                         ),
-                        value: _novoPedStore.getEasEsquerdo(),
-                        onChanged: widget.blockUi
-                            ? null
-                            : (value) {
-                                _removeFocus(context);
-                                if (_novoPedStore.getMordidaCruzPost()) {
-                                  _novoPedStore.setEasEsquerdo(value);
-                                }
-                              },
-                        activeColor: Colors.black12,
-                        checkColor: Colors.blue,
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(height: 20),
                 //movimento de corpo
                 Row(
                   children: [
@@ -458,59 +424,37 @@ class _TransversalState extends State<Transversal> {
             padding: const EdgeInsets.symmetric(vertical: 20),
             child: Column(
               children: [
+                const SizedBox(height: 20),
                 //Direito / esquerdo
                 Row(
                   children: [
+                    const SizedBox(width: 68),
                     Expanded(
-                      child: CheckboxListTile(
-                        controlAffinity: ListTileControlAffinity.leading,
-                        title: Text(
-                          'Direito',
-                          style: TextStyle(
-                            color: _novoPedStore.getMordidaCruzPost()
-                                ? Colors.black
-                                : Colors.grey.withOpacity(0.5),
-                          ),
+                      child: Text(
+                        'Direito',
+                        style: TextStyle(
+                          color: _novoPedStore.getMordidaCruzPost()
+                              ? Colors.black
+                              : Colors.grey.withOpacity(0.5),
+                          fontSize: 16,
                         ),
-                        value: _novoPedStore.getCaiDireito(),
-                        onChanged: widget.blockUi
-                            ? null
-                            : (value) {
-                                _removeFocus(context);
-                                if (_novoPedStore.getMordidaCruzPost()) {
-                                  _novoPedStore.setCaiDireito(value);
-                                }
-                              },
-                        activeColor: Colors.black12,
-                        checkColor: Colors.blue,
                       ),
                     ),
+                    const SizedBox(width: 68),
                     Expanded(
-                      child: CheckboxListTile(
-                        controlAffinity: ListTileControlAffinity.leading,
-                        title: Text(
-                          'Esquerdo',
-                          style: TextStyle(
-                            color: _novoPedStore.getMordidaCruzPost()
-                                ? Colors.black
-                                : Colors.grey.withOpacity(0.5),
-                          ),
+                      child: Text(
+                        'Esquerdo',
+                        style: TextStyle(
+                          color: _novoPedStore.getMordidaCruzPost()
+                              ? Colors.black
+                              : Colors.grey.withOpacity(0.5),
+                          fontSize: 16,
                         ),
-                        value: _novoPedStore.getCaiEsquerdo(),
-                        onChanged: widget.blockUi
-                            ? null
-                            : (value) {
-                                _removeFocus(context);
-                                if (_novoPedStore.getMordidaCruzPost()) {
-                                  _novoPedStore.setCaiEsquerdo(value);
-                                }
-                              },
-                        activeColor: Colors.black12,
-                        checkColor: Colors.blue,
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(height: 20),
                 //movimento de corpo
                 Row(
                   children: [
