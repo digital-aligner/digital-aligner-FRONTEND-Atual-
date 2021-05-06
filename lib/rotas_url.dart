@@ -1,7 +1,13 @@
 class RotasUrl {
   //static const rotaHeroku = 'https://aqueous-wave-03435.herokuapp.com/';
   //static const rotaBase = 'http://localhost:1337/';
-  static const rotaBase = 'http://localhost:1337/';
+  //STL VIEWER ROUTES
+  static const rotaModSupWebView =
+      'https://app.digitalaligner.com.br/stl_viewer/modelo_sup_viewer.html';
+  static const rotaModInfWebView =
+      'https://app.digitalaligner.com.br/stl_viewer/modelo_inf_viewer.html';
+
+  static const rotaBase = 'https://aqueous-wave-03435.herokuapp.com/';
   static const rotaGetPaisesAndState = rotaBase + 'paises';
   static const rotaLogin = rotaBase + 'auth/local/';
   static const rotaCadastro = rotaBase + 'users/';
@@ -27,7 +33,8 @@ class RotasUrl {
   static const rotaNovoRefinamento = rotaBase + 'novo-refinamento/';
   static const rotaUpload = rotaBase + 'upload/';
   static const rotaUploads3Custom = rotaBase + 'dig-align-s-3-uploads/';
-  static const rotaUploads3CustomZip = rotaBase + 'dig-align-s-3-uploads-get-zip/';
+  static const rotaUploads3CustomZip =
+      rotaBase + 'dig-align-s-3-uploads-get-zip/';
   static const rotaUserMe = rotaBase + 'users/me';
   static const rotaStatusPedido = rotaBase + 'status-pedidos/';
   static const rotaPedidos = rotaBase + 'pedidos/';

@@ -12,6 +12,7 @@ import 'package:digital_aligner_app/screens/login_screen.dart';
 
 import 'package:digital_aligner_app/screens/relatorio_view_screen.dart';
 import 'package:digital_aligner_app/screens/view_images_screen.dart';
+
 import 'package:easy_web_view/easy_web_view.dart';
 
 import 'package:flutter/material.dart';
@@ -25,6 +26,8 @@ import 'package:http/http.dart' as http;
 import 'editar_pedido.dart';
 
 import 'dart:html' as html;
+
+import 'view_modelo_screen.dart';
 
 //import 'package:transparent_image/transparent_image.dart';
 
@@ -181,12 +184,12 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
           child: Column(
             children: [
               //Modelo Superior
+              //NOTE! If website url changes has diferente names, use the primary
               _modelo3d(
                 key: key,
                 modelUrl: _modeloSupLink,
                 title: 'Modelo Superior',
-                viewer3dUrl:
-                    'https://digital-aligner-e0e72.web.app/stl_viewer/modelo_sup_viewer.html',
+                viewer3dUrl: RotasUrl.rotaModSupWebView,
               ),
               const SizedBox(height: 20),
               //Modelo Inferior
@@ -194,13 +197,69 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                 key: key1,
                 modelUrl: _modeloInfLink,
                 title: 'Modelo Inferior',
-                viewer3dUrl:
-                    'https://digital-aligner-e0e72.web.app/stl_viewer/modelo_inf_viewer.html',
+                viewer3dUrl: RotasUrl.rotaModInfWebView,
               ),
             ],
           ),
         ),
-
+        const SizedBox(height: 40),
+        const Text(
+          'Problemas? Visualize em nova janela:',
+          style: const TextStyle(
+            color: Colors.black54,
+            fontSize: 18,
+            //fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 40),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton.icon(
+              onPressed: () async {
+                setState(() {
+                  modelsVisible = false;
+                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ViewModeloScreen(
+                      key: key,
+                      modelUrl: _modeloSupLink,
+                      title: 'Modelo Superior',
+                      viewer3dUrl: RotasUrl.rotaModSupWebView,
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.visibility),
+              label: const Text('Visualizar superior'),
+            ),
+            const SizedBox(
+              width: 20,
+            ),
+            ElevatedButton.icon(
+              onPressed: () async {
+                setState(() {
+                  modelsVisible = false;
+                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ViewModeloScreen(
+                      key: key,
+                      modelUrl: _modeloInfLink,
+                      title: 'Modelo Inferior',
+                      viewer3dUrl: RotasUrl.rotaModInfWebView,
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.visibility),
+              label: const Text('Visualizar Inferior'),
+            ),
+          ],
+        ),
         //Fotografias
         //text
         const SizedBox(height: 40),

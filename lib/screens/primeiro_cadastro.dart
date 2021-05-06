@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
-import 'package:digital_aligner_app/dados/scrollbarWidgetConfig.dart';
 import 'package:digital_aligner_app/functions/system_functions.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 
@@ -941,6 +940,8 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                 children: <Widget>[
                   if (firstFetch && _stateCountryData == null)
                     Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const SizedBox(height: 50),
                         CircularProgressIndicator(
