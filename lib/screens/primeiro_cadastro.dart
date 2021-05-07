@@ -65,7 +65,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
 
   Timer searchOnStoppedTyping;
 
-  Widget _form() {
+  Widget _form(double width) {
     return Form(
       key: _formKey,
       child: Column(
@@ -123,159 +123,174 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 80,
-                            child: TextFormField(
-                              onSaved: (String value) {
-                                _controllerCPF.text =
-                                    SystemFunctions.formatCpfRemoveFormating(
-                                  cpf: value,
-                                );
-                              },
-                              validator: (value) {
-                                if (value.length < 11) {
-                                  return 'Por favor insira seu cpf';
-                                }
-                                return null;
-                              },
-                              onChanged: (value) async {
-                                const duration = Duration(milliseconds: 500);
-                                if (searchOnStoppedTyping != null) {
+                    Container(
+                      width: width,
+                      height: width > 600 ? 80 : 180,
+                      child: Flex(
+                        direction:
+                            width > 600 ? Axis.horizontal : Axis.vertical,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 80,
+                              child: TextFormField(
+                                onSaved: (String value) {
+                                  _controllerCPF.text =
+                                      SystemFunctions.formatCpfRemoveFormating(
+                                    cpf: value,
+                                  );
+                                },
+                                validator: (value) {
+                                  if (value.length < 11) {
+                                    return 'Por favor insira seu cpf';
+                                  }
+                                  return null;
+                                },
+                                onChanged: (value) async {
+                                  const duration = Duration(milliseconds: 500);
+                                  if (searchOnStoppedTyping != null) {
+                                    setState(
+                                        () => searchOnStoppedTyping.cancel());
+                                  }
                                   setState(
-                                      () => searchOnStoppedTyping.cancel());
-                                }
-                                setState(
-                                  () => searchOnStoppedTyping = new Timer(
-                                    duration,
-                                    () {
-                                      if (value.length == 11) {
-                                        String fCpf = SystemFunctions.formatCpf(
-                                          cpf: value,
-                                        );
-                                        _controllerCPF.text = fCpf;
-                                      }
-                                    },
-                                  ),
-                                );
-                              },
-                              maxLength: 11,
-                              controller: _controllerCPF,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(r'[0-9]')),
-                              ],
-                              initialValue: null,
-                              decoration: const InputDecoration(
-                                //To hide cpf length num
-                                counterText: '',
-                                labelText: 'CPF: *',
-                                border: const OutlineInputBorder(),
+                                    () => searchOnStoppedTyping = new Timer(
+                                      duration,
+                                      () {
+                                        if (value.length == 11) {
+                                          String fCpf =
+                                              SystemFunctions.formatCpf(
+                                            cpf: value,
+                                          );
+                                          _controllerCPF.text = fCpf;
+                                        }
+                                      },
+                                    ),
+                                  );
+                                },
+                                maxLength: 11,
+                                controller: _controllerCPF,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[0-9]')),
+                                ],
+                                initialValue: null,
+                                decoration: const InputDecoration(
+                                  //To hide cpf length num
+                                  counterText: '',
+                                  labelText: 'CPF: *',
+                                  border: const OutlineInputBorder(),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: Container(
-                            height: 80,
-                            child: DateTimeField(
-                              onSaved: (value) {
-                                _controllerDataNasc.text = value.toString();
-                              },
-                              validator: (value) {
-                                if (value == null) {
-                                  return 'Por favor insira sua data de nascimento';
-                                }
-                                return null;
-                              },
-                              controller: _controllerDataNasc,
-                              decoration: const InputDecoration(
-                                labelText: 'Data de Nascimento: *',
-                                border: const OutlineInputBorder(),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: Container(
+                              height: 80,
+                              child: DateTimeField(
+                                onSaved: (value) {
+                                  _controllerDataNasc.text = value.toString();
+                                },
+                                validator: (value) {
+                                  if (value == null) {
+                                    return 'Por favor insira sua data de nascimento';
+                                  }
+                                  return null;
+                                },
+                                controller: _controllerDataNasc,
+                                decoration: const InputDecoration(
+                                  labelText: 'Data de Nascimento: *',
+                                  border: const OutlineInputBorder(),
+                                ),
+                                format: format,
+                                onShowPicker: (context, currentValue) {
+                                  return showDatePicker(
+                                      initialEntryMode:
+                                          DatePickerEntryMode.input,
+                                      locale: Localizations.localeOf(context),
+                                      errorFormatText: 'Escolha data válida',
+                                      errorInvalidText: 'Data invalida',
+                                      context: context,
+                                      firstDate: DateTime(1900),
+                                      initialDate:
+                                          currentValue ?? DateTime.now(),
+                                      lastDate: DateTime(2100));
+                                },
                               ),
-                              format: format,
-                              onShowPicker: (context, currentValue) {
-                                return showDatePicker(
-                                    initialEntryMode: DatePickerEntryMode.input,
-                                    locale: Localizations.localeOf(context),
-                                    errorFormatText: 'Escolha data válida',
-                                    errorInvalidText: 'Data invalida',
-                                    context: context,
-                                    firstDate: DateTime(1900),
-                                    initialDate: currentValue ?? DateTime.now(),
-                                    lastDate: DateTime(2100));
-                              },
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 80,
-                            child: DropdownSearch<String>(
-                              validator: (value) {
-                                if (value == null) {
-                                  return 'Por favor selecione CRO (UF)';
-                                }
-                                return null;
-                              },
-                              dropdownSearchDecoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                contentPadding:
-                                    EdgeInsets.fromLTRB(10, 10, 10, 10),
-                              ),
-                              mode: Mode.MENU,
-                              showSearchBox: true,
-                              showSelectedItem: true,
-                              items: _states,
-                              label: 'CRO (UF): *',
-                              //hint: 'country in menu mode',
-                              popupItemDisabled:
-                                  (String s) => /*s.startsWith('I')*/ null,
-                              onChanged: (value) {
-                                _cro_uf = value;
-                              },
-                              selectedItem: _cro_uf,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: Container(
-                            height: 80,
-                            child: TextFormField(
-                              onSaved: (String value) {
-                                _controllerCRO.text = value;
-                              },
-                              validator: (value) {
-                                if (value.length == 0) {
-                                  return 'Por favor escolha CRO';
-                                }
-                                return null;
-                              },
-                              controller: _controllerCRO,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(r'[0-9]')),
-                              ],
-                              initialValue: null,
-                              decoration: InputDecoration(
-                                labelText: 'CRO (Número): *',
-                                border: OutlineInputBorder(),
+                    Container(
+                      width: width,
+                      height: width > 600 ? 80 : 180,
+                      child: Flex(
+                        direction:
+                            width > 600 ? Axis.horizontal : Axis.vertical,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 80,
+                              child: DropdownSearch<String>(
+                                validator: (value) {
+                                  if (value == null) {
+                                    return 'Por favor selecione CRO (UF)';
+                                  }
+                                  return null;
+                                },
+                                dropdownSearchDecoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  contentPadding:
+                                      EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                ),
+                                mode: Mode.MENU,
+                                showSearchBox: true,
+                                showSelectedItem: true,
+                                items: _states,
+                                label: 'CRO (UF): *',
+                                //hint: 'country in menu mode',
+                                popupItemDisabled:
+                                    (String s) => /*s.startsWith('I')*/ null,
+                                onChanged: (value) {
+                                  _cro_uf = value;
+                                },
+                                selectedItem: _cro_uf,
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: Container(
+                              height: 80,
+                              child: TextFormField(
+                                onSaved: (String value) {
+                                  _controllerCRO.text = value;
+                                },
+                                validator: (value) {
+                                  if (value.length == 0) {
+                                    return 'Por favor escolha CRO';
+                                  }
+                                  return null;
+                                },
+                                controller: _controllerCRO,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[0-9]')),
+                                ],
+                                initialValue: null,
+                                decoration: InputDecoration(
+                                  labelText: 'CRO (Número): *',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const Divider(thickness: 1),
                     Container(
@@ -301,62 +316,68 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Container(
-                            height: 80,
-                            child: TextFormField(
-                              maxLength: 255,
-                              onSaved: (String value) {
-                                _controllerNUM.text = value;
-                              },
-                              validator: (value) {
-                                if (value.length == 0) {
-                                  return 'Por favor insira o número';
-                                }
-                                return null;
-                              },
-                              controller: _controllerNUM,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(r'[0-9]')),
-                              ],
-                              initialValue: null,
-                              decoration: InputDecoration(
-                                counterText: '',
-                                labelText: 'Número: *',
-                                border: OutlineInputBorder(),
+                    Container(
+                      width: width,
+                      height: width > 600 ? 80 : 180,
+                      child: Flex(
+                        direction:
+                            width > 600 ? Axis.horizontal : Axis.vertical,
+                        children: <Widget>[
+                          Expanded(
+                            child: Container(
+                              height: 80,
+                              child: TextFormField(
+                                maxLength: 255,
+                                onSaved: (String value) {
+                                  _controllerNUM.text = value;
+                                },
+                                validator: (value) {
+                                  if (value.length == 0) {
+                                    return 'Por favor insira o número';
+                                  }
+                                  return null;
+                                },
+                                controller: _controllerNUM,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[0-9]')),
+                                ],
+                                initialValue: null,
+                                decoration: InputDecoration(
+                                  counterText: '',
+                                  labelText: 'Número: *',
+                                  border: OutlineInputBorder(),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: Container(
-                            height: 80,
-                            child: TextFormField(
-                              maxLength: 255,
-                              onSaved: (String value) {
-                                _complemento = value;
-                              },
-                              validator: (value) {
-                                if (value.length == 0) {
-                                  return 'Por favor insira o complemento';
-                                }
-                                return null;
-                              },
-                              initialValue: null,
-                              decoration: InputDecoration(
-                                counterText: '',
-                                labelText: 'Complemento: *',
-                                border: OutlineInputBorder(),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: Container(
+                              height: 80,
+                              child: TextFormField(
+                                maxLength: 255,
+                                onSaved: (String value) {
+                                  _complemento = value;
+                                },
+                                validator: (value) {
+                                  if (value.length == 0) {
+                                    return 'Por favor insira o complemento';
+                                  }
+                                  return null;
+                                },
+                                initialValue: null,
+                                decoration: InputDecoration(
+                                  counterText: '',
+                                  labelText: 'Complemento: *',
+                                  border: OutlineInputBorder(),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 10),
                     Container(
@@ -466,292 +487,316 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 80,
-                            child: DropdownSearch<String>(
-                              validator: (value) {
-                                if (value == null) {
-                                  return 'Por favor escolha uf';
-                                }
-                                return null;
-                              },
-                              dropdownSearchDecoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                contentPadding:
-                                    EdgeInsets.fromLTRB(10, 10, 10, 10),
-                              ),
-                              mode: Mode.MENU,
-                              showSearchBox: true,
-                              showSelectedItem: true,
-                              items: _states,
-                              label: 'UF: *',
-                              //hint: 'country in menu mode',
-                              popupItemDisabled:
-                                  (String s) => /*s.startsWith('I')*/ null,
-                              onChanged: (value) {
-                                _uf = value;
-                              },
-                              selectedItem: _uf,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: Container(
-                            height: 80,
-                            child: TextFormField(
-                              onSaved: (String value) {
-                                _cidade = value;
-                              },
-                              validator: (value) {
-                                if (value.length == 0) {
-                                  return 'Por favor insira sua cidade';
-                                }
-                                return null;
-                              },
-                              initialValue: null,
-                              decoration: InputDecoration(
-                                labelText: 'Cidade: *',
-                                border: OutlineInputBorder(),
+                    Container(
+                      width: width,
+                      height: width > 600 ? 80 : 180,
+                      child: Flex(
+                        direction:
+                            width > 600 ? Axis.horizontal : Axis.vertical,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 80,
+                              child: DropdownSearch<String>(
+                                validator: (value) {
+                                  if (value == null) {
+                                    return 'Por favor escolha uf';
+                                  }
+                                  return null;
+                                },
+                                dropdownSearchDecoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  contentPadding:
+                                      EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                ),
+                                mode: Mode.MENU,
+                                showSearchBox: true,
+                                showSelectedItem: true,
+                                items: _states,
+                                label: 'UF: *',
+                                //hint: 'country in menu mode',
+                                popupItemDisabled:
+                                    (String s) => /*s.startsWith('I')*/ null,
+                                onChanged: (value) {
+                                  _uf = value;
+                                },
+                                selectedItem: _uf,
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: Container(
+                              height: 80,
+                              child: TextFormField(
+                                onSaved: (String value) {
+                                  _cidade = value;
+                                },
+                                validator: (value) {
+                                  if (value.length == 0) {
+                                    return 'Por favor insira sua cidade';
+                                  }
+                                  return null;
+                                },
+                                initialValue: null,
+                                decoration: InputDecoration(
+                                  labelText: 'Cidade: *',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const Divider(thickness: 1),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
-                            height: 80,
-                            child: TextFormField(
-                              onSaved: (String value) {
-                                _controllerTEL.text = SystemFunctions
-                                    .formatTelefoneRemoveFormating(
-                                  telefone: value,
-                                );
-                              },
-                              validator: (value) {
-                                if (value.length == 0) {
-                                  return 'Por favor insira seu número de telefone';
-                                }
-                                return null;
-                              },
-                              onChanged: (value) async {
-                                const duration = Duration(milliseconds: 500);
-                                if (searchOnStoppedTyping != null) {
+                    Container(
+                      width: width,
+                      height: width > 600 ? 80 : 180,
+                      child: Flex(
+                        direction:
+                            width > 600 ? Axis.horizontal : Axis.vertical,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
+                              height: 80,
+                              child: TextFormField(
+                                onSaved: (String value) {
+                                  _controllerTEL.text = SystemFunctions
+                                      .formatTelefoneRemoveFormating(
+                                    telefone: value,
+                                  );
+                                },
+                                validator: (value) {
+                                  if (value.length == 0) {
+                                    return 'Por favor insira seu número de telefone';
+                                  }
+                                  return null;
+                                },
+                                onChanged: (value) async {
+                                  const duration = Duration(milliseconds: 500);
+                                  if (searchOnStoppedTyping != null) {
+                                    setState(
+                                        () => searchOnStoppedTyping.cancel());
+                                  }
                                   setState(
-                                      () => searchOnStoppedTyping.cancel());
-                                }
-                                setState(
-                                  () => searchOnStoppedTyping = new Timer(
-                                    duration,
-                                    () {
-                                      if (value.length == 10) {
-                                        String fTel =
-                                            SystemFunctions.formatTelefone(
-                                          telefone: value,
-                                        );
-                                        _controllerTEL.text = fTel;
-                                      }
-                                    },
-                                  ),
-                                );
-                              },
-                              maxLength: 10,
-                              controller: _controllerTEL,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(r'[0-9]')),
-                              ],
-                              initialValue: null,
-                              decoration: InputDecoration(
-                                //To hide cep length num
-                                counterText: '',
-                                labelText: 'Telefone Fixo (Comercial): *',
-                                //hintText: 'Insira seu nome',
-                                border: OutlineInputBorder(),
+                                    () => searchOnStoppedTyping = new Timer(
+                                      duration,
+                                      () {
+                                        if (value.length == 10) {
+                                          String fTel =
+                                              SystemFunctions.formatTelefone(
+                                            telefone: value,
+                                          );
+                                          _controllerTEL.text = fTel;
+                                        }
+                                      },
+                                    ),
+                                  );
+                                },
+                                maxLength: 10,
+                                controller: _controllerTEL,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[0-9]')),
+                                ],
+                                initialValue: null,
+                                decoration: InputDecoration(
+                                  //To hide cep length num
+                                  counterText: '',
+                                  labelText: 'Telefone Fixo (Comercial): *',
+                                  //hintText: 'Insira seu nome',
+                                  border: OutlineInputBorder(),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: Container(
-                            margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
-                            height: 80,
-                            child: TextFormField(
-                              onSaved: (String value) {
-                                _controllerCEL.text = SystemFunctions
-                                    .formatCellphoneRemoveFormating(
-                                  cellphone: value,
-                                );
-                              },
-                              validator: (value) {
-                                if (value.length == 0) {
-                                  return 'Por favor insira seu número de celular';
-                                }
-                                return null;
-                              },
-                              onChanged: (value) async {
-                                const duration = Duration(milliseconds: 500);
-                                if (searchOnStoppedTyping != null) {
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: Container(
+                              margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
+                              height: 80,
+                              child: TextFormField(
+                                onSaved: (String value) {
+                                  _controllerCEL.text = SystemFunctions
+                                      .formatCellphoneRemoveFormating(
+                                    cellphone: value,
+                                  );
+                                },
+                                validator: (value) {
+                                  if (value.length == 0) {
+                                    return 'Por favor insira seu número de celular';
+                                  }
+                                  return null;
+                                },
+                                onChanged: (value) async {
+                                  const duration = Duration(milliseconds: 500);
+                                  if (searchOnStoppedTyping != null) {
+                                    setState(
+                                        () => searchOnStoppedTyping.cancel());
+                                  }
                                   setState(
-                                      () => searchOnStoppedTyping.cancel());
-                                }
-                                setState(
-                                  () => searchOnStoppedTyping = new Timer(
-                                    duration,
-                                    () {
-                                      if (value.length == 11) {
-                                        String fCel =
-                                            SystemFunctions.formatCellphone(
-                                          cellphone: value,
-                                        );
-                                        _controllerCEL.text = fCel;
-                                      }
-                                    },
-                                  ),
-                                );
-                              },
-                              maxLength: 11,
-                              controller: _controllerCEL,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(r'[0-9]')),
-                              ],
-                              initialValue: null,
-                              decoration: InputDecoration(
-                                //To hide cep length num
-                                counterText: '',
-                                labelText: 'Celular (Whatsapp): *',
-                                //hintText: 'Insira seu nome',
-                                border: OutlineInputBorder(),
+                                    () => searchOnStoppedTyping = new Timer(
+                                      duration,
+                                      () {
+                                        if (value.length == 11) {
+                                          String fCel =
+                                              SystemFunctions.formatCellphone(
+                                            cellphone: value,
+                                          );
+                                          _controllerCEL.text = fCel;
+                                        }
+                                      },
+                                    ),
+                                  );
+                                },
+                                maxLength: 11,
+                                controller: _controllerCEL,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[0-9]')),
+                                ],
+                                initialValue: null,
+                                decoration: InputDecoration(
+                                  //To hide cep length num
+                                  counterText: '',
+                                  labelText: 'Celular (Whatsapp): *',
+                                  //hintText: 'Insira seu nome',
+                                  border: OutlineInputBorder(),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     const Divider(thickness: 1),
-                    Row(
-                      children: [
-                        //Email
-                        Expanded(
-                          child: Container(
-                            margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
-                            height: 80,
-                            child: TextFormField(
-                              onSaved: (String value) {
-                                _email = value;
-                              },
-                              validator: (value) {
-                                if (value.length == 0) {
-                                  return 'Por favor insira seu email';
-                                }
-                                if (value != _emailConfirm) {
-                                  return 'Emails não correspondem';
-                                }
-                                return null;
-                              },
-                              initialValue: null,
-                              decoration: InputDecoration(
-                                labelText: 'Email: *',
-                                border: OutlineInputBorder(),
+                    Container(
+                      width: width,
+                      height: width > 600 ? 80 : 180,
+                      child: Flex(
+                        direction:
+                            width > 600 ? Axis.horizontal : Axis.vertical,
+                        children: [
+                          //Email
+                          Expanded(
+                            child: Container(
+                              margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
+                              height: 80,
+                              child: TextFormField(
+                                onSaved: (String value) {
+                                  _email = value;
+                                },
+                                validator: (value) {
+                                  if (value.length == 0) {
+                                    return 'Por favor insira seu email';
+                                  }
+                                  if (value != _emailConfirm) {
+                                    return 'Emails não correspondem';
+                                  }
+                                  return null;
+                                },
+                                initialValue: null,
+                                decoration: InputDecoration(
+                                  labelText: 'Email: *',
+                                  border: OutlineInputBorder(),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 20),
-                        //Confirm email
-                        Expanded(
-                          child: Container(
-                            margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
-                            height: 80,
-                            child: TextFormField(
-                              onChanged: (String value) {
-                                _emailConfirm = value;
-                              },
-                              validator: (value) {
-                                if (value.length == 0) {
-                                  return 'Por favor confirme seu email';
-                                }
-                                return null;
-                              },
-                              initialValue: null,
-                              decoration: InputDecoration(
-                                labelText: 'Confirme seu email.',
-                                border: OutlineInputBorder(),
+                          const SizedBox(width: 20),
+                          //Confirm email
+                          Expanded(
+                            child: Container(
+                              margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
+                              height: 80,
+                              child: TextFormField(
+                                onChanged: (String value) {
+                                  _emailConfirm = value;
+                                },
+                                validator: (value) {
+                                  if (value.length == 0) {
+                                    return 'Por favor confirme seu email';
+                                  }
+                                  return null;
+                                },
+                                initialValue: null,
+                                decoration: InputDecoration(
+                                  labelText: 'Confirme seu email.',
+                                  border: OutlineInputBorder(),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        //password
-                        Expanded(
-                          child: Container(
-                            height: 80,
-                            child: TextFormField(
-                              obscureText: true,
-                              onSaved: (String value) {
-                                _password = value;
-                              },
-                              validator: (value) {
-                                if (value.length == 0) {
-                                  return 'Por favor insira sua senha';
-                                }
-                                if (value.length < 6) {
-                                  return 'A senha deve ter no mínimo 6 caracteres';
-                                }
-                                if (value != _passwordConfirm) {
-                                  return 'Senhas não correspondem';
-                                }
-                                return null;
-                              },
-                              initialValue: null,
-                              decoration: InputDecoration(
-                                labelText: 'Senha: *',
-                                border: OutlineInputBorder(),
+                    Container(
+                      width: width,
+                      height: width > 600 ? 80 : 180,
+                      child: Flex(
+                        direction:
+                            width > 600 ? Axis.horizontal : Axis.vertical,
+                        children: [
+                          //password
+                          Expanded(
+                            child: Container(
+                              height: 80,
+                              child: TextFormField(
+                                obscureText: true,
+                                onSaved: (String value) {
+                                  _password = value;
+                                },
+                                validator: (value) {
+                                  if (value.length == 0) {
+                                    return 'Por favor insira sua senha';
+                                  }
+                                  if (value.length < 6) {
+                                    return 'A senha deve ter no mínimo 6 caracteres';
+                                  }
+                                  if (value != _passwordConfirm) {
+                                    return 'Senhas não correspondem';
+                                  }
+                                  return null;
+                                },
+                                initialValue: null,
+                                decoration: InputDecoration(
+                                  labelText: 'Senha: *',
+                                  border: OutlineInputBorder(),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 20),
-                        //password confirm
-                        Expanded(
-                          child: Container(
-                            height: 80,
-                            child: TextFormField(
-                              obscureText: true,
-                              onChanged: (String value) {
-                                _passwordConfirm = value;
-                              },
-                              validator: (value) {
-                                if (value.length == 0) {
-                                  return 'Por favor confirme sua senha';
-                                }
-                                return null;
-                              },
-                              initialValue: null,
-                              decoration: InputDecoration(
-                                labelText: 'Confirme sua senha.',
-                                border: OutlineInputBorder(),
+                          const SizedBox(width: 20),
+                          //password confirm
+                          Expanded(
+                            child: Container(
+                              height: 80,
+                              child: TextFormField(
+                                obscureText: true,
+                                onChanged: (String value) {
+                                  _passwordConfirm = value;
+                                },
+                                validator: (value) {
+                                  if (value.length == 0) {
+                                    return 'Por favor confirme sua senha';
+                                  }
+                                  return null;
+                                },
+                                initialValue: null,
+                                decoration: InputDecoration(
+                                  labelText: 'Confirme sua senha.',
+                                  border: OutlineInputBorder(),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     )
                   ],
                 ),
@@ -766,9 +811,11 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
     );
   }
 
-  Widget _buttons() {
-    return Row(
+  Widget _buttons(double width) {
+    return Flex(
       mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      direction: width > 600 ? Axis.horizontal : Axis.vertical,
       children: <Widget>[
         Container(
           width: 300,
@@ -828,6 +875,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
           ),
         ),
         const SizedBox(
+          height: 20,
           width: 20,
         ),
         Container(
@@ -920,6 +968,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: SecondaryAppbar(),
       body: GestureDetector(
@@ -935,21 +984,20 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
           showTrackOnHover: true,
           child: SingleChildScrollView(
             child: Container(
-              height: 1800,
+              height: width > 600 ? 1700 : 2300,
               child: Column(
                 children: <Widget>[
                   if (firstFetch && _stateCountryData == null)
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 50),
-                        CircularProgressIndicator(
+                    Container(
+                      padding: EdgeInsets.only(top: 40),
+                      width: width,
+                      child: Center(
+                        child: CircularProgressIndicator(
                           valueColor: new AlwaysStoppedAnimation<Color>(
                             Colors.blue,
                           ),
                         ),
-                      ],
+                      ),
                     ),
                   if (!firstFetch && _stateCountryData != null)
                     Column(
@@ -967,9 +1015,9 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                           ),
                         ),
                         const SizedBox(height: 50),
-                        _form(),
+                        _form(width),
                         const SizedBox(height: 50),
-                        _buttons(),
+                        _buttons(width),
                         const SizedBox(height: 50),
                       ],
                     ),
