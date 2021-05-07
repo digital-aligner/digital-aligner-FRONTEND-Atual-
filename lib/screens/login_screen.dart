@@ -21,6 +21,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   bool _blockUi = false;
+  bool _cadastroScreenOpen = false;
 
   Future<void> _submit(_loginStore, context) async {
     setState(() => _isLoading = true);
@@ -74,109 +75,116 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           )
         : Form(
-            child: SingleChildScrollView(
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 40, horizontal: 10),
-                height: 500,
-                child: Column(
-                  children: <Widget>[
-                    Column(
-                      children: <Widget>[],
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                vertical: 40,
+                horizontal: 10,
+              ),
+              height: 500,
+              child: Column(
+                children: <Widget>[
+                  Column(
+                    children: <Widget>[],
+                  ),
+                  TextFormField(
+                    initialValue: _loginStore.email,
+                    onChanged: (value) {
+                      _loginStore.setEmail(value);
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      hintText: 'Insira seu e-mail',
+                      border: OutlineInputBorder(),
                     ),
-                    TextFormField(
-                      initialValue: _loginStore.email,
-                      onChanged: (value) {
-                        _loginStore.setEmail(value);
-                      },
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        hintText: 'Insira seu e-mail',
-                        border: OutlineInputBorder(),
-                      ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  TextFormField(
+                    onFieldSubmitted: (value) {
+                      _submit(_loginStore, context);
+                    },
+                    obscureText: true,
+                    initialValue: _loginStore.senha,
+                    onChanged: (value) {
+                      _loginStore.setSenha(value);
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Senha',
+                      hintText: 'Insira sua senha',
+                      border: OutlineInputBorder(),
                     ),
-                    const SizedBox(
-                      height: 10,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: <Widget>[
+                        const SizedBox(
+                          height: 60,
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RecuperarSenha(),
+                              ),
+                            );
+                          },
+                          child: Text('Recuperar senha'),
+                        ),
+                      ],
                     ),
-                    TextFormField(
-                      onFieldSubmitted: (value) {
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
                         _submit(_loginStore, context);
                       },
-                      obscureText: true,
-                      initialValue: _loginStore.senha,
-                      onChanged: (value) {
-                        _loginStore.setSenha(value);
-                      },
-                      decoration: InputDecoration(
-                        labelText: 'Senha',
-                        hintText: 'Insira sua senha',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: <Widget>[
-                          const SizedBox(
-                            height: 60,
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => RecuperarSenha(),
-                                ),
-                              );
-                            },
-                            child: Text('Recuperar senha'),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 10),
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _submit(_loginStore, context);
-                        },
-                        child: const Text(
-                          'ENTRAR',
-                          style: const TextStyle(
-                            color: Colors.white,
-                          ),
+                      child: const Text(
+                        'ENTRAR',
+                        style: const TextStyle(
+                          color: Colors.white,
                         ),
                       ),
                     ),
+                  ),
+                  if (constraints.maxWidth > 768)
                     Expanded(
                       child: Container(),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 10),
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PrimeiroCadastro(),
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          'NOVO CADASTRO',
-                          style: const TextStyle(
-                            color: Colors.white,
+                    )
+                  else
+                    const SizedBox(height: 20),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _cadastroScreenOpen = true;
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PrimeiroCadastro(),
                           ),
+                        ).then((_) {
+                          _cadastroScreenOpen = false;
+                        });
+                      },
+                      child: const Text(
+                        'NOVO CADASTRO',
+                        style: const TextStyle(
+                          color: Colors.white,
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           );
@@ -187,137 +195,134 @@ class _LoginScreenState extends State<LoginScreen> {
     BoxConstraints c,
   ) {
     final cor = Theme.of(ctx).primaryColor;
+    // Outer card with shadow
     return Center(
-      child: SingleChildScrollView(
-        // Outer card with shadow
-        child: Card(
-          elevation: 10,
-          child: Container(
-            height: 500,
-            width: 768,
-            // Row - holds the left and right content
-            child: Row(
-              children: [
-                // Left content (blue side)
-                Expanded(
-                  flex: 3,
-                  child: Card(
-                    elevation: 10,
-                    margin: EdgeInsets.all(0),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [cor, Colors.indigo[700]],
-                        ),
+      child: Card(
+        elevation: 10,
+        child: Container(
+          height: 500,
+          width: 768,
+          // Row - holds the left and right content
+          child: Row(
+            children: [
+              // Left content (blue side)
+              Expanded(
+                flex: 3,
+                child: Card(
+                  elevation: 10,
+                  margin: EdgeInsets.all(0),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [cor, Colors.indigo[700]],
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Flexible(
-                            flex: 2,
-                            child: Column(
-                              children: [
-                                new Image(
-                                  image:
-                                      new AssetImage('assets/logos/logo.png'),
-                                  height: 70.0,
-                                  width: 70.0,
-                                ),
-                                SizedBox(height: 15),
-                                Text(
-                                  'Bem-Vindo',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 50,
-                                    fontFamily: 'BigNoodleTitling',
-                                  ),
-                                ),
-                                SizedBox(height: 15),
-                                Text(
-                                  'Aqui você acessa a plataforma dos alinhadores estéticos revolucionários da Digital Aligner. Se precisar de ajuda, clique numa das opções abaixo.',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontFamily: 'Quicksand Light',
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                SizedBox(height: 15),
-                              ],
-                            ),
-                          ),
-                          Flexible(
-                            flex: 1,
-                            child: Text(
-                              'PRECISA DE AJUDA?',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          Row(
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          flex: 2,
+                          child: Column(
                             children: [
-                              Expanded(
-                                child: Container(),
+                              new Image(
+                                image: new AssetImage('assets/logos/logo.png'),
+                                height: 70.0,
+                                width: 70.0,
                               ),
-                              IconButton(
-                                tooltip: 'Whatsapp',
-                                onPressed: () {
-                                  /*
+                              const SizedBox(height: 15),
+                              const Text(
+                                'Bem-Vindo',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 50,
+                                  fontFamily: 'BigNoodleTitling',
+                                ),
+                              ),
+                              const SizedBox(height: 15),
+                              const Text(
+                                'Aqui você acessa a plataforma dos alinhadores estéticos revolucionários da Digital Aligner. Se precisar de ajuda, clique numa das opções abaixo.',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Quicksand Light',
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 15),
+                            ],
+                          ),
+                        ),
+                        Flexible(
+                          flex: 1,
+                          child: const Text(
+                            'PRECISA DE AJUDA?',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(),
+                            ),
+                            IconButton(
+                              tooltip: 'Whatsapp',
+                              onPressed: () {
+                                /*
                                   html.window.open(
                                       'https://api.whatsapp.com/send?phone=5581992777557&text=Ol%C3%A1,%20preciso%20de%20ajuda%20com%20o%20site%20do%20Digital%20Aligner...',
                                       'new tab');*/
-                                },
-                                color: Colors.white,
-                                icon: const Icon(Icons.send_to_mobile),
-                              ),
-                              IconButton(
-                                tooltip: 'Email',
-                                onPressed: () {
-                                  /*html.window.open(
+                              },
+                              color: Colors.white,
+                              icon: const Icon(Icons.send_to_mobile),
+                            ),
+                            IconButton(
+                              tooltip: 'Email',
+                              onPressed: () {
+                                /*html.window.open(
                                       'contato@digitalaligner.com.br',
                                       'new tab');*/
-                                },
-                                color: Colors.white,
-                                icon: const Icon(Icons.mail),
-                              ),
-                              IconButton(
-                                tooltip: 'Atendimento',
-                                onPressed: () {
-                                  /*html.window
-                                      .open('tel:+5581992777557', 'new tab');*/
-                                },
-                                color: Colors.white,
-                                icon: const Icon(Icons.phone),
-                              ),
-                              Expanded(
-                                child: Container(),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                          const Text(
-                            'V1.23',
-                            style: TextStyle(
+                              },
                               color: Colors.white,
+                              icon: const Icon(Icons.mail),
                             ),
+                            IconButton(
+                              tooltip: 'Atendimento',
+                              onPressed: () {
+                                /*html.window
+                                      .open('tel:+5581992777557', 'new tab');*/
+                              },
+                              color: Colors.white,
+                              icon: const Icon(Icons.phone),
+                            ),
+                            Expanded(
+                              child: Container(),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          'V1.23',
+                          style: TextStyle(
+                            color: Colors.white,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                //Right content
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: _form(context: ctx, isMobile: false, constraints: c),
-                  ),
-                )
-              ],
-            ),
+              ),
+              //Right content
+              Expanded(
+                flex: 2,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: _form(context: ctx, isMobile: false, constraints: c),
+                ),
+              )
+            ],
           ),
         ),
       ),
@@ -329,97 +334,94 @@ class _LoginScreenState extends State<LoginScreen> {
     BoxConstraints c,
   ) {
     final cor = Theme.of(ctx).primaryColor;
+    // Outer card with shadow
     return Center(
-      child: SingleChildScrollView(
-        // Outer card with shadow
-        child: Card(
-          elevation: 10,
-          child: Container(
-            height: 768,
-            width: 500,
-            // Row - holds the left and right content
-            child: Column(
-              children: [
-                // top content (blue side)
-                Expanded(
-                  flex: 2,
-                  child: Card(
-                    elevation: 10,
-                    margin: EdgeInsets.all(0),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [cor, Colors.indigo[700]],
-                        ),
+      child: Card(
+        elevation: 10,
+        child: Container(
+          height: 900,
+          width: 500,
+          // column - holds the top and bottom content
+          child: Column(
+            children: [
+              // top content (blue side)
+              Expanded(
+                flex: 2,
+                child: Card(
+                  elevation: 10,
+                  margin: EdgeInsets.all(0),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [cor, Colors.indigo[700]],
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Flexible(
-                            flex: 2,
-                            child: Column(
-                              children: [
-                                new Image(
-                                  image:
-                                      new AssetImage('assets/logos/logo.png'),
-                                  height: 70.0,
-                                  width: 70.0,
-                                ),
-                                SizedBox(height: 5),
-                                const Text(
-                                  'Bem-Vindo',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 50,
-                                    fontFamily: 'BigNoodleTitling',
-                                  ),
-                                ),
-                                const SizedBox(height: 5),
-                                const Text(
-                                  'Aqui você acessa a plataforma dos alinhadores estéticos revolucionários da Digital Aligner. Se precisar de ajuda, clique numa das opções abaixo.',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontFamily: 'Quicksand Light',
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                SizedBox(height: 5),
-                              ],
-                            ),
-                          ),
-                          Flexible(
-                            flex: 1,
-                            child: const Text(
-                              'PRECISA DE AJUDA?',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          flex: 2,
+                          child: Column(
+                            children: [
+                              new Image(
+                                image: new AssetImage('assets/logos/logo.png'),
+                                height: 70.0,
+                                width: 70.0,
                               ),
-                            ),
+                              const SizedBox(height: 5),
+                              const Text(
+                                'Bem-Vindo',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 50,
+                                  fontFamily: 'BigNoodleTitling',
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              const Text(
+                                'Aqui você acessa a plataforma dos alinhadores estéticos revolucionários da Digital Aligner. Se precisar de ajuda, clique numa das opções abaixo.',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Quicksand Light',
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 5),
+                            ],
                           ),
-                          const SizedBox(height: 20),
-                          const Text(
-                            'V1.23',
+                        ),
+                        Flexible(
+                          flex: 1,
+                          child: const Text(
+                            'PRECISA DE AJUDA?',
                             style: TextStyle(
                               color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          'V1.23',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                //bottom content
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: _form(context: ctx, isMobile: true, constraints: c),
-                  ),
-                )
-              ],
-            ),
+              ),
+              //bottom content
+              Expanded(
+                flex: 2,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: _form(context: ctx, isMobile: true, constraints: c),
+                ),
+              )
+            ],
           ),
         ),
       ),
@@ -431,7 +433,7 @@ class _LoginScreenState extends State<LoginScreen> {
     AuthProvider authStore = Provider.of<AuthProvider>(context);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (Navigator.canPop(context)) {
+      if (Navigator.canPop(context) && !_cadastroScreenOpen) {
         Navigator.pop(context);
       }
 
@@ -466,31 +468,44 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     }
 
+    double height = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: AbsorbPointer(
         absorbing: _blockUi,
-        child: Stack(
-          children: <Widget>[
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: new AssetImage('assets/backgrounds/login_screen.jpg'),
+        child: Scrollbar(
+          thickness: 15,
+          isAlwaysShown: width < 768 ? true : false,
+          showTrackOnHover: width < 768 ? true : false,
+          child: Stack(
+            children: <Widget>[
+              //Background image
+              Container(
+                width: width,
+                height: height,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image:
+                        new AssetImage('assets/backgrounds/login_screen.jpg'),
+                  ),
                 ),
               ),
-            ),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                if (constraints.maxWidth > 768) {
-                  return _layoutDesktop(context, constraints);
-                } else {
-                  return _layoutMobile(context, constraints);
-                }
-              },
-            ),
-          ],
+              // signin/login form
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  if (constraints.maxWidth > 768) {
+                    return _layoutDesktop(context, constraints);
+                  } else {
+                    return SingleChildScrollView(
+                      child: _layoutMobile(context, constraints),
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

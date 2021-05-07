@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "digital-aligner-e0e72"
+    "default": "digital-aligner-e0e72",
+    "dev": "digital-aligner-dev"
   }
 }
