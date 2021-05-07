@@ -37,7 +37,7 @@ class _SagitalState extends State<Sagital> {
   @override
   Widget build(BuildContext context) {
     final _novoPedStore = Provider.of<PedidoProvider>(context);
-
+    double width = MediaQuery.of(context).size.width;
     //loading provider values to controller
     _controllerLocalRecElastAlinh.text = _novoPedStore.getLocalRecElastAlinh();
     _controllerLocalRecAlinhBotao.text = _novoPedStore.getLocalRecAlinhBotao();
@@ -56,9 +56,9 @@ class _SagitalState extends State<Sagital> {
             ),
           ),
           const SizedBox(height: 20),
-          _relacaoMolar(_novoPedStore),
+          _relacaoMolar(_novoPedStore, width),
           const SizedBox(height: 20),
-          _relacaoCanino(_novoPedStore),
+          _relacaoCanino(_novoPedStore, width),
           const SizedBox(height: 20),
           _opcionais(_novoPedStore),
         ],
@@ -66,7 +66,7 @@ class _SagitalState extends State<Sagital> {
     );
   }
 
-  Widget _relacaoMolar(PedidoProvider _novoPedStore) {
+  Widget _relacaoMolar(PedidoProvider _novoPedStore, double width) {
     return Column(
       children: <Widget>[
         //Texto: Relação molar
@@ -160,548 +160,514 @@ class _SagitalState extends State<Sagital> {
         ),
         Card(
           elevation: 5,
-          child: Column(children: [
-            const SizedBox(height: 40),
-            //Lado direito, lado esquerdo
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Container(
-                  height: 80,
-                  child: Column(
+          child: Column(
+            children: [
+              const SizedBox(height: 40),
+              Flex(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                direction: width > 800 ? Axis.horizontal : Axis.vertical,
+                children: [
+                  //lado direto
+                  Column(
                     children: [
-                      Row(
-                        children: [
-                          Column(
-                            children: [
-                              Text(
-                                'Lado direito',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              Row(
-                                children: [
-                                  Radio(
-                                    activeColor: Colors.blue,
-                                    groupValue:
-                                        _novoPedStore.getRmRadioValue('_rmLd'),
-                                    onChanged: widget.blockUi
-                                        ? null
-                                        : (value) {
-                                            _removeFocus(context);
-                                            _novoPedStore.setRmRadio(
-                                                value, '_rmLd');
-                                            _novoPedStore.manageRmLadoDireito();
-                                          },
-                                    value: 1,
-                                  ),
-                                  const Text('Manter'),
-                                  Radio(
-                                    activeColor: Colors.blue,
-                                    groupValue:
-                                        _novoPedStore.getRmRadioValue('_rmLd'),
-                                    onChanged: widget.blockUi
-                                        ? null
-                                        : (value) {
-                                            _removeFocus(context);
-                                            _novoPedStore.setRmRadio(
-                                                value, '_rmLd');
-                                            _novoPedStore.manageRmLadoDireito();
-                                          },
-                                    value: 2,
-                                  ),
-                                  const Text('Corrigir'),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  height: 80,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Column(
-                            children: [
-                              const Text(
-                                'Lado esquerdo',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              Row(
-                                children: [
-                                  Radio(
-                                    activeColor: Colors.blue,
-                                    groupValue:
-                                        _novoPedStore.getRmRadioValue('_rmLe'),
-                                    onChanged: widget.blockUi
-                                        ? null
-                                        : (value) {
-                                            _removeFocus(context);
-                                            _novoPedStore.setRmRadio(
-                                                value, '_rmLe');
-                                            _novoPedStore
-                                                .manageRmLadoEsquerdo();
-                                          },
-                                    value: 1,
-                                  ),
-                                  const Text('Manter'),
-                                  Radio(
-                                    activeColor: Colors.blue,
-                                    groupValue:
-                                        _novoPedStore.getRmRadioValue('_rmLe'),
-                                    onChanged: widget.blockUi
-                                        ? null
-                                        : (value) {
-                                            _removeFocus(context);
-                                            _novoPedStore.setRmRadio(
-                                                value, '_rmLe');
-                                            _novoPedStore
-                                                .manageRmLadoEsquerdo();
-                                          },
-                                    value: 2,
-                                  ),
-                                  const Text('Corrigir'),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            //Superior direito, superior esquerdo
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Container(
-                  height: 80,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Column(
-                            children: [
-                              Text(
-                                'Superior direito',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: _novoPedStore.getRmLdState()
-                                      ? Colors.black
-                                      : Colors.grey.withOpacity(0.5),
+                      //lado direito
+                      Container(
+                        height: 80,
+                        child: Column(
+                          children: [
+                            Text(
+                              'Lado direito',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRmRadioValue('_rmLd'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          _novoPedStore.setRmRadio(
+                                              value, '_rmLd');
+                                          _novoPedStore.manageRmLadoDireito();
+                                        },
+                                  value: 1,
                                 ),
-                              ),
-                              Row(
-                                children: [
-                                  Radio(
-                                    activeColor: Colors.blue,
-                                    groupValue:
-                                        _novoPedStore.getRmRadioValue('_rmSd'),
-                                    onChanged: widget.blockUi
-                                        ? null
-                                        : (value) {
-                                            _removeFocus(context);
-                                            if (_novoPedStore.getRmLdState()) {
-                                              _novoPedStore.setRmRadio(
-                                                value,
-                                                '_rmSd',
-                                              );
-                                            }
-                                          },
-                                    value: 1,
-                                  ),
-                                  Text(
-                                    'Distalize',
-                                    style: TextStyle(
-                                      color: _novoPedStore.getRmLdState()
-                                          ? Colors.black
-                                          : Colors.grey.withOpacity(0.5),
-                                    ),
-                                  ),
-                                  Radio(
-                                    activeColor: Colors.blue,
-                                    groupValue:
-                                        _novoPedStore.getRmRadioValue('_rmSd'),
-                                    onChanged: widget.blockUi
-                                        ? null
-                                        : (value) {
-                                            _removeFocus(context);
-                                            if (_novoPedStore.getRmLdState()) {
-                                              _novoPedStore.setRmRadio(
-                                                value,
-                                                '_rmSd',
-                                              );
-                                            }
-                                          },
-                                    value: 2,
-                                  ),
-                                  Text(
-                                    'Mesialize',
-                                    style: TextStyle(
-                                      color: _novoPedStore.getRmLdState()
-                                          ? Colors.black
-                                          : Colors.grey.withOpacity(0.5),
-                                    ),
-                                  ),
-                                  Radio(
-                                    activeColor: Colors.blue,
-                                    groupValue:
-                                        _novoPedStore.getRmRadioValue('_rmSd'),
-                                    onChanged: widget.blockUi
-                                        ? null
-                                        : (value) {
-                                            _removeFocus(context);
-                                            if (_novoPedStore.getRmLdState()) {
-                                              _novoPedStore.setRmRadio(
-                                                value,
-                                                '_rmSd',
-                                              );
-                                            }
-                                          },
-                                    value: 3,
-                                  ),
-                                  Text(
-                                    'Manter',
-                                    style: TextStyle(
-                                      color: _novoPedStore.getRmLdState()
-                                          ? Colors.black
-                                          : Colors.grey.withOpacity(0.5),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  height: 80,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Column(
-                            children: [
-                              Text(
-                                'Superior esquerdo',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: _novoPedStore.getRmLeState()
-                                      ? Colors.black
-                                      : Colors.grey.withOpacity(0.5),
+                                const Text('Manter'),
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRmRadioValue('_rmLd'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          _novoPedStore.setRmRadio(
+                                              value, '_rmLd');
+                                          _novoPedStore.manageRmLadoDireito();
+                                        },
+                                  value: 2,
                                 ),
-                              ),
-                              Row(
-                                children: [
-                                  Radio(
-                                    activeColor: Colors.blue,
-                                    groupValue:
-                                        _novoPedStore.getRmRadioValue('_rmSe'),
-                                    onChanged: widget.blockUi
-                                        ? null
-                                        : (value) {
-                                            _removeFocus(context);
-                                            if (_novoPedStore.getRmLeState()) {
-                                              _novoPedStore.setRmRadio(
-                                                value,
-                                                '_rmSe',
-                                              );
-                                            }
-                                          },
-                                    value: 1,
-                                  ),
-                                  Text(
-                                    'Distalize',
-                                    style: TextStyle(
-                                      color: _novoPedStore.getRmLeState()
-                                          ? Colors.black
-                                          : Colors.grey.withOpacity(0.5),
-                                    ),
-                                  ),
-                                  Radio(
-                                    activeColor: Colors.blue,
-                                    groupValue:
-                                        _novoPedStore.getRmRadioValue('_rmSe'),
-                                    onChanged: widget.blockUi
-                                        ? null
-                                        : (value) {
-                                            _removeFocus(context);
-                                            if (_novoPedStore.getRmLeState()) {
-                                              _novoPedStore.setRmRadio(
-                                                value,
-                                                '_rmSe',
-                                              );
-                                            }
-                                          },
-                                    value: 2,
-                                  ),
-                                  Text(
-                                    'Mesialize',
-                                    style: TextStyle(
-                                      color: _novoPedStore.getRmLeState()
-                                          ? Colors.black
-                                          : Colors.grey.withOpacity(0.5),
-                                    ),
-                                  ),
-                                  Radio(
-                                    activeColor: Colors.blue,
-                                    groupValue:
-                                        _novoPedStore.getRmRadioValue('_rmSe'),
-                                    onChanged: widget.blockUi
-                                        ? null
-                                        : (value) {
-                                            _removeFocus(context);
-                                            if (_novoPedStore.getRmLeState()) {
-                                              _novoPedStore.setRmRadio(
-                                                value,
-                                                '_rmSe',
-                                              );
-                                            }
-                                          },
-                                    value: 3,
-                                  ),
-                                  Text(
-                                    'Manter',
-                                    style: TextStyle(
-                                      color: _novoPedStore.getRmLeState()
-                                          ? Colors.black
-                                          : Colors.grey.withOpacity(0.5),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
+                                const Text('Corrigir'),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            //Inferior direito, inferior esquerdo
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Container(
-                  height: 80,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Column(
-                            children: [
-                              Text(
-                                'Inferior direito',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: _novoPedStore.getRmLdState()
-                                      ? Colors.black
-                                      : Colors.grey.withOpacity(0.5),
+                      //superior direito
+                      Container(
+                        height: 80,
+                        child: Column(
+                          children: [
+                            Text(
+                              'Superior direito',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: _novoPedStore.getRmLdState()
+                                    ? Colors.black
+                                    : Colors.grey.withOpacity(0.5),
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRmRadioValue('_rmSd'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRmLdState()) {
+                                            _novoPedStore.setRmRadio(
+                                              value,
+                                              '_rmSd',
+                                            );
+                                          }
+                                        },
+                                  value: 1,
                                 ),
-                              ),
-                              Row(
-                                children: [
-                                  Radio(
-                                    activeColor: Colors.blue,
-                                    groupValue:
-                                        _novoPedStore.getRmRadioValue('_rmId'),
-                                    onChanged: widget.blockUi
-                                        ? null
-                                        : (value) {
-                                            _removeFocus(context);
-                                            if (_novoPedStore.getRmLdState()) {
-                                              _novoPedStore.setRmRadio(
-                                                value,
-                                                '_rmId',
-                                              );
-                                            }
-                                          },
-                                    value: 1,
+                                Text(
+                                  'Distalize',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRmLdState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
                                   ),
-                                  Text(
-                                    'Distalize',
-                                    style: TextStyle(
-                                      color: _novoPedStore.getRmLdState()
-                                          ? Colors.black
-                                          : Colors.grey.withOpacity(0.5),
-                                    ),
-                                  ),
-                                  Radio(
-                                    activeColor: Colors.blue,
-                                    groupValue:
-                                        _novoPedStore.getRmRadioValue('_rmId'),
-                                    onChanged: widget.blockUi
-                                        ? null
-                                        : (value) {
-                                            _removeFocus(context);
-                                            if (_novoPedStore.getRmLdState()) {
-                                              _novoPedStore.setRmRadio(
-                                                value,
-                                                '_rmId',
-                                              );
-                                            }
-                                          },
-                                    value: 2,
-                                  ),
-                                  Text(
-                                    'Mesialize',
-                                    style: TextStyle(
-                                      color: _novoPedStore.getRmLdState()
-                                          ? Colors.black
-                                          : Colors.grey.withOpacity(0.5),
-                                    ),
-                                  ),
-                                  Radio(
-                                    activeColor: Colors.blue,
-                                    groupValue:
-                                        _novoPedStore.getRmRadioValue('_rmId'),
-                                    onChanged: widget.blockUi
-                                        ? null
-                                        : (value) {
-                                            _removeFocus(context);
-                                            if (_novoPedStore.getRmLdState()) {
-                                              _novoPedStore.setRmRadio(
-                                                value,
-                                                '_rmId',
-                                              );
-                                            }
-                                          },
-                                    value: 3,
-                                  ),
-                                  Text(
-                                    'Manter',
-                                    style: TextStyle(
-                                      color: _novoPedStore.getRmLdState()
-                                          ? Colors.black
-                                          : Colors.grey.withOpacity(0.5),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  height: 80,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Column(
-                            children: [
-                              Text(
-                                'Inferior esquerdo',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: _novoPedStore.getRmLeState()
-                                      ? Colors.black
-                                      : Colors.grey.withOpacity(0.5),
                                 ),
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRmRadioValue('_rmSd'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRmLdState()) {
+                                            _novoPedStore.setRmRadio(
+                                              value,
+                                              '_rmSd',
+                                            );
+                                          }
+                                        },
+                                  value: 2,
+                                ),
+                                Text(
+                                  'Mesialize',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRmLdState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
+                                  ),
+                                ),
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRmRadioValue('_rmSd'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRmLdState()) {
+                                            _novoPedStore.setRmRadio(
+                                              value,
+                                              '_rmSd',
+                                            );
+                                          }
+                                        },
+                                  value: 3,
+                                ),
+                                Text(
+                                  'Manter',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRmLdState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      //inferior direito
+                      Container(
+                        height: 80,
+                        child: Column(
+                          children: [
+                            Text(
+                              'Inferior direito',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: _novoPedStore.getRmLdState()
+                                    ? Colors.black
+                                    : Colors.grey.withOpacity(0.5),
                               ),
-                              Row(
-                                children: [
-                                  Radio(
-                                    activeColor: Colors.blue,
-                                    groupValue:
-                                        _novoPedStore.getRmRadioValue('_rmIe'),
-                                    onChanged: widget.blockUi
-                                        ? null
-                                        : (value) {
-                                            _removeFocus(context);
-                                            if (_novoPedStore.getRmLeState()) {
-                                              _novoPedStore.setRmRadio(
-                                                value,
-                                                '_rmIe',
-                                              );
-                                            }
-                                          },
-                                    value: 1,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRmRadioValue('_rmId'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRmLdState()) {
+                                            _novoPedStore.setRmRadio(
+                                              value,
+                                              '_rmId',
+                                            );
+                                          }
+                                        },
+                                  value: 1,
+                                ),
+                                Text(
+                                  'Distalize',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRmLdState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
                                   ),
-                                  Text(
-                                    'Distalize',
-                                    style: TextStyle(
-                                      color: _novoPedStore.getRmLeState()
-                                          ? Colors.black
-                                          : Colors.grey.withOpacity(0.5),
-                                    ),
+                                ),
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRmRadioValue('_rmId'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRmLdState()) {
+                                            _novoPedStore.setRmRadio(
+                                              value,
+                                              '_rmId',
+                                            );
+                                          }
+                                        },
+                                  value: 2,
+                                ),
+                                Text(
+                                  'Mesialize',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRmLdState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
                                   ),
-                                  Radio(
-                                    activeColor: Colors.blue,
-                                    groupValue:
-                                        _novoPedStore.getRmRadioValue('_rmIe'),
-                                    onChanged: widget.blockUi
-                                        ? null
-                                        : (value) {
-                                            _removeFocus(context);
-                                            if (_novoPedStore.getRmLeState()) {
-                                              _novoPedStore.setRmRadio(
-                                                value,
-                                                '_rmIe',
-                                              );
-                                            }
-                                          },
-                                    value: 2,
+                                ),
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRmRadioValue('_rmId'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRmLdState()) {
+                                            _novoPedStore.setRmRadio(
+                                              value,
+                                              '_rmId',
+                                            );
+                                          }
+                                        },
+                                  value: 3,
+                                ),
+                                Text(
+                                  'Manter',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRmLdState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
                                   ),
-                                  Text(
-                                    'Mesialize',
-                                    style: TextStyle(
-                                      color: _novoPedStore.getRmLeState()
-                                          ? Colors.black
-                                          : Colors.grey.withOpacity(0.5),
-                                    ),
-                                  ),
-                                  Radio(
-                                    activeColor: Colors.blue,
-                                    groupValue:
-                                        _novoPedStore.getRmRadioValue('_rmIe'),
-                                    onChanged: widget.blockUi
-                                        ? null
-                                        : (value) {
-                                            _removeFocus(context);
-                                            if (_novoPedStore.getRmLeState()) {
-                                              _novoPedStore.setRmRadio(
-                                                value,
-                                                '_rmIe',
-                                              );
-                                            }
-                                          },
-                                    value: 3,
-                                  ),
-                                  Text(
-                                    'Manter',
-                                    style: TextStyle(
-                                      color: _novoPedStore.getRmLeState()
-                                          ? Colors.black
-                                          : Colors.grey.withOpacity(0.5),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ]),
+                  const SizedBox(
+                    width: 60,
+                    height: 60,
+                  ),
+                  //lado esquerdo
+                  Column(
+                    children: [
+                      //lado esquerdo
+                      Container(
+                        height: 80,
+                        child: Column(
+                          children: [
+                            const Text(
+                              'Lado esquerdo',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRmRadioValue('_rmLe'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          _novoPedStore.setRmRadio(
+                                              value, '_rmLe');
+                                          _novoPedStore.manageRmLadoEsquerdo();
+                                        },
+                                  value: 1,
+                                ),
+                                const Text('Manter'),
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRmRadioValue('_rmLe'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          _novoPedStore.setRmRadio(
+                                              value, '_rmLe');
+                                          _novoPedStore.manageRmLadoEsquerdo();
+                                        },
+                                  value: 2,
+                                ),
+                                const Text('Corrigir'),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      //superior esquerdo
+                      Container(
+                        height: 80,
+                        child: Column(
+                          children: [
+                            Text(
+                              'Superior esquerdo',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: _novoPedStore.getRmLeState()
+                                    ? Colors.black
+                                    : Colors.grey.withOpacity(0.5),
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRmRadioValue('_rmSe'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRmLeState()) {
+                                            _novoPedStore.setRmRadio(
+                                              value,
+                                              '_rmSe',
+                                            );
+                                          }
+                                        },
+                                  value: 1,
+                                ),
+                                Text(
+                                  'Distalize',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRmLeState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
+                                  ),
+                                ),
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRmRadioValue('_rmSe'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRmLeState()) {
+                                            _novoPedStore.setRmRadio(
+                                              value,
+                                              '_rmSe',
+                                            );
+                                          }
+                                        },
+                                  value: 2,
+                                ),
+                                Text(
+                                  'Mesialize',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRmLeState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
+                                  ),
+                                ),
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRmRadioValue('_rmSe'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRmLeState()) {
+                                            _novoPedStore.setRmRadio(
+                                              value,
+                                              '_rmSe',
+                                            );
+                                          }
+                                        },
+                                  value: 3,
+                                ),
+                                Text(
+                                  'Manter',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRmLeState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      //inferior esquerdo
+                      Container(
+                        height: 80,
+                        child: Column(
+                          children: [
+                            Text(
+                              'Inferior esquerdo',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: _novoPedStore.getRmLeState()
+                                    ? Colors.black
+                                    : Colors.grey.withOpacity(0.5),
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRmRadioValue('_rmIe'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRmLeState()) {
+                                            _novoPedStore.setRmRadio(
+                                              value,
+                                              '_rmIe',
+                                            );
+                                          }
+                                        },
+                                  value: 1,
+                                ),
+                                Text(
+                                  'Distalize',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRmLeState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
+                                  ),
+                                ),
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRmRadioValue('_rmIe'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRmLeState()) {
+                                            _novoPedStore.setRmRadio(
+                                              value,
+                                              '_rmIe',
+                                            );
+                                          }
+                                        },
+                                  value: 2,
+                                ),
+                                Text(
+                                  'Mesialize',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRmLeState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
+                                  ),
+                                ),
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRmRadioValue('_rmIe'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRmLeState()) {
+                                            _novoPedStore.setRmRadio(
+                                              value,
+                                              '_rmIe',
+                                            );
+                                          }
+                                        },
+                                  value: 3,
+                                ),
+                                Text(
+                                  'Manter',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRmLeState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 20),
         Container(
@@ -723,7 +689,7 @@ class _SagitalState extends State<Sagital> {
     );
   }
 
-  Widget _relacaoCanino(var _novoPedStore) {
+  Widget _relacaoCanino(PedidoProvider _novoPedStore, double width) {
     return Column(
       children: <Widget>[
         //Texto: Relação molar
@@ -821,556 +787,506 @@ class _SagitalState extends State<Sagital> {
           child: Column(
             children: [
               const SizedBox(height: 40),
-              //Lado direito, lado esquerdo
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+              Flex(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                direction: width > 800 ? Axis.horizontal : Axis.vertical,
                 children: [
-                  Container(
-                    height: 80,
-                    child: Column(
-                      children: [
-                        Row(
+                  //lado direito
+                  Column(
+                    children: [
+                      //lado direito
+                      Container(
+                        height: 80,
+                        child: Column(
                           children: [
-                            Column(
+                            const Text(
+                              'Lado direito',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Text(
-                                  'Lado direito',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRcRadioValue('_rcLd'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          _novoPedStore.setRcRadio(
+                                              value, '_rcLd');
+                                          _novoPedStore.manageRcLadoDireito();
+                                        },
+                                  value: 1,
                                 ),
-                                Row(
-                                  children: [
-                                    Radio(
-                                      activeColor: Colors.blue,
-                                      groupValue: _novoPedStore
-                                          .getRcRadioValue('_rcLd'),
-                                      onChanged: widget.blockUi
-                                          ? null
-                                          : (value) {
-                                              _removeFocus(context);
-                                              _novoPedStore.setRcRadio(
-                                                  value, '_rcLd');
-                                              _novoPedStore
-                                                  .manageRcLadoDireito();
-                                            },
-                                      value: 1,
-                                    ),
-                                    const Text('Manter'),
-                                    Radio(
-                                      activeColor: Colors.blue,
-                                      groupValue: _novoPedStore
-                                          .getRcRadioValue('_rcLd'),
-                                      onChanged: widget.blockUi
-                                          ? null
-                                          : (value) {
-                                              _removeFocus(context);
-                                              _novoPedStore.setRcRadio(
-                                                  value, '_rcLd');
-                                              _novoPedStore
-                                                  .manageRcLadoDireito();
-                                            },
-                                      value: 2,
-                                    ),
-                                    const Text('Corrigir'),
-                                  ],
+                                const Text('Manter'),
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRcRadioValue('_rcLd'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          _novoPedStore.setRcRadio(
+                                              value, '_rcLd');
+                                          _novoPedStore.manageRcLadoDireito();
+                                        },
+                                  value: 2,
                                 ),
+                                const Text('Corrigir'),
                               ],
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    height: 80,
-                    child: Column(
-                      children: [
-                        Row(
+                      ),
+                      //superior direito
+                      Container(
+                        height: 80,
+                        child: Column(
                           children: [
-                            Column(
-                              children: [
-                                const Text(
-                                  'Lado esquerdo',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                Row(
-                                  children: [
-                                    Radio(
-                                      activeColor: Colors.blue,
-                                      groupValue: _novoPedStore
-                                          .getRcRadioValue('_rcLe'),
-                                      onChanged: widget.blockUi
-                                          ? null
-                                          : (value) {
-                                              _removeFocus(context);
-                                              _novoPedStore.setRcRadio(
-                                                  value, '_rcLe');
-                                              _novoPedStore
-                                                  .manageRcLadoEsquerdo();
-                                            },
-                                      value: 1,
-                                    ),
-                                    const Text('Manter'),
-                                    Radio(
-                                      activeColor: Colors.blue,
-                                      groupValue: _novoPedStore
-                                          .getRcRadioValue('_rcLe'),
-                                      onChanged: widget.blockUi
-                                          ? null
-                                          : (value) {
-                                              _removeFocus(context);
-                                              _novoPedStore.setRcRadio(
-                                                  value, '_rcLe');
-                                              _novoPedStore
-                                                  .manageRcLadoEsquerdo();
-                                            },
-                                      value: 2,
-                                    ),
-                                    const Text('Corrigir'),
-                                  ],
-                                ),
-                              ],
+                            Text(
+                              'Superior direito',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: _novoPedStore.getRcLdState()
+                                    ? Colors.black
+                                    : Colors.grey.withOpacity(0.5),
+                              ),
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              //Superior direito, superior esquerdo
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Container(
-                    height: 80,
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Column(
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRcRadioValue('_rcSd'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRcLdState()) {
+                                            _novoPedStore.setRcRadio(
+                                              value,
+                                              '_rcSd',
+                                            );
+                                          }
+                                        },
+                                  value: 1,
+                                ),
                                 Text(
-                                  'Superior direito',
+                                  'Distalize',
                                   style: TextStyle(
-                                    fontWeight: FontWeight.bold,
                                     color: _novoPedStore.getRcLdState()
                                         ? Colors.black
                                         : Colors.grey.withOpacity(0.5),
                                   ),
                                 ),
-                                Row(
-                                  children: [
-                                    Radio(
-                                      activeColor: Colors.blue,
-                                      groupValue: _novoPedStore
-                                          .getRcRadioValue('_rcSd'),
-                                      onChanged: widget.blockUi
-                                          ? null
-                                          : (value) {
-                                              _removeFocus(context);
-                                              if (_novoPedStore
-                                                  .getRcLdState()) {
-                                                _novoPedStore.setRcRadio(
-                                                  value,
-                                                  '_rcSd',
-                                                );
-                                              }
-                                            },
-                                      value: 1,
-                                    ),
-                                    Text(
-                                      'Distalize',
-                                      style: TextStyle(
-                                        color: _novoPedStore.getRcLdState()
-                                            ? Colors.black
-                                            : Colors.grey.withOpacity(0.5),
-                                      ),
-                                    ),
-                                    Radio(
-                                      activeColor: Colors.blue,
-                                      groupValue: _novoPedStore
-                                          .getRcRadioValue('_rcSd'),
-                                      onChanged: widget.blockUi
-                                          ? null
-                                          : (value) {
-                                              _removeFocus(context);
-                                              if (_novoPedStore
-                                                  .getRcLdState()) {
-                                                _novoPedStore.setRcRadio(
-                                                  value,
-                                                  '_rcSd',
-                                                );
-                                              }
-                                            },
-                                      value: 2,
-                                    ),
-                                    Text(
-                                      'Mesialize',
-                                      style: TextStyle(
-                                        color: _novoPedStore.getRcLdState()
-                                            ? Colors.black
-                                            : Colors.grey.withOpacity(0.5),
-                                      ),
-                                    ),
-                                    Radio(
-                                      activeColor: Colors.blue,
-                                      groupValue: _novoPedStore
-                                          .getRcRadioValue('_rcSd'),
-                                      onChanged: widget.blockUi
-                                          ? null
-                                          : (value) {
-                                              _removeFocus(context);
-                                              if (_novoPedStore
-                                                  .getRcLdState()) {
-                                                _novoPedStore.setRcRadio(
-                                                  value,
-                                                  '_rcSd',
-                                                );
-                                              }
-                                            },
-                                      value: 3,
-                                    ),
-                                    Text(
-                                      'Manter',
-                                      style: TextStyle(
-                                        color: _novoPedStore.getRcLdState()
-                                            ? Colors.black
-                                            : Colors.grey.withOpacity(0.5),
-                                      ),
-                                    ),
-                                  ],
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRcRadioValue('_rcSd'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRcLdState()) {
+                                            _novoPedStore.setRcRadio(
+                                              value,
+                                              '_rcSd',
+                                            );
+                                          }
+                                        },
+                                  value: 2,
                                 ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    height: 80,
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Column(
-                              children: [
                                 Text(
-                                  'Superior esquerdo',
+                                  'Mesialize',
                                   style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: _novoPedStore.getRcLeState()
-                                        ? Colors.black
-                                        : Colors.grey.withOpacity(0.5),
-                                  ),
-                                ),
-                                Row(
-                                  children: [
-                                    Radio(
-                                      activeColor: Colors.blue,
-                                      groupValue: _novoPedStore
-                                          .getRcRadioValue('_rcSe'),
-                                      onChanged: widget.blockUi
-                                          ? null
-                                          : (value) {
-                                              _removeFocus(context);
-                                              if (_novoPedStore
-                                                  .getRcLeState()) {
-                                                _novoPedStore.setRcRadio(
-                                                  value,
-                                                  '_rcSe',
-                                                );
-                                              }
-                                            },
-                                      value: 1,
-                                    ),
-                                    Text(
-                                      'Distalize',
-                                      style: TextStyle(
-                                        color: _novoPedStore.getRcLeState()
-                                            ? Colors.black
-                                            : Colors.grey.withOpacity(0.5),
-                                      ),
-                                    ),
-                                    Radio(
-                                      activeColor: Colors.blue,
-                                      groupValue: _novoPedStore
-                                          .getRcRadioValue('_rcSe'),
-                                      onChanged: widget.blockUi
-                                          ? null
-                                          : (value) {
-                                              _removeFocus(context);
-                                              if (_novoPedStore
-                                                  .getRcLeState()) {
-                                                _novoPedStore.setRcRadio(
-                                                  value,
-                                                  '_rcSe',
-                                                );
-                                              }
-                                            },
-                                      value: 2,
-                                    ),
-                                    Text(
-                                      'Mesialize',
-                                      style: TextStyle(
-                                        color: _novoPedStore.getRcLeState()
-                                            ? Colors.black
-                                            : Colors.grey.withOpacity(0.5),
-                                      ),
-                                    ),
-                                    Radio(
-                                      activeColor: Colors.blue,
-                                      groupValue: _novoPedStore
-                                          .getRcRadioValue('_rcSe'),
-                                      onChanged: widget.blockUi
-                                          ? null
-                                          : (value) {
-                                              _removeFocus(context);
-                                              if (_novoPedStore
-                                                  .getRcLeState()) {
-                                                _novoPedStore.setRcRadio(
-                                                  value,
-                                                  '_rcSe',
-                                                );
-                                              }
-                                            },
-                                      value: 3,
-                                    ),
-                                    Text(
-                                      'Manter',
-                                      style: TextStyle(
-                                        color: _novoPedStore.getRcLeState()
-                                            ? Colors.black
-                                            : Colors.grey.withOpacity(0.5),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              //Inferior esquerdo, inferior direito
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Container(
-                    height: 80,
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Column(
-                              children: [
-                                Text(
-                                  'Inferior direito',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
                                     color: _novoPedStore.getRcLdState()
                                         ? Colors.black
                                         : Colors.grey.withOpacity(0.5),
                                   ),
                                 ),
-                                Row(
-                                  children: [
-                                    Radio(
-                                      activeColor: Colors.blue,
-                                      groupValue: _novoPedStore
-                                          .getRcRadioValue('_rcId'),
-                                      onChanged: widget.blockUi
-                                          ? null
-                                          : (value) {
-                                              _removeFocus(context);
-                                              if (_novoPedStore
-                                                  .getRcLdState()) {
-                                                _novoPedStore.setRcRadio(
-                                                  value,
-                                                  '_rcId',
-                                                );
-                                              }
-                                            },
-                                      value: 1,
-                                    ),
-                                    Text(
-                                      'Distalize',
-                                      style: TextStyle(
-                                        color: _novoPedStore.getRcLdState()
-                                            ? Colors.black
-                                            : Colors.grey.withOpacity(0.5),
-                                      ),
-                                    ),
-                                    Radio(
-                                      activeColor: Colors.blue,
-                                      groupValue: _novoPedStore
-                                          .getRcRadioValue('_rcId'),
-                                      onChanged: widget.blockUi
-                                          ? null
-                                          : (value) {
-                                              _removeFocus(context);
-                                              if (_novoPedStore
-                                                  .getRcLdState()) {
-                                                _novoPedStore.setRcRadio(
-                                                  value,
-                                                  '_rcId',
-                                                );
-                                              }
-                                            },
-                                      value: 2,
-                                    ),
-                                    Text(
-                                      'Mesialize',
-                                      style: TextStyle(
-                                        color: _novoPedStore.getRcLdState()
-                                            ? Colors.black
-                                            : Colors.grey.withOpacity(0.5),
-                                      ),
-                                    ),
-                                    Radio(
-                                      activeColor: Colors.blue,
-                                      groupValue: _novoPedStore
-                                          .getRcRadioValue('_rcId'),
-                                      onChanged: widget.blockUi
-                                          ? null
-                                          : (value) {
-                                              _removeFocus(context);
-                                              if (_novoPedStore
-                                                  .getRcLdState()) {
-                                                _novoPedStore.setRcRadio(
-                                                  value,
-                                                  '_rcId',
-                                                );
-                                              }
-                                            },
-                                      value: 3,
-                                    ),
-                                    Text(
-                                      'Manter',
-                                      style: TextStyle(
-                                        color: _novoPedStore.getRcLdState()
-                                            ? Colors.black
-                                            : Colors.grey.withOpacity(0.5),
-                                      ),
-                                    ),
-                                  ],
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRcRadioValue('_rcSd'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRcLdState()) {
+                                            _novoPedStore.setRcRadio(
+                                              value,
+                                              '_rcSd',
+                                            );
+                                          }
+                                        },
+                                  value: 3,
+                                ),
+                                Text(
+                                  'Manter',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRcLdState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
+                                  ),
                                 ),
                               ],
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    height: 80,
-                    child: Column(
-                      children: [
-                        Row(
+                      ),
+                      //inferior direito
+                      Container(
+                        height: 80,
+                        child: Column(
                           children: [
-                            Column(
+                            Text(
+                              'Inferior direito',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: _novoPedStore.getRcLdState()
+                                    ? Colors.black
+                                    : Colors.grey.withOpacity(0.5),
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRcRadioValue('_rcId'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRcLdState()) {
+                                            _novoPedStore.setRcRadio(
+                                              value,
+                                              '_rcId',
+                                            );
+                                          }
+                                        },
+                                  value: 1,
+                                ),
                                 Text(
-                                  'Inferior esquerdo',
+                                  'Distalize',
                                   style: TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                    color: _novoPedStore.getRcLdState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
+                                  ),
+                                ),
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRcRadioValue('_rcId'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRcLdState()) {
+                                            _novoPedStore.setRcRadio(
+                                              value,
+                                              '_rcId',
+                                            );
+                                          }
+                                        },
+                                  value: 2,
+                                ),
+                                Text(
+                                  'Mesialize',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRcLdState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
+                                  ),
+                                ),
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRcRadioValue('_rcId'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRcLdState()) {
+                                            _novoPedStore.setRcRadio(
+                                              value,
+                                              '_rcId',
+                                            );
+                                          }
+                                        },
+                                  value: 3,
+                                ),
+                                Text(
+                                  'Manter',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRcLdState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    width: 60,
+                    height: 60,
+                  ),
+                  //lado esquerdo
+                  Column(
+                    children: [
+                      //lado esquerdo
+                      Container(
+                        height: 80,
+                        child: Column(
+                          children: [
+                            const Text(
+                              'Lado esquerdo',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRcRadioValue('_rcLe'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          _novoPedStore.setRcRadio(
+                                              value, '_rcLe');
+                                          _novoPedStore.manageRcLadoEsquerdo();
+                                        },
+                                  value: 1,
+                                ),
+                                const Text('Manter'),
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRcRadioValue('_rcLe'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          _novoPedStore.setRcRadio(
+                                              value, '_rcLe');
+                                          _novoPedStore.manageRcLadoEsquerdo();
+                                        },
+                                  value: 2,
+                                ),
+                                const Text('Corrigir'),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      //superior esquerdo
+                      Container(
+                        height: 80,
+                        child: Column(
+                          children: [
+                            Text(
+                              'Superior esquerdo',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: _novoPedStore.getRcLeState()
+                                    ? Colors.black
+                                    : Colors.grey.withOpacity(0.5),
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRcRadioValue('_rcSe'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRcLeState()) {
+                                            _novoPedStore.setRcRadio(
+                                              value,
+                                              '_rcSe',
+                                            );
+                                          }
+                                        },
+                                  value: 1,
+                                ),
+                                Text(
+                                  'Distalize',
+                                  style: TextStyle(
                                     color: _novoPedStore.getRcLeState()
                                         ? Colors.black
                                         : Colors.grey.withOpacity(0.5),
                                   ),
                                 ),
-                                Row(
-                                  children: [
-                                    Radio(
-                                      activeColor: Colors.blue,
-                                      groupValue: _novoPedStore
-                                          .getRcRadioValue('_rcIe'),
-                                      onChanged: widget.blockUi
-                                          ? null
-                                          : (value) {
-                                              _removeFocus(context);
-                                              if (_novoPedStore
-                                                  .getRcLeState()) {
-                                                _novoPedStore.setRcRadio(
-                                                  value,
-                                                  '_rcIe',
-                                                );
-                                              }
-                                            },
-                                      value: 1,
-                                    ),
-                                    Text(
-                                      'Distalize',
-                                      style: TextStyle(
-                                        color: _novoPedStore.getRcLeState()
-                                            ? Colors.black
-                                            : Colors.grey.withOpacity(0.5),
-                                      ),
-                                    ),
-                                    Radio(
-                                      activeColor: Colors.blue,
-                                      groupValue: _novoPedStore
-                                          .getRcRadioValue('_rcIe'),
-                                      onChanged: widget.blockUi
-                                          ? null
-                                          : (value) {
-                                              _removeFocus(context);
-                                              if (_novoPedStore
-                                                  .getRcLeState()) {
-                                                _novoPedStore.setRcRadio(
-                                                  value,
-                                                  '_rcIe',
-                                                );
-                                              }
-                                            },
-                                      value: 2,
-                                    ),
-                                    Text(
-                                      'Mesialize',
-                                      style: TextStyle(
-                                        color: _novoPedStore.getRcLeState()
-                                            ? Colors.black
-                                            : Colors.grey.withOpacity(0.5),
-                                      ),
-                                    ),
-                                    Radio(
-                                      activeColor: Colors.blue,
-                                      groupValue: _novoPedStore
-                                          .getRcRadioValue('_rcIe'),
-                                      onChanged: widget.blockUi
-                                          ? null
-                                          : (value) {
-                                              _removeFocus(context);
-                                              if (_novoPedStore
-                                                  .getRcLeState()) {
-                                                _novoPedStore.setRcRadio(
-                                                  value,
-                                                  '_rcIe',
-                                                );
-                                              }
-                                            },
-                                      value: 3,
-                                    ),
-                                    Text(
-                                      'Manter',
-                                      style: TextStyle(
-                                        color: _novoPedStore.getRcLeState()
-                                            ? Colors.black
-                                            : Colors.grey.withOpacity(0.5),
-                                      ),
-                                    ),
-                                  ],
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRcRadioValue('_rcSe'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRcLeState()) {
+                                            _novoPedStore.setRcRadio(
+                                              value,
+                                              '_rcSe',
+                                            );
+                                          }
+                                        },
+                                  value: 2,
+                                ),
+                                Text(
+                                  'Mesialize',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRcLeState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
+                                  ),
+                                ),
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRcRadioValue('_rcSe'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRcLeState()) {
+                                            _novoPedStore.setRcRadio(
+                                              value,
+                                              '_rcSe',
+                                            );
+                                          }
+                                        },
+                                  value: 3,
+                                ),
+                                Text(
+                                  'Manter',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRcLeState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
+                                  ),
                                 ),
                               ],
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                      //inferior esquerdo
+                      Container(
+                        height: 80,
+                        child: Column(
+                          children: [
+                            Text(
+                              'Inferior esquerdo',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: _novoPedStore.getRcLeState()
+                                    ? Colors.black
+                                    : Colors.grey.withOpacity(0.5),
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRcRadioValue('_rcIe'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRcLeState()) {
+                                            _novoPedStore.setRcRadio(
+                                              value,
+                                              '_rcIe',
+                                            );
+                                          }
+                                        },
+                                  value: 1,
+                                ),
+                                Text(
+                                  'Distalize',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRcLeState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
+                                  ),
+                                ),
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRcRadioValue('_rcIe'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRcLeState()) {
+                                            _novoPedStore.setRcRadio(
+                                              value,
+                                              '_rcIe',
+                                            );
+                                          }
+                                        },
+                                  value: 2,
+                                ),
+                                Text(
+                                  'Mesialize',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRcLeState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
+                                  ),
+                                ),
+                                Radio(
+                                  activeColor: Colors.blue,
+                                  groupValue:
+                                      _novoPedStore.getRcRadioValue('_rcIe'),
+                                  onChanged: widget.blockUi
+                                      ? null
+                                      : (value) {
+                                          _removeFocus(context);
+                                          if (_novoPedStore.getRcLeState()) {
+                                            _novoPedStore.setRcRadio(
+                                              value,
+                                              '_rcIe',
+                                            );
+                                          }
+                                        },
+                                  value: 3,
+                                ),
+                                Text(
+                                  'Manter',
+                                  style: TextStyle(
+                                    color: _novoPedStore.getRcLeState()
+                                        ? Colors.black
+                                        : Colors.grey.withOpacity(0.5),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -1432,7 +1348,7 @@ class _SagitalState extends State<Sagital> {
         ),
         CheckboxListTile(
           controlAffinity: ListTileControlAffinity.leading,
-          title: Row(
+          title: Wrap(
             children: [
               const Text(
                 'Recorte para elástico no alinhador (especificar o dente)',
@@ -1499,7 +1415,7 @@ class _SagitalState extends State<Sagital> {
         ),
         CheckboxListTile(
           controlAffinity: ListTileControlAffinity.leading,
-          title: Row(
+          title: Wrap(
             children: [
               const Text(
                 'Recorte no alinhador para botão (especificar o dente)',
@@ -1566,7 +1482,7 @@ class _SagitalState extends State<Sagital> {
         ),
         CheckboxListTile(
           controlAffinity: ListTileControlAffinity.leading,
-          title: Row(
+          title: Wrap(
             children: [
               const Text(
                 'Alívio no alinhador para braço de força (especificar o dente)',

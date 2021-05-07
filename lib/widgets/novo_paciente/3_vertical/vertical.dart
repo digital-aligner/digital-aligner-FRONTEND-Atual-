@@ -69,6 +69,8 @@ class _VerticalState extends State<Vertical> {
 
     setCustomInicialState();
 
+    double width = MediaQuery.of(context).size.width;
+
     return Container(
       width: double.infinity,
       child: Column(
@@ -81,7 +83,7 @@ class _VerticalState extends State<Vertical> {
             ),
           ),
           const SizedBox(height: 20),
-          _sobremordidaProfunda(_novoPedStore),
+          _sobremordidaProfunda(_novoPedStore, width),
           const SizedBox(height: 20),
           //_opcionaisSobremordida(_novoPedStore),
           const SizedBox(height: 20),
@@ -91,7 +93,7 @@ class _VerticalState extends State<Vertical> {
     );
   }
 
-  Widget _sobremordidaProfunda(PedidoProvider _novoPedStore) {
+  Widget _sobremordidaProfunda(PedidoProvider _novoPedStore, double width) {
     return Column(
       children: <Widget>[
         //Texto: SOBREMORDIDA PROFUNDA
@@ -238,113 +240,107 @@ class _VerticalState extends State<Vertical> {
               ],
             ),
             const SizedBox(height: 20),
-            //Texto: Intrusão..
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            Flex(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              direction: width > 800 ? Axis.horizontal : Axis.vertical,
               children: [
-                Text(
-                  'Intrusão dos dentes anteriores',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: _novoPedStore.getSobremordidaState()
-                        ? Colors.black
-                        : Colors.grey.withOpacity(0.5),
-                  ),
-                ),
-                Text(
-                  'Extrusão dos dentes posteriores',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: _novoPedStore.getSobremordidaState()
-                        ? Colors.black
-                        : Colors.grey.withOpacity(0.5),
-                  ),
-                ),
-              ],
-            ),
-            //Intrusão
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                //Intrusão Superior
-                Container(
-                  height: 80,
-                  child: Column(
-                    children: [
-                      Row(
+                Column(
+                  children: [
+                    //intrusão dos dentes ant
+                    Text(
+                      'Intrusão dos dentes anteriores',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: _novoPedStore.getSobremordidaState()
+                            ? Colors.black
+                            : Colors.grey.withOpacity(0.5),
+                      ),
+                    ),
+                    //Intrusão Superior
+                    Container(
+                      height: 80,
+                      child: Column(
                         children: [
-                          Column(
+                          Row(
                             children: [
-                              Row(
+                              Column(
                                 children: [
-                                  Radio(
-                                    toggleable: true,
-                                    activeColor: Colors.blue,
-                                    groupValue: _novoPedStore
-                                        .getSbmpRadioValue('_idaSup'),
-                                    onChanged: widget.blockUi
-                                        ? null
-                                        : (value) {
-                                            _removeFocus(context);
-                                            if (_novoPedStore
-                                                .getSobremordidaState()) {
-                                              _novoPedStore.setSbmpRadio(
-                                                value,
-                                                '_idaSup',
-                                              );
-                                            }
-                                          },
-                                    value: 1,
-                                  ),
-                                  Text(
-                                    'Superiores - Qts mm? ',
-                                    style: TextStyle(
-                                      color:
-                                          _novoPedStore.getSobremordidaState()
+                                  Row(
+                                    children: [
+                                      Radio(
+                                        toggleable: true,
+                                        activeColor: Colors.blue,
+                                        groupValue: _novoPedStore
+                                            .getSbmpRadioValue('_idaSup'),
+                                        onChanged: widget.blockUi
+                                            ? null
+                                            : (value) {
+                                                _removeFocus(context);
+                                                if (_novoPedStore
+                                                    .getSobremordidaState()) {
+                                                  _novoPedStore.setSbmpRadio(
+                                                    value,
+                                                    '_idaSup',
+                                                  );
+                                                }
+                                              },
+                                        value: 1,
+                                      ),
+                                      Text(
+                                        'Superiores - Qts mm? ',
+                                        style: TextStyle(
+                                          color: _novoPedStore
+                                                  .getSobremordidaState()
                                               ? Colors.black
                                               : Colors.grey.withOpacity(0.5),
-                                    ),
-                                  ),
-                                  Column(
-                                    children: [
-                                      Container(
-                                        height: 35,
-                                        width: 75,
-                                        child: TextFormField(
-                                          onChanged: (value) {
-                                            _novoPedStore.setIdaSup(value);
-                                          },
-                                          textAlign: TextAlign.center,
-                                          onSaved: (String value) {
-                                            //sc.usernameCpf = value;
-                                          },
-                                          enabled: widget.blockUi
-                                              ? !widget.blockUi
-                                              : _novoPedStore.getIdaSupState(),
-                                          validator: (value) {
-                                            if (value.length < 0) {
-                                              return 'Não valido.';
-                                            }
-                                            return null;
-                                          },
-                                          maxLength: 5,
-                                          controller: _cIntDentAntSup,
-                                          keyboardType: TextInputType.number,
-                                          inputFormatters: <TextInputFormatter>[
-                                            FilteringTextInputFormatter.allow(
-                                                RegExp(r'[,0-9]')),
-                                          ],
-                                          decoration: const InputDecoration(
-                                            //To hide cpf length num
-                                            counterText: '',
-                                            //labelText: 'Quantos mm?',
-                                            // border: const OutlineInputBorder(),
-                                          ),
                                         ),
                                       ),
-                                      const SizedBox(
-                                        height: 15,
-                                      )
+                                      Column(
+                                        children: [
+                                          Container(
+                                            height: 35,
+                                            width: 75,
+                                            child: TextFormField(
+                                              onChanged: (value) {
+                                                _novoPedStore.setIdaSup(value);
+                                              },
+                                              textAlign: TextAlign.center,
+                                              onSaved: (String value) {
+                                                //sc.usernameCpf = value;
+                                              },
+                                              enabled: widget.blockUi
+                                                  ? !widget.blockUi
+                                                  : _novoPedStore
+                                                      .getIdaSupState(),
+                                              validator: (value) {
+                                                if (value.length < 0) {
+                                                  return 'Não valido.';
+                                                }
+                                                return null;
+                                              },
+                                              maxLength: 5,
+                                              controller: _cIntDentAntSup,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              inputFormatters: <
+                                                  TextInputFormatter>[
+                                                FilteringTextInputFormatter
+                                                    .allow(RegExp(r'[,0-9]')),
+                                              ],
+                                              decoration: const InputDecoration(
+                                                //To hide cpf length num
+                                                counterText: '',
+                                                //labelText: 'Quantos mm?',
+                                                // border: const OutlineInputBorder(),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 15,
+                                          )
+                                        ],
+                                      ),
                                     ],
                                   ),
                                 ],
@@ -353,10 +349,35 @@ class _VerticalState extends State<Vertical> {
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                //Extrusao Superior
+                const SizedBox(
+                  width: 60,
+                  height: 60,
+                ),
+                Column(
+                  children: [
+                    //extrusão dos dentes post
+                    Text(
+                      'Extrusão dos dentes posteriores',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: _novoPedStore.getSobremordidaState()
+                            ? Colors.black
+                            : Colors.grey.withOpacity(0.5),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            //Intrusão
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+//Extrusao Superior
                 Container(
                   height: 80,
                   child: Column(
