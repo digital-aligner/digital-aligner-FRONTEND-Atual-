@@ -232,8 +232,8 @@ class _SagitalState extends State<Sagital> {
                                     : Colors.grey.withOpacity(0.5),
                               ),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 Radio(
                                   activeColor: Colors.blue,
@@ -329,8 +329,8 @@ class _SagitalState extends State<Sagital> {
                                     : Colors.grey.withOpacity(0.5),
                               ),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 Radio(
                                   activeColor: Colors.blue,
@@ -430,8 +430,8 @@ class _SagitalState extends State<Sagital> {
                               'Lado esquerdo',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 Radio(
                                   activeColor: Colors.blue,
@@ -482,8 +482,8 @@ class _SagitalState extends State<Sagital> {
                                     : Colors.grey.withOpacity(0.5),
                               ),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 Radio(
                                   activeColor: Colors.blue,
@@ -579,8 +579,8 @@ class _SagitalState extends State<Sagital> {
                                     : Colors.grey.withOpacity(0.5),
                               ),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 Radio(
                                   activeColor: Colors.blue,
@@ -666,6 +666,7 @@ class _SagitalState extends State<Sagital> {
                   ),
                 ],
               ),
+              const SizedBox(height: 40),
             ],
           ),
         ),
@@ -856,8 +857,8 @@ class _SagitalState extends State<Sagital> {
                                     : Colors.grey.withOpacity(0.5),
                               ),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 Radio(
                                   activeColor: Colors.blue,
@@ -953,8 +954,8 @@ class _SagitalState extends State<Sagital> {
                                     : Colors.grey.withOpacity(0.5),
                               ),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 Radio(
                                   activeColor: Colors.blue,
@@ -1106,8 +1107,8 @@ class _SagitalState extends State<Sagital> {
                                     : Colors.grey.withOpacity(0.5),
                               ),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 Radio(
                                   activeColor: Colors.blue,
@@ -1203,8 +1204,8 @@ class _SagitalState extends State<Sagital> {
                                     : Colors.grey.withOpacity(0.5),
                               ),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 Radio(
                                   activeColor: Colors.blue,
@@ -1290,6 +1291,7 @@ class _SagitalState extends State<Sagital> {
                   ),
                 ],
               ),
+              const SizedBox(height: 40),
             ],
           ),
         ),
