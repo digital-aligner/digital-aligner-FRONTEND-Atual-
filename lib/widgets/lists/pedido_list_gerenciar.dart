@@ -32,6 +32,9 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
   CheckNewDataProvider _cndp;
   bool _absorbPointerBool = false;
 
+  int mediaQuerySm = 576;
+  int mediaQueryMd = 768;
+
   Widget _relatorioStatusBtn(int index, double _sWidth, double _sHeight) {
     if (pedList[index]['relatorios'].length == 0) {
       return Container(
@@ -141,53 +144,55 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
           if (_pedidosListStore.getDropdownValue() == 'Todos')
             Row(
               children: [
-                Expanded(
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Text(
-                        _isoDateTimeToLocal(
-                          pedList[index]['created_at'],
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Text(
+                          _isoDateTimeToLocal(
+                            pedList[index]['created_at'],
+                          ),
+                          textAlign: TextAlign.center,
+                          //overflow: TextOverflow.ellipsis,
                         ),
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (pedListViewed[index] == false)
-                        Positioned(
-                          top: -20,
-                          right: -30,
-                          child: const SizedBox(
-                            width: 50,
-                            height: 50,
-                            child: ClipOval(
-                              child: Material(
-                                color: Colors.blue,
-                                child: const Center(
-                                    child: const Text(
-                                  'NOVO!',
-                                  style: const TextStyle(color: Colors.white),
-                                )),
+                        if (pedListViewed[index] == false)
+                          Positioned(
+                            top: -20,
+                            right: -30,
+                            child: const SizedBox(
+                              width: 50,
+                              height: 50,
+                              child: ClipOval(
+                                child: Material(
+                                  color: Colors.blue,
+                                  child: const Center(
+                                      child: const Text(
+                                    'NOVO!',
+                                    style: const TextStyle(color: Colors.white),
+                                  )),
+                                ),
                               ),
                             ),
-                          ),
-                        )
-                    ],
+                          )
+                      ],
+                    ),
                   ),
-                ),
                 Expanded(
                   child: Text(
                     '${pedList[index]['codigo_pedido']}',
                     textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
-                    textAlign: TextAlign.center,
                     //overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                if (_sWidth > mediaQueryMd)
+                  Expanded(
+                    child: Text(
+                      '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
+                      textAlign: TextAlign.center,
+                      //overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 Expanded(
                   child: Text(
                     '${pedList[index]['status_pedido'] != null && pedList[index]['status_pedido'].length > 0 ? pedList[index]['status_pedido']['status'] : '-'}',
@@ -195,20 +200,22 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                     //overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Expanded(
-                  child: Text(
-                    '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
-                    textAlign: TextAlign.center,
-                    //overflow: TextOverflow.ellipsis,
+                if (_sWidth > mediaQueryMd)
+                  Expanded(
+                    child: Text(
+                      '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
+                      textAlign: TextAlign.center,
+                      //overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: _relatorioStatusBtn(
-                    index,
-                    _sWidth,
-                    _sHeight,
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: _relatorioStatusBtn(
+                      index,
+                      _sWidth,
+                      _sHeight,
+                    ),
                   ),
-                ),
               ],
             )
           else if (_pedidosListStore.getDropdownValue() == 'Pedidos Aprovados')
@@ -230,13 +237,14 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Expanded(
-                  child: Text(
-                    '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: Text(
+                      '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
                 Expanded(
                   child: Text(
                     '${pedList[index]['status_pedido'] != null && pedList[index]['status_pedido'].length > 0 ? pedList[index]['status_pedido']['status'] : '-'}',
@@ -253,13 +261,14 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Expanded(
-                  child: Text(
-                    '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: Text(
+                      '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
                 Expanded(
                   child: _relatorioStatusBtn(
                     index,
@@ -288,13 +297,14 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Expanded(
-                  child: Text(
-                    '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: Text(
+                      '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
                 Expanded(
                   child: Text(
                     '${pedList[index]['status_pedido'] != null && pedList[index]['status_pedido'].length > 0 ? pedList[index]['status_pedido']['status'] : '-'}',
@@ -302,13 +312,14 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Expanded(
-                  child: Text(
-                    '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: Text(
+                      '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
                 Expanded(
                   child: _relatorioStatusBtn(
                     index,
@@ -349,21 +360,23 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                   ),
                 ),
                 //dentista
-                Expanded(
-                  child: Text(
-                    '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: Text(
+                      '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
                 //nome paciente
-                Expanded(
-                  child: Text(
-                    '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: Text(
+                      '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
                 //status relatório
                 Expanded(
                   child: _relatorioStatusBtn(
@@ -396,13 +409,14 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                   ),
                 ),
                 //nome paciente
-                Expanded(
-                  child: Text(
-                    '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: Text(
+                      '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
                 //status
                 Expanded(
                   child: Text(
@@ -412,23 +426,25 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                   ),
                 ),
                 //Data do pedido
-                Expanded(
-                  child: Text(
-                    _isoDateTimeToLocal(
-                      pedList[index]['created_at'] ?? '',
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: Text(
+                      _isoDateTimeToLocal(
+                        pedList[index]['created_at'] ?? '',
+                      ),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
                 //dentista
-                Expanded(
-                  child: Text(
-                    '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: Text(
+                      '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
                 //status relatório
                 Expanded(
                   child: _relatorioStatusBtn(

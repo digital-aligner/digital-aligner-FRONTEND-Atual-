@@ -34,6 +34,9 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
 
   final TextEditingController _searchField = TextEditingController();
 
+  int mediaQuerySm = 576;
+  int mediaQueryMd = 768;
+
   //For page managmente (0-10-20 equals page 0,1,2)
   int _startPage = 0;
   bool _blockPageBtns = true;
@@ -63,23 +66,24 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
     _pedidosListStore.clearPedidosAndUpdate();
   }
 
-  Widget _getHeaders() {
+  Widget _getHeaders(double sWidth) {
     //Will be used to check and change ui based on search
     if (_pedidosListStore.getDropdownValue() == 'Todos') {
       return Row(
         children: [
-          SizedBox(width: 20),
-          Expanded(
-            child: Text(
-              'Data',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          const SizedBox(width: 20),
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: Text(
+                'Data',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                //overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           Expanded(
             child: Text(
               'Pedido',
@@ -88,20 +92,21 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                 fontWeight: FontWeight.bold,
                 color: Colors.black54,
               ),
-              overflow: TextOverflow.ellipsis,
+              //overflow: TextOverflow.ellipsis,
             ),
           ),
-          Expanded(
-            child: const Text(
-              'Paciente',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQueryMd)
+            Expanded(
+              child: const Text(
+                'Paciente',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                //overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           Expanded(
             child: const Text(
               'Status',
@@ -110,38 +115,40 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                 fontWeight: FontWeight.bold,
                 color: Colors.black54,
               ),
-              overflow: TextOverflow.ellipsis,
+              //overflow: TextOverflow.ellipsis,
             ),
           ),
-          Expanded(
-            child: const Text(
-              'Responsável',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQueryMd)
+            Expanded(
+              child: const Text(
+                'Responsável',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                //overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
-          Expanded(
-            child: const Text(
-              'Opções',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: const Text(
+                'Opções',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                //overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           const SizedBox(width: 20),
         ],
       );
     } else if (_pedidosListStore.getDropdownValue() == 'Pedidos Aprovados') {
       return Row(
         children: [
-          SizedBox(width: 20),
+          const SizedBox(width: 20),
           Expanded(
             child: const Text(
               'Data da Aprovação',
@@ -164,17 +171,18 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Expanded(
-            child: const Text(
-              'Paciente',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: const Text(
+                'Paciente',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           Expanded(
             child: const Text(
               'Status',
@@ -197,17 +205,18 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Expanded(
-            child: const Text(
-              'Responsável',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: const Text(
+                'Responsável',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           Expanded(
             child: const Text(
               'Opções',
@@ -225,7 +234,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
     } else if (_pedidosListStore.getDropdownValue() == 'Refinamentos') {
       return Row(
         children: [
-          SizedBox(width: 20),
+          const SizedBox(width: 20),
           Expanded(
             child: Text(
               'Data',
@@ -248,17 +257,18 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Expanded(
-            child: const Text(
-              'Paciente',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: const Text(
+                'Paciente',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           Expanded(
             child: const Text(
               'Status',
@@ -270,17 +280,18 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Expanded(
-            child: const Text(
-              'Responsável',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: const Text(
+                'Responsável',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           Expanded(
             child: const Text(
               'Opções',
@@ -299,7 +310,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
         'Alterações de Pedidos') {
       return Row(
         children: [
-          SizedBox(width: 20),
+          const SizedBox(width: 20),
           //data alteracao
           Expanded(
             child: Text(
@@ -337,29 +348,31 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
             ),
           ),
           //responsável
-          Expanded(
-            child: const Text(
-              'Responsável',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: const Text(
+                'Responsável',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           //nome paciente
-          Expanded(
-            child: const Text(
-              'Paciente',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: const Text(
+                'Paciente',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           //opções
           Expanded(
             child: const Text(
@@ -378,7 +391,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
     } else if (_pedidosListStore.getDropdownValue() == 'Pedidos Alterados') {
       return Row(
         children: [
-          SizedBox(width: 20),
+          const SizedBox(width: 20),
           //data alteracao
           Expanded(
             child: Text(
@@ -404,17 +417,18 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
             ),
           ),
           //nome paciente
-          Expanded(
-            child: const Text(
-              'Paciente',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: const Text(
+                'Paciente',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           //status
           Expanded(
             child: const Text(
@@ -428,29 +442,31 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
             ),
           ),
           //data do pedido
-          Expanded(
-            child: Text(
-              'Data do Pedido',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: Text(
+                'Data do Pedido',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           //responsável
-          Expanded(
-            child: const Text(
-              'Responsável',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: const Text(
+                'Responsável',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           //opções
           Expanded(
             child: const Text(
@@ -470,70 +486,81 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
     return Container(child: const Text(''));
   }
 
-  Widget _searchBox() {
-    return Row(
-      children: [
-        DropdownButton<String>(
-          value: _pedidosListStore.getDropdownValue(),
-          icon: const Icon(Icons.arrow_downward_outlined),
-          iconSize: 24,
-          elevation: 16,
-          style: const TextStyle(color: Colors.deepPurple),
-          underline: Container(
-            height: 0,
-            color: Colors.deepPurpleAccent,
-          ),
-          onChanged: (String newValue) {
-            setState(() {
-              //page to 0 before fetch
-              _startPage = 0;
-              _pedidosListStore.setDropdownValue(newValue);
-              _searchField.text = '';
-              _pedidosListStore.setQuery('');
-            });
-            //fetchData before set state (fixes not updating bug)
-            fetchData = true;
-            _pedidosListStore.clearPedidosAndUpdate();
-          },
-          items: <String>[
-            'Todos',
-            'Pedidos Aprovados',
-            'Pedidos Alterados',
-            'Alterações de Pedidos',
-            'Refinamentos',
-          ].map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-        ),
-        const SizedBox(width: 20),
-        Expanded(
-          child: TextField(
-            decoration: InputDecoration(
-              hintText:
-                  'Código pedido, CPF do responsável, nome do responsável ou nome do paciente.',
+  Widget _searchBox(double sWidth) {
+    return Container(
+      height: 120,
+      width: sWidth,
+      child: Flex(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        direction: sWidth > 800 ? Axis.horizontal : Axis.vertical,
+        children: [
+          DropdownButton<String>(
+            value: _pedidosListStore.getDropdownValue(),
+            icon: const Icon(Icons.arrow_downward_outlined),
+            iconSize: 24,
+            elevation: 16,
+            style: const TextStyle(color: Colors.deepPurple),
+            underline: Container(
+              height: 0,
+              color: Colors.deepPurpleAccent,
             ),
-            controller: _searchField,
-            onChanged: (value) async {
-              //page to 0 before fetch
-              _startPage = 0;
+            onChanged: (String newValue) {
+              setState(() {
+                //page to 0 before fetch
+                _startPage = 0;
+                _pedidosListStore.setDropdownValue(newValue);
+                _searchField.text = '';
+                _pedidosListStore.setQuery('');
+              });
+              //fetchData before set state (fixes not updating bug)
               fetchData = true;
-              const duration = Duration(milliseconds: 500);
-              if (searchOnStoppedTyping != null) {
-                setState(() => searchOnStoppedTyping.cancel());
-              }
-              setState(
-                () => searchOnStoppedTyping = new Timer(
-                  duration,
-                  () => _searchBoxQuery(value),
-                ),
-              );
+              _pedidosListStore.clearPedidosAndUpdate();
             },
+            items: <String>[
+              'Todos',
+              'Pedidos Aprovados',
+              'Pedidos Alterados',
+              'Alterações de Pedidos',
+              'Refinamentos',
+            ].map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
           ),
-        ),
-      ],
+          const SizedBox(height: 20, width: 20),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText:
+                        'Código pedido, CPF do responsável, nome do responsável ou nome do paciente.',
+                  ),
+                  controller: _searchField,
+                  onChanged: (value) async {
+                    //page to 0 before fetch
+                    _startPage = 0;
+                    fetchData = true;
+                    const duration = Duration(milliseconds: 500);
+                    if (searchOnStoppedTyping != null) {
+                      setState(() => searchOnStoppedTyping.cancel());
+                    }
+                    setState(
+                      () => searchOnStoppedTyping = new Timer(
+                        duration,
+                        () => _searchBoxQuery(value),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -600,7 +627,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
         showTrackOnHover: true,
         child: SingleChildScrollView(
           child: Container(
-            height: 1350,
+            height: 1390,
             padding: const EdgeInsets.symmetric(
               horizontal: 50,
             ),
@@ -627,7 +654,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                         icon: Icon(Icons.refresh),
                       ),
                       const SizedBox(height: 40),
-                      _searchBox(),
+                      _searchBox(sWidth),
                       const SizedBox(
                         height: 50,
                         child: const Divider(
@@ -635,7 +662,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                         ),
                       ),
                       //TOP TEXT
-                      _getHeaders(),
+                      _getHeaders(sWidth),
                       const SizedBox(height: 20),
                       if (_pedidosListStore.getPedidosList() == null)
                         Center(
