@@ -85,7 +85,7 @@ class _TransversalState extends State<Transversal> {
           _linhaMediaSupTop(_novoPedStore),
           _linhaMediaSup(_novoPedStore, width),
           _linhaMediaInfTop(_novoPedStore),
-          _linhaMediaInf(_novoPedStore),
+          _linhaMediaInf(_novoPedStore, width),
         ],
       ),
     );
@@ -95,8 +95,8 @@ class _TransversalState extends State<Transversal> {
     return Column(
       children: [
         //Texto: MORDIDA CRUZADA POSTERIOR
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Wrap(
+          alignment: WrapAlignment.center,
           children: [
             const Text(
               'MORDIDA CRUZADA POSTERIOR:',
@@ -842,200 +842,204 @@ class _TransversalState extends State<Transversal> {
   Widget _linhaMediaSup(PedidoProvider _novoPedStore, double width) {
     return Card(
       elevation: 5,
-      child: Column(
-        children: <Widget>[
-          const SizedBox(height: 20),
-          //Manter ou corrigir
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Radio(
-                activeColor: Colors.blue,
-                groupValue: _novoPedStore.getLinhaMediaSupRadio(),
-                onChanged: widget.blockUi
-                    ? null
-                    : (value) {
-                        _removeFocus(context);
-                        _novoPedStore.setLinhaMediaSupRadio(value);
-                        _novoPedStore.manageFormLmSup();
-                      },
-                value: 1,
-              ),
-              const Text('Manter'),
-              Radio(
-                activeColor: Colors.blue,
-                groupValue: _novoPedStore.getLinhaMediaSupRadio(),
-                onChanged: widget.blockUi
-                    ? null
-                    : (value) {
-                        _removeFocus(context);
-                        _novoPedStore.setLinhaMediaSupRadio(value);
-                        _novoPedStore.manageFormLmSup();
-                      },
-                value: 2,
-              ),
-              const Text('Corrigir'),
-            ],
-          ),
-          const SizedBox(height: 40),
-          //Texto: LINHA MÉDIA SUPERIOR
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'SUPERIOR:',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: _novoPedStore.getLinhaMediaSupState()
-                      ? Colors.black
-                      : Colors.grey.withOpacity(0.5),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: <Widget>[
+            const SizedBox(height: 20),
+            //Manter ou corrigir
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Radio(
+                  activeColor: Colors.blue,
+                  groupValue: _novoPedStore.getLinhaMediaSupRadio(),
+                  onChanged: widget.blockUi
+                      ? null
+                      : (value) {
+                          _removeFocus(context);
+                          _novoPedStore.setLinhaMediaSupRadio(value);
+                          _novoPedStore.manageFormLmSup();
+                        },
+                  value: 1,
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Flex(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            direction: width > 800 ? Axis.horizontal : Axis.vertical,
-            children: [
-              //Esquerdo - mover direita
-              Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Radio(
-                    activeColor: Colors.blue,
-                    groupValue: _novoPedStore.getLmSupRadioValue(null),
-                    onChanged: widget.blockUi
-                        ? null
-                        : (value) {
-                            _removeFocus(context);
-                            if (_novoPedStore.getLinhaMediaSupState()) {
-                              _novoPedStore.setLmSupRadio(
-                                value,
-                                '_lmSupDireita',
-                              );
-                            }
-                          },
-                    value: 1,
+                const Text('Manter'),
+                Radio(
+                  activeColor: Colors.blue,
+                  groupValue: _novoPedStore.getLinhaMediaSupRadio(),
+                  onChanged: widget.blockUi
+                      ? null
+                      : (value) {
+                          _removeFocus(context);
+                          _novoPedStore.setLinhaMediaSupRadio(value);
+                          _novoPedStore.manageFormLmSup();
+                        },
+                  value: 2,
+                ),
+                const Text('Corrigir'),
+              ],
+            ),
+            const SizedBox(height: 40),
+            //Texto: LINHA MÉDIA SUPERIOR
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'SUPERIOR:',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: _novoPedStore.getLinhaMediaSupState()
+                        ? Colors.black
+                        : Colors.grey.withOpacity(0.5),
                   ),
-                  Text(
-                    'mover para a direita - Qts mm? ',
-                    style: TextStyle(
-                      color: _novoPedStore.getLinhaMediaSupState()
-                          ? Colors.black
-                          : Colors.grey.withOpacity(0.5),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Flex(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              direction: width > 800 ? Axis.horizontal : Axis.vertical,
+              children: [
+                //Esquerdo - mover direita
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Radio(
+                      activeColor: Colors.blue,
+                      groupValue: _novoPedStore.getLmSupRadioValue(null),
+                      onChanged: widget.blockUi
+                          ? null
+                          : (value) {
+                              _removeFocus(context);
+                              if (_novoPedStore.getLinhaMediaSupState()) {
+                                _novoPedStore.setLmSupRadio(
+                                  value,
+                                  '_lmSupDireita',
+                                );
+                              }
+                            },
+                      value: 1,
                     ),
-                  ),
-                  Container(
-                    height: 35,
-                    width: 75,
-                    child: TextFormField(
-                      onChanged: (value) {
-                        _novoPedStore.setLmSupDireitaMm(value);
-                      },
-                      textAlign: TextAlign.center,
-                      onSaved: (String value) {
-                        //sc.usernameCpf = value;
-                      },
-                      enabled: widget.blockUi
-                          ? !widget.blockUi
-                          : _novoPedStore.getLinhaMediaSupState() &&
-                              _novoPedStore.getLmSupDireitaState(),
-                      validator: (value) {
-                        if (value.length < 0) {
-                          return 'Não valido.';
-                        }
-                        return null;
-                      },
-                      maxLength: 5,
-                      controller: _cLmSupDireita,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
-                      ],
-                      decoration: const InputDecoration(
-                        //To hide cpf length num
-                        counterText: '',
-                        //labelText: 'Quantos mm?',
-                        // border: const OutlineInputBorder(),
+                    Text(
+                      'mover para a direita - Qts mm? ',
+                      style: TextStyle(
+                        color: _novoPedStore.getLinhaMediaSupState()
+                            ? Colors.black
+                            : Colors.grey.withOpacity(0.5),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                width: 60,
-                height: 60,
-              ),
-              //Direito - mover esquerda
-              Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Radio(
-                    activeColor: Colors.blue,
-                    groupValue: _novoPedStore.getLmSupRadioValue(null),
-                    onChanged: widget.blockUi
-                        ? null
-                        : (value) {
-                            _removeFocus(context);
-                            if (_novoPedStore.getLinhaMediaSupState()) {
-                              _novoPedStore.setLmSupRadio(
-                                value,
-                                '_lmSupEsquerda',
-                              );
-                            }
-                          },
-                    value: 2,
-                  ),
-                  Text(
-                    'mover para a esquerda - Qts mm? ',
-                    style: TextStyle(
-                      color: _novoPedStore.getLinhaMediaSupState()
-                          ? Colors.black
-                          : Colors.grey.withOpacity(0.5),
-                    ),
-                  ),
-                  Container(
-                    height: 35,
-                    width: 75,
-                    child: TextFormField(
-                      onChanged: (value) {
-                        _novoPedStore.setLmSupEsquerdaMm(value);
-                      },
-                      textAlign: TextAlign.center,
-                      onSaved: (String value) {
-                        //sc.usernameCpf = value;
-                      },
-                      enabled: widget.blockUi
-                          ? !widget.blockUi
-                          : _novoPedStore.getLinhaMediaSupState() &&
-                              _novoPedStore.getLmSupEsquerdaState(),
-                      validator: (value) {
-                        if (value.length < 0) {
-                          return 'Não valido.';
-                        }
-                        return null;
-                      },
-                      maxLength: 5,
-                      controller: _cLmSupEsquerda,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
-                      ],
-                      decoration: const InputDecoration(
-                        //To hide cpf length num
-                        counterText: '',
-                        //labelText: 'Quantos mm?',
-                        // border: const OutlineInputBorder(),
+                    Container(
+                      height: 35,
+                      width: 75,
+                      child: TextFormField(
+                        onChanged: (value) {
+                          _novoPedStore.setLmSupDireitaMm(value);
+                        },
+                        textAlign: TextAlign.center,
+                        onSaved: (String value) {
+                          //sc.usernameCpf = value;
+                        },
+                        enabled: widget.blockUi
+                            ? !widget.blockUi
+                            : _novoPedStore.getLinhaMediaSupState() &&
+                                _novoPedStore.getLmSupDireitaState(),
+                        validator: (value) {
+                          if (value.length < 0) {
+                            return 'Não valido.';
+                          }
+                          return null;
+                        },
+                        maxLength: 5,
+                        controller: _cLmSupDireita,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
+                        ],
+                        decoration: const InputDecoration(
+                          //To hide cpf length num
+                          counterText: '',
+                          //labelText: 'Quantos mm?',
+                          // border: const OutlineInputBorder(),
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
+                  ],
+                ),
+                const SizedBox(
+                  width: 60,
+                  height: 60,
+                ),
+                //Direito - mover esquerda
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Radio(
+                      activeColor: Colors.blue,
+                      groupValue: _novoPedStore.getLmSupRadioValue(null),
+                      onChanged: widget.blockUi
+                          ? null
+                          : (value) {
+                              _removeFocus(context);
+                              if (_novoPedStore.getLinhaMediaSupState()) {
+                                _novoPedStore.setLmSupRadio(
+                                  value,
+                                  '_lmSupEsquerda',
+                                );
+                              }
+                            },
+                      value: 2,
+                    ),
+                    Text(
+                      'mover para a esquerda - Qts mm? ',
+                      style: TextStyle(
+                        color: _novoPedStore.getLinhaMediaSupState()
+                            ? Colors.black
+                            : Colors.grey.withOpacity(0.5),
+                      ),
+                    ),
+                    Container(
+                      height: 35,
+                      width: 75,
+                      child: TextFormField(
+                        onChanged: (value) {
+                          _novoPedStore.setLmSupEsquerdaMm(value);
+                        },
+                        textAlign: TextAlign.center,
+                        onSaved: (String value) {
+                          //sc.usernameCpf = value;
+                        },
+                        enabled: widget.blockUi
+                            ? !widget.blockUi
+                            : _novoPedStore.getLinhaMediaSupState() &&
+                                _novoPedStore.getLmSupEsquerdaState(),
+                        validator: (value) {
+                          if (value.length < 0) {
+                            return 'Não valido.';
+                          }
+                          return null;
+                        },
+                        maxLength: 5,
+                        controller: _cLmSupEsquerda,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
+                        ],
+                        decoration: const InputDecoration(
+                          //To hide cpf length num
+                          counterText: '',
+                          //labelText: 'Quantos mm?',
+                          // border: const OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
@@ -1127,252 +1131,207 @@ class _TransversalState extends State<Transversal> {
     );
   }
 
-  Widget _linhaMediaInf(PedidoProvider _novoPedStore) {
+  Widget _linhaMediaInf(PedidoProvider _novoPedStore, double width) {
     return Card(
       elevation: 5,
-      child: Column(
-        children: <Widget>[
-          const SizedBox(height: 20),
-          //Manter ou corrigir
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Radio(
-                activeColor: Colors.blue,
-                groupValue: _novoPedStore.getLinhaMediaInfRadio(),
-                onChanged: widget.blockUi
-                    ? null
-                    : (value) {
-                        _removeFocus(context);
-                        _novoPedStore.setLinhaMediaInfRadio(value);
-                        _novoPedStore.manageFormLmInf();
-                      },
-                value: 1,
-              ),
-              const Text('Manter'),
-              Radio(
-                activeColor: Colors.blue,
-                groupValue: _novoPedStore.getLinhaMediaInfRadio(),
-                onChanged: widget.blockUi
-                    ? null
-                    : (value) {
-                        _removeFocus(context);
-                        _novoPedStore.setLinhaMediaInfRadio(value);
-                        _novoPedStore.manageFormLmInf();
-                      },
-                value: 2,
-              ),
-              const Text('Corrigir'),
-            ],
-          ),
-          const SizedBox(height: 40),
-          //Texto: LINHA MÉDIA INFERIOR
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'INFERIOR:',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: _novoPedStore.getLinhaMediaInfState()
-                      ? Colors.black
-                      : Colors.grey.withOpacity(0.5),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: <Widget>[
+            const SizedBox(height: 20),
+            //Manter ou corrigir
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Radio(
+                  activeColor: Colors.blue,
+                  groupValue: _novoPedStore.getLinhaMediaInfRadio(),
+                  onChanged: widget.blockUi
+                      ? null
+                      : (value) {
+                          _removeFocus(context);
+                          _novoPedStore.setLinhaMediaInfRadio(value);
+                          _novoPedStore.manageFormLmInf();
+                        },
+                  value: 1,
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          //Intrusão
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              //Esquerdo - mover direita
-              Container(
-                height: 80,
-                child: Column(
+                const Text('Manter'),
+                Radio(
+                  activeColor: Colors.blue,
+                  groupValue: _novoPedStore.getLinhaMediaInfRadio(),
+                  onChanged: widget.blockUi
+                      ? null
+                      : (value) {
+                          _removeFocus(context);
+                          _novoPedStore.setLinhaMediaInfRadio(value);
+                          _novoPedStore.manageFormLmInf();
+                        },
+                  value: 2,
+                ),
+                const Text('Corrigir'),
+              ],
+            ),
+            const SizedBox(height: 40),
+            //Texto: LINHA MÉDIA INFERIOR
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'INFERIOR:',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: _novoPedStore.getLinhaMediaInfState()
+                        ? Colors.black
+                        : Colors.grey.withOpacity(0.5),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Flex(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              direction: width > 800 ? Axis.horizontal : Axis.vertical,
+              children: [
+                //Esquerdo - mover direita
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    Row(
-                      children: [
-                        Column(
-                          children: [
-                            Row(
-                              children: [
-                                Radio(
-                                  activeColor: Colors.blue,
-                                  groupValue:
-                                      _novoPedStore.getLmInfRadioValue(null),
-                                  onChanged: widget.blockUi
-                                      ? null
-                                      : (value) {
-                                          _removeFocus(context);
-                                          if (_novoPedStore
-                                              .getLinhaMediaInfState()) {
-                                            _novoPedStore.setLmInfRadio(
-                                              value,
-                                              '_lmInfDireita',
-                                            );
-                                          }
-                                        },
-                                  value: 1,
-                                ),
-                                Text(
-                                  'mover para a direita - Qts mm? ',
-                                  style: TextStyle(
-                                    color: _novoPedStore.getLinhaMediaInfState()
-                                        ? Colors.black
-                                        : Colors.grey.withOpacity(0.5),
-                                  ),
-                                ),
-                                Column(
-                                  children: [
-                                    Container(
-                                      height: 35,
-                                      width: 75,
-                                      child: TextFormField(
-                                        onChanged: (value) {
-                                          _novoPedStore
-                                              .setLmInfDireitaMm(value);
-                                        },
-                                        textAlign: TextAlign.center,
-                                        onSaved: (String value) {
-                                          //sc.usernameCpf = value;
-                                        },
-                                        enabled: widget.blockUi
-                                            ? !widget.blockUi
-                                            : _novoPedStore
-                                                    .getLinhaMediaInfState() &&
-                                                _novoPedStore
-                                                    .getLmInfDireitaState(),
-                                        validator: (value) {
-                                          if (value.length < 0) {
-                                            return 'Não valido.';
-                                          }
-                                          return null;
-                                        },
-                                        maxLength: 5,
-                                        controller: _cLmInfDireita,
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: <TextInputFormatter>[
-                                          FilteringTextInputFormatter.allow(
-                                              RegExp(r'[,0-9]')),
-                                        ],
-                                        decoration: const InputDecoration(
-                                          //To hide cpf length num
-                                          counterText: '',
-                                          //labelText: 'Quantos mm?',
-                                          // border: const OutlineInputBorder(),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 15,
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
+                    Radio(
+                      activeColor: Colors.blue,
+                      groupValue: _novoPedStore.getLmInfRadioValue(null),
+                      onChanged: widget.blockUi
+                          ? null
+                          : (value) {
+                              _removeFocus(context);
+                              if (_novoPedStore.getLinhaMediaInfState()) {
+                                _novoPedStore.setLmInfRadio(
+                                  value,
+                                  '_lmInfDireita',
+                                );
+                              }
+                            },
+                      value: 1,
+                    ),
+                    Text(
+                      'mover para a direita - Qts mm? ',
+                      style: TextStyle(
+                        color: _novoPedStore.getLinhaMediaInfState()
+                            ? Colors.black
+                            : Colors.grey.withOpacity(0.5),
+                      ),
+                    ),
+                    Container(
+                      height: 35,
+                      width: 75,
+                      child: TextFormField(
+                        onChanged: (value) {
+                          _novoPedStore.setLmInfDireitaMm(value);
+                        },
+                        textAlign: TextAlign.center,
+                        onSaved: (String value) {
+                          //sc.usernameCpf = value;
+                        },
+                        enabled: widget.blockUi
+                            ? !widget.blockUi
+                            : _novoPedStore.getLinhaMediaInfState() &&
+                                _novoPedStore.getLmInfDireitaState(),
+                        validator: (value) {
+                          if (value.length < 0) {
+                            return 'Não valido.';
+                          }
+                          return null;
+                        },
+                        maxLength: 5,
+                        controller: _cLmInfDireita,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
+                        ],
+                        decoration: const InputDecoration(
+                          //To hide cpf length num
+                          counterText: '',
+                          //labelText: 'Quantos mm?',
+                          // border: const OutlineInputBorder(),
                         ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
-              ),
-              //Direito - mover esquerda
-              Container(
-                height: 80,
-                child: Column(
+                const SizedBox(
+                  width: 60,
+                  height: 60,
+                ),
+                //Direito - mover esquerda
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    Row(
-                      children: [
-                        Column(
-                          children: [
-                            Row(
-                              children: [
-                                Radio(
-                                  activeColor: Colors.blue,
-                                  groupValue:
-                                      _novoPedStore.getLmInfRadioValue(null),
-                                  onChanged: widget.blockUi
-                                      ? null
-                                      : (value) {
-                                          _removeFocus(context);
-                                          if (_novoPedStore
-                                              .getLinhaMediaInfState()) {
-                                            _novoPedStore.setLmInfRadio(
-                                              value,
-                                              '_lmInfEsquerda',
-                                            );
-                                          }
-                                        },
-                                  value: 2,
-                                ),
-                                Text(
-                                  'mover para a esquerda - Qts mm? ',
-                                  style: TextStyle(
-                                    color: _novoPedStore.getLinhaMediaInfState()
-                                        ? Colors.black
-                                        : Colors.grey.withOpacity(0.5),
-                                  ),
-                                ),
-                                Column(
-                                  children: [
-                                    Container(
-                                      height: 35,
-                                      width: 75,
-                                      child: TextFormField(
-                                        onChanged: (value) {
-                                          _novoPedStore
-                                              .setLmInfEsquerdaMm(value);
-                                        },
-                                        textAlign: TextAlign.center,
-                                        onSaved: (String value) {
-                                          //sc.usernameCpf = value;
-                                        },
-                                        enabled: widget.blockUi
-                                            ? !widget.blockUi
-                                            : _novoPedStore
-                                                    .getLinhaMediaInfState() &&
-                                                _novoPedStore
-                                                    .getLmInfEsquerdaState(),
-                                        validator: (value) {
-                                          if (value.length < 0) {
-                                            return 'Não valido.';
-                                          }
-                                          return null;
-                                        },
-                                        maxLength: 5,
-                                        controller: _cLmInfEsquerda,
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: <TextInputFormatter>[
-                                          FilteringTextInputFormatter.allow(
-                                              RegExp(r'[,0-9]')),
-                                        ],
-                                        decoration: const InputDecoration(
-                                          //To hide cpf length num
-                                          counterText: '',
-                                          //labelText: 'Quantos mm?',
-                                          // border: const OutlineInputBorder(),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 15,
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
+                    //Direito - mover esquerda
+                    Radio(
+                      activeColor: Colors.blue,
+                      groupValue: _novoPedStore.getLmInfRadioValue(null),
+                      onChanged: widget.blockUi
+                          ? null
+                          : (value) {
+                              _removeFocus(context);
+                              if (_novoPedStore.getLinhaMediaInfState()) {
+                                _novoPedStore.setLmInfRadio(
+                                  value,
+                                  '_lmInfEsquerda',
+                                );
+                              }
+                            },
+                      value: 2,
+                    ),
+                    Text(
+                      'mover para a esquerda - Qts mm? ',
+                      style: TextStyle(
+                        color: _novoPedStore.getLinhaMediaInfState()
+                            ? Colors.black
+                            : Colors.grey.withOpacity(0.5),
+                      ),
+                    ),
+                    Container(
+                      height: 35,
+                      width: 75,
+                      child: TextFormField(
+                        onChanged: (value) {
+                          _novoPedStore.setLmInfEsquerdaMm(value);
+                        },
+                        textAlign: TextAlign.center,
+                        onSaved: (String value) {
+                          //sc.usernameCpf = value;
+                        },
+                        enabled: widget.blockUi
+                            ? !widget.blockUi
+                            : _novoPedStore.getLinhaMediaInfState() &&
+                                _novoPedStore.getLmInfEsquerdaState(),
+                        validator: (value) {
+                          if (value.length < 0) {
+                            return 'Não valido.';
+                          }
+                          return null;
+                        },
+                        maxLength: 5,
+                        controller: _cLmInfEsquerda,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
+                        ],
+                        decoration: const InputDecoration(
+                          //To hide cpf length num
+                          counterText: '',
+                          //labelText: 'Quantos mm?',
+                          // border: const OutlineInputBorder(),
                         ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

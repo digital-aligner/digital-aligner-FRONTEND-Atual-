@@ -694,8 +694,8 @@ class _PedidoFormState extends State<PedidoForm> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                Wrap(
+                  alignment: WrapAlignment.center,
                   children: [
                     const Text(
                       'Gerencie endereços no seu perfil',
@@ -857,7 +857,7 @@ class _PedidoFormState extends State<PedidoForm> {
                       //Novo paciente
                       if (widget.isNovoPaciente)
                         Container(
-                          width: 300,
+                          width: _sWidth < 400 ? 200 : 300,
                           child: ElevatedButton(
                             onPressed: !_sendingPedido
                                 ? () {
@@ -908,10 +908,12 @@ class _PedidoFormState extends State<PedidoForm> {
                                   }
                                 : null,
                             child: !_sendingPedido
-                                ? const Text(
-                                    'ENVIAR NOVO PACIENTE',
-                                    style: const TextStyle(
-                                      color: Colors.white,
+                                ? const Flexible(
+                                    child: const Text(
+                                      'ENVIAR NOVO PACIENTE',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   )
                                 : CircularProgressIndicator(

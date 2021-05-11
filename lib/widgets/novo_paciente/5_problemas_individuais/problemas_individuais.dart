@@ -49,7 +49,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
   @override
   Widget build(BuildContext context) {
     PedidoProvider _novoPedStore = Provider.of<PedidoProvider>(context);
-
+    double width = MediaQuery.of(context).size.width;
     //loading text controllers where needed
     void setCustomInicialState() {
       _cIncProjArcoSupApinOutros.text =
@@ -95,9 +95,11 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'Apinhamento (Observar padrão periodontal do paciente)',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              Flexible(
+                child: const Text(
+                  'Apinhamento (Observar padrão periodontal do paciente)',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),
@@ -149,13 +151,12 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
               const SizedBox(height: 10),
             ],
           ),
-
           const SizedBox(height: 20),
-          _apinhamento(_novoPedStore),
+          _apinhamento(_novoPedStore, width),
           const SizedBox(height: 20),
-          _arcoSupApin(_novoPedStore),
+          _arcoSupApin(_novoPedStore, width),
           const SizedBox(height: 20),
-          _arcoInfApin(_novoPedStore),
+          _arcoInfApin(_novoPedStore, width),
           const SizedBox(height: 20),
           _consideracoesImportantes(_novoPedStore),
         ],
@@ -163,8 +164,12 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
     );
   }
 
-  Widget _apinhamento(PedidoProvider _novoPedStore) {
-    return Row(
+  Widget _apinhamento(PedidoProvider _novoPedStore, double width) {
+    return Flex(
+      mainAxisAlignment:
+          width > 800 ? MainAxisAlignment.start : MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      direction: width > 800 ? Axis.horizontal : Axis.vertical,
       children: <Widget>[
         Radio(
           activeColor: Colors.blue,
@@ -181,7 +186,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
           value: 3,
         ),
         const Text('Ausência de apinhamento'),
-        Expanded(flex: 1, child: Container()),
+        width > 800 ? Expanded(flex: 1, child: Container()) : Container(),
         Radio(
           activeColor: Colors.blue,
           groupValue: _novoPedStore.getTratarApinRadioValue('_tratarApinRadio'),
@@ -197,7 +202,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
           value: 1,
         ),
         const Text('Manter'),
-        Expanded(flex: 1, child: Container()),
+        width > 800 ? Expanded(flex: 1, child: Container()) : Container(),
         Radio(
           activeColor: Colors.blue,
           groupValue: _novoPedStore.getTratarApinRadioValue('_tratarApinRadio'),
@@ -215,7 +220,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
     );
   }
 
-  Widget _arcoSupApin(_novoPedStore) {
+  Widget _arcoSupApin(PedidoProvider _novoPedStore, double width) {
     return Column(
       children: <Widget>[
         const SizedBox(height: 20),
@@ -237,6 +242,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
             padding: const EdgeInsets.all(20),
             child: Column(children: [
               const SizedBox(height: 20),
+              //text
               Row(
                 children: [
                   Expanded(
@@ -276,61 +282,69 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                 ],
               ),
               // Expansão values getExpArcoSupApin
-              SizedBox(
-                height: 50,
-                child: Row(
-                  children: <Widget>[
-                    const SizedBox(width: 60),
-                    Radio(
-                      activeColor: Colors.blue,
-                      groupValue: _novoPedStore.getExpArcoSupApinRadio(),
-                      onChanged: widget.blockUi
-                          ? null
-                          : (value) {
-                              _removeFocus(context);
-                              if (_novoPedStore.getCorrigirApinSelecionado() &&
-                                  _novoPedStore.getExpArcoSupApin()) {
-                                _novoPedStore.setExpArcoSupApinRadio(value);
-                              }
-                            },
-                      value: 1,
+              Flex(
+                mainAxisAlignment: width > 800
+                    ? MainAxisAlignment.start
+                    : MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                direction: width > 800 ? Axis.horizontal : Axis.vertical,
+                children: <Widget>[
+                  width > 800
+                      ? const SizedBox(
+                          width: 60,
+                        )
+                      : Container(),
+                  Radio(
+                    activeColor: Colors.blue,
+                    groupValue: _novoPedStore.getExpArcoSupApinRadio(),
+                    onChanged: widget.blockUi
+                        ? null
+                        : (value) {
+                            _removeFocus(context);
+                            if (_novoPedStore.getCorrigirApinSelecionado() &&
+                                _novoPedStore.getExpArcoSupApin()) {
+                              _novoPedStore.setExpArcoSupApinRadio(value);
+                            }
+                          },
+                    value: 1,
+                  ),
+                  Text(
+                    'Até 2,5mm por lado',
+                    style: TextStyle(
+                      color: _novoPedStore.getExpArcoSupApin()
+                          ? Colors.black
+                          : Colors.grey.withOpacity(0.5),
                     ),
-                    Text(
-                      'Até 2,5mm por lado',
-                      style: TextStyle(
-                        color: _novoPedStore.getExpArcoSupApin()
-                            ? Colors.black
-                            : Colors.grey.withOpacity(0.5),
-                      ),
+                  ),
+                  width > 800
+                      ? Expanded(flex: 1, child: Container())
+                      : Container(),
+                  Radio(
+                    activeColor: Colors.blue,
+                    groupValue: _novoPedStore.getExpArcoSupApinRadio(),
+                    onChanged: widget.blockUi
+                        ? null
+                        : (value) {
+                            _removeFocus(context);
+                            if (_novoPedStore.getCorrigirApinSelecionado() &&
+                                _novoPedStore.getExpArcoSupApin()) {
+                              _novoPedStore.setExpArcoSupApinRadio(value);
+                            }
+                          },
+                    value: 2,
+                  ),
+                  Text(
+                    'Qto necessário',
+                    style: TextStyle(
+                      color: _novoPedStore.getExpArcoSupApin()
+                          ? Colors.black
+                          : Colors.grey.withOpacity(0.5),
                     ),
-                    Expanded(flex: 1, child: Container()),
-                    Radio(
-                      activeColor: Colors.blue,
-                      groupValue: _novoPedStore.getExpArcoSupApinRadio(),
-                      onChanged: widget.blockUi
-                          ? null
-                          : (value) {
-                              _removeFocus(context);
-                              if (_novoPedStore.getCorrigirApinSelecionado() &&
-                                  _novoPedStore.getExpArcoSupApin()) {
-                                _novoPedStore.setExpArcoSupApinRadio(value);
-                              }
-                            },
-                      value: 2,
-                    ),
-                    Text(
-                      'Qto necessário',
-                      style: TextStyle(
-                        color: _novoPedStore.getExpArcoSupApin()
-                            ? Colors.black
-                            : Colors.grey.withOpacity(0.5),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-
               // ------- Inclinação -----------
+              //text
               Row(
                 children: [
                   Expanded(
@@ -370,9 +384,18 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                 ],
               ),
               // Inclinação values
-              Row(
+              Flex(
+                mainAxisAlignment: width > 800
+                    ? MainAxisAlignment.start
+                    : MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                direction: width > 800 ? Axis.horizontal : Axis.vertical,
                 children: <Widget>[
-                  const SizedBox(width: 60),
+                  width > 800
+                      ? const SizedBox(
+                          width: 60,
+                        )
+                      : Container(),
                   Radio(
                     activeColor: Colors.blue,
                     groupValue: _novoPedStore.getIncProjArcoSupApinRadio(),
@@ -396,7 +419,9 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                           : Colors.grey.withOpacity(0.5),
                     ),
                   ),
-                  Expanded(flex: 1, child: Container()),
+                  width > 800
+                      ? Expanded(flex: 1, child: Container())
+                      : Container(),
                   Radio(
                     activeColor: Colors.blue,
                     groupValue: _novoPedStore.getIncProjArcoSupApinRadio(),
@@ -420,8 +445,11 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                           : Colors.grey.withOpacity(0.5),
                     ),
                   ),
-                  Expanded(flex: 1, child: Container()),
-                  Row(
+                  width > 800
+                      ? Expanded(flex: 1, child: Container())
+                      : Container(),
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       Radio(
                         activeColor: Colors.blue,
@@ -447,60 +475,51 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                               : Colors.grey.withOpacity(0.5),
                         ),
                       ),
-                      Column(
-                        children: [
-                          Container(
-                            height: 35,
-                            width: 75,
-                            child: TextFormField(
-                              onChanged: (value) {
-                                _novoPedStore
-                                    .setIncProjArcoSupApinOutros(value);
-                              },
-                              textAlign: TextAlign.center,
-                              onSaved: (String value) {
-                                //sc.usernameCpf = value;
-                              },
-                              enabled: widget.blockUi
-                                  ? !widget.blockUi
-                                  : _novoPedStore.getIncProjArcoSupApin() &&
-                                      _novoPedStore
-                                              .getIncProjArcoSupApinRadio() ==
-                                          3,
-                              validator: (value) {
-                                if (value.length < 0) {
-                                  return 'Não valido.';
-                                }
-                                return null;
-                              },
-                              maxLength: 5,
-                              controller: _cIncProjArcoSupApinOutros,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(r'[,0-9]')),
-                              ],
-                              decoration: InputDecoration(
-                                /*
-                                fillColor: _novoPedStore.getDistDPASupState()
-                                    ? Colors.white
-                                    : Color.fromRGBO(
-                                        128,
-                                        128,
-                                        128,
-                                        0.1,
-                                      ),*/
-                                //To hide cpf length num
-                                counterText: '',
-                                //labelText: 'Quantos mm?',
-                                // border: const OutlineInputBorder(),
-                              ),
-                            ),
+                      Container(
+                        height: 35,
+                        width: 75,
+                        child: TextFormField(
+                          onChanged: (value) {
+                            _novoPedStore.setIncProjArcoSupApinOutros(value);
+                          },
+                          textAlign: TextAlign.center,
+                          onSaved: (String value) {
+                            //sc.usernameCpf = value;
+                          },
+                          enabled: widget.blockUi
+                              ? !widget.blockUi
+                              : _novoPedStore.getIncProjArcoSupApin() &&
+                                  _novoPedStore.getIncProjArcoSupApinRadio() ==
+                                      3,
+                          validator: (value) {
+                            if (value.length < 0) {
+                              return 'Não valido.';
+                            }
+                            return null;
+                          },
+                          maxLength: 5,
+                          controller: _cIncProjArcoSupApinOutros,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.allow(
+                                RegExp(r'[,0-9]')),
+                          ],
+                          decoration: InputDecoration(
+                            /*
+                            fillColor: _novoPedStore.getDistDPASupState()
+                                ? Colors.white
+                                : Color.fromRGBO(
+                                    128,
+                                    128,
+                                    128,
+                                    0.1,
+                                  ),*/
+                            //To hide cpf length num
+                            counterText: '',
+                            //labelText: 'Quantos mm?',
+                            // border: const OutlineInputBorder(),
                           ),
-                          SizedBox(
-                            height: 15,
-                          )
-                        ],
+                        ),
                       ),
                     ],
                   ),
@@ -558,10 +577,8 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                   child: Column(
                     children: [
                       // Lado esquerdo
-                      //const SizedBox(height: 45),
                       Row(
                         children: [
-                          //const SizedBox(width: 40),
                           Expanded(
                             child: Container(
                               decoration: BoxDecoration(
@@ -605,7 +622,11 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                         ],
                       ),
                       // Values
-                      Row(
+                      Flex(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        direction:
+                            width > 800 ? Axis.horizontal : Axis.vertical,
                         children: <Widget>[
                           const SizedBox(width: 80),
                           Radio(
@@ -636,7 +657,9 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                       : Colors.grey.withOpacity(0.5),
                             ),
                           ),
-                          Expanded(flex: 1, child: Container()),
+                          width > 800
+                              ? Expanded(flex: 1, child: Container())
+                              : Container(),
                           Radio(
                             activeColor: Colors.blue,
                             groupValue: _novoPedStore.getDistDPASAEsqRadio(),
@@ -668,7 +691,11 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                           const SizedBox(width: 131),
                         ],
                       ),
-                      Row(
+                      Flex(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        direction:
+                            width > 800 ? Axis.horizontal : Axis.vertical,
                         children: <Widget>[
                           const SizedBox(width: 80),
                           Radio(
@@ -699,7 +726,9 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                       : Colors.grey.withOpacity(0.5),
                             ),
                           ),
-                          Expanded(flex: 1, child: Container()),
+                          width > 800
+                              ? Expanded(flex: 1, child: Container())
+                              : Container(),
                           Radio(
                             activeColor: Colors.blue,
                             groupValue: _novoPedStore.getDistDPASAEsqRadio(),
@@ -727,59 +756,49 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                       : Colors.grey.withOpacity(0.5),
                             ),
                           ),
-                          Column(
-                            children: [
-                              Container(
-                                height: 35,
-                                width: 75,
-                                child: TextFormField(
-                                  onChanged: (value) {
-                                    _novoPedStore.setDistDPASAEsqOutros(value);
-                                  },
-                                  textAlign: TextAlign.center,
-                                  onSaved: (String value) {
-                                    //sc.usernameCpf = value;
-                                  },
-                                  enabled: widget.blockUi
-                                      ? !widget.blockUi
-                                      : _novoPedStore.getDistDPASAEsq() &&
-                                          _novoPedStore
-                                                  .getDistDPASAEsqRadio() ==
-                                              4,
-                                  validator: (value) {
-                                    if (value.length < 0) {
-                                      return 'Não valido.';
-                                    }
-                                    return null;
-                                  },
-                                  maxLength: 5,
-                                  controller: _cDistDPASAEsqOutros,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp(r'[,0-9]')),
-                                  ],
-                                  decoration: InputDecoration(
-                                    fillColor:
-                                        _novoPedStore.getDistDPASupState()
-                                            ? Colors.white
-                                            : Color.fromRGBO(
-                                                128,
-                                                128,
-                                                128,
-                                                0.1,
-                                              ),
-                                    //To hide cpf length num
-                                    counterText: '',
-                                    //labelText: 'Quantos mm?',
-                                    // border: const OutlineInputBorder(),
-                                  ),
-                                ),
+                          Container(
+                            height: 35,
+                            width: 75,
+                            child: TextFormField(
+                              onChanged: (value) {
+                                _novoPedStore.setDistDPASAEsqOutros(value);
+                              },
+                              textAlign: TextAlign.center,
+                              onSaved: (String value) {
+                                //sc.usernameCpf = value;
+                              },
+                              enabled: widget.blockUi
+                                  ? !widget.blockUi
+                                  : _novoPedStore.getDistDPASAEsq() &&
+                                      _novoPedStore.getDistDPASAEsqRadio() == 4,
+                              validator: (value) {
+                                if (value.length < 0) {
+                                  return 'Não valido.';
+                                }
+                                return null;
+                              },
+                              maxLength: 5,
+                              controller: _cDistDPASAEsqOutros,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'[,0-9]')),
+                              ],
+                              decoration: InputDecoration(
+                                fillColor: _novoPedStore.getDistDPASupState()
+                                    ? Colors.white
+                                    : Color.fromRGBO(
+                                        128,
+                                        128,
+                                        128,
+                                        0.1,
+                                      ),
+                                //To hide cpf length num
+                                counterText: '',
+                                //labelText: 'Quantos mm?',
+                                // border: const OutlineInputBorder(),
                               ),
-                              SizedBox(
-                                height: 15,
-                              )
-                            ],
+                            ),
                           ),
                         ],
                       ),
@@ -830,7 +849,11 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                         ],
                       ),
                       // Values
-                      Row(
+                      Flex(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        direction:
+                            width > 800 ? Axis.horizontal : Axis.vertical,
                         children: <Widget>[
                           const SizedBox(width: 80),
                           Radio(
@@ -861,7 +884,9 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                       : Colors.grey.withOpacity(0.5),
                             ),
                           ),
-                          Expanded(flex: 1, child: Container()),
+                          width > 800
+                              ? Expanded(flex: 1, child: Container())
+                              : Container(),
                           Radio(
                             activeColor: Colors.blue,
                             groupValue: _novoPedStore.getDistDPASADirRadio(),
@@ -893,7 +918,11 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                           const SizedBox(width: 131),
                         ],
                       ),
-                      Row(
+                      Flex(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        direction:
+                            width > 800 ? Axis.horizontal : Axis.vertical,
                         children: <Widget>[
                           const SizedBox(width: 80),
                           Radio(
@@ -924,7 +953,9 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                       : Colors.grey.withOpacity(0.5),
                             ),
                           ),
-                          Expanded(flex: 1, child: Container()),
+                          width > 800
+                              ? Expanded(flex: 1, child: Container())
+                              : Container(),
                           Radio(
                             activeColor: Colors.blue,
                             groupValue: _novoPedStore.getDistDPASADirRadio(),
@@ -952,59 +983,49 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                       : Colors.grey.withOpacity(0.5),
                             ),
                           ),
-                          Column(
-                            children: [
-                              Container(
-                                height: 35,
-                                width: 75,
-                                child: TextFormField(
-                                  onChanged: (value) {
-                                    _novoPedStore.setDistDPASADirOutros(value);
-                                  },
-                                  textAlign: TextAlign.center,
-                                  onSaved: (String value) {
-                                    //sc.usernameCpf = value;
-                                  },
-                                  enabled: widget.blockUi
-                                      ? !widget.blockUi
-                                      : _novoPedStore.getDistDPASADir() &&
-                                          _novoPedStore
-                                                  .getDistDPASADirRadio() ==
-                                              4,
-                                  validator: (value) {
-                                    if (value.length < 0) {
-                                      return 'Não valido.';
-                                    }
-                                    return null;
-                                  },
-                                  maxLength: 5,
-                                  controller: _cDistDPASADirOutros,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp(r'[,0-9]')),
-                                  ],
-                                  decoration: InputDecoration(
-                                    fillColor:
-                                        _novoPedStore.getDistDPASupState()
-                                            ? Colors.white
-                                            : Color.fromRGBO(
-                                                128,
-                                                128,
-                                                128,
-                                                0.1,
-                                              ),
-                                    //To hide cpf length num
-                                    counterText: '',
-                                    //labelText: 'Quantos mm?',
-                                    // border: const OutlineInputBorder(),
-                                  ),
-                                ),
+                          Container(
+                            height: 35,
+                            width: 75,
+                            child: TextFormField(
+                              onChanged: (value) {
+                                _novoPedStore.setDistDPASADirOutros(value);
+                              },
+                              textAlign: TextAlign.center,
+                              onSaved: (String value) {
+                                //sc.usernameCpf = value;
+                              },
+                              enabled: widget.blockUi
+                                  ? !widget.blockUi
+                                  : _novoPedStore.getDistDPASADir() &&
+                                      _novoPedStore.getDistDPASADirRadio() == 4,
+                              validator: (value) {
+                                if (value.length < 0) {
+                                  return 'Não valido.';
+                                }
+                                return null;
+                              },
+                              maxLength: 5,
+                              controller: _cDistDPASADirOutros,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'[,0-9]')),
+                              ],
+                              decoration: InputDecoration(
+                                fillColor: _novoPedStore.getDistDPASupState()
+                                    ? Colors.white
+                                    : Color.fromRGBO(
+                                        128,
+                                        128,
+                                        128,
+                                        0.1,
+                                      ),
+                                //To hide cpf length num
+                                counterText: '',
+                                //labelText: 'Quantos mm?',
+                                // border: const OutlineInputBorder(),
                               ),
-                              SizedBox(
-                                height: 15,
-                              )
-                            ],
+                            ),
                           ),
                         ],
                       ),
@@ -1056,7 +1077,11 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                         ],
                       ),
                       // Values
-                      Row(
+                      Flex(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        direction:
+                            width > 800 ? Axis.horizontal : Axis.vertical,
                         children: <Widget>[
                           const SizedBox(width: 80),
                           Radio(
@@ -1090,7 +1115,9 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                       : Colors.grey.withOpacity(0.5),
                             ),
                           ),
-                          Expanded(flex: 1, child: Container()),
+                          width > 800
+                              ? Expanded(flex: 1, child: Container())
+                              : Container(),
                           Radio(
                             activeColor: Colors.blue,
                             groupValue:
@@ -1125,7 +1152,11 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                           const SizedBox(width: 131),
                         ],
                       ),
-                      Row(
+                      Flex(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        direction:
+                            width > 800 ? Axis.horizontal : Axis.vertical,
                         children: <Widget>[
                           const SizedBox(width: 80),
                           Radio(
@@ -1159,7 +1190,9 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                       : Colors.grey.withOpacity(0.5),
                             ),
                           ),
-                          Expanded(flex: 1, child: Container()),
+                          width > 800
+                              ? Expanded(flex: 1, child: Container())
+                              : Container(),
                           Radio(
                             activeColor: Colors.blue,
                             groupValue:
@@ -1189,60 +1222,51 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                       : Colors.grey.withOpacity(0.5),
                             ),
                           ),
-                          Column(
-                            children: [
-                              Container(
-                                height: 35,
-                                width: 75,
-                                child: TextFormField(
-                                  onChanged: (value) {
-                                    _novoPedStore
-                                        .setDistDPASADesInterOutros(value);
-                                  },
-                                  textAlign: TextAlign.center,
-                                  onSaved: (String value) {
-                                    //sc.usernameCpf = value;
-                                  },
-                                  enabled: widget.blockUi
-                                      ? !widget.blockUi
-                                      : _novoPedStore.getDistDPASADesInter() &&
-                                          _novoPedStore
-                                                  .getDistDPASADesInterRadio() ==
-                                              4,
-                                  validator: (value) {
-                                    if (value.length < 0) {
-                                      return 'Não valido.';
-                                    }
-                                    return null;
-                                  },
-                                  maxLength: 5,
-                                  controller: _cDistDPASADesInterOutros,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp(r'[,0-9]')),
-                                  ],
-                                  decoration: InputDecoration(
-                                    fillColor:
-                                        _novoPedStore.getDistDPASupState()
-                                            ? Colors.white
-                                            : Color.fromRGBO(
-                                                128,
-                                                128,
-                                                128,
-                                                0.1,
-                                              ),
-                                    //To hide cpf length num
-                                    counterText: '',
-                                    //labelText: 'Quantos mm?',
-                                    // border: const OutlineInputBorder(),
-                                  ),
-                                ),
+                          Container(
+                            height: 35,
+                            width: 75,
+                            child: TextFormField(
+                              onChanged: (value) {
+                                _novoPedStore.setDistDPASADesInterOutros(value);
+                              },
+                              textAlign: TextAlign.center,
+                              onSaved: (String value) {
+                                //sc.usernameCpf = value;
+                              },
+                              enabled: widget.blockUi
+                                  ? !widget.blockUi
+                                  : _novoPedStore.getDistDPASADesInter() &&
+                                      _novoPedStore
+                                              .getDistDPASADesInterRadio() ==
+                                          4,
+                              validator: (value) {
+                                if (value.length < 0) {
+                                  return 'Não valido.';
+                                }
+                                return null;
+                              },
+                              maxLength: 5,
+                              controller: _cDistDPASADesInterOutros,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'[,0-9]')),
+                              ],
+                              decoration: InputDecoration(
+                                fillColor: _novoPedStore.getDistDPASupState()
+                                    ? Colors.white
+                                    : Color.fromRGBO(
+                                        128,
+                                        128,
+                                        128,
+                                        0.1,
+                                      ),
+                                //To hide cpf length num
+                                counterText: '',
+                                //labelText: 'Quantos mm?',
+                                // border: const OutlineInputBorder(),
                               ),
-                              SizedBox(
-                                height: 15,
-                              )
-                            ],
+                            ),
                           ),
                         ],
                       ),
@@ -1257,7 +1281,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
     );
   }
 
-  Widget _arcoInfApin(_novoPedStore) {
+  Widget _arcoInfApin(_novoPedStore, double width) {
     return Column(
       children: <Widget>[
         const SizedBox(height: 20),
@@ -1280,6 +1304,7 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
             child: Column(
               children: [
                 const SizedBox(height: 20),
+                //text
                 Row(
                   children: [
                     Expanded(
@@ -1319,62 +1344,67 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                   ],
                 ),
                 // Expansão values
-                SizedBox(
-                  height: 50,
-                  child: Row(
-                    children: <Widget>[
-                      const SizedBox(width: 60),
-                      Radio(
-                        activeColor: Colors.blue,
-                        groupValue: _novoPedStore.getExpArcoInfApinRadio(),
-                        onChanged: widget.blockUi
-                            ? null
-                            : (value) {
-                                _removeFocus(context);
-                                if (_novoPedStore
-                                        .getCorrigirApinSelecionado() &&
-                                    _novoPedStore.getExpArcoInfApin()) {
-                                  _novoPedStore.setExpArcoInfApinRadio(value);
-                                }
-                              },
-                        value: 1,
+                Flex(
+                  mainAxisAlignment: width > 800
+                      ? MainAxisAlignment.start
+                      : MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  direction: width > 800 ? Axis.horizontal : Axis.vertical,
+                  children: <Widget>[
+                    width > 800
+                        ? const SizedBox(
+                            width: 60,
+                          )
+                        : Container(),
+                    Radio(
+                      activeColor: Colors.blue,
+                      groupValue: _novoPedStore.getExpArcoInfApinRadio(),
+                      onChanged: widget.blockUi
+                          ? null
+                          : (value) {
+                              _removeFocus(context);
+                              if (_novoPedStore.getCorrigirApinSelecionado() &&
+                                  _novoPedStore.getExpArcoInfApin()) {
+                                _novoPedStore.setExpArcoInfApinRadio(value);
+                              }
+                            },
+                      value: 1,
+                    ),
+                    Text(
+                      'Até 2,5mm por lado',
+                      style: TextStyle(
+                        color: _novoPedStore.getExpArcoInfApin()
+                            ? Colors.black
+                            : Colors.grey.withOpacity(0.5),
                       ),
-                      Text(
-                        'Até 2,5mm por lado',
-                        style: TextStyle(
-                          color: _novoPedStore.getExpArcoInfApin()
-                              ? Colors.black
-                              : Colors.grey.withOpacity(0.5),
-                        ),
+                    ),
+                    width > 800
+                        ? Expanded(flex: 1, child: Container())
+                        : Container(),
+                    Radio(
+                      activeColor: Colors.blue,
+                      groupValue: _novoPedStore.getExpArcoInfApinRadio(),
+                      onChanged: widget.blockUi
+                          ? null
+                          : (value) {
+                              _removeFocus(context);
+                              if (_novoPedStore.getCorrigirApinSelecionado() &&
+                                  _novoPedStore.getExpArcoInfApin()) {
+                                _novoPedStore.setExpArcoInfApinRadio(value);
+                              }
+                            },
+                      value: 2,
+                    ),
+                    Text(
+                      'Qto necessário',
+                      style: TextStyle(
+                        color: _novoPedStore.getExpArcoInfApin()
+                            ? Colors.black
+                            : Colors.grey.withOpacity(0.5),
                       ),
-                      Expanded(flex: 1, child: Container()),
-                      Radio(
-                        activeColor: Colors.blue,
-                        groupValue: _novoPedStore.getExpArcoInfApinRadio(),
-                        onChanged: widget.blockUi
-                            ? null
-                            : (value) {
-                                _removeFocus(context);
-                                if (_novoPedStore
-                                        .getCorrigirApinSelecionado() &&
-                                    _novoPedStore.getExpArcoInfApin()) {
-                                  _novoPedStore.setExpArcoInfApinRadio(value);
-                                }
-                              },
-                        value: 2,
-                      ),
-                      Text(
-                        'Qto necessário',
-                        style: TextStyle(
-                          color: _novoPedStore.getExpArcoInfApin()
-                              ? Colors.black
-                              : Colors.grey.withOpacity(0.5),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-
                 // ------- Inclinação -----------
                 Row(
                   children: [
@@ -1415,7 +1445,12 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                   ],
                 ),
                 // Inclinação values
-                Row(
+                Flex(
+                  mainAxisAlignment: width > 800
+                      ? MainAxisAlignment.start
+                      : MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  direction: width > 800 ? Axis.horizontal : Axis.vertical,
                   children: <Widget>[
                     const SizedBox(width: 60),
                     Radio(
@@ -1441,7 +1476,9 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                             : Colors.grey.withOpacity(0.5),
                       ),
                     ),
-                    Expanded(flex: 1, child: Container()),
+                    width > 800
+                        ? Expanded(flex: 1, child: Container())
+                        : Container(),
                     Radio(
                       activeColor: Colors.blue,
                       groupValue: _novoPedStore.getIncProjArcoInfApinRadio(),
@@ -1465,8 +1502,11 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                             : Colors.grey.withOpacity(0.5),
                       ),
                     ),
-                    Expanded(flex: 1, child: Container()),
-                    Row(
+                    width > 800
+                        ? Expanded(flex: 1, child: Container())
+                        : Container(),
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Radio(
                           activeColor: Colors.blue,
@@ -1493,51 +1533,43 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                 : Colors.grey.withOpacity(0.5),
                           ),
                         ),
-                        Column(
-                          children: [
-                            Container(
-                              height: 35,
-                              width: 75,
-                              child: TextFormField(
-                                onChanged: (value) {
-                                  _novoPedStore
-                                      .setIncProjArcoInfApinOutros(value);
-                                },
-                                textAlign: TextAlign.center,
-                                onSaved: (String value) {
-                                  //sc.usernameCpf = value;
-                                },
-                                enabled: widget.blockUi
-                                    ? !widget.blockUi
-                                    : _novoPedStore.getIncProjArcoInfApin() &&
-                                        _novoPedStore
-                                                .getIncProjArcoInfApinRadio() ==
-                                            3,
-                                validator: (value) {
-                                  if (value.length < 0) {
-                                    return 'Não valido.';
-                                  }
-                                  return null;
-                                },
-                                maxLength: 5,
-                                controller: _cIncProjArcoInfApinOutros,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.allow(
-                                      RegExp(r'[,0-9]')),
-                                ],
-                                decoration: const InputDecoration(
-                                  //To hide cpf length num
-                                  counterText: '',
-                                  //labelText: 'Quantos mm?',
-                                  // border: const OutlineInputBorder(),
-                                ),
-                              ),
+                        Container(
+                          height: 35,
+                          width: 75,
+                          child: TextFormField(
+                            onChanged: (value) {
+                              _novoPedStore.setIncProjArcoInfApinOutros(value);
+                            },
+                            textAlign: TextAlign.center,
+                            onSaved: (String value) {
+                              //sc.usernameCpf = value;
+                            },
+                            enabled: widget.blockUi
+                                ? !widget.blockUi
+                                : _novoPedStore.getIncProjArcoInfApin() &&
+                                    _novoPedStore
+                                            .getIncProjArcoInfApinRadio() ==
+                                        3,
+                            validator: (value) {
+                              if (value.length < 0) {
+                                return 'Não valido.';
+                              }
+                              return null;
+                            },
+                            maxLength: 5,
+                            controller: _cIncProjArcoInfApinOutros,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[,0-9]')),
+                            ],
+                            decoration: const InputDecoration(
+                              //To hide cpf length num
+                              counterText: '',
+                              //labelText: 'Quantos mm?',
+                              // border: const OutlineInputBorder(),
                             ),
-                            SizedBox(
-                              height: 15,
-                            )
-                          ],
+                          ),
                         ),
                       ],
                     ),
@@ -1643,7 +1675,13 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                           ],
                         ),
                         // Values
-                        Row(
+                        Flex(
+                          mainAxisAlignment: width > 800
+                              ? MainAxisAlignment.start
+                              : MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          direction:
+                              width > 800 ? Axis.horizontal : Axis.vertical,
                           children: <Widget>[
                             const SizedBox(width: 80),
                             Radio(
@@ -1675,7 +1713,9 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                     : Colors.grey.withOpacity(0.5),
                               ),
                             ),
-                            Expanded(flex: 1, child: Container()),
+                            width > 800
+                                ? Expanded(flex: 1, child: Container())
+                                : Container(),
                             Radio(
                               activeColor: Colors.blue,
                               groupValue: _novoPedStore.getDistDPAIAEsqRadio(),
@@ -1708,7 +1748,13 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                             const SizedBox(width: 131),
                           ],
                         ),
-                        Row(
+                        Flex(
+                          mainAxisAlignment: width > 800
+                              ? MainAxisAlignment.start
+                              : MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          direction:
+                              width > 800 ? Axis.horizontal : Axis.vertical,
                           children: <Widget>[
                             const SizedBox(width: 80),
                             Radio(
@@ -1740,7 +1786,9 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                     : Colors.grey.withOpacity(0.5),
                               ),
                             ),
-                            Expanded(flex: 1, child: Container()),
+                            width > 800
+                                ? Expanded(flex: 1, child: Container())
+                                : Container(),
                             Radio(
                               activeColor: Colors.blue,
                               groupValue: _novoPedStore.getDistDPAIAEsqRadio(),
@@ -1769,55 +1817,45 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                     : Colors.grey.withOpacity(0.5),
                               ),
                             ),
-                            Column(
-                              children: [
-                                Container(
-                                  height: 35,
-                                  width: 75,
-                                  child: TextFormField(
-                                    onChanged: (value) {
-                                      _novoPedStore
-                                          .setDistDPAIAEsqOutros(value);
-                                    },
-                                    textAlign: TextAlign.center,
-                                    onSaved: (String value) {
-                                      //sc.usernameCpf = value;
-                                    },
-                                    enabled: widget.blockUi
-                                        ? !widget.blockUi
-                                        : _novoPedStore.getDistDPAIAEsq() &&
-                                            _novoPedStore
-                                                    .getDistDPAIAEsqRadio() ==
-                                                4,
-                                    validator: (value) {
-                                      if (value.length < 0) {
-                                        return 'Não valido.';
-                                      }
-                                      return null;
-                                    },
-                                    maxLength: 5,
-                                    controller: _cDistDPAIAEsqOutros,
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: <TextInputFormatter>[
-                                      FilteringTextInputFormatter.allow(
-                                          RegExp(r'[,0-9]')),
-                                    ],
-                                    decoration: InputDecoration(
-                                      fillColor: _novoPedStore
-                                              .getDistDPAInfState()
-                                          ? Colors.white
-                                          : Color.fromRGBO(128, 128, 128, 0.1),
-                                      //To hide cpf length num
-                                      counterText: '',
-                                      //labelText: 'Quantos mm?',
-                                      // border: const OutlineInputBorder(),
-                                    ),
-                                  ),
+                            Container(
+                              height: 35,
+                              width: 75,
+                              child: TextFormField(
+                                onChanged: (value) {
+                                  _novoPedStore.setDistDPAIAEsqOutros(value);
+                                },
+                                textAlign: TextAlign.center,
+                                onSaved: (String value) {
+                                  //sc.usernameCpf = value;
+                                },
+                                enabled: widget.blockUi
+                                    ? !widget.blockUi
+                                    : _novoPedStore.getDistDPAIAEsq() &&
+                                        _novoPedStore.getDistDPAIAEsqRadio() ==
+                                            4,
+                                validator: (value) {
+                                  if (value.length < 0) {
+                                    return 'Não valido.';
+                                  }
+                                  return null;
+                                },
+                                maxLength: 5,
+                                controller: _cDistDPAIAEsqOutros,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[,0-9]')),
+                                ],
+                                decoration: InputDecoration(
+                                  fillColor: _novoPedStore.getDistDPAInfState()
+                                      ? Colors.white
+                                      : Color.fromRGBO(128, 128, 128, 0.1),
+                                  //To hide cpf length num
+                                  counterText: '',
+                                  //labelText: 'Quantos mm?',
+                                  // border: const OutlineInputBorder(),
                                 ),
-                                SizedBox(
-                                  height: 15,
-                                )
-                              ],
+                              ),
                             ),
                           ],
                         ),
@@ -1870,7 +1908,11 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                           ],
                         ),
                         // Values
-                        Row(
+                        Flex(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          direction:
+                              width > 800 ? Axis.horizontal : Axis.vertical,
                           children: <Widget>[
                             const SizedBox(width: 80),
                             Radio(
@@ -1902,7 +1944,9 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                     : Colors.grey.withOpacity(0.5),
                               ),
                             ),
-                            Expanded(flex: 1, child: Container()),
+                            width > 800
+                                ? Expanded(flex: 1, child: Container())
+                                : Container(),
                             Radio(
                               activeColor: Colors.blue,
                               groupValue: _novoPedStore.getDistDPAIADirRadio(),
@@ -1934,7 +1978,11 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                             const SizedBox(width: 131),
                           ],
                         ),
-                        Row(
+                        Flex(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          direction:
+                              width > 800 ? Axis.horizontal : Axis.vertical,
                           children: <Widget>[
                             const SizedBox(width: 80),
                             Radio(
@@ -1966,7 +2014,9 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                     : Colors.grey.withOpacity(0.5),
                               ),
                             ),
-                            Expanded(flex: 1, child: Container()),
+                            width > 800
+                                ? Expanded(flex: 1, child: Container())
+                                : Container(),
                             Radio(
                               activeColor: Colors.blue,
                               groupValue: _novoPedStore.getDistDPAIADirRadio(),
@@ -1995,55 +2045,45 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                     : Colors.grey.withOpacity(0.5),
                               ),
                             ),
-                            Column(
-                              children: [
-                                Container(
-                                  height: 35,
-                                  width: 75,
-                                  child: TextFormField(
-                                    onChanged: (value) {
-                                      _novoPedStore
-                                          .setDistDPAIADirOutros(value);
-                                    },
-                                    textAlign: TextAlign.center,
-                                    onSaved: (String value) {
-                                      //sc.usernameCpf = value;
-                                    },
-                                    enabled: widget.blockUi
-                                        ? !widget.blockUi
-                                        : _novoPedStore.getDistDPAIADir() &&
-                                            _novoPedStore
-                                                    .getDistDPAIADirRadio() ==
-                                                4,
-                                    validator: (value) {
-                                      if (value.length < 0) {
-                                        return 'Não valido.';
-                                      }
-                                      return null;
-                                    },
-                                    maxLength: 5,
-                                    controller: _cDistDPAIADirOutros,
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: <TextInputFormatter>[
-                                      FilteringTextInputFormatter.allow(
-                                          RegExp(r'[,0-9]')),
-                                    ],
-                                    decoration: InputDecoration(
-                                      fillColor: _novoPedStore
-                                              .getDistDPAInfState()
-                                          ? Colors.white
-                                          : Color.fromRGBO(128, 128, 128, 0.1),
-                                      //To hide cpf length num
-                                      counterText: '',
-                                      //labelText: 'Quantos mm?',
-                                      // border: const OutlineInputBorder(),
-                                    ),
-                                  ),
+                            Container(
+                              height: 35,
+                              width: 75,
+                              child: TextFormField(
+                                onChanged: (value) {
+                                  _novoPedStore.setDistDPAIADirOutros(value);
+                                },
+                                textAlign: TextAlign.center,
+                                onSaved: (String value) {
+                                  //sc.usernameCpf = value;
+                                },
+                                enabled: widget.blockUi
+                                    ? !widget.blockUi
+                                    : _novoPedStore.getDistDPAIADir() &&
+                                        _novoPedStore.getDistDPAIADirRadio() ==
+                                            4,
+                                validator: (value) {
+                                  if (value.length < 0) {
+                                    return 'Não valido.';
+                                  }
+                                  return null;
+                                },
+                                maxLength: 5,
+                                controller: _cDistDPAIADirOutros,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[,0-9]')),
+                                ],
+                                decoration: InputDecoration(
+                                  fillColor: _novoPedStore.getDistDPAInfState()
+                                      ? Colors.white
+                                      : Color.fromRGBO(128, 128, 128, 0.1),
+                                  //To hide cpf length num
+                                  counterText: '',
+                                  //labelText: 'Quantos mm?',
+                                  // border: const OutlineInputBorder(),
                                 ),
-                                SizedBox(
-                                  height: 15,
-                                )
-                              ],
+                              ),
                             ),
                           ],
                         ),
@@ -2096,7 +2136,11 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                           ],
                         ),
                         // Values
-                        Row(
+                        Flex(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          direction:
+                              width > 800 ? Axis.horizontal : Axis.vertical,
                           children: <Widget>[
                             const SizedBox(width: 80),
                             Radio(
@@ -2131,7 +2175,9 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                     : Colors.grey.withOpacity(0.5),
                               ),
                             ),
-                            Expanded(flex: 1, child: Container()),
+                            width > 800
+                                ? Expanded(flex: 1, child: Container())
+                                : Container(),
                             Radio(
                               activeColor: Colors.blue,
                               groupValue:
@@ -2167,7 +2213,11 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                             const SizedBox(width: 131),
                           ],
                         ),
-                        Row(
+                        Flex(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          direction:
+                              width > 800 ? Axis.horizontal : Axis.vertical,
                           children: <Widget>[
                             const SizedBox(width: 80),
                             Radio(
@@ -2202,7 +2252,9 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                     : Colors.grey.withOpacity(0.5),
                               ),
                             ),
-                            Expanded(flex: 1, child: Container()),
+                            width > 800
+                                ? Expanded(flex: 1, child: Container())
+                                : Container(),
                             Radio(
                               activeColor: Colors.blue,
                               groupValue:
@@ -2233,56 +2285,47 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
                                     : Colors.grey.withOpacity(0.5),
                               ),
                             ),
-                            Column(
-                              children: [
-                                Container(
-                                  height: 35,
-                                  width: 75,
-                                  child: TextFormField(
-                                    onChanged: (value) {
-                                      _novoPedStore
-                                          .setDistDPAIADesInterOutros(value);
-                                    },
-                                    textAlign: TextAlign.center,
-                                    onSaved: (String value) {
-                                      //sc.usernameCpf = value;
-                                    },
-                                    enabled: widget.blockUi
-                                        ? !widget.blockUi
-                                        : _novoPedStore
-                                                .getDistDPAIADesInter() &&
-                                            _novoPedStore
-                                                    .getDistDPAIADesInterRadio() ==
-                                                4,
-                                    validator: (value) {
-                                      if (value.length < 0) {
-                                        return 'Não valido.';
-                                      }
-                                      return null;
-                                    },
-                                    maxLength: 5,
-                                    controller: _cDistDPAIADesInterOutros,
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: <TextInputFormatter>[
-                                      FilteringTextInputFormatter.allow(
-                                          RegExp(r'[,0-9]')),
-                                    ],
-                                    decoration: InputDecoration(
-                                      fillColor: _novoPedStore
-                                              .getDistDPAInfState()
-                                          ? Colors.white
-                                          : Color.fromRGBO(128, 128, 128, 0.1),
-                                      //To hide cpf length num
-                                      counterText: '',
-                                      //labelText: 'Quantos mm?',
-                                      // border: const OutlineInputBorder(),
-                                    ),
-                                  ),
+                            Container(
+                              height: 35,
+                              width: 75,
+                              child: TextFormField(
+                                onChanged: (value) {
+                                  _novoPedStore
+                                      .setDistDPAIADesInterOutros(value);
+                                },
+                                textAlign: TextAlign.center,
+                                onSaved: (String value) {
+                                  //sc.usernameCpf = value;
+                                },
+                                enabled: widget.blockUi
+                                    ? !widget.blockUi
+                                    : _novoPedStore.getDistDPAIADesInter() &&
+                                        _novoPedStore
+                                                .getDistDPAIADesInterRadio() ==
+                                            4,
+                                validator: (value) {
+                                  if (value.length < 0) {
+                                    return 'Não valido.';
+                                  }
+                                  return null;
+                                },
+                                maxLength: 5,
+                                controller: _cDistDPAIADesInterOutros,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[,0-9]')),
+                                ],
+                                decoration: InputDecoration(
+                                  fillColor: _novoPedStore.getDistDPAInfState()
+                                      ? Colors.white
+                                      : Color.fromRGBO(128, 128, 128, 0.1),
+                                  //To hide cpf length num
+                                  counterText: '',
+                                  //labelText: 'Quantos mm?',
+                                  // border: const OutlineInputBorder(),
                                 ),
-                                SizedBox(
-                                  height: 15,
-                                )
-                              ],
+                              ),
                             ),
                           ],
                         ),
@@ -2305,11 +2348,13 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'Extração dos terceiros molares',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
+            Flexible(
+              child: const Text(
+                'Extração dos terceiros molares',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
               ),
             ),
           ],
@@ -2397,11 +2442,13 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'Realizar extração virtual dos seguintes dentes',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
+            Flexible(
+              child: const Text(
+                'Realizar extração virtual dos seguintes dentes',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
               ),
             ),
           ],
@@ -2463,11 +2510,13 @@ class _ProblemasIndividuaisState extends State<ProblemasIndividuais> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'Não movimentar os seguintes elementos',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
+            Flexible(
+              child: const Text(
+                'Não movimentar os seguintes elementos',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
               ),
             ),
           ],

@@ -1351,6 +1351,7 @@ class _SagitalState extends State<Sagital> {
         CheckboxListTile(
           controlAffinity: ListTileControlAffinity.leading,
           title: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               const Text(
                 'Recorte para elástico no alinhador (especificar o dente)',
@@ -1418,6 +1419,7 @@ class _SagitalState extends State<Sagital> {
         CheckboxListTile(
           controlAffinity: ListTileControlAffinity.leading,
           title: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               const Text(
                 'Recorte no alinhador para botão (especificar o dente)',
@@ -1485,6 +1487,7 @@ class _SagitalState extends State<Sagital> {
         CheckboxListTile(
           controlAffinity: ListTileControlAffinity.leading,
           title: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               const Text(
                 'Alívio no alinhador para braço de força (especificar o dente)',

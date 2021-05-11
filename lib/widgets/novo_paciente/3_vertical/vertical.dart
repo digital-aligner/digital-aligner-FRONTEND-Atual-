@@ -265,8 +265,8 @@ class _VerticalState extends State<Vertical> {
                       height: 80,
                       child: Column(
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               Radio(
                                 toggleable: true,
@@ -295,47 +295,40 @@ class _VerticalState extends State<Vertical> {
                                       : Colors.grey.withOpacity(0.5),
                                 ),
                               ),
-                              Column(
-                                children: [
-                                  Container(
-                                    height: 35,
-                                    width: 75,
-                                    child: TextFormField(
-                                      onChanged: (value) {
-                                        _novoPedStore.setIdaSup(value);
-                                      },
-                                      textAlign: TextAlign.center,
-                                      onSaved: (String value) {
-                                        //sc.usernameCpf = value;
-                                      },
-                                      enabled: widget.blockUi
-                                          ? !widget.blockUi
-                                          : _novoPedStore.getIdaSupState(),
-                                      validator: (value) {
-                                        if (value.length < 0) {
-                                          return 'Não valido.';
-                                        }
-                                        return null;
-                                      },
-                                      maxLength: 5,
-                                      controller: _cIntDentAntSup,
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.allow(
-                                            RegExp(r'[,0-9]')),
-                                      ],
-                                      decoration: const InputDecoration(
-                                        //To hide cpf length num
-                                        counterText: '',
-                                        //labelText: 'Quantos mm?',
-                                        // border: const OutlineInputBorder(),
-                                      ),
-                                    ),
+                              Container(
+                                height: 35,
+                                width: 75,
+                                child: TextFormField(
+                                  onChanged: (value) {
+                                    _novoPedStore.setIdaSup(value);
+                                  },
+                                  textAlign: TextAlign.center,
+                                  onSaved: (String value) {
+                                    //sc.usernameCpf = value;
+                                  },
+                                  enabled: widget.blockUi
+                                      ? !widget.blockUi
+                                      : _novoPedStore.getIdaSupState(),
+                                  validator: (value) {
+                                    if (value.length < 0) {
+                                      return 'Não valido.';
+                                    }
+                                    return null;
+                                  },
+                                  maxLength: 5,
+                                  controller: _cIntDentAntSup,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: <TextInputFormatter>[
+                                    FilteringTextInputFormatter.allow(
+                                        RegExp(r'[,0-9]')),
+                                  ],
+                                  decoration: const InputDecoration(
+                                    //To hide cpf length num
+                                    counterText: '',
+                                    //labelText: 'Quantos mm?',
+                                    // border: const OutlineInputBorder(),
                                   ),
-                                  const SizedBox(
-                                    height: 15,
-                                  )
-                                ],
+                                ),
                               ),
                             ],
                           ),
@@ -347,8 +340,8 @@ class _VerticalState extends State<Vertical> {
                       height: 80,
                       child: Column(
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               Radio(
                                 toggleable: true,
@@ -377,47 +370,40 @@ class _VerticalState extends State<Vertical> {
                                       : Colors.grey.withOpacity(0.5),
                                 ),
                               ),
-                              Column(
-                                children: [
-                                  Container(
-                                    height: 35,
-                                    width: 75,
-                                    child: TextFormField(
-                                      onChanged: (value) {
-                                        _novoPedStore.setIdaInf(value);
-                                      },
-                                      textAlign: TextAlign.center,
-                                      onSaved: (String value) {
-                                        //sc.usernameCpf = value;
-                                      },
-                                      enabled: widget.blockUi
-                                          ? !widget.blockUi
-                                          : _novoPedStore.getIdaInfState(),
-                                      validator: (value) {
-                                        if (value.length < 0) {
-                                          return 'Não valido.';
-                                        }
-                                        return null;
-                                      },
-                                      maxLength: 5,
-                                      controller: _cIntDentAntInf,
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.allow(
-                                            RegExp(r'[,0-9]')),
-                                      ],
-                                      decoration: const InputDecoration(
-                                        //To hide cpf length num
-                                        counterText: '',
-                                        //labelText: 'Quantos mm?',
-                                        // border: const OutlineInputBorder(),
-                                      ),
-                                    ),
+                              Container(
+                                height: 35,
+                                width: 75,
+                                child: TextFormField(
+                                  onChanged: (value) {
+                                    _novoPedStore.setIdaInf(value);
+                                  },
+                                  textAlign: TextAlign.center,
+                                  onSaved: (String value) {
+                                    //sc.usernameCpf = value;
+                                  },
+                                  enabled: widget.blockUi
+                                      ? !widget.blockUi
+                                      : _novoPedStore.getIdaInfState(),
+                                  validator: (value) {
+                                    if (value.length < 0) {
+                                      return 'Não valido.';
+                                    }
+                                    return null;
+                                  },
+                                  maxLength: 5,
+                                  controller: _cIntDentAntInf,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: <TextInputFormatter>[
+                                    FilteringTextInputFormatter.allow(
+                                        RegExp(r'[,0-9]')),
+                                  ],
+                                  decoration: const InputDecoration(
+                                    //To hide cpf length num
+                                    counterText: '',
+                                    //labelText: 'Quantos mm?',
+                                    // border: const OutlineInputBorder(),
                                   ),
-                                  SizedBox(
-                                    height: 15,
-                                  )
-                                ],
+                                ),
                               ),
                             ],
                           ),
@@ -448,8 +434,8 @@ class _VerticalState extends State<Vertical> {
                       height: 80,
                       child: Column(
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               Radio(
                                 toggleable: true,
@@ -478,47 +464,40 @@ class _VerticalState extends State<Vertical> {
                                       : Colors.grey.withOpacity(0.5),
                                 ),
                               ),
-                              Column(
-                                children: [
-                                  Container(
-                                    height: 35,
-                                    width: 75,
-                                    child: TextFormField(
-                                      onChanged: (value) {
-                                        _novoPedStore.setEdpSup(value);
-                                      },
-                                      textAlign: TextAlign.center,
-                                      onSaved: (String value) {
-                                        //sc.usernameCpf = value;
-                                      },
-                                      enabled: widget.blockUi
-                                          ? !widget.blockUi
-                                          : _novoPedStore.getEdpSupState(),
-                                      validator: (value) {
-                                        if (value.length < 0) {
-                                          return 'Não valido.';
-                                        }
-                                        return null;
-                                      },
-                                      maxLength: 5,
-                                      controller: _cExtrDentPostSup,
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.allow(
-                                            RegExp(r'[,0-9]')),
-                                      ],
-                                      decoration: const InputDecoration(
-                                        //To hide cpf length num
-                                        counterText: '',
-                                        //labelText: 'Quantos mm?',
-                                        // border: const OutlineInputBorder(),
-                                      ),
-                                    ),
+                              Container(
+                                height: 35,
+                                width: 75,
+                                child: TextFormField(
+                                  onChanged: (value) {
+                                    _novoPedStore.setEdpSup(value);
+                                  },
+                                  textAlign: TextAlign.center,
+                                  onSaved: (String value) {
+                                    //sc.usernameCpf = value;
+                                  },
+                                  enabled: widget.blockUi
+                                      ? !widget.blockUi
+                                      : _novoPedStore.getEdpSupState(),
+                                  validator: (value) {
+                                    if (value.length < 0) {
+                                      return 'Não valido.';
+                                    }
+                                    return null;
+                                  },
+                                  maxLength: 5,
+                                  controller: _cExtrDentPostSup,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: <TextInputFormatter>[
+                                    FilteringTextInputFormatter.allow(
+                                        RegExp(r'[,0-9]')),
+                                  ],
+                                  decoration: const InputDecoration(
+                                    //To hide cpf length num
+                                    counterText: '',
+                                    //labelText: 'Quantos mm?',
+                                    // border: const OutlineInputBorder(),
                                   ),
-                                  SizedBox(
-                                    height: 15,
-                                  )
-                                ],
+                                ),
                               ),
                             ],
                           ),
@@ -530,8 +509,8 @@ class _VerticalState extends State<Vertical> {
                       height: 80,
                       child: Column(
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               Radio(
                                 toggleable: true,
@@ -560,47 +539,40 @@ class _VerticalState extends State<Vertical> {
                                       : Colors.grey.withOpacity(0.5),
                                 ),
                               ),
-                              Column(
-                                children: [
-                                  Container(
-                                    height: 35,
-                                    width: 75,
-                                    child: TextFormField(
-                                      onChanged: (value) {
-                                        _novoPedStore.setEdpInf(value);
-                                      },
-                                      textAlign: TextAlign.center,
-                                      onSaved: (String value) {
-                                        //sc.usernameCpf = value;
-                                      },
-                                      enabled: widget.blockUi
-                                          ? !widget.blockUi
-                                          : _novoPedStore.getEdpInfState(),
-                                      validator: (value) {
-                                        if (value.length < 0) {
-                                          return 'Não valido.';
-                                        }
-                                        return null;
-                                      },
-                                      maxLength: 5,
-                                      controller: _cExtrDentPostInf,
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.allow(
-                                            RegExp(r'[,0-9]')),
-                                      ],
-                                      decoration: const InputDecoration(
-                                        //To hide cpf length num
-                                        counterText: '',
-                                        //labelText: 'Quantos mm?',
-                                        // border: const OutlineInputBorder(),
-                                      ),
-                                    ),
+                              Container(
+                                height: 35,
+                                width: 75,
+                                child: TextFormField(
+                                  onChanged: (value) {
+                                    _novoPedStore.setEdpInf(value);
+                                  },
+                                  textAlign: TextAlign.center,
+                                  onSaved: (String value) {
+                                    //sc.usernameCpf = value;
+                                  },
+                                  enabled: widget.blockUi
+                                      ? !widget.blockUi
+                                      : _novoPedStore.getEdpInfState(),
+                                  validator: (value) {
+                                    if (value.length < 0) {
+                                      return 'Não valido.';
+                                    }
+                                    return null;
+                                  },
+                                  maxLength: 5,
+                                  controller: _cExtrDentPostInf,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: <TextInputFormatter>[
+                                    FilteringTextInputFormatter.allow(
+                                        RegExp(r'[,0-9]')),
+                                  ],
+                                  decoration: const InputDecoration(
+                                    //To hide cpf length num
+                                    counterText: '',
+                                    //labelText: 'Quantos mm?',
+                                    // border: const OutlineInputBorder(),
                                   ),
-                                  const SizedBox(
-                                    height: 15,
-                                  )
-                                ],
+                                ),
                               ),
                             ],
                           ),
@@ -611,7 +583,6 @@ class _VerticalState extends State<Vertical> {
                 ),
               ],
             ),
-
             const SizedBox(height: 20),
           ]),
         ),
@@ -901,8 +872,8 @@ class _VerticalState extends State<Vertical> {
                         height: 80,
                         child: Column(
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 Radio(
                                   toggleable: true,
@@ -932,60 +903,53 @@ class _VerticalState extends State<Vertical> {
                                             : Colors.grey.withOpacity(0.5),
                                   ),
                                 ),
-                                Column(
-                                  children: [
-                                    Container(
-                                      height: 35,
-                                      width: 75,
-                                      child: TextFormField(
-                                        onChanged: (value) {
-                                          _novoPedStore.setMaaEdaSup(value);
-                                        },
-                                        textAlign: TextAlign.center,
-                                        onSaved: (String value) {
-                                          //sc.usernameCpf = value;
-                                        },
-                                        enabled: widget.blockUi
-                                            ? !widget.blockUi
-                                            : _novoPedStore.getMaaEdaSupState(),
-                                        validator: (value) {
-                                          if (value.length < 0) {
-                                            return 'Não valido.';
-                                          }
-                                          return null;
-                                        },
-                                        maxLength: 5,
-                                        controller: _cMaaExtDentAntSup,
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: <TextInputFormatter>[
-                                          FilteringTextInputFormatter.allow(
-                                              RegExp(r'[,0-9]')),
-                                        ],
-                                        decoration: const InputDecoration(
-                                          //To hide cpf length num
-                                          counterText: '',
-                                          //labelText: 'Quantos mm?',
-                                          // border: const OutlineInputBorder(),
-                                        ),
-                                      ),
+                                Container(
+                                  height: 35,
+                                  width: 75,
+                                  child: TextFormField(
+                                    onChanged: (value) {
+                                      _novoPedStore.setMaaEdaSup(value);
+                                    },
+                                    textAlign: TextAlign.center,
+                                    onSaved: (String value) {
+                                      //sc.usernameCpf = value;
+                                    },
+                                    enabled: widget.blockUi
+                                        ? !widget.blockUi
+                                        : _novoPedStore.getMaaEdaSupState(),
+                                    validator: (value) {
+                                      if (value.length < 0) {
+                                        return 'Não valido.';
+                                      }
+                                      return null;
+                                    },
+                                    maxLength: 5,
+                                    controller: _cMaaExtDentAntSup,
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: <TextInputFormatter>[
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp(r'[,0-9]')),
+                                    ],
+                                    decoration: const InputDecoration(
+                                      //To hide cpf length num
+                                      counterText: '',
+                                      //labelText: 'Quantos mm?',
+                                      // border: const OutlineInputBorder(),
                                     ),
-                                    SizedBox(
-                                      height: 15,
-                                    )
-                                  ],
+                                  ),
                                 ),
                               ],
                             ),
                           ],
                         ),
                       ),
-                      //Extrusão dantes anteriores Inferior
+                      //Extrusão dentes anteriores Inferior
                       Container(
                         height: 80,
                         child: Column(
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 Radio(
                                   toggleable: true,
@@ -1015,47 +979,40 @@ class _VerticalState extends State<Vertical> {
                                             : Colors.grey.withOpacity(0.5),
                                   ),
                                 ),
-                                Column(
-                                  children: [
-                                    Container(
-                                      height: 35,
-                                      width: 75,
-                                      child: TextFormField(
-                                        onChanged: (value) {
-                                          _novoPedStore.setMaaEdaInf(value);
-                                        },
-                                        textAlign: TextAlign.center,
-                                        onSaved: (String value) {
-                                          //sc.usernameCpf = value;
-                                        },
-                                        enabled: widget.blockUi
-                                            ? !widget.blockUi
-                                            : _novoPedStore.getMaaEdaInfState(),
-                                        validator: (value) {
-                                          if (value.length < 0) {
-                                            return 'Não valido.';
-                                          }
-                                          return null;
-                                        },
-                                        maxLength: 5,
-                                        controller: _cMaaExtDentAntInf,
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: <TextInputFormatter>[
-                                          FilteringTextInputFormatter.allow(
-                                              RegExp(r'[,0-9]')),
-                                        ],
-                                        decoration: const InputDecoration(
-                                          //To hide cpf length num
-                                          counterText: '',
-                                          //labelText: 'Quantos mm?',
-                                          // border: const OutlineInputBorder(),
-                                        ),
-                                      ),
+                                Container(
+                                  height: 35,
+                                  width: 75,
+                                  child: TextFormField(
+                                    onChanged: (value) {
+                                      _novoPedStore.setMaaEdaInf(value);
+                                    },
+                                    textAlign: TextAlign.center,
+                                    onSaved: (String value) {
+                                      //sc.usernameCpf = value;
+                                    },
+                                    enabled: widget.blockUi
+                                        ? !widget.blockUi
+                                        : _novoPedStore.getMaaEdaInfState(),
+                                    validator: (value) {
+                                      if (value.length < 0) {
+                                        return 'Não valido.';
+                                      }
+                                      return null;
+                                    },
+                                    maxLength: 5,
+                                    controller: _cMaaExtDentAntInf,
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: <TextInputFormatter>[
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp(r'[,0-9]')),
+                                    ],
+                                    decoration: const InputDecoration(
+                                      //To hide cpf length num
+                                      counterText: '',
+                                      //labelText: 'Quantos mm?',
+                                      // border: const OutlineInputBorder(),
                                     ),
-                                    SizedBox(
-                                      height: 15,
-                                    )
-                                  ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -1086,8 +1043,8 @@ class _VerticalState extends State<Vertical> {
                         height: 80,
                         child: Column(
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 Radio(
                                   toggleable: true,
@@ -1117,47 +1074,40 @@ class _VerticalState extends State<Vertical> {
                                             : Colors.grey.withOpacity(0.5),
                                   ),
                                 ),
-                                Column(
-                                  children: [
-                                    Container(
-                                      height: 35,
-                                      width: 75,
-                                      child: TextFormField(
-                                        onChanged: (value) {
-                                          _novoPedStore.setMaaIdpSup(value);
-                                        },
-                                        textAlign: TextAlign.center,
-                                        onSaved: (String value) {
-                                          //sc.usernameCpf = value;
-                                        },
-                                        enabled: widget.blockUi
-                                            ? !widget.blockUi
-                                            : _novoPedStore.getMaaIdpSupState(),
-                                        validator: (value) {
-                                          if (value.length < 0) {
-                                            return 'Não valido.';
-                                          }
-                                          return null;
-                                        },
-                                        maxLength: 5,
-                                        controller: _cMaaIntrDentPostSup,
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: <TextInputFormatter>[
-                                          FilteringTextInputFormatter.allow(
-                                              RegExp(r'[,0-9]')),
-                                        ],
-                                        decoration: const InputDecoration(
-                                          //To hide cpf length num
-                                          counterText: '',
-                                          //labelText: 'Quantos mm?',
-                                          // border: const OutlineInputBorder(),
-                                        ),
-                                      ),
+                                Container(
+                                  height: 35,
+                                  width: 75,
+                                  child: TextFormField(
+                                    onChanged: (value) {
+                                      _novoPedStore.setMaaIdpSup(value);
+                                    },
+                                    textAlign: TextAlign.center,
+                                    onSaved: (String value) {
+                                      //sc.usernameCpf = value;
+                                    },
+                                    enabled: widget.blockUi
+                                        ? !widget.blockUi
+                                        : _novoPedStore.getMaaIdpSupState(),
+                                    validator: (value) {
+                                      if (value.length < 0) {
+                                        return 'Não valido.';
+                                      }
+                                      return null;
+                                    },
+                                    maxLength: 5,
+                                    controller: _cMaaIntrDentPostSup,
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: <TextInputFormatter>[
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp(r'[,0-9]')),
+                                    ],
+                                    decoration: const InputDecoration(
+                                      //To hide cpf length num
+                                      counterText: '',
+                                      //labelText: 'Quantos mm?',
+                                      // border: const OutlineInputBorder(),
                                     ),
-                                    const SizedBox(
-                                      height: 15,
-                                    )
-                                  ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -1169,8 +1119,8 @@ class _VerticalState extends State<Vertical> {
                         height: 80,
                         child: Column(
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 Radio(
                                   toggleable: true,
@@ -1200,47 +1150,40 @@ class _VerticalState extends State<Vertical> {
                                             : Colors.grey.withOpacity(0.5),
                                   ),
                                 ),
-                                Column(
-                                  children: [
-                                    Container(
-                                      height: 35,
-                                      width: 75,
-                                      child: TextFormField(
-                                        onChanged: (value) {
-                                          _novoPedStore.setMaaIdpInf(value);
-                                        },
-                                        textAlign: TextAlign.center,
-                                        onSaved: (String value) {
-                                          //sc.usernameCpf = value;
-                                        },
-                                        enabled: widget.blockUi
-                                            ? !widget.blockUi
-                                            : _novoPedStore.getMaaIdpInfState(),
-                                        validator: (value) {
-                                          if (value.length < 0) {
-                                            return 'Não valido.';
-                                          }
-                                          return null;
-                                        },
-                                        maxLength: 5,
-                                        controller: _cMaaIntrDentPostInf,
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: <TextInputFormatter>[
-                                          FilteringTextInputFormatter.allow(
-                                              RegExp(r'[,0-9]')),
-                                        ],
-                                        decoration: const InputDecoration(
-                                          //To hide cpf length num
-                                          counterText: '',
-                                          //labelText: 'Quantos mm?',
-                                          // border: const OutlineInputBorder(),
-                                        ),
-                                      ),
+                                Container(
+                                  height: 35,
+                                  width: 75,
+                                  child: TextFormField(
+                                    onChanged: (value) {
+                                      _novoPedStore.setMaaIdpInf(value);
+                                    },
+                                    textAlign: TextAlign.center,
+                                    onSaved: (String value) {
+                                      //sc.usernameCpf = value;
+                                    },
+                                    enabled: widget.blockUi
+                                        ? !widget.blockUi
+                                        : _novoPedStore.getMaaIdpInfState(),
+                                    validator: (value) {
+                                      if (value.length < 0) {
+                                        return 'Não valido.';
+                                      }
+                                      return null;
+                                    },
+                                    maxLength: 5,
+                                    controller: _cMaaIntrDentPostInf,
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: <TextInputFormatter>[
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp(r'[,0-9]')),
+                                    ],
+                                    decoration: const InputDecoration(
+                                      //To hide cpf length num
+                                      counterText: '',
+                                      //labelText: 'Quantos mm?',
+                                      // border: const OutlineInputBorder(),
                                     ),
-                                    const SizedBox(
-                                      height: 15,
-                                    )
-                                  ],
+                                  ),
                                 ),
                               ],
                             ),
