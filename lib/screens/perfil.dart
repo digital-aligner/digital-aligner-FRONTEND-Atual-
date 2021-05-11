@@ -272,12 +272,6 @@ class _PerfilState extends State<Perfil> {
   bool firstFetch = true;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    firstFetch = true;
-  }
-
-  @override
   Widget build(BuildContext context) {
     //Bug fix: Listen to false. When updating cadastro and notify listener
     //both screens pop. Use onPop method to update instead.
@@ -297,7 +291,7 @@ class _PerfilState extends State<Perfil> {
 
     final double sWidth = MediaQuery.of(context).size.width;
     final double sHeight = MediaQuery.of(context).size.height;
-
+    int mediaQuerySm = 576;
     return Scaffold(
       appBar: MyAppBar(),
       // *BUG* Verify closing drawer automaticlly when under 1200
@@ -309,7 +303,9 @@ class _PerfilState extends State<Perfil> {
         child: SingleChildScrollView(
           child: Container(
             height: 1000,
-            padding: const EdgeInsets.symmetric(horizontal: 100),
+            padding: sWidth > mediaQuerySm
+                ? const EdgeInsets.symmetric(horizontal: 100)
+                : const EdgeInsets.symmetric(horizontal: 8),
             child: Column(
               children: <Widget>[
                 const SizedBox(

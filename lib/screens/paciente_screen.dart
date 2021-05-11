@@ -364,13 +364,13 @@ class _PacienteScreenState extends State<PacienteScreen> {
       barrierDismissible: false, // user must tap button!
       context: ctx,
       builder: (BuildContext ctx2) {
-        return AlertDialog(
-          title: Container(
-            height: 400,
-            width: 600,
-            child: Form(
+        return SingleChildScrollView(
+          child: AlertDialog(
+            title: Form(
               key: _formKey,
               child: Container(
+                height: 400,
+                width: 600,
                 child: Column(
                   children: [
                     Container(
@@ -424,45 +424,45 @@ class _PacienteScreenState extends State<PacienteScreen> {
                 ),
               ),
             ),
+            actions: [
+              TextButton(
+                child: Text("Atualizar"),
+                onPressed: () {
+                  if (_formKey.currentState.validate()) {
+                    _formKey.currentState.save();
+                    _sendPacienteUpdate().then((data) {
+                      _controllerDataNasc.text = null;
+                      if (!data.containsKey('error')) {
+                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: const Duration(seconds: 8),
+                            content: Text('Paciente atualizado!'),
+                          ),
+                        );
+                        _pacienteListStore.clearPacientesAndUpdate();
+                        Navigator.of(ctx).pop();
+                      } else {
+                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: const Duration(seconds: 8),
+                            content: const Text('Algo deu errado'),
+                          ),
+                        );
+                      }
+                    });
+                  }
+                },
+              ),
+              TextButton(
+                child: Text("Fechar"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
           ),
-          actions: [
-            TextButton(
-              child: Text("Atualizar"),
-              onPressed: () {
-                if (_formKey.currentState.validate()) {
-                  _formKey.currentState.save();
-                  _sendPacienteUpdate().then((data) {
-                    _controllerDataNasc.text = null;
-                    if (!data.containsKey('error')) {
-                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          duration: const Duration(seconds: 8),
-                          content: Text('Paciente atualizado!'),
-                        ),
-                      );
-                      _pacienteListStore.clearPacientesAndUpdate();
-                      Navigator.of(ctx).pop();
-                    } else {
-                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          duration: const Duration(seconds: 8),
-                          content: const Text('Algo deu errado'),
-                        ),
-                      );
-                    }
-                  });
-                }
-              },
-            ),
-            TextButton(
-              child: Text("Fechar"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
         );
       },
     );

@@ -24,6 +24,7 @@ class _TermosState extends State<Termos> {
   @override
   Widget build(BuildContext context) {
     final _novoPedStore = Provider.of<PedidoProvider>(context);
+    double width = MediaQuery.of(context).size.width;
     return Container(
       width: double.infinity,
       child: Column(
@@ -74,21 +75,21 @@ class _TermosState extends State<Termos> {
               const SizedBox(height: 10),
             ],
           ),
-
           //Termos
-          Row(
-            children: [
-              Expanded(
-                child: CheckboxListTile(
-                  controlAffinity: ListTileControlAffinity.leading,
-                  title: const Text(
-                    'Li e estou de acordo com os termos de uso.',
-                  ),
-                  value: _novoPedStore.getTermos(),
-                  onChanged: widget.blockUi
-                      ? null
-                      : (value) {
-                          /*
+          width > 800
+              ? Row(
+                  children: [
+                    Expanded(
+                      child: CheckboxListTile(
+                        controlAffinity: ListTileControlAffinity.leading,
+                        title: const Text(
+                          'Li e estou de acordo com os termos de uso.',
+                        ),
+                        value: _novoPedStore.getTermos(),
+                        onChanged: widget.blockUi
+                            ? null
+                            : (value) {
+                                /*
                     if (_novoPedStore.getCorrigirApinSelecionado()) {
                       _novoPedStore.setExpArcoSupApin(value);
                       if (value == false) {
@@ -97,31 +98,84 @@ class _TermosState extends State<Termos> {
                       }
                     }
                     */
-                          _removeFocus(context);
-                          _novoPedStore.setTermos(value);
-                        },
-                  activeColor: Colors.black12,
-                  checkColor: Colors.blue,
-                ),
-              ),
-              Expanded(
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => TermosScreen()),
-                    );
-                  },
-                  child: const Text(
-                    "Visualizar Termos",
-                    style: TextStyle(
-                      color: Colors.lightBlue,
+                                _removeFocus(context);
+                                _novoPedStore.setTermos(value);
+                              },
+                        activeColor: Colors.black12,
+                        checkColor: Colors.blue,
+                      ),
                     ),
-                  ),
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => TermosScreen()),
+                          );
+                        },
+                        child: const Text(
+                          "Visualizar Termos",
+                          style: TextStyle(
+                            color: Colors.lightBlue,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              : Column(
+                  children: [
+                    Wrap(
+                      children: [
+                        CheckboxListTile(
+                          controlAffinity: ListTileControlAffinity.leading,
+                          title: const Text(
+                            'Li e estou de acordo com os termos de uso.',
+                          ),
+                          value: _novoPedStore.getTermos(),
+                          onChanged: widget.blockUi
+                              ? null
+                              : (value) {
+                                  /*
+                        if (_novoPedStore.getCorrigirApinSelecionado()) {
+                        _novoPedStore.setExpArcoSupApin(value);
+                        if (value == false) {
+                          _novoPedStore.clearExpArcoSupFields(
+                              clearParentCheckbox: false);
+                        }
+                        }
+                        */
+                                  _removeFocus(context);
+                                  _novoPedStore.setTermos(value);
+                                },
+                          activeColor: Colors.black12,
+                          checkColor: Colors.blue,
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => TermosScreen()),
+                            );
+                          },
+                          child: const Text(
+                            "Visualizar Termos",
+                            style: TextStyle(
+                              color: Colors.lightBlue,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
 
           const SizedBox(height: 20),
           CheckboxListTile(

@@ -774,7 +774,7 @@ class _PedidoFormState extends State<PedidoForm> {
                       //Atualizar pedido btn
                       if (widget.isEditarPedido && widget.blockUi)
                         Container(
-                          width: 300,
+                          width: _sWidth < 400 ? 200 : 300,
                           child: ElevatedButton(
                             onPressed: null,
                             child: const Text(
@@ -788,7 +788,7 @@ class _PedidoFormState extends State<PedidoForm> {
 
                       if (widget.isEditarPedido && !widget.blockUi)
                         Container(
-                          width: 300,
+                          width: _sWidth < 400 ? 200 : 300,
                           child: ElevatedButton(
                             onPressed: !_sendingPedido
                                 ? () {
@@ -927,7 +927,7 @@ class _PedidoFormState extends State<PedidoForm> {
                       //Novo pedido
                       if (widget.isNovoPedido)
                         Container(
-                          width: 300,
+                          width: _sWidth < 400 ? 200 : 300,
                           child: ElevatedButton(
                             onPressed: !_sendingPedido
                                 ? () {
@@ -992,7 +992,7 @@ class _PedidoFormState extends State<PedidoForm> {
                       //Novo refinamento
                       if (widget.isNovoRefinamento)
                         Container(
-                          width: 300,
+                          width: _sWidth < 400 ? 200 : 300,
                           child: ElevatedButton(
                             onPressed: () {
                               if (_formKey.currentState.validate()) {

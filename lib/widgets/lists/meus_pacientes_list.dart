@@ -32,6 +32,9 @@ class _MeusPacientesListState extends State<MeusPacientesList> {
   Widget build(BuildContext context) {
     _pacienteListStore = Provider.of<PacientesListProvider>(context);
 
+    double width = MediaQuery.of(context).size.width;
+    int mediaQuerySm = 576;
+
     pacList = _pacienteListStore.getPacientesList();
 
     if (pacList == null) {
@@ -95,13 +98,14 @@ class _MeusPacientesListState extends State<MeusPacientesList> {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                Expanded(
-                                  child: Text(
-                                    '${pacList[index]['historico_pacientes'][0]['status'] ?? '-'}',
-                                    textAlign: TextAlign.center,
-                                    overflow: TextOverflow.ellipsis,
+                                if (width > mediaQuerySm)
+                                  Expanded(
+                                    child: Text(
+                                      '${pacList[index]['historico_pacientes'][0]['status'] ?? '-'}',
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
-                                ),
                                 Expanded(
                                   child: Text(
                                     '${pacList[index]['nome_paciente']}',

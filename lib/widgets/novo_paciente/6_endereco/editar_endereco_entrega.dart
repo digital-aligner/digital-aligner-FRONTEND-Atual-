@@ -207,7 +207,7 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
 
   Widget build(BuildContext context) {
     super.build(context);
-
+    double sWidth = MediaQuery.of(context).size.width;
     return Container(
       width: MediaQuery.of(context).size.width,
       child: Form(
@@ -228,7 +228,7 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
                   showSearchBox: true,
                   showSelectedItem: true,
                   items: _enderecoUiList,
-                  //label: 'UF: *',
+                  label: 'UF: *',
                   //hint: 'UF: *',
                   popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
                   onChanged: (value) {
@@ -289,62 +289,67 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
                 },
                 decoration: const InputDecoration(
                   hintText: 'Endereço: *',
-                  //labelText: 'Endereço: *',
+                  labelText: 'Endereço: *',
                   border: const OutlineInputBorder(),
                 ),
               ),
             ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                    height: 80,
-                    child: TextFormField(
-                      enabled: !widget.blockUi,
-                      readOnly: true,
-                      onSaved: (String value) {
-                        _controllerNUM.text = value;
-                      },
-                      validator: (String value) {
-                        return value.isEmpty ? 'Campo vazio' : null;
-                      },
-                      controller: _controllerNUM,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                      ],
-                      initialValue: null,
-                      decoration: InputDecoration(
-                        //labelText: 'Número: *',
-                        hintText: 'Número: *',
-                        border: OutlineInputBorder(),
+            Container(
+              width: sWidth,
+              height: sWidth > 600 ? 80 : 180,
+              child: Flex(
+                direction: sWidth > 600 ? Axis.horizontal : Axis.vertical,
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      height: 80,
+                      child: TextFormField(
+                        enabled: !widget.blockUi,
+                        readOnly: true,
+                        onSaved: (String value) {
+                          _controllerNUM.text = value;
+                        },
+                        validator: (String value) {
+                          return value.isEmpty ? 'Campo vazio' : null;
+                        },
+                        controller: _controllerNUM,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                        ],
+                        initialValue: null,
+                        decoration: InputDecoration(
+                          labelText: 'Número: *',
+                          hintText: 'Número: *',
+                          border: OutlineInputBorder(),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Container(
-                    height: 80,
-                    child: TextFormField(
-                      enabled: !widget.blockUi,
-                      readOnly: true,
-                      controller: _complemento,
-                      onSaved: (String value) {
-                        _complemento.text = value;
-                      },
-                      validator: (String value) {
-                        return value.isEmpty ? 'Campo vazio' : null;
-                      },
-                      decoration: InputDecoration(
-                        //labelText: 'Complemento: *',
-                        hintText: 'Complemento: *',
-                        border: OutlineInputBorder(),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Container(
+                      height: 80,
+                      child: TextFormField(
+                        enabled: !widget.blockUi,
+                        readOnly: true,
+                        controller: _complemento,
+                        onSaved: (String value) {
+                          _complemento.text = value;
+                        },
+                        validator: (String value) {
+                          return value.isEmpty ? 'Campo vazio' : null;
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Complemento: *',
+                          hintText: 'Complemento: *',
+                          border: OutlineInputBorder(),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             Container(
               height: 80,
@@ -359,7 +364,7 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
                   return value.isEmpty ? 'Campo vazio' : null;
                 },
                 decoration: InputDecoration(
-                  //labelText: 'Bairro: *',
+                  labelText: 'Bairro: *',
                   hintText: 'Bairro: *',
                   border: OutlineInputBorder(),
                 ),
@@ -386,7 +391,7 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
                 decoration: InputDecoration(
                   //To hide cep length num
                   counterText: '',
-                  //labelText: 'CEP: *',
+                  labelText: 'CEP: *',
                   hintText: 'CEP: *',
                   border: OutlineInputBorder(),
                 ),
@@ -414,7 +419,7 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
                   showSearchBox: true,
                   showSelectedItem: true,
                   items: _countries,
-                  //label: 'País: *',
+                  label: 'País: *',
                   hint: 'País: *',
                   popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
                   onChanged: (value) {
@@ -442,77 +447,83 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
                 ],
               ),
 
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 80,
-                    child: TextFormField(
-                      enabled: !widget.blockUi,
-                      readOnly: true,
-                      controller: _cidade,
-                      onSaved: (String value) {
-                        _cidade.text = value;
-                      },
-                      validator: (String value) {
-                        return value.isEmpty ? 'Campo vazio' : null;
-                      },
-                      decoration: InputDecoration(
-                        //labelText: 'Cidade: *',
-                        hintText: 'Cidade: *',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 20),
-                if (!_fetchData && _stateCountryData != null && !_refresh)
+            Container(
+              width: sWidth,
+              height: sWidth > 600 ? 80 : 180,
+              child: Flex(
+                direction: sWidth > 600 ? Axis.horizontal : Axis.vertical,
+                children: [
                   Expanded(
                     child: Container(
                       height: 80,
-                      child: DropdownSearch<String>(
-                          enabled: false,
-                          dropdownBuilder:
-                              (context, selectedItem, itemAsString) {
-                            return Text(_uf.text);
-                          },
-                          onSaved: (String value) {
-                            _uf.text = value;
-                          },
-                          validator: (String value) {
-                            return value.isEmpty ? 'Campo vazio' : null;
-                          },
-                          dropdownSearchDecoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                          ),
-                          mode: Mode.MENU,
-                          showSearchBox: true,
-                          showSelectedItem: true,
-                          items: _states,
-                          label: 'UF: *',
-                          //hint: 'country in menu mode',
-                          popupItemDisabled:
-                              (String s) => /*s.startsWith('I')*/ null,
-                          onChanged: (value) {
-                            _uf.text = value;
-                          },
-                          selectedItem: _uf.text),
-                    ),
-                  ),
-                //Progress bar
-                if (_fetchData && _stateCountryData == null)
-                  Column(
-                    children: [
-                      const SizedBox(height: 50),
-                      CircularProgressIndicator(
-                        valueColor: new AlwaysStoppedAnimation<Color>(
-                          Colors.blue,
+                      child: TextFormField(
+                        enabled: !widget.blockUi,
+                        readOnly: true,
+                        controller: _cidade,
+                        onSaved: (String value) {
+                          _cidade.text = value;
+                        },
+                        validator: (String value) {
+                          return value.isEmpty ? 'Campo vazio' : null;
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Cidade: *',
+                          hintText: 'Cidade: *',
+                          border: OutlineInputBorder(),
                         ),
                       ),
-                    ],
+                    ),
                   ),
-              ],
+                  const SizedBox(width: 20),
+                  if (!_fetchData && _stateCountryData != null && !_refresh)
+                    Expanded(
+                      child: Container(
+                        height: 80,
+                        child: DropdownSearch<String>(
+                            enabled: false,
+                            dropdownBuilder:
+                                (context, selectedItem, itemAsString) {
+                              return Text(_uf.text);
+                            },
+                            onSaved: (String value) {
+                              _uf.text = value;
+                            },
+                            validator: (String value) {
+                              return value.isEmpty ? 'Campo vazio' : null;
+                            },
+                            dropdownSearchDecoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              contentPadding:
+                                  EdgeInsets.fromLTRB(10, 10, 10, 10),
+                            ),
+                            mode: Mode.MENU,
+                            showSearchBox: true,
+                            showSelectedItem: true,
+                            items: _states,
+                            label: 'UF: *',
+                            //hint: 'country in menu mode',
+                            popupItemDisabled:
+                                (String s) => /*s.startsWith('I')*/ null,
+                            onChanged: (value) {
+                              _uf.text = value;
+                            },
+                            selectedItem: _uf.text),
+                      ),
+                    ),
+                  //Progress bar
+                  if (_fetchData && _stateCountryData == null)
+                    Column(
+                      children: [
+                        const SizedBox(height: 50),
+                        CircularProgressIndicator(
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                            Colors.blue,
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
             ),
           ],
         ),

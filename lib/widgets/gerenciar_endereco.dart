@@ -84,7 +84,7 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
     });
   }
 
-  Widget _mapButtonsToUi() {
+  Widget _mapButtonsToUi(double sWidth) {
     if (_novoEndereco) {
       return Container(
         width: 300,
@@ -144,118 +144,125 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
         ),
       );
     } else if (_atualizarEndereco) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          //Atualizar
-          Container(
-            width: 300,
-            child: ElevatedButton(
-              onPressed: !sendingEndereco
-                  ? () {
-                      if (_formKey.currentState.validate()) {
-                        setState(() {
-                          sendingEndereco = true;
-                        });
-                        _formKey.currentState.save();
-                        _updateEndereco().then((_data) {
-                          if (!_data[0].containsKey('error')) {
-                            _restartInicialValues();
-                            _clearInputFields();
-                            _getAllData();
-                            ScaffoldMessenger.of(context)
-                                .removeCurrentSnackBar();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                duration: const Duration(seconds: 4),
-                                content: const Text(
-                                  'Endereço atualizado',
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                duration: const Duration(seconds: 4),
-                                content: Text(
-                                  'Erro ao atualizar endereço.',
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            );
-                          }
+      return Container(
+        width: sWidth,
+        height: sWidth > 600 ? 80 : 180,
+        child: Flex(
+          direction: sWidth > 600 ? Axis.horizontal : Axis.vertical,
+          children: <Widget>[
+            //Atualizar
+            Container(
+              width: sWidth < 400 ? 200 : 300,
+              child: ElevatedButton(
+                onPressed: !sendingEndereco
+                    ? () {
+                        if (_formKey.currentState.validate()) {
                           setState(() {
-                            sendingEndereco = false;
+                            sendingEndereco = true;
                           });
-                        });
+                          _formKey.currentState.save();
+                          _updateEndereco().then((_data) {
+                            if (!_data[0].containsKey('error')) {
+                              _restartInicialValues();
+                              _clearInputFields();
+                              _getAllData();
+                              ScaffoldMessenger.of(context)
+                                  .removeCurrentSnackBar();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: const Duration(seconds: 4),
+                                  content: const Text(
+                                    'Endereço atualizado',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: const Duration(seconds: 4),
+                                  content: Text(
+                                    'Erro ao atualizar endereço.',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              );
+                            }
+                            setState(() {
+                              sendingEndereco = false;
+                            });
+                          });
+                        }
                       }
-                    }
-                  : null,
-              child: !sendingEndereco
-                  ? const Text(
-                      'ATUALIZAR ENDEREÇO',
-                      style: const TextStyle(
-                        color: Colors.white,
+                    : null,
+                child: !sendingEndereco
+                    ? const Text(
+                        'ATUALIZAR ENDEREÇO',
+                        style: const TextStyle(
+                          color: Colors.white,
+                        ),
+                      )
+                    : CircularProgressIndicator(
+                        valueColor: new AlwaysStoppedAnimation<Color>(
+                          Colors.blue,
+                        ),
                       ),
-                    )
-                  : CircularProgressIndicator(
-                      valueColor: new AlwaysStoppedAnimation<Color>(
-                        Colors.blue,
-                      ),
-                    ),
+              ),
             ),
-          ),
-          SizedBox(width: 20),
-          //Deletar
-          Container(
-            width: 300,
-            child: ElevatedButton(
-              onPressed: true
-                  ? null
-                  : () {
-                      //blocked the functionality
-                      if (_formKey.currentState.validate()) {
-                        _formKey.currentState.save();
-                        _deleteEndereco().then((_data) {
-                          if (!_data[0].containsKey('error')) {
-                            _restartInicialValues();
-                            _clearInputFields();
-                            _getAllData();
-                            ScaffoldMessenger.of(context)
-                                .removeCurrentSnackBar();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                duration: const Duration(seconds: 4),
-                                content: Text(
-                                  _data[0]['message'],
-                                  textAlign: TextAlign.center,
+            if (sWidth < 400)
+              const SizedBox(width: 20)
+            else
+              const SizedBox(height: 20),
+            //Deletar
+            Container(
+              width: sWidth < 400 ? 200 : 300,
+              child: ElevatedButton(
+                onPressed: true
+                    ? null
+                    : () {
+                        //blocked the functionality
+                        if (_formKey.currentState.validate()) {
+                          _formKey.currentState.save();
+                          _deleteEndereco().then((_data) {
+                            if (!_data[0].containsKey('error')) {
+                              _restartInicialValues();
+                              _clearInputFields();
+                              _getAllData();
+                              ScaffoldMessenger.of(context)
+                                  .removeCurrentSnackBar();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: const Duration(seconds: 4),
+                                  content: Text(
+                                    _data[0]['message'],
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
-                              ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                duration: const Duration(seconds: 8),
-                                content: Text(
-                                  _data[0]['message'],
-                                  textAlign: TextAlign.center,
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: const Duration(seconds: 8),
+                                  content: Text(
+                                    _data[0]['message'],
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
-                              ),
-                            );
-                          }
-                        });
-                      }
-                    },
-              child: const Text(
-                'DELETAR ENDEREÇO',
-                style: const TextStyle(
-                  color: Colors.white,
+                              );
+                            }
+                          });
+                        }
+                      },
+                child: const Text(
+                  'DELETAR ENDEREÇO',
+                  style: const TextStyle(
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
     } else {
       return Container();
@@ -433,6 +440,7 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
   }
 
   Widget build(BuildContext context) {
+    final double sWidth = MediaQuery.of(context).size.width;
     return Container(
       width: MediaQuery.of(context).size.width,
       child: Form(
@@ -452,7 +460,7 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
                 showSearchBox: true,
                 showSelectedItem: true,
                 items: _enderecoUiList,
-                //label: 'UF: *',
+                label: 'UF: *',
                 //hint: 'UF: *',
                 popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
                 onChanged: (value) async {
@@ -508,58 +516,63 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
                 },
                 decoration: const InputDecoration(
                   hintText: 'Endereço: *',
-                  //labelText: 'Endereço: *',
+                  labelText: 'Endereço: *',
                   border: const OutlineInputBorder(),
                 ),
               ),
             ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                    height: 80,
-                    child: TextFormField(
-                      onSaved: (String value) {
-                        _controllerNUM.text = value;
-                      },
-                      validator: (String value) {
-                        return value.isEmpty ? 'Campo vazio' : null;
-                      },
-                      controller: _controllerNUM,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                      ],
-                      initialValue: null,
-                      decoration: InputDecoration(
-                        //labelText: 'Número: *',
-                        hintText: 'Número: *',
-                        border: OutlineInputBorder(),
+            Container(
+              width: sWidth,
+              height: sWidth > 600 ? 80 : 180,
+              child: Flex(
+                direction: sWidth > 600 ? Axis.horizontal : Axis.vertical,
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      height: 80,
+                      child: TextFormField(
+                        onSaved: (String value) {
+                          _controllerNUM.text = value;
+                        },
+                        validator: (String value) {
+                          return value.isEmpty ? 'Campo vazio' : null;
+                        },
+                        controller: _controllerNUM,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                        ],
+                        initialValue: null,
+                        decoration: InputDecoration(
+                          labelText: 'Número: *',
+                          hintText: 'Número: *',
+                          border: OutlineInputBorder(),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Container(
-                    height: 80,
-                    child: TextFormField(
-                      controller: _complemento,
-                      onSaved: (String value) {
-                        _complemento.text = value;
-                      },
-                      validator: (String value) {
-                        return value.isEmpty ? 'Campo vazio' : null;
-                      },
-                      decoration: InputDecoration(
-                        //labelText: 'Complemento: *',
-                        hintText: 'Complemento: *',
-                        border: OutlineInputBorder(),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Container(
+                      height: 80,
+                      child: TextFormField(
+                        controller: _complemento,
+                        onSaved: (String value) {
+                          _complemento.text = value;
+                        },
+                        validator: (String value) {
+                          return value.isEmpty ? 'Campo vazio' : null;
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Complemento: *',
+                          hintText: 'Complemento: *',
+                          border: OutlineInputBorder(),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             Container(
               height: 80,
@@ -572,7 +585,7 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
                   return value.isEmpty ? 'Campo vazio' : null;
                 },
                 decoration: InputDecoration(
-                  //labelText: 'Bairro: *',
+                  labelText: 'Bairro: *',
                   hintText: 'Bairro: *',
                   border: OutlineInputBorder(),
                 ),
@@ -597,7 +610,7 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
                 decoration: InputDecoration(
                   //To hide cep length num
                   counterText: '',
-                  //labelText: 'CEP: *',
+                  labelText: 'CEP: *',
                   hintText: 'CEP: *',
                   border: OutlineInputBorder(),
                 ),
@@ -626,7 +639,7 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
                   showSearchBox: true,
                   showSelectedItem: true,
                   items: _countries,
-                  //label: 'País: *',
+                  label: 'País: *',
                   hint: 'País: *',
                   popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
                   onChanged: (value) {
@@ -653,78 +666,84 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
                   ),
                 ],
               ),
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 80,
-                    child: TextFormField(
-                      controller: _cidade,
-                      onSaved: (String value) {
-                        _cidade.text = value;
-                      },
-                      validator: (String value) {
-                        return value.isEmpty ? 'Campo vazio' : null;
-                      },
-                      decoration: InputDecoration(
-                        //labelText: 'Cidade: *',
-                        hintText: 'Cidade: *',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 20),
-                //Uf
-                if (!_fetchData && _stateCountryData != null && !_refresh)
+            Container(
+              width: sWidth,
+              height: sWidth > 600 ? 80 : 180,
+              child: Flex(
+                direction: sWidth > 600 ? Axis.horizontal : Axis.vertical,
+                children: [
                   Expanded(
                     child: Container(
                       height: 80,
-                      child: DropdownSearch<String>(
-                          //To fix ui not updating on state change
-                          dropdownBuilder:
-                              (context, selectedItem, itemAsString) {
-                            return Text(_uf.text);
-                          },
-                          onSaved: (String value) {
-                            _uf.text = value;
-                          },
-                          validator: (String value) {
-                            return value.isEmpty ? 'Campo vazio' : null;
-                          },
-                          dropdownSearchDecoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                          ),
-                          mode: Mode.MENU,
-                          showSearchBox: true,
-                          showSelectedItem: true,
-                          items: _states,
-                          label: 'UF: *',
-                          //hint: 'country in menu mode',
-                          popupItemDisabled:
-                              (String s) => /*s.startsWith('I')*/ null,
-                          onChanged: (value) {
-                            _uf.text = value;
-                          },
-                          selectedItem: _uf.text),
-                    ),
-                  ),
-                //Progress bar
-                if (_fetchData && _stateCountryData == null)
-                  Column(
-                    children: [
-                      const SizedBox(height: 50),
-                      CircularProgressIndicator(
-                        valueColor: new AlwaysStoppedAnimation<Color>(
-                          Colors.blue,
+                      child: TextFormField(
+                        controller: _cidade,
+                        onSaved: (String value) {
+                          _cidade.text = value;
+                        },
+                        validator: (String value) {
+                          return value.isEmpty ? 'Campo vazio' : null;
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Cidade: *',
+                          hintText: 'Cidade: *',
+                          border: OutlineInputBorder(),
                         ),
                       ),
-                    ],
+                    ),
                   ),
-              ],
+                  const SizedBox(width: 20),
+                  //Uf
+                  if (!_fetchData && _stateCountryData != null && !_refresh)
+                    Expanded(
+                      child: Container(
+                        height: 80,
+                        child: DropdownSearch<String>(
+                            //To fix ui not updating on state change
+                            dropdownBuilder:
+                                (context, selectedItem, itemAsString) {
+                              return Text(_uf.text);
+                            },
+                            onSaved: (String value) {
+                              _uf.text = value;
+                            },
+                            validator: (String value) {
+                              return value.isEmpty ? 'Campo vazio' : null;
+                            },
+                            dropdownSearchDecoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              contentPadding:
+                                  EdgeInsets.fromLTRB(10, 10, 10, 10),
+                            ),
+                            mode: Mode.MENU,
+                            showSearchBox: true,
+                            showSelectedItem: true,
+                            items: _states,
+                            label: 'UF: *',
+                            //hint: 'country in menu mode',
+                            popupItemDisabled:
+                                (String s) => /*s.startsWith('I')*/ null,
+                            onChanged: (value) {
+                              _uf.text = value;
+                            },
+                            selectedItem: _uf.text),
+                      ),
+                    ),
+                  //Progress bar
+                  if (_fetchData && _stateCountryData == null)
+                    Column(
+                      children: [
+                        const SizedBox(height: 50),
+                        CircularProgressIndicator(
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                            Colors.blue,
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
             ),
-            _mapButtonsToUi(),
+            _mapButtonsToUi(sWidth),
           ],
         ),
       ),

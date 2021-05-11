@@ -320,83 +320,92 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                     ),
                                   ),
                                   const SizedBox(height: 10),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                          height: 80,
-                                          child: TextFormField(
-                                            onSaved: (String value) {
-                                              sc.usernameCpf = value;
-                                            },
-                                            enabled: false,
-                                            validator: (value) {
-                                              if (value.length < 11) {
-                                                return 'Por favor insira seu cpf';
-                                              }
-                                              return null;
-                                            },
-                                            maxLength: 11,
-                                            controller: _controllerCPF,
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: <
-                                                TextInputFormatter>[
-                                              FilteringTextInputFormatter.allow(
-                                                  RegExp(r'[0-9]')),
-                                            ],
-                                            decoration: const InputDecoration(
-                                              //To hide cpf length num
-                                              counterText: '',
-                                              labelText: 'CPF: *',
-                                              border:
-                                                  const OutlineInputBorder(),
+                                  Container(
+                                    width: sWidth,
+                                    height: sWidth > 600 ? 80 : 180,
+                                    child: Flex(
+                                      direction: sWidth > 600
+                                          ? Axis.horizontal
+                                          : Axis.vertical,
+                                      children: [
+                                        Expanded(
+                                          child: Container(
+                                            height: 80,
+                                            child: TextFormField(
+                                              onSaved: (String value) {
+                                                sc.usernameCpf = value;
+                                              },
+                                              enabled: false,
+                                              validator: (value) {
+                                                if (value.length < 11) {
+                                                  return 'Por favor insira seu cpf';
+                                                }
+                                                return null;
+                                              },
+                                              maxLength: 11,
+                                              controller: _controllerCPF,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              inputFormatters: <
+                                                  TextInputFormatter>[
+                                                FilteringTextInputFormatter
+                                                    .allow(RegExp(r'[0-9]')),
+                                              ],
+                                              decoration: const InputDecoration(
+                                                //To hide cpf length num
+                                                counterText: '',
+                                                labelText: 'CPF: *',
+                                                border:
+                                                    const OutlineInputBorder(),
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(width: 20),
-                                      Expanded(
-                                        child: Container(
-                                          height: 80,
-                                          child: DateTimeField(
-                                            onSaved: (DateTime value) {
-                                              //If doesnt change date value, its null.
-                                              //Send date loaded in controller
-                                              if (value != null) {
-                                                sc.data_nasc =
-                                                    value.toIso8601String();
-                                              }
-                                            },
-                                            controller: _controllerDataNasc,
-                                            decoration: const InputDecoration(
-                                              labelText:
-                                                  'Data de Nascimento: *',
-                                              border:
-                                                  const OutlineInputBorder(),
+                                        const SizedBox(width: 20),
+                                        Expanded(
+                                          child: Container(
+                                            height: 80,
+                                            child: DateTimeField(
+                                              onSaved: (DateTime value) {
+                                                //If doesnt change date value, its null.
+                                                //Send date loaded in controller
+                                                if (value != null) {
+                                                  sc.data_nasc =
+                                                      value.toIso8601String();
+                                                }
+                                              },
+                                              controller: _controllerDataNasc,
+                                              decoration: const InputDecoration(
+                                                labelText:
+                                                    'Data de Nascimento: *',
+                                                border:
+                                                    const OutlineInputBorder(),
+                                              ),
+                                              format: format,
+                                              onShowPicker:
+                                                  (context, currentValue) {
+                                                return showDatePicker(
+                                                    initialEntryMode:
+                                                        DatePickerEntryMode
+                                                            .input,
+                                                    locale:
+                                                        Localizations.localeOf(
+                                                            context),
+                                                    errorFormatText:
+                                                        'Escolha data válida',
+                                                    errorInvalidText:
+                                                        'Data invalida',
+                                                    context: context,
+                                                    firstDate: DateTime(1900),
+                                                    initialDate: currentValue ??
+                                                        DateTime.now(),
+                                                    lastDate: DateTime(2100));
+                                              },
                                             ),
-                                            format: format,
-                                            onShowPicker:
-                                                (context, currentValue) {
-                                              return showDatePicker(
-                                                  initialEntryMode:
-                                                      DatePickerEntryMode.input,
-                                                  locale:
-                                                      Localizations.localeOf(
-                                                          context),
-                                                  errorFormatText:
-                                                      'Escolha data válida',
-                                                  errorInvalidText:
-                                                      'Data invalida',
-                                                  context: context,
-                                                  firstDate: DateTime(1900),
-                                                  initialDate: currentValue ??
-                                                      DateTime.now(),
-                                                  lastDate: DateTime(2100));
-                                            },
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                   const SizedBox(height: 10),
                                   Container(
@@ -696,74 +705,83 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                     height: 75,
                                     thickness: 1,
                                   ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                          margin:
-                                              EdgeInsets.fromLTRB(0, 25, 0, 0),
-                                          height: 80,
-                                          child: TextFormField(
-                                            onSaved: (String value) {
-                                              sc.telefone = value;
-                                            },
-                                            maxLength: 10,
-                                            controller: _controllerTEL,
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: <
-                                                TextInputFormatter>[
-                                              FilteringTextInputFormatter.allow(
-                                                  RegExp(r'[0-9]')),
-                                            ],
-                                            initialValue: null,
-                                            onChanged: (value) {
-                                              //_loginStore.setEmail(value);
-                                            },
-                                            decoration: InputDecoration(
-                                              //To hide cep length num
-                                              counterText: '',
-                                              labelText:
-                                                  'Telefone Fixo (Comercial): *',
-                                              //hintText: 'Insira seu nome',
-                                              border: OutlineInputBorder(),
+                                  Container(
+                                    width: sWidth,
+                                    height: sWidth > 600 ? 80 : 180,
+                                    child: Flex(
+                                      direction: sWidth > 600
+                                          ? Axis.horizontal
+                                          : Axis.vertical,
+                                      children: [
+                                        Expanded(
+                                          child: Container(
+                                            margin: EdgeInsets.fromLTRB(
+                                                0, 25, 0, 0),
+                                            height: 80,
+                                            child: TextFormField(
+                                              onSaved: (String value) {
+                                                sc.telefone = value;
+                                              },
+                                              maxLength: 10,
+                                              controller: _controllerTEL,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              inputFormatters: <
+                                                  TextInputFormatter>[
+                                                FilteringTextInputFormatter
+                                                    .allow(RegExp(r'[0-9]')),
+                                              ],
+                                              initialValue: null,
+                                              onChanged: (value) {
+                                                //_loginStore.setEmail(value);
+                                              },
+                                              decoration: InputDecoration(
+                                                //To hide cep length num
+                                                counterText: '',
+                                                labelText:
+                                                    'Telefone Fixo (Comercial): *',
+                                                //hintText: 'Insira seu nome',
+                                                border: OutlineInputBorder(),
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(width: 20),
-                                      Expanded(
-                                        child: Container(
-                                          margin:
-                                              EdgeInsets.fromLTRB(0, 25, 0, 0),
-                                          height: 80,
-                                          child: TextFormField(
-                                            onSaved: (String value) {
-                                              sc.celular = value;
-                                            },
-                                            maxLength: 11,
-                                            controller: _controllerCEL,
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: <
-                                                TextInputFormatter>[
-                                              FilteringTextInputFormatter.allow(
-                                                  RegExp(r'[0-9]')),
-                                            ],
-                                            initialValue: null,
-                                            onChanged: (value) {
-                                              //_loginStore.setEmail(value);
-                                            },
-                                            decoration: InputDecoration(
-                                              //To hide cep length num
-                                              counterText: '',
-                                              labelText:
-                                                  'Celular (Whatsapp): *',
-                                              //hintText: 'Insira seu nome',
-                                              border: OutlineInputBorder(),
+                                        const SizedBox(width: 20),
+                                        Expanded(
+                                          child: Container(
+                                            margin: EdgeInsets.fromLTRB(
+                                                0, 25, 0, 0),
+                                            height: 80,
+                                            child: TextFormField(
+                                              onSaved: (String value) {
+                                                sc.celular = value;
+                                              },
+                                              maxLength: 11,
+                                              controller: _controllerCEL,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              inputFormatters: <
+                                                  TextInputFormatter>[
+                                                FilteringTextInputFormatter
+                                                    .allow(RegExp(r'[0-9]')),
+                                              ],
+                                              initialValue: null,
+                                              onChanged: (value) {
+                                                //_loginStore.setEmail(value);
+                                              },
+                                              decoration: InputDecoration(
+                                                //To hide cep length num
+                                                counterText: '',
+                                                labelText:
+                                                    'Celular (Whatsapp): *',
+                                                //hintText: 'Insira seu nome',
+                                                border: OutlineInputBorder(),
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                   const Divider(
                                     height: 75,

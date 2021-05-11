@@ -147,6 +147,7 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
     BuildContext ctx,
     List<dynamic> pedList,
     int index,
+    double sWidth,
   ) {
     return Column(
       children: [
@@ -212,8 +213,10 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
           ),
         ),
         const SizedBox(height: 40),
-        Row(
+        Flex(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          direction: sWidth > 800 ? Axis.horizontal : Axis.vertical,
           children: [
             ElevatedButton.icon(
               onPressed: () async {
@@ -236,6 +239,7 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
               label: const Text('Visualizar superior'),
             ),
             const SizedBox(
+              height: 20,
               width: 20,
             ),
             ElevatedButton.icon(
@@ -1009,11 +1013,7 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                       ],
                     ),
 
-                  _pedidoUi(
-                    context,
-                    pedList,
-                    index,
-                  ),
+                  _pedidoUi(context, pedList, index, sWidth),
                   const SizedBox(height: 40),
                 ],
               ),

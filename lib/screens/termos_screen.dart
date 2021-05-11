@@ -9,10 +9,23 @@ class TermosScreen extends StatefulWidget {
 
 class _TermosScreenState extends State<TermosScreen> {
   String termos = '';
+  double height = 0;
   @override
   void didChangeDependencies() async {
     termos = await rootBundle.loadString('assets/texts/termos.txt');
     setState(() {});
+
+    double width = MediaQuery.of(context).size.width;
+
+    if (width < 400) {
+      height = 4500;
+    } else if (width < 800) {
+      height = 3500;
+    } else if (width < 1300) {
+      height = 2150;
+    } else {
+      height = 1800;
+    }
 
     super.didChangeDependencies();
   }
@@ -28,7 +41,7 @@ class _TermosScreenState extends State<TermosScreen> {
         child: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.fromLTRB(20, 20, 30, 20),
-            height: 2000,
+            height: height,
             child: Column(
               children: [
                 Text(termos),

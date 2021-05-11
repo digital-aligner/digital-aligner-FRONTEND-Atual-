@@ -46,7 +46,7 @@ class _MeusPacientesState extends State<MeusPacientes> {
     super.deactivate();
   }
 
-  Widget _getHeaders() {
+  Widget _getHeaders({int mediaQuerySm, double width}) {
     return Row(
       children: [
         const SizedBox(width: 20),
@@ -61,17 +61,18 @@ class _MeusPacientesState extends State<MeusPacientes> {
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        Expanded(
-          child: Text(
-            'Histórico recente',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black54,
+        if (width > mediaQuerySm)
+          Expanded(
+            child: Text(
+              'Histórico recente',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
-            overflow: TextOverflow.ellipsis,
           ),
-        ),
         Expanded(
           child: Text(
             'Nome Paciente',
@@ -157,6 +158,7 @@ class _MeusPacientesState extends State<MeusPacientes> {
     }
 
     final double sWidth = MediaQuery.of(context).size.width;
+    final int mediaQuerySm = 576;
 
     return Scaffold(
       appBar: MyAppBar(),
@@ -194,7 +196,10 @@ class _MeusPacientesState extends State<MeusPacientes> {
                   ),
                 ),
                 //TOP TEXT
-                _getHeaders(),
+                _getHeaders(
+                  width: sWidth,
+                  mediaQuerySm: mediaQuerySm,
+                ),
                 const SizedBox(height: 20),
                 if (_pacientesListStore.getPacientesList() == null)
                   Center(
@@ -218,8 +223,11 @@ class _MeusPacientesState extends State<MeusPacientes> {
                     child: MeusPacientesList(),
                   ),
                 const SizedBox(height: 100),
-                Row(
+                Flex(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  direction:
+                      sWidth > mediaQuerySm ? Axis.horizontal : Axis.vertical,
                   children: [
                     ElevatedButton.icon(
                       onPressed: _startPage <= 0 || _blockPageBtns
@@ -242,7 +250,10 @@ class _MeusPacientesState extends State<MeusPacientes> {
                       icon: const Icon(Icons.arrow_back),
                       label: const Text('Anterior'),
                     ),
-                    const SizedBox(width: 200),
+                    if (sWidth > mediaQuerySm)
+                      SizedBox(width: 200)
+                    else
+                      SizedBox(height: 20),
                     ElevatedButton.icon(
                       onPressed: _blockPageBtns || _blockForwardBtn
                           ? null
