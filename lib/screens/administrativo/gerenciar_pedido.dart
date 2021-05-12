@@ -149,17 +149,18 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
       return Row(
         children: [
           const SizedBox(width: 20),
-          Expanded(
-            child: const Text(
-              'Data da Aprovação',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: const Text(
+                'Data da Aprovação',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                //overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           Expanded(
             child: Text(
               'Pedido',
@@ -168,10 +169,10 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                 fontWeight: FontWeight.bold,
                 color: Colors.black54,
               ),
-              overflow: TextOverflow.ellipsis,
+              //overflow: TextOverflow.ellipsis,
             ),
           ),
-          if (sWidth > mediaQuerySm)
+          if (sWidth > mediaQueryMd)
             Expanded(
               child: const Text(
                 'Paciente',
@@ -180,7 +181,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                   fontWeight: FontWeight.bold,
                   color: Colors.black54,
                 ),
-                overflow: TextOverflow.ellipsis,
+                //overflow: TextOverflow.ellipsis,
               ),
             ),
           Expanded(
@@ -191,21 +192,22 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                 fontWeight: FontWeight.bold,
                 color: Colors.black54,
               ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          Expanded(
-            child: Text(
-              'Data do Pedido',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
-              ),
-              overflow: TextOverflow.ellipsis,
+              //overflow: TextOverflow.ellipsis,
             ),
           ),
           if (sWidth > mediaQuerySm)
+            Expanded(
+              child: Text(
+                'Data do Pedido',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                //overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          if (sWidth > mediaQueryMd)
             Expanded(
               child: const Text(
                 'Responsável',
@@ -214,20 +216,21 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                   fontWeight: FontWeight.bold,
                   color: Colors.black54,
                 ),
-                overflow: TextOverflow.ellipsis,
+                //overflow: TextOverflow.ellipsis,
               ),
             ),
-          Expanded(
-            child: const Text(
-              'Opções',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: const Text(
+                'Opções',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                //overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           const SizedBox(width: 20),
         ],
       );
@@ -235,17 +238,18 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
       return Row(
         children: [
           const SizedBox(width: 20),
-          Expanded(
-            child: Text(
-              'Data',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: Text(
+                'Data',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           Expanded(
             child: Text(
               'Pedido',
@@ -257,7 +261,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          if (sWidth > mediaQuerySm)
+          if (sWidth > mediaQueryMd)
             Expanded(
               child: const Text(
                 'Paciente',
@@ -280,7 +284,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          if (sWidth > mediaQuerySm)
+          if (sWidth > mediaQueryMd)
             Expanded(
               child: const Text(
                 'Responsável',
@@ -292,17 +296,18 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-          Expanded(
-            child: const Text(
-              'Opções',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: const Text(
+                'Opções',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           const SizedBox(width: 20),
         ],
       );
@@ -312,17 +317,18 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
         children: [
           const SizedBox(width: 20),
           //data alteracao
-          Expanded(
-            child: Text(
-              'Data',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: Text(
+                'Data',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                //overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           //código do pedido
           Expanded(
             child: Text(
@@ -332,7 +338,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                 fontWeight: FontWeight.bold,
                 color: Colors.black54,
               ),
-              overflow: TextOverflow.ellipsis,
+              //overflow: TextOverflow.ellipsis,
             ),
           ),
           //descrição
@@ -344,11 +350,11 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                 fontWeight: FontWeight.bold,
                 color: Colors.black54,
               ),
-              overflow: TextOverflow.ellipsis,
+              //overflow: TextOverflow.ellipsis,
             ),
           ),
           //responsável
-          if (sWidth > mediaQuerySm)
+          if (sWidth > mediaQueryMd)
             Expanded(
               child: const Text(
                 'Responsável',
@@ -357,11 +363,11 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                   fontWeight: FontWeight.bold,
                   color: Colors.black54,
                 ),
-                overflow: TextOverflow.ellipsis,
+                //overflow: TextOverflow.ellipsis,
               ),
             ),
           //nome paciente
-          if (sWidth > mediaQuerySm)
+          if (sWidth > mediaQueryMd)
             Expanded(
               child: const Text(
                 'Paciente',
@@ -370,21 +376,22 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                   fontWeight: FontWeight.bold,
                   color: Colors.black54,
                 ),
-                overflow: TextOverflow.ellipsis,
+                //overflow: TextOverflow.ellipsis,
               ),
             ),
           //opções
-          Expanded(
-            child: const Text(
-              'Opções',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: const Text(
+                'Opções',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                //overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           const SizedBox(width: 20),
         ],
       );
@@ -401,7 +408,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                 fontWeight: FontWeight.bold,
                 color: Colors.black54,
               ),
-              overflow: TextOverflow.ellipsis,
+              //overflow: TextOverflow.ellipsis,
             ),
           ),
           //código do pedido
@@ -413,11 +420,11 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                 fontWeight: FontWeight.bold,
                 color: Colors.black54,
               ),
-              overflow: TextOverflow.ellipsis,
+              //overflow: TextOverflow.ellipsis,
             ),
           ),
           //nome paciente
-          if (sWidth > mediaQuerySm)
+          if (sWidth > mediaQueryMd)
             Expanded(
               child: const Text(
                 'Paciente',
@@ -426,23 +433,24 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                   fontWeight: FontWeight.bold,
                   color: Colors.black54,
                 ),
-                overflow: TextOverflow.ellipsis,
+                //overflow: TextOverflow.ellipsis,
               ),
             ),
           //status
-          Expanded(
-            child: const Text(
-              'Status',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          //data do pedido
           if (sWidth > mediaQuerySm)
+            Expanded(
+              child: const Text(
+                'Status',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                //overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          //data do pedido
+          if (sWidth > mediaQueryMd)
             Expanded(
               child: Text(
                 'Data do Pedido',
@@ -451,11 +459,11 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                   fontWeight: FontWeight.bold,
                   color: Colors.black54,
                 ),
-                overflow: TextOverflow.ellipsis,
+                //overflow: TextOverflow.ellipsis,
               ),
             ),
           //responsável
-          if (sWidth > mediaQuerySm)
+          if (sWidth > mediaQueryMd)
             Expanded(
               child: const Text(
                 'Responsável',
@@ -464,21 +472,22 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                   fontWeight: FontWeight.bold,
                   color: Colors.black54,
                 ),
-                overflow: TextOverflow.ellipsis,
+                //overflow: TextOverflow.ellipsis,
               ),
             ),
           //opções
-          Expanded(
-            child: const Text(
-              'Opções',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: const Text(
+                'Opções',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                //overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           const SizedBox(width: 20),
         ],
       );
@@ -531,33 +540,29 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
             }).toList(),
           ),
           const SizedBox(height: 20, width: 20),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText:
-                        'Código pedido, CPF do responsável, nome do responsável ou nome do paciente.',
-                  ),
-                  controller: _searchField,
-                  onChanged: (value) async {
-                    //page to 0 before fetch
-                    _startPage = 0;
-                    fetchData = true;
-                    const duration = Duration(milliseconds: 500);
-                    if (searchOnStoppedTyping != null) {
-                      setState(() => searchOnStoppedTyping.cancel());
-                    }
-                    setState(
-                      () => searchOnStoppedTyping = new Timer(
-                        duration,
-                        () => _searchBoxQuery(value),
-                      ),
-                    );
-                  },
-                ),
+          Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                hintText:
+                    'Código pedido, CPF do responsável, nome do responsável ou nome do paciente.',
               ),
-            ],
+              controller: _searchField,
+              onChanged: (value) async {
+                //page to 0 before fetch
+                _startPage = 0;
+                fetchData = true;
+                const duration = Duration(milliseconds: 500);
+                if (searchOnStoppedTyping != null) {
+                  setState(() => searchOnStoppedTyping.cancel());
+                }
+                setState(
+                  () => searchOnStoppedTyping = new Timer(
+                    duration,
+                    () => _searchBoxQuery(value),
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -627,7 +632,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
         showTrackOnHover: true,
         child: SingleChildScrollView(
           child: Container(
-            height: 1390,
+            height: 1430,
             padding: const EdgeInsets.symmetric(
               horizontal: 50,
             ),

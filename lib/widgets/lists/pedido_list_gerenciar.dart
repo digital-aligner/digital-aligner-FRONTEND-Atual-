@@ -221,112 +221,117 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
           else if (_pedidosListStore.getDropdownValue() == 'Pedidos Aprovados')
             Row(
               children: [
-                Expanded(
-                  child: Text(
-                    _isoDateTimeToLocal(
-                      pedList[index]['data_aprovacao'] ?? '',
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: Text(
+                      _isoDateTimeToLocal(
+                        pedList[index]['data_aprovacao'] ?? '',
+                      ),
+                      textAlign: TextAlign.center,
+                      //overflow: TextOverflow.ellipsis,
                     ),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
                 Expanded(
                   child: Text(
                     '${pedList[index]['codigo_pedido']}',
                     textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                    //overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (_sWidth > mediaQuerySm)
+                if (_sWidth > mediaQueryMd)
                   Expanded(
                     child: Text(
                       '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
                       textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
+                      //overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 Expanded(
                   child: Text(
                     '${pedList[index]['status_pedido'] != null && pedList[index]['status_pedido'].length > 0 ? pedList[index]['status_pedido']['status'] : '-'}',
                     textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    _isoDateTimeToLocal(
-                      pedList[index]['created_at'] ?? '',
-                    ),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                    //overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 if (_sWidth > mediaQuerySm)
                   Expanded(
                     child: Text(
-                      '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
+                      _isoDateTimeToLocal(
+                        pedList[index]['created_at'] ?? '',
+                      ),
                       textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
+                      //overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                Expanded(
-                  child: _relatorioStatusBtn(
-                    index,
-                    _sWidth,
-                    _sHeight,
+                if (_sWidth > mediaQueryMd)
+                  Expanded(
+                    child: Text(
+                      '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
+                      textAlign: TextAlign.center,
+                      //overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: _relatorioStatusBtn(
+                      index,
+                      _sWidth,
+                      _sHeight,
+                    ),
+                  ),
               ],
             )
           else if (_pedidosListStore.getDropdownValue() == 'Refinamentos')
             Row(
               children: [
-                Expanded(
-                  child: Text(
-                    _isoDateTimeToLocal(
-                      pedList[index]['created_at'],
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: Text(
+                      _isoDateTimeToLocal(
+                        pedList[index]['created_at'],
+                      ),
+                      textAlign: TextAlign.center,
+                      //overflow: TextOverflow.ellipsis,
                     ),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
                 Expanded(
                   child: Text(
                     '${pedList[index]['codigo_pedido']}',
                     textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                    //overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (_sWidth > mediaQuerySm)
+                if (_sWidth > mediaQueryMd)
                   Expanded(
                     child: Text(
                       '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
                       textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
+                      //overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 Expanded(
                   child: Text(
                     '${pedList[index]['status_pedido'] != null && pedList[index]['status_pedido'].length > 0 ? pedList[index]['status_pedido']['status'] : '-'}',
                     textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                    //overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (_sWidth > mediaQuerySm)
+                if (_sWidth > mediaQueryMd)
                   Expanded(
                     child: Text(
                       '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
                       textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
+                      //overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                Expanded(
-                  child: _relatorioStatusBtn(
-                    index,
-                    _sWidth,
-                    _sHeight,
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: _relatorioStatusBtn(
+                      index,
+                      _sWidth,
+                      _sHeight,
+                    ),
                   ),
-                ),
               ],
             )
           else if (_pedidosListStore.getDropdownValue() ==
@@ -334,21 +339,22 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
             Row(
               children: [
                 //Data da alteração
-                Expanded(
-                  child: Text(
-                    _isoDateToLocal(
-                      pedList[index]['hist_alteracao_pedido']['data'] ?? '',
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: Text(
+                      _isoDateToLocal(
+                        pedList[index]['hist_alteracao_pedido']['data'] ?? '',
+                      ),
+                      textAlign: TextAlign.center,
+                      //overflow: TextOverflow.ellipsis,
                     ),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
                 //código pedido
                 Expanded(
                   child: Text(
                     '${pedList[index]['codigo_pedido']}',
                     textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                    //overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 //descrição
@@ -356,35 +362,36 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                   child: Text(
                     '${pedList[index]['hist_alteracao_pedido']['info'] ?? ''}',
                     textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                    //overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 //dentista
-                if (_sWidth > mediaQuerySm)
+                if (_sWidth > mediaQueryMd)
                   Expanded(
                     child: Text(
                       '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
                       textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
+                      // overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 //nome paciente
-                if (_sWidth > mediaQuerySm)
+                if (_sWidth > mediaQueryMd)
                   Expanded(
                     child: Text(
                       '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
                       textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
+                      //overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 //status relatório
-                Expanded(
-                  child: _relatorioStatusBtn(
-                    index,
-                    _sWidth,
-                    _sHeight,
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: _relatorioStatusBtn(
+                      index,
+                      _sWidth,
+                      _sHeight,
+                    ),
                   ),
-                ),
               ],
             )
           else if (_pedidosListStore.getDropdownValue() == 'Pedidos Alterados')
@@ -397,7 +404,7 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                       pedList[index]['updated_at'] ?? '',
                     ),
                     textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                    //overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 //código pedido
@@ -405,54 +412,56 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                   child: Text(
                     '${pedList[index]['codigo_pedido']}',
                     textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                    //overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 //nome paciente
-                if (_sWidth > mediaQuerySm)
+                if (_sWidth > mediaQueryMd)
                   Expanded(
                     child: Text(
                       '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
                       textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
+                      //overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 //status
-                Expanded(
-                  child: Text(
-                    '${pedList[index]['status_pedido'] != null && pedList[index]['status_pedido'].length > 0 ? pedList[index]['status_pedido']['status'] : '-'}',
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                //Data do pedido
                 if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: Text(
+                      '${pedList[index]['status_pedido'] != null && pedList[index]['status_pedido'].length > 0 ? pedList[index]['status_pedido']['status'] : '-'}',
+                      textAlign: TextAlign.center,
+                      //overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                //Data do pedido
+                if (_sWidth > mediaQueryMd)
                   Expanded(
                     child: Text(
                       _isoDateTimeToLocal(
                         pedList[index]['created_at'] ?? '',
                       ),
                       textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
+                      //overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 //dentista
-                if (_sWidth > mediaQuerySm)
+                if (_sWidth > mediaQueryMd)
                   Expanded(
                     child: Text(
                       '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
                       textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
+                      //overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 //status relatório
-                Expanded(
-                  child: _relatorioStatusBtn(
-                    index,
-                    _sWidth,
-                    _sHeight,
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: _relatorioStatusBtn(
+                      index,
+                      _sWidth,
+                      _sHeight,
+                    ),
                   ),
-                ),
               ],
             ),
         ],

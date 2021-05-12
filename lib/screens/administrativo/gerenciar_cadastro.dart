@@ -33,6 +33,8 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
   bool _blockPageBtns = true;
   bool _blockForwardBtn = true;
 
+  int mediaQuerySm = 576;
+
   void fetchDataHandler(bool value) {
     fetchData = value;
   }
@@ -122,20 +124,21 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
     );
   }
 
-  Widget _getHeaders() {
+  Widget _getHeaders(double width) {
     return Row(
       children: [
         const SizedBox(width: 20),
-        Expanded(
-          child: const Text(
-            'Data',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black54,
+        if (width > mediaQuerySm)
+          Expanded(
+            child: const Text(
+              'Data',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
             ),
           ),
-        ),
         Expanded(
           child: const Text(
             'Nome',
@@ -146,16 +149,17 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
             ),
           ),
         ),
-        Expanded(
-          child: const Text(
-            'CPF',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black54,
+        if (width > mediaQuerySm)
+          Expanded(
+            child: const Text(
+              'CPF',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
             ),
           ),
-        ),
         Expanded(
           child: Text(
             'Status',
@@ -233,7 +237,7 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
         showTrackOnHover: true,
         child: SingleChildScrollView(
           child: Container(
-            height: 1300,
+            height: 1430,
             padding: const EdgeInsets.symmetric(
               horizontal: 50,
             ),
@@ -268,7 +272,7 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
                         ),
                       ),
                       //TOP TEXT
-                      _getHeaders(),
+                      _getHeaders(sWidth),
                       const SizedBox(height: 20),
                       if (cadastroStore.getCadastros() == null)
                         Center(

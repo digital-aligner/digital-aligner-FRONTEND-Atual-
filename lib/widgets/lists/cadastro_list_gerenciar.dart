@@ -27,6 +27,8 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
 
   bool _absorbPointerBool = false;
 
+  int mediaQuerySm = 576;
+
   String _isoDateTimeToLocal(String isoDateString) {
     DateTime _dateTime = DateTime.parse(isoDateString).toLocal();
     String _formatedDate = DateFormat('dd/MM/yyyy - kk:mm').format(_dateTime);
@@ -45,34 +47,36 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
     return _formatedCpf;
   }
 
-  Widget _listItem(int index) {
+  Widget _listItem(int index, double width) {
     return Container(
       padding: const EdgeInsets.only(top: 25),
       child: Column(
         children: [
           Row(
             children: [
-              Expanded(
-                child: Text(
-                  _isoDateTimeToLocal(
-                    cadList[index]['created_at'],
+              if (width > mediaQuerySm)
+                Expanded(
+                  child: Text(
+                    _isoDateTimeToLocal(
+                      cadList[index]['created_at'],
+                    ),
+                    textAlign: TextAlign.center,
+                    //overflow: TextOverflow.ellipsis,
                   ),
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
               Expanded(
                 child: Text(
                   '${cadList[index]['nome'] + " " + cadList[index]['sobrenome']}',
                   textAlign: TextAlign.center,
                 ),
               ),
-              Expanded(
-                child: Text(
-                  _formatCpf(cadList[index]['username']),
-                  textAlign: TextAlign.center,
+              if (width > mediaQuerySm)
+                Expanded(
+                  child: Text(
+                    _formatCpf(cadList[index]['username']),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              ),
               Expanded(
                 child: Text(
                   '${cadList[index]['aprovacao_usuario']['status']}',
@@ -391,20 +395,20 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
   Future<dynamic> _dialog(BuildContext ctx, int index) async {
     _dialogOpen = true;
     return showDialog(
-      barrierDismissible: false, // user must tap button!
+      //barrierDismissible: false, // user must tap button!
       context: ctx,
       builder: (BuildContext ctx2) {
         return StatefulBuilder(
           builder: (context, setState) {
-            return AlertDialog(
-              title: Container(
-                width: 850,
-                height: 400,
-                child: Scrollbar(
-                  thickness: 15,
-                  isAlwaysShown: true,
-                  showTrackOnHover: true,
-                  child: SingleChildScrollView(
+            return Scrollbar(
+              thickness: 15,
+              isAlwaysShown: true,
+              showTrackOnHover: true,
+              child: SingleChildScrollView(
+                child: AlertDialog(
+                  title: Container(
+                    width: 850,
+                    height: 500,
                     child: Column(
                       children: [
                         Container(
@@ -422,218 +426,220 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                       ],
                     ),
                   ),
-                ),
-              ),
-              actions: [
-                Container(
-                  width: 220,
-                  height: 50,
-                  child: SwitchListTile(
-                      activeColor: Colors.blue,
-                      title: const Text('Cadista?'),
-                      value: cadList[index]['is_cadista'],
-                      onChanged: (bool value) {
-                        cadastroStore
-                            .sendCadistaState(cadList[index]['id'], value)
-                            .then((data) {
-                          if (!data.containsKey('error')) {
-                            ScaffoldMessenger.of(context)
-                                .removeCurrentSnackBar();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                duration: const Duration(seconds: 8),
-                                content: value
-                                    ? const Text(
-                                        'Acesso de cadista liberado!',
-                                      )
-                                    : const Text(
-                                        'Acesso de cadista removido!',
-                                      ),
-                              ),
-                            );
-                            Navigator.pop(context, true);
-                          } else {
-                            ScaffoldMessenger.of(context)
-                                .removeCurrentSnackBar();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                duration: const Duration(seconds: 8),
-                                content: Text('Algo deu errado'),
-                              ),
-                            );
-                          }
-                        });
-                      },
-                      secondary: const Icon(
-                        Icons.engineering,
-                      )),
-                ),
-                Container(
-                  width: 270,
-                  height: 50,
-                  child: SwitchListTile(
-                      activeColor: Colors.blue,
-                      title: const Text('Representante?'),
-                      value: cadList[index]['is_representante'],
-                      onChanged: (bool value) {
-                        cadastroStore
-                            .sendRepresentanteState(cadList[index]['id'], value)
-                            .then((data) {
-                          if (!data.containsKey('error')) {
-                            ScaffoldMessenger.of(context)
-                                .removeCurrentSnackBar();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                duration: const Duration(seconds: 8),
-                                content: value
-                                    ? const Text(
-                                        'Acesso de representante liberado!',
-                                      )
-                                    : const Text(
-                                        'Acesso de representante removido!',
-                                      ),
-                              ),
-                            );
-                            Navigator.pop(context, true);
-                          } else {
-                            ScaffoldMessenger.of(context)
-                                .removeCurrentSnackBar();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                duration: const Duration(seconds: 8),
-                                content: const Text('Algo deu errado'),
-                              ),
-                            );
-                          }
-                        });
-                      },
-                      secondary: const Icon(
-                        Icons.supervisor_account,
-                      )),
-                ),
-                Container(
-                  width: 270,
-                  height: 50,
-                  child: SwitchListTile(
-                      activeColor: Colors.blue,
-                      title: const Text('Revisor?'),
-                      value: cadList[index]['is_revisor'] ?? false,
-                      onChanged: (bool value) {
-                        cadastroStore
-                            .sendRevisorState(cadList[index]['id'], value)
-                            .then((data) {
-                          if (!data.containsKey('error')) {
-                            ScaffoldMessenger.of(context)
-                                .removeCurrentSnackBar();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                duration: const Duration(seconds: 8),
-                                content: value
-                                    ? const Text(
-                                        'Acesso de revisor liberado!',
-                                      )
-                                    : const Text(
-                                        'Acesso de revisor removido!',
-                                      ),
-                              ),
-                            );
-                            Navigator.pop(context, true);
-                          } else {
-                            ScaffoldMessenger.of(context)
-                                .removeCurrentSnackBar();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                duration: const Duration(seconds: 8),
-                                content: const Text('Algo deu errado'),
-                              ),
-                            );
-                          }
-                        });
-                      },
-                      secondary: const Icon(
-                        Icons.supervisor_account,
-                      )),
-                ),
-                TextButton(
-                  child: !_sendingCadastro
-                      ? const Text("Aprovar")
-                      : CircularProgressIndicator(
-                          valueColor: new AlwaysStoppedAnimation<Color>(
-                            Colors.blue,
-                          ),
-                        ),
-                  onPressed: !_sendingCadastro
-                      ? () {
-                          setState(() {
-                            _sendingCadastro = true;
-                          });
-                          cadastroStore
-                              .aprovarCadastro(cadList[index]['id'])
-                              .then((data) {
-                            if (!data.containsKey('error')) {
-                              ScaffoldMessenger.of(context)
-                                  .removeCurrentSnackBar();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  duration: const Duration(seconds: 8),
-                                  content: Text('Cadastro aprovado!'),
-                                ),
-                              );
-                              Navigator.pop(context, true);
-                            } else {
-                              ScaffoldMessenger.of(context)
-                                  .removeCurrentSnackBar();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  duration: const Duration(seconds: 8),
-                                  content: Text('Algo deu errado'),
-                                ),
-                              );
-                            }
-                            setState(() {
-                              _sendingCadastro = false;
+                  actions: [
+                    Container(
+                      width: 220,
+                      height: 50,
+                      child: SwitchListTile(
+                          activeColor: Colors.blue,
+                          title: const Text('Cadista?'),
+                          value: cadList[index]['is_cadista'],
+                          onChanged: (bool value) {
+                            cadastroStore
+                                .sendCadistaState(cadList[index]['id'], value)
+                                .then((data) {
+                              if (!data.containsKey('error')) {
+                                ScaffoldMessenger.of(context)
+                                    .removeCurrentSnackBar();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    duration: const Duration(seconds: 8),
+                                    content: value
+                                        ? const Text(
+                                            'Acesso de cadista liberado!',
+                                          )
+                                        : const Text(
+                                            'Acesso de cadista removido!',
+                                          ),
+                                  ),
+                                );
+                                Navigator.pop(context, true);
+                              } else {
+                                ScaffoldMessenger.of(context)
+                                    .removeCurrentSnackBar();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    duration: const Duration(seconds: 8),
+                                    content: Text('Algo deu errado'),
+                                  ),
+                                );
+                              }
                             });
-                          });
-                        }
-                      : null,
-                ),
-                TextButton(
-                  child: !_sendingCadastro
-                      ? Text("Editar")
-                      : CircularProgressIndicator(
-                          valueColor: new AlwaysStoppedAnimation<Color>(
-                            Colors.blue,
-                          ),
-                        ),
-                  onPressed: !_sendingCadastro
-                      ? () {
-                          cadastroStore.setSelectedCad(index);
-
-                          Navigator.of(context)
-                              .pushNamed(
-                            EditarCadastro.routeName,
-                          )
-                              .then((didUpdate) {
-                            if (didUpdate) {
-                              _dialogOpen = false;
-                              Future.delayed(Duration(milliseconds: 800), () {
-                                widget.fetchDataHandler(true);
-                                _absorbPointerBool = false;
-                                cadastroStore.clearCadastrosAndUpdate();
+                          },
+                          secondary: const Icon(
+                            Icons.engineering,
+                          )),
+                    ),
+                    Container(
+                      width: 270,
+                      height: 50,
+                      child: SwitchListTile(
+                          activeColor: Colors.blue,
+                          title: const Text('Representante?'),
+                          value: cadList[index]['is_representante'],
+                          onChanged: (bool value) {
+                            cadastroStore
+                                .sendRepresentanteState(
+                                    cadList[index]['id'], value)
+                                .then((data) {
+                              if (!data.containsKey('error')) {
+                                ScaffoldMessenger.of(context)
+                                    .removeCurrentSnackBar();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    duration: const Duration(seconds: 8),
+                                    content: value
+                                        ? const Text(
+                                            'Acesso de representante liberado!',
+                                          )
+                                        : const Text(
+                                            'Acesso de representante removido!',
+                                          ),
+                                  ),
+                                );
+                                Navigator.pop(context, true);
+                              } else {
+                                ScaffoldMessenger.of(context)
+                                    .removeCurrentSnackBar();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    duration: const Duration(seconds: 8),
+                                    content: const Text('Algo deu errado'),
+                                  ),
+                                );
+                              }
+                            });
+                          },
+                          secondary: const Icon(
+                            Icons.supervisor_account,
+                          )),
+                    ),
+                    Container(
+                      width: 270,
+                      height: 50,
+                      child: SwitchListTile(
+                          activeColor: Colors.blue,
+                          title: const Text('Revisor?'),
+                          value: cadList[index]['is_revisor'] ?? false,
+                          onChanged: (bool value) {
+                            cadastroStore
+                                .sendRevisorState(cadList[index]['id'], value)
+                                .then((data) {
+                              if (!data.containsKey('error')) {
+                                ScaffoldMessenger.of(context)
+                                    .removeCurrentSnackBar();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    duration: const Duration(seconds: 8),
+                                    content: value
+                                        ? const Text(
+                                            'Acesso de revisor liberado!',
+                                          )
+                                        : const Text(
+                                            'Acesso de revisor removido!',
+                                          ),
+                                  ),
+                                );
+                                Navigator.pop(context, true);
+                              } else {
+                                ScaffoldMessenger.of(context)
+                                    .removeCurrentSnackBar();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    duration: const Duration(seconds: 8),
+                                    content: const Text('Algo deu errado'),
+                                  ),
+                                );
+                              }
+                            });
+                          },
+                          secondary: const Icon(
+                            Icons.supervisor_account,
+                          )),
+                    ),
+                    TextButton(
+                      child: !_sendingCadastro
+                          ? const Text("Aprovar")
+                          : CircularProgressIndicator(
+                              valueColor: new AlwaysStoppedAnimation<Color>(
+                                Colors.blue,
+                              ),
+                            ),
+                      onPressed: !_sendingCadastro
+                          ? () {
+                              setState(() {
+                                _sendingCadastro = true;
+                              });
+                              cadastroStore
+                                  .aprovarCadastro(cadList[index]['id'])
+                                  .then((data) {
+                                if (!data.containsKey('error')) {
+                                  ScaffoldMessenger.of(context)
+                                      .removeCurrentSnackBar();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      duration: const Duration(seconds: 8),
+                                      content: Text('Cadastro aprovado!'),
+                                    ),
+                                  );
+                                  Navigator.pop(context, true);
+                                } else {
+                                  ScaffoldMessenger.of(context)
+                                      .removeCurrentSnackBar();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      duration: const Duration(seconds: 8),
+                                      content: Text('Algo deu errado'),
+                                    ),
+                                  );
+                                }
+                                setState(() {
+                                  _sendingCadastro = false;
+                                });
                               });
                             }
-                          });
-                        }
-                      : null,
+                          : null,
+                    ),
+                    TextButton(
+                      child: !_sendingCadastro
+                          ? Text("Editar")
+                          : CircularProgressIndicator(
+                              valueColor: new AlwaysStoppedAnimation<Color>(
+                                Colors.blue,
+                              ),
+                            ),
+                      onPressed: !_sendingCadastro
+                          ? () {
+                              cadastroStore.setSelectedCad(index);
+
+                              Navigator.of(context)
+                                  .pushNamed(
+                                EditarCadastro.routeName,
+                              )
+                                  .then((didUpdate) {
+                                if (didUpdate) {
+                                  _dialogOpen = false;
+                                  Future.delayed(Duration(milliseconds: 800),
+                                      () {
+                                    widget.fetchDataHandler(true);
+                                    _absorbPointerBool = false;
+                                    cadastroStore.clearCadastrosAndUpdate();
+                                  });
+                                }
+                              });
+                            }
+                          : null,
+                    ),
+                    TextButton(child: Text("Excluir"), onPressed: null),
+                    TextButton(
+                      child: Text("Fechar"),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
                 ),
-                TextButton(child: Text("Excluir"), onPressed: null),
-                TextButton(
-                  child: Text("Fechar"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
+              ),
             );
           },
         );
@@ -643,6 +649,8 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+
     //For direct url access
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (Navigator.canPop(context) && !_dialogOpen) {
@@ -691,7 +699,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                       },
                       title: Tooltip(
                         message: 'Altere seu cadastro pelo perfil',
-                        child: _listItem(index),
+                        child: _listItem(index, width),
                       ),
                     ),
                   ),
@@ -731,7 +739,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                       },
                       title: Tooltip(
                         message: 'Visualizar e editar cadastro',
-                        child: _listItem(index),
+                        child: _listItem(index, width),
                       ),
                     ),
                   ),
