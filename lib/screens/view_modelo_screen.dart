@@ -55,7 +55,7 @@ class _ViewModeloScreenState extends State<ViewModeloScreen> {
                 isMarkdown: false, // Use markdown syntax
                 convertToWidgets: false, // Try to convert to flutter widgets
                 onLoaded: () => null,
-                width: 800,
+                width: MediaQuery.of(context).size.width,
                 height: 500,
               ),
             ),
