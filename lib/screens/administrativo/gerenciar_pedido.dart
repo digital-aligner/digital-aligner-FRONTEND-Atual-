@@ -691,9 +691,13 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                             fetchDataHandler: fetchDataHandler,
                           ),
                         ),
-                      const SizedBox(height: 100),
-                      Row(
+
+                      Flex(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        direction: sWidth > mediaQuerySm
+                            ? Axis.horizontal
+                            : Axis.vertical,
                         children: [
                           ElevatedButton.icon(
                             onPressed: _startPage <= 0 || _blockPageBtns
@@ -716,7 +720,10 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                             icon: const Icon(Icons.arrow_back),
                             label: const Text('Anterior'),
                           ),
-                          const SizedBox(width: 200),
+                          if (sWidth > mediaQuerySm)
+                            const SizedBox(width: 200)
+                          else
+                            const SizedBox(height: 20),
                           ElevatedButton.icon(
                             onPressed: _blockPageBtns || _blockForwardBtn
                                 ? null

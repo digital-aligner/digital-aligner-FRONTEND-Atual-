@@ -39,6 +39,8 @@ class _MeusPacientesState extends State<MeusPacientes> {
   bool _blockPageBtns = true;
   bool _blockForwardBtn = true;
 
+  int mediaQueryMd = 768;
+
   @override
   void deactivate() {
     _pacientesListStore.clearPacientes();
@@ -170,7 +172,7 @@ class _MeusPacientesState extends State<MeusPacientes> {
         showTrackOnHover: true,
         child: SingleChildScrollView(
           child: Container(
-            height: 1350,
+            height: 1430,
             padding: const EdgeInsets.symmetric(
               horizontal: 50,
             ),
@@ -222,7 +224,6 @@ class _MeusPacientesState extends State<MeusPacientes> {
                   Expanded(
                     child: MeusPacientesList(),
                   ),
-                const SizedBox(height: 100),
                 Flex(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -251,9 +252,9 @@ class _MeusPacientesState extends State<MeusPacientes> {
                       label: const Text('Anterior'),
                     ),
                     if (sWidth > mediaQuerySm)
-                      SizedBox(width: 200)
+                      const SizedBox(width: 200)
                     else
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                     ElevatedButton.icon(
                       onPressed: _blockPageBtns || _blockForwardBtn
                           ? null

@@ -41,6 +41,9 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
   bool _blockPageBtns = true;
   bool _blockForwardBtn = true;
 
+  int mediaQuerySm = 576;
+  int mediaQueryMd = 768;
+
   @override
   void dispose() {
     _pacientesListStore.clearPacientes();
@@ -58,7 +61,7 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
     _pacientesListStore.clearPacientesAndUpdate();
   }
 
-  Widget _getHeaders() {
+  Widget _getHeaders(double width) {
     return Row(
       children: [
         const SizedBox(width: 20),
@@ -70,20 +73,21 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
               fontWeight: FontWeight.bold,
               color: Colors.black54,
             ),
-            overflow: TextOverflow.ellipsis,
+            //overflow: TextOverflow.ellipsis,
           ),
         ),
-        Expanded(
-          child: Text(
-            'Histórico recente',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black54,
+        if (width > mediaQuerySm)
+          Expanded(
+            child: Text(
+              'Histórico recente',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+              //overflow: TextOverflow.ellipsis,
             ),
-            overflow: TextOverflow.ellipsis,
           ),
-        ),
         Expanded(
           child: Text(
             'Nome Paciente',
@@ -92,10 +96,10 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
               fontWeight: FontWeight.bold,
               color: Colors.black54,
             ),
-            overflow: TextOverflow.ellipsis,
+            //overflow: TextOverflow.ellipsis,
           ),
         ),
-        SizedBox(width: 20),
+        const SizedBox(width: 20),
       ],
     );
   }
@@ -227,7 +231,7 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
                   ),
                 ),
                 //TOP TEXT
-                _getHeaders(),
+                _getHeaders(sWidth),
                 const SizedBox(height: 20),
                 if (_pacientesListStore.getPacientesList() == null)
                   Center(
@@ -250,9 +254,12 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
                   Expanded(
                     child: MeusPacientesList(),
                   ),
-                const SizedBox(height: 100),
-                Row(
+
+                Flex(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  direction:
+                      sWidth > mediaQuerySm ? Axis.horizontal : Axis.vertical,
                   children: [
                     ElevatedButton.icon(
                       onPressed: _startPage <= 0 || _blockPageBtns
@@ -275,7 +282,10 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
                       icon: const Icon(Icons.arrow_back),
                       label: const Text('Anterior'),
                     ),
-                    const SizedBox(width: 200),
+                    if (sWidth > mediaQuerySm)
+                      const SizedBox(width: 200)
+                    else
+                      const SizedBox(height: 20),
                     ElevatedButton.icon(
                       onPressed: _blockPageBtns || _blockForwardBtn
                           ? null

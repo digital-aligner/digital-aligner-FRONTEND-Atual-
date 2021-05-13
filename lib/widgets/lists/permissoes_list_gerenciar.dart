@@ -30,6 +30,9 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
 
   bool _absorbPointerBool = false;
 
+  int mediaQuerySm = 576;
+  int mediaQueryMd = 768;
+
   Future<dynamic> mudarPermissao(int _id, int _idPerm, String _token) async {
     String url = RotasUrl.rotaCadastro + _id.toString();
 
@@ -379,21 +382,160 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
     );
   }
 
-  Future<dynamic> _dialog(BuildContext ctx, int index) async {
+  Future<dynamic> _dialog(
+    BuildContext ctx,
+    int index,
+    double height,
+    double width,
+  ) async {
     return showDialog(
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: true, // user must tap button!
       context: ctx,
       builder: (BuildContext ctx2) {
         return StatefulBuilder(
           builder: (context, setState) {
-            return AlertDialog(
-              title: Container(
-                width: 600,
-                height: 400,
-                child: Scrollbar(
-                  thickness: 15,
-                  isAlwaysShown: true,
-                  showTrackOnHover: true,
+            if (width < mediaQueryMd || height < 500)
+              return Scrollbar(
+                thickness: 15,
+                isAlwaysShown: true,
+                showTrackOnHover: true,
+                child: SingleChildScrollView(
+                  child: AlertDialog(
+                    title: Container(
+                      width: 600,
+                      height: 500,
+                      child: Column(
+                        children: [
+                          Container(
+                            child: Text(
+                              '${cadList[index]['nome'] + ' ' + cadList[index]['sobrenome']}' ??
+                                  '',
+                              style: TextStyle(
+                                fontSize: 35,
+                                color: Colors.black54,
+                              ),
+                            ),
+                          ),
+                          const Divider(thickness: 1),
+                          _ui(index),
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        child: Text("Adm"),
+                        onPressed: () {
+                          mudarPermissao(
+                            cadList[index]['id'],
+                            4,
+                            authStore.token,
+                          ).then((data) {
+                            if (data.containsKey('error')) {
+                              ScaffoldMessenger.of(context)
+                                  .removeCurrentSnackBar();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: const Duration(seconds: 8),
+                                  content: const Text(
+                                    'Erro ao mudar permissão.',
+                                  ),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context)
+                                  .removeCurrentSnackBar();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: const Duration(seconds: 8),
+                                  content: Text('Permissão alterada!'),
+                                ),
+                              );
+                              Navigator.of(ctx).pop(true);
+                            }
+                          });
+                        },
+                      ),
+                      TextButton(
+                        child: Text("Gerente"),
+                        onPressed: () {
+                          mudarPermissao(
+                            cadList[index]['id'],
+                            3,
+                            authStore.token,
+                          ).then((data) {
+                            if (data.containsKey('error')) {
+                              ScaffoldMessenger.of(context)
+                                  .removeCurrentSnackBar();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: const Duration(seconds: 8),
+                                  content: const Text(
+                                    'Erro ao mudar permissão.',
+                                  ),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context)
+                                  .removeCurrentSnackBar();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: const Duration(seconds: 8),
+                                  content: Text('Permissão alterada!'),
+                                ),
+                              );
+                              Navigator.of(ctx).pop(true);
+                            }
+                          });
+                        },
+                      ),
+                      TextButton(
+                        child: Text("Credenciado"),
+                        onPressed: () {
+                          mudarPermissao(
+                            cadList[index]['id'],
+                            1,
+                            authStore.token,
+                          ).then((data) {
+                            if (data.containsKey('error')) {
+                              ScaffoldMessenger.of(context)
+                                  .removeCurrentSnackBar();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: const Duration(seconds: 8),
+                                  content: const Text(
+                                    'Erro ao mudar permissão.',
+                                  ),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context)
+                                  .removeCurrentSnackBar();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: const Duration(seconds: 8),
+                                  content: Text('Permissão alterada!'),
+                                ),
+                              );
+                              Navigator.of(ctx).pop(true);
+                            }
+                          });
+                        },
+                      ),
+                      TextButton(
+                        child: Text("Fechar"),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            else
+              return AlertDialog(
+                title: Container(
+                  width: 600,
+                  height: 400,
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
@@ -413,140 +555,140 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
                     ),
                   ),
                 ),
-              ),
-              actions: [
-                TextButton(
-                  child: Text("Adm"),
-                  onPressed: () {
-                    mudarPermissao(
-                      cadList[index]['id'],
-                      4,
-                      authStore.token,
-                    ).then((data) {
-                      if (data.containsKey('error')) {
-                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            duration: const Duration(seconds: 8),
-                            content: const Text(
-                              'Erro ao mudar permissão.',
+                actions: [
+                  TextButton(
+                    child: Text("Adm"),
+                    onPressed: () {
+                      mudarPermissao(
+                        cadList[index]['id'],
+                        4,
+                        authStore.token,
+                      ).then((data) {
+                        if (data.containsKey('error')) {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 8),
+                              content: const Text(
+                                'Erro ao mudar permissão.',
+                              ),
                             ),
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            duration: const Duration(seconds: 8),
-                            content: Text('Permissão alterada!'),
-                          ),
-                        );
-                        Navigator.of(ctx).pop(true);
-                      }
-                    });
-                  },
-                ),
-                TextButton(
-                  child: Text("Gerente"),
-                  onPressed: () {
-                    mudarPermissao(
-                      cadList[index]['id'],
-                      3,
-                      authStore.token,
-                    ).then((data) {
-                      if (data.containsKey('error')) {
-                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            duration: const Duration(seconds: 8),
-                            content: const Text(
-                              'Erro ao mudar permissão.',
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 8),
+                              content: Text('Permissão alterada!'),
                             ),
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            duration: const Duration(seconds: 8),
-                            content: Text('Permissão alterada!'),
-                          ),
-                        );
-                        Navigator.of(ctx).pop(true);
-                      }
-                    });
-                  },
-                ),
-                TextButton(
-                  child: Text("Credenciado"),
-                  onPressed: () {
-                    mudarPermissao(
-                      cadList[index]['id'],
-                      1,
-                      authStore.token,
-                    ).then((data) {
-                      if (data.containsKey('error')) {
-                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            duration: const Duration(seconds: 8),
-                            content: const Text(
-                              'Erro ao mudar permissão.',
+                          );
+                          Navigator.of(ctx).pop(true);
+                        }
+                      });
+                    },
+                  ),
+                  TextButton(
+                    child: Text("Gerente"),
+                    onPressed: () {
+                      mudarPermissao(
+                        cadList[index]['id'],
+                        3,
+                        authStore.token,
+                      ).then((data) {
+                        if (data.containsKey('error')) {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 8),
+                              content: const Text(
+                                'Erro ao mudar permissão.',
+                              ),
                             ),
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            duration: const Duration(seconds: 8),
-                            content: Text('Permissão alterada!'),
-                          ),
-                        );
-                        Navigator.of(ctx).pop(true);
-                      }
-                    });
-                  },
-                ),
-                TextButton(
-                  child: Text("Fechar"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 8),
+                              content: Text('Permissão alterada!'),
+                            ),
+                          );
+                          Navigator.of(ctx).pop(true);
+                        }
+                      });
+                    },
+                  ),
+                  TextButton(
+                    child: Text("Credenciado"),
+                    onPressed: () {
+                      mudarPermissao(
+                        cadList[index]['id'],
+                        1,
+                        authStore.token,
+                      ).then((data) {
+                        if (data.containsKey('error')) {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 8),
+                              content: const Text(
+                                'Erro ao mudar permissão.',
+                              ),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 8),
+                              content: Text('Permissão alterada!'),
+                            ),
+                          );
+                          Navigator.of(ctx).pop(true);
+                        }
+                      });
+                    },
+                  ),
+                  TextButton(
+                    child: Text("Fechar"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
           },
         );
       },
     );
   }
 
-  Widget _listItem(int index) {
+  Widget _listItem(int index, double width) {
     return Container(
-      padding: const EdgeInsets.only(top: 25),
       child: Column(
         children: [
           Row(
             children: [
-              Expanded(
-                child: Text(
-                  _isoDateTimeToLocal(cadList[index]['created_at']),
-                  textAlign: TextAlign.center,
+              if (width > mediaQuerySm)
+                Expanded(
+                  child: Text(
+                    _isoDateTimeToLocal(cadList[index]['created_at']),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              ),
               Expanded(
                 child: Text(
                   '${cadList[index]['nome'] + " " + cadList[index]['sobrenome']}',
                   textAlign: TextAlign.center,
                 ),
               ),
-              Expanded(
-                child: Text(
-                  _formatCpf(cadList[index]['username']),
-                  textAlign: TextAlign.center,
+              if (width > mediaQuerySm)
+                Expanded(
+                  child: Text(
+                    _formatCpf(cadList[index]['username']),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              ),
               Expanded(
                 child: Text(
                   '${cadList[index]['role']['name']}',
@@ -565,6 +707,8 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
     cadastroStore = Provider.of<CadastroProvider>(context);
     cadList = cadastroStore.getCadastros();
     authStore = Provider.of<AuthProvider>(context);
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
 
     if (cadList == null) {
       return Container(
@@ -605,7 +749,7 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
                       },
                       title: Tooltip(
                         message: 'Você não pode alterar suas permissões',
-                        child: _listItem(index),
+                        child: _listItem(index, width),
                       ),
                     ),
                   ),
@@ -629,7 +773,7 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
                       setState(() {
                         _absorbPointerBool = true;
                       });
-                      _dialog(ctx, index).then((didUpdate) {
+                      _dialog(ctx, index, height, width).then((didUpdate) {
                         if (didUpdate == null) {
                           setState(() {
                             _absorbPointerBool = false;
@@ -646,7 +790,7 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
                     },
                     title: Tooltip(
                         message: 'Alterar permissões de usuários',
-                        child: _listItem(index)),
+                        child: _listItem(index, width)),
                   ),
                 ),
               ],

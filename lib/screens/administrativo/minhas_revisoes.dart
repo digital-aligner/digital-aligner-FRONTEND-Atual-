@@ -35,6 +35,9 @@ class _MinhasRevisoesState extends State<MinhasRevisoes> {
   bool _blockPageBtns = true;
   bool _blockForwardBtn = true;
 
+  int mediaQuerySm = 576;
+  int mediaQueryMd = 768;
+
   @override
   void dispose() {
     _searchField.dispose();
@@ -59,23 +62,24 @@ class _MinhasRevisoesState extends State<MinhasRevisoes> {
     fetchData = value;
   }
 
-  Widget _getHeaders() {
+  Widget _getHeaders(double sWidth) {
     //Will be used to check and change ui based on search
     if (_pedidosListStore.getDropdownValue() == 'Todos') {
       return Row(
         children: [
-          SizedBox(width: 20),
-          Expanded(
-            child: Text(
-              'Data',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          const SizedBox(width: 20),
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: Text(
+                'Data',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                //overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           Expanded(
             child: Text(
               'Pedido',
@@ -84,20 +88,21 @@ class _MinhasRevisoesState extends State<MinhasRevisoes> {
                 fontWeight: FontWeight.bold,
                 color: Colors.black54,
               ),
-              overflow: TextOverflow.ellipsis,
+              //overflow: TextOverflow.ellipsis,
             ),
           ),
-          Expanded(
-            child: const Text(
-              'Paciente',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQueryMd)
+            Expanded(
+              child: const Text(
+                'Paciente',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                //overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           Expanded(
             child: const Text(
               'Status',
@@ -106,31 +111,33 @@ class _MinhasRevisoesState extends State<MinhasRevisoes> {
                 fontWeight: FontWeight.bold,
                 color: Colors.black54,
               ),
-              overflow: TextOverflow.ellipsis,
+              //overflow: TextOverflow.ellipsis,
             ),
           ),
-          Expanded(
-            child: const Text(
-              'Responsável',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQueryMd)
+            Expanded(
+              child: const Text(
+                'Responsável',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                //overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
-          Expanded(
-            child: const Text(
-              'Opções',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: const Text(
+                'Opções',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                //overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
           const SizedBox(width: 20),
         ],
       );
@@ -348,7 +355,7 @@ class _MinhasRevisoesState extends State<MinhasRevisoes> {
         showTrackOnHover: true,
         child: SingleChildScrollView(
           child: Container(
-            height: 1300,
+            height: 1430,
             padding: const EdgeInsets.symmetric(
               horizontal: 50,
             ),
@@ -383,7 +390,7 @@ class _MinhasRevisoesState extends State<MinhasRevisoes> {
                         ),
                       ),
                       //TOP TEXT
-                      _getHeaders(),
+                      _getHeaders(sWidth),
                       const SizedBox(height: 20),
                       if (_pedidosListStore.getPedidosList() == null)
                         Center(
@@ -407,9 +414,13 @@ class _MinhasRevisoesState extends State<MinhasRevisoes> {
                             fetchDataHandler: fetchDataHandler,
                           ),
                         ),
-                      const SizedBox(height: 100),
-                      Row(
+
+                      Flex(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        direction: sWidth > mediaQuerySm
+                            ? Axis.horizontal
+                            : Axis.vertical,
                         children: [
                           ElevatedButton.icon(
                             onPressed: _startPage <= 0 || _blockPageBtns
@@ -432,7 +443,10 @@ class _MinhasRevisoesState extends State<MinhasRevisoes> {
                             icon: const Icon(Icons.arrow_back),
                             label: const Text('Anterior'),
                           ),
-                          const SizedBox(width: 200),
+                          if (sWidth > mediaQuerySm)
+                            const SizedBox(width: 200)
+                          else
+                            const SizedBox(height: 20),
                           ElevatedButton.icon(
                             onPressed: _blockPageBtns || _blockForwardBtn
                                 ? null

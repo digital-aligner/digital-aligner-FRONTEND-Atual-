@@ -35,6 +35,9 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
   bool _blockPageBtns = true;
   bool _blockForwardBtn = true;
 
+  int mediaQuerySm = 576;
+  int mediaQueryMd = 768;
+
   void fetchDataHandler(bool value) {
     fetchData = value;
   }
@@ -59,68 +62,75 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
     cadastroStore.clearCadastrosAndUpdate();
   }
 
-  Widget _searchBox() {
-    return Row(
-      children: [
-        DropdownButton<String>(
-          value: cadastroStore.getPermDropdownValue(),
-          icon: const Icon(Icons.arrow_downward_outlined),
-          iconSize: 24,
-          elevation: 16,
-          style: const TextStyle(color: Colors.deepPurple),
-          underline: Container(
-            height: 0,
-            color: Colors.deepPurpleAccent,
-          ),
-          onChanged: (String newValue) {
-            setState(() {
-              //page to 0 before fetch
-              _startPage = 0;
-              cadastroStore.setPermDropdownValue(newValue);
-              _searchField.text = '';
-              cadastroStore.setQuery('');
-            });
-            //fetchData before set state (fixes not updating bug)
-            fetchData = true;
-            cadastroStore.clearCadastrosAndUpdate();
-          },
-          items: <String>[
-            'Todos',
-            'Administrador',
-            'Gerente',
-            'Credenciado',
-          ].map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-        ),
-        const SizedBox(width: 20),
-        Expanded(
-          child: TextField(
-            decoration: InputDecoration(
-              hintText: 'Nome ou CPF do usuário.',
+  Widget _searchBox(double width) {
+    return Container(
+      height: 120,
+      width: width,
+      child: Flex(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        direction: width > 800 ? Axis.horizontal : Axis.vertical,
+        children: [
+          DropdownButton<String>(
+            value: cadastroStore.getPermDropdownValue(),
+            icon: const Icon(Icons.arrow_downward_outlined),
+            iconSize: 24,
+            elevation: 16,
+            style: const TextStyle(color: Colors.deepPurple),
+            underline: Container(
+              height: 0,
+              color: Colors.deepPurpleAccent,
             ),
-            controller: _searchField,
-            onChanged: (value) {
-              //page to 0 before fetch
-              _startPage = 0;
+            onChanged: (String newValue) {
+              setState(() {
+                //page to 0 before fetch
+                _startPage = 0;
+                cadastroStore.setPermDropdownValue(newValue);
+                _searchField.text = '';
+                cadastroStore.setQuery('');
+              });
+              //fetchData before set state (fixes not updating bug)
               fetchData = true;
-              const duration = Duration(milliseconds: 500);
-              if (searchOnStoppedTyping != null) {
-                setState(() => searchOnStoppedTyping.cancel());
-              }
-              setState(
-                () => searchOnStoppedTyping = new Timer(
-                  duration,
-                  () => _searchBoxQuery(value),
-                ),
-              );
+              cadastroStore.clearCadastrosAndUpdate();
             },
+            items: <String>[
+              'Todos',
+              'Administrador',
+              'Gerente',
+              'Credenciado',
+            ].map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
           ),
-        ),
-      ],
+          const SizedBox(width: 20, height: 20),
+          Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Nome ou CPF do usuário.',
+              ),
+              controller: _searchField,
+              onChanged: (value) {
+                //page to 0 before fetch
+                _startPage = 0;
+                fetchData = true;
+                const duration = Duration(milliseconds: 500);
+                if (searchOnStoppedTyping != null) {
+                  setState(() => searchOnStoppedTyping.cancel());
+                }
+                setState(
+                  () => searchOnStoppedTyping = new Timer(
+                    duration,
+                    () => _searchBoxQuery(value),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -129,20 +139,21 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
     cadastroStore.clearCadastrosAndUpdate();
   }
 
-  Widget _getHeaders() {
+  Widget _getHeaders(double width) {
     return Row(
       children: [
         const SizedBox(width: 20),
-        Expanded(
-          child: const Text(
-            'Data',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black54,
+        if (width > mediaQuerySm)
+          Expanded(
+            child: const Text(
+              'Data',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
             ),
           ),
-        ),
         Expanded(
           child: const Text(
             'Nome',
@@ -153,16 +164,17 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
             ),
           ),
         ),
-        Expanded(
-          child: const Text(
-            'CPF',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black54,
+        if (width > mediaQuerySm)
+          Expanded(
+            child: const Text(
+              'CPF',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
             ),
           ),
-        ),
         Expanded(
           child: Text(
             'Status',
@@ -237,7 +249,7 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
         showTrackOnHover: true,
         child: SingleChildScrollView(
           child: Container(
-            height: 1300,
+            height: 1430,
             padding: const EdgeInsets.symmetric(
               horizontal: 50,
             ),
@@ -264,7 +276,7 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
                         icon: Icon(Icons.refresh),
                       ),
                       const SizedBox(height: 40),
-                      _searchBox(),
+                      _searchBox(sWidth),
                       const SizedBox(
                         height: 50,
                         child: const Divider(
@@ -272,7 +284,7 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
                         ),
                       ),
                       //TOP TEXT
-                      _getHeaders(),
+                      _getHeaders(sWidth),
                       const SizedBox(height: 20),
                       if (cadastroStore.getCadastros() == null)
                         Center(
@@ -296,9 +308,12 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
                             fetchDataHandler: fetchDataHandler,
                           ),
                         ),
-                      const SizedBox(height: 100),
-                      Row(
+                      Flex(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        direction: sWidth > mediaQuerySm
+                            ? Axis.horizontal
+                            : Axis.vertical,
                         children: [
                           ElevatedButton.icon(
                             onPressed: _startPage <= 0 || _blockPageBtns
@@ -321,7 +336,10 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
                             icon: const Icon(Icons.arrow_back),
                             label: const Text('Anterior'),
                           ),
-                          const SizedBox(width: 200),
+                          if (sWidth > mediaQuerySm)
+                            const SizedBox(width: 200)
+                          else
+                            const SizedBox(height: 20),
                           ElevatedButton.icon(
                             onPressed: _blockPageBtns || _blockForwardBtn
                                 ? null

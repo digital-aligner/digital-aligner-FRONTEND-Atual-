@@ -27,6 +27,9 @@ class _MeusRefinamentosListState extends State<MeusRefinamentosList> {
 
   bool _absorbPointerBool = false;
 
+  int mediaQuerySm = 576;
+  int mediaQueryMd = 768;
+
   Widget _relatorioStatusBtn(int index, double _sWidth, double _sHeight) {
     if (pedList[index]['relatorios'].length == 0) {
       return Container(
@@ -86,29 +89,31 @@ class _MeusRefinamentosListState extends State<MeusRefinamentosList> {
         children: <Widget>[
           Row(
             children: [
-              Expanded(
-                child: Text(
-                  _isoDateTimeToLocal(
-                    pedList[index]['created_at'],
+              if (_sWidth > mediaQuerySm)
+                Expanded(
+                  child: Text(
+                    _isoDateTimeToLocal(
+                      pedList[index]['created_at'],
+                    ),
+                    textAlign: TextAlign.center,
+                    //overflow: TextOverflow.ellipsis,
                   ),
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
               Expanded(
                 child: Text(
                   '${pedList[index]['codigo_pedido']}',
                   textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              Expanded(
-                child: Text(
-                  '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
-                  textAlign: TextAlign.center,
                   //overflow: TextOverflow.ellipsis,
                 ),
               ),
+              if (_sWidth > mediaQueryMd)
+                Expanded(
+                  child: Text(
+                    '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
+                    textAlign: TextAlign.center,
+                    //overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               if (authStore.role != 'Credenciado')
                 Expanded(
                   child: Text(
@@ -125,13 +130,14 @@ class _MeusRefinamentosListState extends State<MeusRefinamentosList> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ), */
-              Expanded(
-                child: _relatorioStatusBtn(
-                  index,
-                  _sWidth,
-                  _sHeight,
+              if (authStore.role == 'Credenciado' && _sWidth > mediaQuerySm)
+                Expanded(
+                  child: _relatorioStatusBtn(
+                    index,
+                    _sWidth,
+                    _sHeight,
+                  ),
                 ),
-              ),
             ],
           ),
         ],

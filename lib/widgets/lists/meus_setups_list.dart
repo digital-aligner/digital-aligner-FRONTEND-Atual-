@@ -31,6 +31,9 @@ class _MeusSetupsListState extends State<MeusSetupsList> {
 
   bool _absorbPointerBool = false;
 
+  int mediaQuerySm = 576;
+  int mediaQueryMd = 768;
+
   Widget _relatorioStatusBtn(int index, double _sWidth, double _sHeight) {
     if (pedList[index]['relatorios'].length == 0) {
       return Container(
@@ -129,29 +132,31 @@ class _MeusSetupsListState extends State<MeusSetupsList> {
           if (_pedidosListStore.getDropdownValue() == 'Todos')
             Row(
               children: [
-                Expanded(
-                  child: Text(
-                    _isoDateTimeToLocal(
-                      pedList[index]['created_at'],
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: Text(
+                      _isoDateTimeToLocal(
+                        pedList[index]['created_at'],
+                      ),
+                      textAlign: TextAlign.center,
+                      //overflow: TextOverflow.ellipsis,
                     ),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
                 Expanded(
                   child: Text(
                     '${pedList[index]['codigo_pedido']}',
                     textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
-                    textAlign: TextAlign.center,
                     //overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                if (_sWidth > mediaQueryMd)
+                  Expanded(
+                    child: Text(
+                      '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
+                      textAlign: TextAlign.center,
+                      //overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 Expanded(
                   child: Text(
                     '${pedList[index]['status_pedido'] != null && pedList[index]['status_pedido'].length > 0 ? pedList[index]['status_pedido']['status'] : '-'}',
@@ -159,20 +164,22 @@ class _MeusSetupsListState extends State<MeusSetupsList> {
                     //overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Expanded(
-                  child: Text(
-                    '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
-                    textAlign: TextAlign.center,
-                    //overflow: TextOverflow.ellipsis,
+                if (_sWidth > mediaQueryMd)
+                  Expanded(
+                    child: Text(
+                      '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
+                      textAlign: TextAlign.center,
+                      //overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: _relatorioStatusBtn(
-                    index,
-                    _sWidth,
-                    _sHeight,
+                if (_sWidth > mediaQuerySm)
+                  Expanded(
+                    child: _relatorioStatusBtn(
+                      index,
+                      _sWidth,
+                      _sHeight,
+                    ),
                   ),
-                ),
               ],
             ),
           if (_pedidosListStore.getDropdownValue() == 'Pedidos Aprovados')

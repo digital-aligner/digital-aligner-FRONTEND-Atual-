@@ -34,6 +34,7 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
   bool _blockForwardBtn = true;
 
   int mediaQuerySm = 576;
+  int mediaQueryMd = 768;
 
   void fetchDataHandler(bool value) {
     fetchData = value;
@@ -60,67 +61,74 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
     cadastroStore.clearCadastrosAndUpdate();
   }
 
-  Widget _searchBox() {
-    return Row(
-      children: [
-        DropdownButton<String>(
-          value: cadastroStore.getCadDropdownValue(),
-          icon: const Icon(Icons.arrow_downward_outlined),
-          iconSize: 24,
-          elevation: 16,
-          style: const TextStyle(color: Colors.deepPurple),
-          underline: Container(
-            height: 0,
-            color: Colors.deepPurpleAccent,
+  Widget _searchBox(double width) {
+    return Container(
+      height: 120,
+      width: width,
+      child: Flex(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        direction: width > 800 ? Axis.horizontal : Axis.vertical,
+        children: [
+          DropdownButton<String>(
+            value: cadastroStore.getCadDropdownValue(),
+            icon: const Icon(Icons.arrow_downward_outlined),
+            iconSize: 24,
+            elevation: 16,
+            style: const TextStyle(color: Colors.deepPurple),
+            underline: Container(
+              height: 0,
+              color: Colors.deepPurpleAccent,
+            ),
+            onChanged: (String newValue) {
+              setState(() {
+                //page to 0 before fetch
+                _startPage = 0;
+                cadastroStore.setCadDropdownValue(newValue);
+                _searchField.text = '';
+                cadastroStore.setQuery('');
+              });
+              //fetchData before set state (fixes not updating bug)
+              fetchData = true;
+              cadastroStore.clearCadastrosAndUpdate();
+            },
+            items: <String>[
+              'Todos',
+              'Aprovado',
+              'Aguardando',
+              'Negado',
+            ].map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
           ),
-          onChanged: (String newValue) {
-            setState(() {
+          const SizedBox(width: 20, height: 20),
+          Expanded(
+              child: TextField(
+            decoration: InputDecoration(
+              hintText: 'Nome ou CPF do usuário.',
+            ),
+            controller: _searchField,
+            onChanged: (value) async {
               //page to 0 before fetch
               _startPage = 0;
-              cadastroStore.setCadDropdownValue(newValue);
-              _searchField.text = '';
-              cadastroStore.setQuery('');
-            });
-            //fetchData before set state (fixes not updating bug)
-            fetchData = true;
-            cadastroStore.clearCadastrosAndUpdate();
-          },
-          items: <String>[
-            'Todos',
-            'Aprovado',
-            'Aguardando',
-            'Negado',
-          ].map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-        ),
-        const SizedBox(width: 20),
-        Expanded(
-            child: TextField(
-          decoration: InputDecoration(
-            hintText: 'Nome ou CPF do usuário.',
-          ),
-          controller: _searchField,
-          onChanged: (value) async {
-            //page to 0 before fetch
-            _startPage = 0;
-            fetchData = true;
-            const duration = Duration(milliseconds: 500);
-            if (searchOnStoppedTyping != null) {
-              setState(() => searchOnStoppedTyping.cancel());
-            }
-            setState(
-              () => searchOnStoppedTyping = new Timer(
-                duration,
-                () => _searchBoxQuery(value),
-              ),
-            );
-          },
-        )),
-      ],
+              fetchData = true;
+              const duration = Duration(milliseconds: 500);
+              if (searchOnStoppedTyping != null) {
+                setState(() => searchOnStoppedTyping.cancel());
+              }
+              setState(
+                () => searchOnStoppedTyping = new Timer(
+                  duration,
+                  () => _searchBoxQuery(value),
+                ),
+              );
+            },
+          )),
+        ],
+      ),
     );
   }
 
@@ -264,7 +272,7 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
                         icon: Icon(Icons.refresh),
                       ),
                       const SizedBox(height: 40),
-                      _searchBox(),
+                      _searchBox(sWidth),
                       const SizedBox(
                         height: 50,
                         child: const Divider(
@@ -296,9 +304,13 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
                             fetchDataHandler: fetchDataHandler,
                           ),
                         ),
-                      const SizedBox(height: 100),
-                      Row(
+
+                      Flex(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        direction: sWidth > mediaQuerySm
+                            ? Axis.horizontal
+                            : Axis.vertical,
                         children: [
                           ElevatedButton.icon(
                             onPressed: _startPage <= 0 || _blockPageBtns
@@ -321,7 +333,10 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
                             icon: const Icon(Icons.arrow_back),
                             label: const Text('Anterior'),
                           ),
-                          const SizedBox(width: 200),
+                          if (sWidth > mediaQuerySm)
+                            const SizedBox(width: 200)
+                          else
+                            const SizedBox(height: 20),
                           ElevatedButton.icon(
                             onPressed: _blockPageBtns || _blockForwardBtn
                                 ? null

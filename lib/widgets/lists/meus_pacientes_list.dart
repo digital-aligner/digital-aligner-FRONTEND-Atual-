@@ -58,7 +58,6 @@ class _MeusPacientesListState extends State<MeusPacientesList> {
       itemCount: pacList.length,
       itemBuilder: (ctx, index) {
         return Container(
-          margin: EdgeInsets.all(2),
           height: 80,
           child: Card(
             shadowColor: Colors.grey,
@@ -95,7 +94,7 @@ class _MeusPacientesListState extends State<MeusPacientesList> {
                                       pacList[index]['created_at'],
                                     ),
                                     textAlign: TextAlign.center,
-                                    overflow: TextOverflow.ellipsis,
+                                    //overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                                 if (width > mediaQuerySm)
