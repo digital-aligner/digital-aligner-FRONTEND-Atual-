@@ -153,14 +153,14 @@ class _MeusSetupsListState extends State<MeusSetupsList> {
                   Expanded(
                     child: Text(
                       '${pedList[index]['paciente'] != null ? pedList[index]['paciente']['nome_paciente'] : ''}',
-                      textAlign: TextAlign.center,
+                      textAlign: TextAlign.start,
                       //overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 Expanded(
                   child: Text(
                     '${pedList[index]['status_pedido'] != null && pedList[index]['status_pedido'].length > 0 ? pedList[index]['status_pedido']['status'] : '-'}',
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.start,
                     //overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -168,7 +168,7 @@ class _MeusSetupsListState extends State<MeusSetupsList> {
                   Expanded(
                     child: Text(
                       '${pedList[index]['users_permissions_user']['nome'] + ' ' + pedList[index]['users_permissions_user']['sobrenome']}',
-                      textAlign: TextAlign.center,
+                      textAlign: TextAlign.start,
                       //overflow: TextOverflow.ellipsis,
                     ),
                   ),

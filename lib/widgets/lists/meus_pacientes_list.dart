@@ -101,15 +101,15 @@ class _MeusPacientesListState extends State<MeusPacientesList> {
                                   Expanded(
                                     child: Text(
                                       '${pacList[index]['historico_pacientes'][0]['status'] ?? '-'}',
-                                      textAlign: TextAlign.center,
-                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.start,
+                                      //overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                 Expanded(
                                   child: Text(
                                     '${pacList[index]['nome_paciente']}',
-                                    textAlign: TextAlign.center,
-                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.start,
+                                    //overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],

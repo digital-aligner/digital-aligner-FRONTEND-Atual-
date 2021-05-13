@@ -679,7 +679,7 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
               Expanded(
                 child: Text(
                   '${cadList[index]['nome'] + " " + cadList[index]['sobrenome']}',
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.start,
                 ),
               ),
               if (width > mediaQuerySm)
