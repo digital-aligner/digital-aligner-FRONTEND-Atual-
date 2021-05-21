@@ -201,6 +201,18 @@ class _MeusRefinamentosState extends State<MeusRefinamentos> {
     _pedidosListStore.clearPedidosAndUpdate();
   }
 
+  void refreshPageFetchNewList() {
+    setState(() {
+      //page to 0 before fetch
+      _startPage = 0;
+      _pedidosListStore.setDropdownValue('Todos');
+      _pedidosListStore.setQuery('');
+    });
+    //fetchData before set state (fixes not updating bug)
+    fetchData = true;
+    _pedidosListStore.clearPedidosAndUpdate();
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -267,6 +279,14 @@ class _MeusRefinamentosState extends State<MeusRefinamentos> {
                 Text(
                   'Meus Refinamentos',
                   style: Theme.of(context).textTheme.headline1,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    refreshPageFetchNewList();
+                  },
+                  label: const Text('Atualizar'),
+                  icon: Icon(Icons.refresh),
                 ),
                 const SizedBox(height: 40),
                 _searchBox(),
