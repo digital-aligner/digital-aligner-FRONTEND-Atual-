@@ -190,4 +190,74 @@ class AuthProvider with ChangeNotifier {
     }
     return null;
   }
+
+  Future<dynamic> getCitiesData({
+    List<dynamic> local,
+    String selectedState,
+    String selectedCountry,
+  }) async {
+    int stateId = 0;
+
+    if (selectedState == '') {
+      return [];
+    }
+
+    //get the id from the list based on selected state
+    if (selectedCountry == 'Brasil') {
+      for (int i = 0; i < local[0]['estado_brasils'].length; i++) {
+        if (local[0]['estado_brasils'][i]['estado'] == selectedState) {
+          stateId = local[0]['estado_brasils'][i]['id'];
+        }
+      }
+    }
+
+    var _response = await http.get(
+      Uri.parse(
+        RotasUrl.rotaGetCities + '?stateId=' + stateId.toString(),
+      ),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+
+    List<dynamic> responseData = json.decode(_response.body);
+
+    if (responseData[0].containsKey('error')) {
+      return [];
+    } else {
+      List<String> cities = [];
+      responseData.forEach((city) => cities.add(city['city_name']));
+      return cities;
+    }
+  }
+
+  List<String> mapStatesToCitiesToUiList({
+    List<dynamic> local,
+    String selectedCountry,
+  }) {
+    //If no country is selected, then return default states to display
+    if (selectedCountry == null) {
+      List<String> states = [];
+      for (int i = 0; i < local[0]['estado_brasils'].length; i++) {
+        states.add(local[0]['estado_brasils'][i]['estado']);
+      }
+      return states;
+    }
+
+    if (selectedCountry == 'Brasil') {
+      List<String> states = [];
+      for (int i = 0; i < local[0]['estado_brasils'].length; i++) {
+        states.add(local[0]['estado_brasils'][i]['estado']);
+      }
+      return states;
+    }
+    if (selectedCountry == 'Portugal') {
+      List<String> states = [];
+      for (int i = 0; i < local[1]['estado_portugals'].length; i++) {
+        states.add(local[1]['estado_portugals'][i]['estado']);
+      }
+      return states;
+    }
+    return null;
+  }
 }

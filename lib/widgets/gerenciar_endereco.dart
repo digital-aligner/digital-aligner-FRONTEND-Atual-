@@ -40,6 +40,7 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
   //To controle when to fetch data
   bool _fetchData = true;
   bool _refresh = false;
+  bool _refreshCityData = false;
   //List enderecos from db string (for ui list only)
   List<String> _enderecoUiList = [];
   //The actual list from the db (map)
@@ -57,6 +58,7 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
   //For ui
   List<String> _countries;
   List<String> _states;
+  List<String> _cities;
 
   // If id is null, then the selected is "Novo Endereço"
   bool _novoEndereco = false;
@@ -412,11 +414,19 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
 
   @override
   void didChangeDependencies() async {
-    super.didChangeDependencies();
-
     if (_fetchData) {
       _getAllData();
     }
+    /*
+    if (_refreshCityData) {
+      _cities = await fetchCitiesData();
+      //set a default value
+      if (_cities.length > 0) {
+        _cidade.text = _cities[0];
+      }
+      _refreshCityData = false;
+    }*/
+    super.didChangeDependencies();
   }
 
   Future<void> _getAllData() async {
@@ -435,8 +445,18 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
       selectedCountry: _pais.text,
     );
 
+    _cities = await fetchCitiesData();
+
     _fetchData = false;
     setState(() {});
+  }
+
+  Future<dynamic> fetchCitiesData() async {
+    return await _authStore.getCitiesData(
+      local: _stateCountryData,
+      selectedState: _uf.text,
+      selectedCountry: _pais.text,
+    );
   }
 
   Widget build(BuildContext context) {
@@ -672,6 +692,8 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
               child: Flex(
                 direction: sWidth > 600 ? Axis.horizontal : Axis.vertical,
                 children: [
+                  //cidade
+                  /*
                   Expanded(
                     child: Container(
                       height: 80,
@@ -690,7 +712,63 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
                         ),
                       ),
                     ),
+                  ),*/
+
+                  Expanded(
+                    child: Container(
+                      height: 80,
+                      child: DropdownSearch<String>(
+                        onFind: (text) async {
+                          _cities = await fetchCitiesData();
+                          //set a default value
+                          if (_cities.length > 0) {
+                            _cidade.text = _cities[0];
+                            _refreshCityData = false;
+                            return _cities;
+                          }
+                        },
+                        emptyBuilder: (context, searchEntry) {
+                          return Column(
+                            children: [
+                              const SizedBox(height: 50),
+                              CircularProgressIndicator(
+                                valueColor: new AlwaysStoppedAnimation<Color>(
+                                  Colors.blue,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                        //To fix ui not updating on state change
+                        dropdownBuilder: (context, selectedItem, itemAsString) {
+                          return Text(_cidade.text);
+                        },
+                        onSaved: (String value) {
+                          _cidade.text = value;
+                        },
+                        validator: (String value) {
+                          return value.isEmpty ? 'Campo vazio' : null;
+                        },
+                        dropdownSearchDecoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                        ),
+                        mode: Mode.MENU,
+                        showSearchBox: true,
+                        showSelectedItem: true,
+                        items: _cities,
+                        label: 'Cidade: *',
+                        //hint: 'country in menu mode',
+                        popupItemDisabled:
+                            (String s) => /*s.startsWith('I')*/ null,
+                        onChanged: (value) {
+                          _cidade.text = value;
+                        },
+                        selectedItem: _cidade.text,
+                      ),
+                    ),
                   ),
+
                   const SizedBox(width: 20),
                   //Uf
                   if (!_fetchData && _stateCountryData != null && !_refresh)
@@ -724,6 +802,12 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
                                 (String s) => /*s.startsWith('I')*/ null,
                             onChanged: (value) {
                               _uf.text = value;
+
+                              setState(() {
+                                _cidade.text;
+                                _cities = [];
+                                _refreshCityData = true;
+                              });
                             },
                             selectedItem: _uf.text),
                       ),
