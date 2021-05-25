@@ -24,6 +24,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
   AuthProvider _authStore;
   bool firstFetch = true;
   bool _sendingCadastro = false;
+  bool _refreshCityData = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // ----- For flutter web scroll -------
@@ -38,6 +39,8 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
   //For ui
   List<String> _countries;
   List<String> _states;
+  List<String> _cities;
+
   String _email;
   String _password;
   String _nome;
@@ -64,6 +67,14 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
   final _controllerCEL = TextEditingController();
 
   Timer searchOnStoppedTyping;
+
+  Future<dynamic> fetchCitiesData() async {
+    return await _authStore.getCitiesData(
+      local: _stateCountryData,
+      selectedState: _uf,
+      selectedCountry: _pais,
+    );
+  }
 
   Widget _form(double width) {
     return Form(
@@ -517,35 +528,74 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 //hint: 'country in menu mode',
                                 popupItemDisabled:
                                     (String s) => /*s.startsWith('I')*/ null,
-                                onChanged: (value) {
-                                  _uf = value;
+                                onChanged: (value) async {
+                                  setState(() {
+                                    _uf = value;
+                                    _refreshCityData = true;
+                                  });
+                                  _cities = await fetchCitiesData();
+                                  //set a default value
+                                  if (_cities.length > 0) {
+                                    setState(() {
+                                      _cidade = _cities[0];
+                                      _refreshCityData = false;
+                                    });
+                                  }
                                 },
                                 selectedItem: _uf,
                               ),
                             ),
                           ),
                           const SizedBox(width: 20),
-                          Expanded(
-                            child: Container(
-                              height: 80,
-                              child: TextFormField(
-                                onSaved: (String value) {
-                                  _cidade = value;
-                                },
-                                validator: (value) {
-                                  if (value.length == 0) {
-                                    return 'Por favor insira sua cidade';
-                                  }
-                                  return null;
-                                },
-                                initialValue: null,
-                                decoration: InputDecoration(
-                                  labelText: 'Cidade: *',
-                                  border: OutlineInputBorder(),
+                          if (_refreshCityData)
+                            Column(
+                              children: [
+                                CircularProgressIndicator(
+                                  valueColor: new AlwaysStoppedAnimation<Color>(
+                                    Colors.blue,
+                                  ),
+                                ),
+                              ],
+                            )
+                          else
+                            Expanded(
+                              child: Container(
+                                height: 80,
+                                child: DropdownSearch<String>(
+                                  //To fix ui not updating on state change
+                                  dropdownBuilder:
+                                      (context, selectedItem, itemAsString) {
+                                    return Text(_cidade ?? '');
+                                  },
+                                  onSaved: (String value) {
+                                    _cidade = value;
+                                  },
+                                  validator: (String value) {
+                                    if (value == null) {
+                                      return 'Por favor escolha cidade';
+                                    }
+                                    return value.isEmpty ? 'Campo vazio' : null;
+                                  },
+                                  dropdownSearchDecoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    contentPadding:
+                                        EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                  ),
+                                  mode: Mode.MENU,
+                                  showSearchBox: true,
+                                  showSelectedItem: true,
+                                  items: _cities,
+                                  label: 'Cidade: *',
+                                  //hint: 'country in menu mode',
+                                  popupItemDisabled:
+                                      (String s) => /*s.startsWith('I')*/ null,
+                                  onChanged: (value) {
+                                    _cidade = value;
+                                  },
+                                  selectedItem: _cidade,
                                 ),
                               ),
                             ),
-                          ),
                         ],
                       ),
                     ),
@@ -949,8 +999,12 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
         local: _stateCountryData,
         selectedCountry: _pais,
       );
-      firstFetch = false;
-      setState(() {});
+      //manually setting country to Brasil (will change)
+      _pais = 'Brasil';
+
+      setState(() {
+        firstFetch = false;
+      });
     }
   }
 

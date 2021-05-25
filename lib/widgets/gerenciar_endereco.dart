@@ -417,15 +417,6 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
     if (_fetchData) {
       _getAllData();
     }
-    /*
-    if (_refreshCityData) {
-      _cities = await fetchCitiesData();
-      //set a default value
-      if (_cities.length > 0) {
-        _cidade.text = _cities[0];
-      }
-      _refreshCityData = false;
-    }*/
     super.didChangeDependencies();
   }
 
@@ -448,7 +439,9 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
     _cities = await fetchCitiesData();
 
     _fetchData = false;
-    setState(() {});
+    setState(() {
+      _fetchData = false;
+    });
   }
 
   Future<dynamic> fetchCitiesData() async {
@@ -480,7 +473,7 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
                 showSearchBox: true,
                 showSelectedItem: true,
                 items: _enderecoUiList,
-                label: 'UF: *',
+                label: 'Selecione endereço: *',
                 //hint: 'UF: *',
                 popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
                 onChanged: (value) async {
@@ -713,61 +706,52 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
                       ),
                     ),
                   ),*/
-
-                  Expanded(
-                    child: Container(
-                      height: 80,
-                      child: DropdownSearch<String>(
-                        onFind: (text) async {
-                          _cities = await fetchCitiesData();
-                          //set a default value
-                          if (_cities.length > 0) {
-                            _cidade.text = _cities[0];
-                            _refreshCityData = false;
-                            return _cities;
-                          }
-                        },
-                        emptyBuilder: (context, searchEntry) {
-                          return Column(
-                            children: [
-                              const SizedBox(height: 50),
-                              CircularProgressIndicator(
-                                valueColor: new AlwaysStoppedAnimation<Color>(
-                                  Colors.blue,
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                        //To fix ui not updating on state change
-                        dropdownBuilder: (context, selectedItem, itemAsString) {
-                          return Text(_cidade.text);
-                        },
-                        onSaved: (String value) {
-                          _cidade.text = value;
-                        },
-                        validator: (String value) {
-                          return value.isEmpty ? 'Campo vazio' : null;
-                        },
-                        dropdownSearchDecoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                  if (_fetchData && _stateCountryData == null ||
+                      _refreshCityData == true)
+                    Column(
+                      children: [
+                        CircularProgressIndicator(
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                            Colors.blue,
+                          ),
                         ),
-                        mode: Mode.MENU,
-                        showSearchBox: true,
-                        showSelectedItem: true,
-                        items: _cities,
-                        label: 'Cidade: *',
-                        //hint: 'country in menu mode',
-                        popupItemDisabled:
-                            (String s) => /*s.startsWith('I')*/ null,
-                        onChanged: (value) {
-                          _cidade.text = value;
-                        },
-                        selectedItem: _cidade.text,
+                      ],
+                    )
+                  else
+                    Expanded(
+                      child: Container(
+                        height: 80,
+                        child: DropdownSearch<String>(
+                          //To fix ui not updating on state change
+                          dropdownBuilder:
+                              (context, selectedItem, itemAsString) {
+                            return Text(_cidade.text);
+                          },
+                          onSaved: (String value) {
+                            _cidade.text = value;
+                          },
+                          validator: (String value) {
+                            return value.isEmpty ? 'Campo vazio' : null;
+                          },
+                          dropdownSearchDecoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                          ),
+                          mode: Mode.MENU,
+                          showSearchBox: true,
+                          showSelectedItem: true,
+                          items: _cities,
+                          label: 'Cidade: *',
+                          //hint: 'country in menu mode',
+                          popupItemDisabled:
+                              (String s) => /*s.startsWith('I')*/ null,
+                          onChanged: (value) {
+                            _cidade.text = value;
+                          },
+                          selectedItem: _cidade.text,
+                        ),
                       ),
                     ),
-                  ),
 
                   const SizedBox(width: 20),
                   //Uf
@@ -800,14 +784,19 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
                             //hint: 'country in menu mode',
                             popupItemDisabled:
                                 (String s) => /*s.startsWith('I')*/ null,
-                            onChanged: (value) {
-                              _uf.text = value;
-
+                            onChanged: (value) async {
                               setState(() {
-                                _cidade.text;
-                                _cities = [];
+                                _uf.text = value;
                                 _refreshCityData = true;
                               });
+                              _cities = await fetchCitiesData();
+                              //set a default value
+                              if (_cities.length > 0) {
+                                setState(() {
+                                  _cidade.text = _cities[0];
+                                  _refreshCityData = false;
+                                });
+                              }
                             },
                             selectedItem: _uf.text),
                       ),
