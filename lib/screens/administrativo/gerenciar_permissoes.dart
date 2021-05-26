@@ -269,12 +269,24 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
                       ),
                       const SizedBox(height: 20),
                       ElevatedButton.icon(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                            Colors.blueGrey,
+                          ),
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25.0),
+                            ),
+                          ),
+                        ),
                         onPressed: () {
                           refreshPageFetchNewList();
                         },
                         label: const Text('Atualizar'),
                         icon: Icon(Icons.refresh),
                       ),
+
                       const SizedBox(height: 40),
                       _searchBox(sWidth),
                       const SizedBox(

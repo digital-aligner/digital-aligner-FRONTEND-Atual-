@@ -652,6 +652,17 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                       ),
                       const SizedBox(height: 20),
                       ElevatedButton.icon(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                            Colors.blueGrey,
+                          ),
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25.0),
+                            ),
+                          ),
+                        ),
                         onPressed: () {
                           refreshPageFetchNewList();
                         },
