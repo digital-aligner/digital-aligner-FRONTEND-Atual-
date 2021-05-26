@@ -215,7 +215,7 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            //Endereço selection]
+            //Endereço selection
             if (!_fetchData && _stateCountryData != null)
               DropdownSearch<String>(
                   enabled: !widget.blockUi,
@@ -228,7 +228,7 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
                   showSearchBox: true,
                   showSelectedItem: true,
                   items: _enderecoUiList,
-                  label: 'UF: *',
+                  label: 'Selectionar endereço: *',
                   //hint: 'UF: *',
                   popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
                   onChanged: (value) {
@@ -453,28 +453,6 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
               child: Flex(
                 direction: sWidth > 600 ? Axis.horizontal : Axis.vertical,
                 children: [
-                  Expanded(
-                    child: Container(
-                      height: 80,
-                      child: TextFormField(
-                        enabled: !widget.blockUi,
-                        readOnly: true,
-                        controller: _cidade,
-                        onSaved: (String value) {
-                          _cidade.text = value;
-                        },
-                        validator: (String value) {
-                          return value.isEmpty ? 'Campo vazio' : null;
-                        },
-                        decoration: InputDecoration(
-                          labelText: 'Cidade: *',
-                          hintText: 'Cidade: *',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 20),
                   if (!_fetchData && _stateCountryData != null && !_refresh)
                     Expanded(
                       child: Container(
@@ -508,6 +486,41 @@ class _EnderecoEntregaState extends State<EditarEnderecoEntrega>
                               _uf.text = value;
                             },
                             selectedItem: _uf.text),
+                      ),
+                    ),
+                  //Progress bar
+                  if (_fetchData && _stateCountryData == null)
+                    Column(
+                      children: [
+                        const SizedBox(height: 50),
+                        CircularProgressIndicator(
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                            Colors.blue,
+                          ),
+                        ),
+                      ],
+                    ),
+                  const SizedBox(width: 20),
+                  if (!_fetchData && _stateCountryData != null && !_refresh)
+                    Expanded(
+                      child: Container(
+                        height: 80,
+                        child: TextFormField(
+                          enabled: !widget.blockUi,
+                          readOnly: true,
+                          controller: _cidade,
+                          onSaved: (String value) {
+                            _cidade.text = value;
+                          },
+                          validator: (String value) {
+                            return value.isEmpty ? 'Campo vazio' : null;
+                          },
+                          decoration: InputDecoration(
+                            labelText: 'Cidade: *',
+                            hintText: 'Cidade: *',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
                       ),
                     ),
                   //Progress bar

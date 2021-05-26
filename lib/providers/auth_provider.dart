@@ -149,8 +149,8 @@ class AuthProvider with ChangeNotifier {
     });
 
     List<dynamic> localData = json.decode(_response.body);
-
-    return localData;
+    //for now, return only brasil
+    return [localData[0]];
   }
 
   List<String> mapCountriesDataToUiList(List<dynamic> local) {

@@ -277,9 +277,11 @@ class _EditarCadastroState extends State<EditarCadastro> {
                               key: _formKey,
                               child: Column(
                                 children: <Widget>[
+                                  //nome
                                   Container(
                                     height: 80,
                                     child: TextFormField(
+                                      maxLength: 29,
                                       initialValue: sc.nome,
                                       onSaved: (String value) {
                                         sc.nome = value;
@@ -292,16 +294,18 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                       },
                                       decoration: const InputDecoration(
                                         labelText: 'Nome: *',
-
+                                        counterText: '',
                                         //hintText: 'Insira seu nome',
                                         border: const OutlineInputBorder(),
                                       ),
                                     ),
                                   ),
                                   const SizedBox(height: 10),
+                                  //sobrenome
                                   Container(
                                     height: 80,
                                     child: TextFormField(
+                                      maxLength: 29,
                                       initialValue: sc.sobrenome,
                                       onSaved: (String value) {
                                         sc.sobrenome = value;
@@ -313,6 +317,7 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                         return null;
                                       },
                                       decoration: const InputDecoration(
+                                        counterText: '',
                                         labelText: 'Sobrenome: *',
                                         //hintText: 'Insira seu nome',
                                         border: const OutlineInputBorder(),
@@ -504,9 +509,11 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                     ),
                                   ),
                                   const SizedBox(height: 10),
+                                  //cro número
                                   Container(
                                     height: 80,
                                     child: TextFormField(
+                                      maxLength: 30,
                                       onSaved: (String value) {
                                         sc.cro_num = value;
                                       },
@@ -518,6 +525,7 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                       ],
                                       initialValue: null,
                                       decoration: InputDecoration(
+                                        counterText: '',
                                         labelText: 'CRO (Número): *',
                                         border: OutlineInputBorder(),
                                       ),

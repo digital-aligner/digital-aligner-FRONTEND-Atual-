@@ -90,10 +90,11 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                 flex: 9,
                 child: Column(
                   children: [
+                    //nome
                     Container(
                       height: 80,
                       child: TextFormField(
-                        maxLength: 255,
+                        maxLength: 29,
                         onSaved: (String value) {
                           _nome = value;
                         },
@@ -112,10 +113,11 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       ),
                     ),
                     const SizedBox(height: 10),
+                    //sobrenome
                     Container(
                       height: 80,
                       child: TextFormField(
-                        maxLength: 255,
+                        maxLength: 29,
                         onSaved: (String value) {
                           _sobrenome = value;
                         },
@@ -134,6 +136,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       ),
                     ),
                     const SizedBox(height: 10),
+                    //cpf/data de nascimento
                     Container(
                       width: width,
                       height: width > 600 ? 80 : 180,
@@ -235,6 +238,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       ),
                     ),
                     const SizedBox(height: 10),
+                    //cro uf/cro número
                     Container(
                       width: width,
                       height: width > 600 ? 80 : 180,
@@ -277,6 +281,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                             child: Container(
                               height: 80,
                               child: TextFormField(
+                                maxLength: 30,
                                 onSaved: (String value) {
                                   _controllerCRO.text = value;
                                 },
@@ -294,6 +299,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 ],
                                 initialValue: null,
                                 decoration: InputDecoration(
+                                  counterText: '',
                                   labelText: 'CRO (Número): *',
                                   border: OutlineInputBorder(),
                                 ),
@@ -304,11 +310,12 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       ),
                     ),
                     const Divider(thickness: 1),
+                    //endereco
                     Container(
                       margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
                       height: 80,
                       child: TextFormField(
-                        maxLength: 255,
+                        maxLength: 60,
                         onSaved: (String value) {
                           _endereco = value;
                         },
@@ -327,6 +334,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       ),
                     ),
                     const SizedBox(height: 10),
+                    //número / complemento
                     Container(
                       width: width,
                       height: width > 600 ? 80 : 180,
@@ -338,7 +346,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                             child: Container(
                               height: 80,
                               child: TextFormField(
-                                maxLength: 255,
+                                maxLength: 10,
                                 onSaved: (String value) {
                                   _controllerNUM.text = value;
                                 },
@@ -368,7 +376,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                             child: Container(
                               height: 80,
                               child: TextFormField(
-                                maxLength: 255,
+                                maxLength: 40,
                                 onSaved: (String value) {
                                   _complemento = value;
                                 },
@@ -391,10 +399,11 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       ),
                     ),
                     const SizedBox(height: 10),
+                    //bairro
                     Container(
                       height: 80,
                       child: TextFormField(
-                        maxLength: 255,
+                        maxLength: 60,
                         onSaved: (String value) {
                           _bairro = value;
                         },
@@ -413,6 +422,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       ),
                     ),
                     const SizedBox(height: 10),
+                    //cep
                     Container(
                       height: 80,
                       child: TextFormField(
@@ -464,6 +474,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       ),
                     ),
                     const SizedBox(height: 10),
+                    //país
                     Container(
                       height: 80,
                       child: DropdownSearch<String>(
@@ -498,6 +509,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       ),
                     ),
                     const SizedBox(height: 10),
+                    //uf
                     Container(
                       width: width,
                       height: width > 600 ? 80 : 180,
@@ -737,6 +749,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                               margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
                               height: 80,
                               child: TextFormField(
+                                maxLength: 200,
                                 onSaved: (String value) {
                                   _email = value;
                                 },
@@ -751,6 +764,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 },
                                 initialValue: null,
                                 decoration: InputDecoration(
+                                  counterText: '',
                                   labelText: 'Email: *',
                                   border: OutlineInputBorder(),
                                 ),
@@ -764,6 +778,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                               margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
                               height: 80,
                               child: TextFormField(
+                                maxLength: 200,
                                 onChanged: (String value) {
                                   _emailConfirm = value;
                                 },
@@ -775,6 +790,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 },
                                 initialValue: null,
                                 decoration: InputDecoration(
+                                  counterText: '',
                                   labelText: 'Confirme seu email.',
                                   border: OutlineInputBorder(),
                                 ),
@@ -797,6 +813,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                             child: Container(
                               height: 80,
                               child: TextFormField(
+                                maxLength: 30,
                                 obscureText: true,
                                 onSaved: (String value) {
                                   _password = value;
@@ -815,6 +832,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 },
                                 initialValue: null,
                                 decoration: InputDecoration(
+                                  counterText: '',
                                   labelText: 'Senha: *',
                                   border: OutlineInputBorder(),
                                 ),
@@ -827,6 +845,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                             child: Container(
                               height: 80,
                               child: TextFormField(
+                                maxLength: 30,
                                 obscureText: true,
                                 onChanged: (String value) {
                                   _passwordConfirm = value;
@@ -839,6 +858,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 },
                                 initialValue: null,
                                 decoration: InputDecoration(
+                                  counterText: '',
                                   labelText: 'Confirme sua senha.',
                                   border: OutlineInputBorder(),
                                 ),
