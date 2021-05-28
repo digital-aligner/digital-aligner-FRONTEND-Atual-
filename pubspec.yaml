@@ -47,6 +47,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0
   just_audio: ^0.6.15
+  cpfcnpj: ^1.0.3
 #TEMPORARY SOLUTION. When migrating to null safety remove.
 dependency_overrides:
   extended_image: 1.5.0-dev

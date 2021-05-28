@@ -908,12 +908,10 @@ class _PedidoFormState extends State<PedidoForm> {
                                   }
                                 : null,
                             child: !_sendingPedido
-                                ? const Flexible(
-                                    child: const Text(
-                                      'ENVIAR NOVO PACIENTE',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                      ),
+                                ? const Text(
+                                    'ENVIAR NOVO PACIENTE',
+                                    style: const TextStyle(
+                                      color: Colors.white,
                                     ),
                                   )
                                 : CircularProgressIndicator(

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'package:cpfcnpj/cpfcnpj.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
 import 'package:digital_aligner_app/functions/system_functions.dart';
@@ -158,7 +158,12 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                   if (value.length < 11) {
                                     return 'Por favor insira seu cpf';
                                   }
-                                  return null;
+                                  // Validar CPF
+                                  if (CPF.isValid(value)) {
+                                    return null;
+                                  } else {
+                                    return 'Este CPF é inválido. Por favor verifique';
+                                  }
                                 },
                                 onChanged: (value) async {
                                   const duration = Duration(milliseconds: 500);
