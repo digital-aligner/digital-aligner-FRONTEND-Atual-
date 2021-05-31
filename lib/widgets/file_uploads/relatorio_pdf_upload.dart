@@ -124,7 +124,7 @@ class _RelatorioPdfUploadState extends State<RelatorioPdfUpload>
                       icon: Icon(Icons.delete),
                       onPressed: () {
                         if (widget.isEdit) {
-                          //If negitive, error ocurred só delete only from list
+                          //If negative, error ocurred só delete only from list
                           if (currelatorioPdfUpload.id < 0) {
                             setState(() {
                               _relatorioPdfUploadsList.removeWhere(
@@ -144,7 +144,7 @@ class _RelatorioPdfUploadState extends State<RelatorioPdfUpload>
                             });
                           }
                         } else {
-                          //If negitive, error ocurred só delete only from list
+                          //If negative, error ocurred só delete only from list
                           if (currelatorioPdfUpload.id < 0) {
                             setState(() {
                               _relatorioPdfUploadsList.removeWhere(
