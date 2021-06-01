@@ -4988,7 +4988,7 @@ class PedidoProvider with ChangeNotifier {
     _fstNemoError = false;
   }
 
-  //MANAGE PHOTOS, IMAGES, MODELS SEND STATE
+  //MANAGE PHOTOS, IMAGES, MODELS and relatório SEND STATE
 
   bool _fstFotoError = false;
   bool _fstRadioError = false;
@@ -4996,6 +4996,8 @@ class PedidoProvider with ChangeNotifier {
   bool _fstMInfError = false;
   bool _fstCompError = false;
   bool _fstNemoError = false;
+  bool _fstRelPdfError = false;
+  bool _fstRelPptError = false;
 
   static const int _fstNotSending = 0;
   static const int _fstFoto = 1;
@@ -5004,47 +5006,61 @@ class PedidoProvider with ChangeNotifier {
   static const int _fstMInf = 4;
   static const int _fstComp = 5;
   static const int _fstNemo = 6;
+  static const int _fstRelPdf = 7;
+  static const int _fstRelPpt = 8;
 
   //The main sending variable (if != 0, sending a file)
   int _fstSending = 0;
 
-  bool setFstFotoError(bool value) {
+  setFstRelatorioPdfError(bool value) {
+    _fstRelPdfError = value;
+    notifyListeners();
+  }
+
+  setFstRelatorioPptError(bool value) {
+    _fstRelPptError = value;
+    notifyListeners();
+  }
+
+  setFstFotoError(bool value) {
     _fstFotoError = value;
     notifyListeners();
   }
 
-  bool setFstRadioError(bool value) {
+  setFstRadioError(bool value) {
     _fstRadioError = value;
     notifyListeners();
   }
 
-  bool setFstMSupError(bool value) {
+  setFstMSupError(bool value) {
     _fstMSupError = value;
     notifyListeners();
   }
 
-  bool setFstMInfError(bool value) {
+  setFstMInfError(bool value) {
     _fstMInfError = value;
     notifyListeners();
   }
 
-  bool setFstCompError(bool value) {
+  setFstCompError(bool value) {
     _fstCompError = value;
     notifyListeners();
   }
 
-  bool setFstNemoError(bool value) {
+  setFstNemoError(bool value) {
     _fstNemoError = value;
     notifyListeners();
   }
 
-  bool getFstFilesErrors() {
+  getFstFilesErrors() {
     if (_fstFotoError ||
         _fstRadioError ||
         _fstMSupError ||
         _fstMInfError ||
         _fstCompError ||
-        _fstNemoError) {
+        _fstNemoError ||
+        _fstRelPdfError ||
+        _fstRelPptError) {
       return true;
     }
     return false;
@@ -5080,6 +5096,14 @@ class PedidoProvider with ChangeNotifier {
         _fstSending = _fstNemo;
         notifyListeners();
         break;
+      case _fstRelPdf:
+        _fstSending = _fstRelPdf;
+        notifyListeners();
+        break;
+      case _fstRelPpt:
+        _fstSending = _fstRelPpt;
+        notifyListeners();
+        break;
       default:
         _fstSending = _fstNotSending;
         notifyListeners();
@@ -5093,6 +5117,14 @@ class PedidoProvider with ChangeNotifier {
 
   int getFstNotSendingState() {
     return _fstNotSending;
+  }
+
+  int getFstRelPdf() {
+    return _fstRelPdf;
+  }
+
+  int getFstRelPpt() {
+    return _fstRelPpt;
   }
 
   int getFstFoto() {

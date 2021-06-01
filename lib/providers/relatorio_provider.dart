@@ -12,6 +12,9 @@ import 'package:http/http.dart' as http;
 import '../rotas_url.dart';
 
 class RelatorioProvider with ChangeNotifier {
+  //New relatorioPdfUpload object with id and image url from server
+  List<RelatorioPdfModel> _relatorioPdfUploadsList = <RelatorioPdfModel>[];
+
   //MANAGE PPT,PDF SEND STATE
 
   static const int _fstNotSending = 0;
@@ -87,27 +90,30 @@ class RelatorioProvider with ChangeNotifier {
     _token = t;
   }
 
-  void updateRelatorioPdfS3Urls(var data) {
-    _selectedRelatorio.relatorioPdf.relatorio1 = data['url'];
-    _selectedRelatorio.relatorioPdf.relatorio1Id = data['id'];
-  }
-
   void updateRelatorioPPTs3Urls(var data) {
     _selectedRelatorio.relatorioPPT.relatorio1 = data['url'];
     _selectedRelatorio.relatorioPPT.relatorio1Id = data['id'];
   }
 
-  void setPdfList(List<RelatorioPdfModel> list) {
+  void setPdfListForSend(List<RelatorioPdfModel> list) {
     if (list == null) {
       _selectedRelatorio.relatorioPdf = RelatorioPdf();
-      print(_selectedRelatorio.relatorioPdf.relatorio1);
       return;
     }
     _selectedRelatorio.relatorioPdf.relatorio1 = list[0].imageUrl;
     _selectedRelatorio.relatorioPdf.relatorio1Id = list[0].id;
+    _selectedRelatorio.relatorioPdf.relatorio2 = list[1].imageUrl;
+    _selectedRelatorio.relatorioPdf.relatorio2Id = list[1].id;
+    _selectedRelatorio.relatorioPdf.relatorio3 = list[2].imageUrl;
+    _selectedRelatorio.relatorioPdf.relatorio3Id = list[2].id;
+    _selectedRelatorio.relatorioPdf.relatorio4 = list[3].imageUrl;
+    _selectedRelatorio.relatorioPdf.relatorio4Id = list[3].id;
+    _selectedRelatorio.relatorioPdf.relatorio5 = list[4].imageUrl;
+    _selectedRelatorio.relatorioPdf.relatorio5Id = list[4].id;
   }
 
   /*
+
   void setPptList(List<RelatorioPPTModel> list) {
     if (list == null) {
       _selectedRelatorio.relatorioPPT = RelatorioPPT();
@@ -188,41 +194,28 @@ class RelatorioProvider with ChangeNotifier {
 
       _selectedRelatorio.relatorioPdf.relatorio1 =
           _data[0]['relatorio_pdf']['relatorio1'];
-      _selectedRelatorio.relatorioPPT.relatorio1 =
-          _data[0]['relatorio_ppt']['relatorio1'];
       _selectedRelatorio.relatorioPdf.relatorio1Id =
           _data[0]['relatorio_pdf']['relatorio1_id'];
-      _selectedRelatorio.relatorioPPT.relatorio1Id =
-          _data[0]['relatorio_ppt']['relatorio1_id'];
-      /*
-      _selectedRelatorio.codigoPedido = _data[3]['codigo_pedido'];
-      _selectedRelatorio.nome = _data[1]['nome'];
-      _selectedRelatorio.sobrenome = _data[1]['sobrenome'];
-      _selectedRelatorio.email = _data[1]['email'];
-      _selectedRelatorio.cpf = _data[1]['username'];
-      _selectedRelatorio.nomePaciente = _data[2]['nome_paciente'];
-      _selectedRelatorio.idPedido = _data[0]['pedido'];
-      _selectedRelatorio.idPaciente = _data[0]['paciente'];
-
-      _selectedRelatorio.visualizador3d = _data[0]['visualizador_3d'];
-      _selectedRelatorio.visualizador3dOpcao2 =
-          _data[0]['visualizador_3d_opcao_2'];
-
-      _selectedRelatorio.relatorioPdf.id = _data[0]['relatorio_pdf']['id'];
-      _selectedRelatorio.relatorioPPT.id = _data[0]['relatorio_ppt']['id'];
-
-      _selectedRelatorio.id = _data[0]['id'];
-
       _selectedRelatorio.relatorioPdf.relatorio1 =
-          _data[0]['relatorio_pdf']['relatorio1'];
+          _data[0]['relatorio_pdf']['relatorio2'];
+      _selectedRelatorio.relatorioPdf.relatorio1Id =
+          _data[0]['relatorio_pdf']['relatorio2_id'];
+      _selectedRelatorio.relatorioPdf.relatorio1 =
+          _data[0]['relatorio_pdf']['relatorio3'];
+      _selectedRelatorio.relatorioPdf.relatorio1Id =
+          _data[0]['relatorio_pdf']['relatorio3_id'];
+      _selectedRelatorio.relatorioPdf.relatorio1 =
+          _data[0]['relatorio_pdf']['relatorio4'];
+      _selectedRelatorio.relatorioPdf.relatorio1Id =
+          _data[0]['relatorio_pdf']['relatorio4_id'];
+      _selectedRelatorio.relatorioPdf.relatorio1 =
+          _data[0]['relatorio_pdf']['relatorio5'];
+      _selectedRelatorio.relatorioPdf.relatorio1Id =
+          _data[0]['relatorio_pdf']['relatorio5_id'];
       _selectedRelatorio.relatorioPPT.relatorio1 =
           _data[0]['relatorio_ppt']['relatorio1'];
-      _selectedRelatorio.relatorioPdf.relatorio1Id =
-          _data[0]['relatorio_pdf']['relatorio1_id'];
       _selectedRelatorio.relatorioPPT.relatorio1Id =
           _data[0]['relatorio_ppt']['relatorio1_id'];
-          */
-
     } catch (error) {
       print('Error! ' + error.toString());
       return error;

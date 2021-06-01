@@ -1,7 +1,6 @@
 //import 'dart:convert';
 
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
-import 'package:digital_aligner_app/providers/pedidos_list_provider.dart';
 import 'package:digital_aligner_app/providers/relatorio_provider.dart';
 import 'package:digital_aligner_app/widgets/file_uploads/relatorio_pdf_upload.dart';
 import 'package:digital_aligner_app/widgets/file_uploads/relatorio_ppt_upload.dart';

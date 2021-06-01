@@ -171,6 +171,7 @@ class _PhotoUploadState extends State<PhotoUpload> {
           elevation: 5,
           child: Row(
             children: [
+              const SizedBox(height: 10),
               if (curPhoto.thumbnail == null)
                 Center(
                   child: CircularProgressIndicator(
@@ -217,7 +218,7 @@ class _PhotoUploadState extends State<PhotoUpload> {
                       ? null
                       : () {
                           if (widget.isEdit) {
-                            //If negitive, error ocurred só delete only from list
+                            //If negative, error ocurred só delete only from list
                             if (curPhoto.id < 0) {
                               setState(() {
                                 _photosList.removeWhere(
@@ -264,6 +265,7 @@ class _PhotoUploadState extends State<PhotoUpload> {
                 ),
               if (curPhoto.id == null) Container(),
               const SizedBox(
+                height: 10,
                 width: 20,
               ),
             ],
@@ -311,7 +313,7 @@ class _PhotoUploadState extends State<PhotoUpload> {
           PhotoModel pm = PhotoModel(listId: resData[i]['id']);
           pm.id = resData[i]['id'];
           pm.fileName = resData[i]['name'];
-          pm.thumbnail = resData[i]['formats']['thumbnail']['url'];
+          //pm.thumbnail = resData[i]['formats']['thumbnail']['url'];
           pm.imageUrl = resData[i]['url'];
           _photosList.add(pm);
         }
