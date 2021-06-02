@@ -53,8 +53,9 @@ class _PacienteScreenState extends State<PacienteScreen> {
     for (var history in data) {
       l.add(
         ListTile(
+          onTap: () {},
           leading: Icon(Icons.assignment_turned_in),
-          title: Text(history['status']),
+          title: Text(history['status'] + ' (Visualizar)'),
           subtitle: Row(
             children: [
               Column(

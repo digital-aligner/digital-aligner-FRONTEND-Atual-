@@ -69,6 +69,11 @@ class PedidosListProvider with ChangeNotifier {
     }
   }
 
+  void putPedidoInList(var pedido) {
+    _pedidos = [];
+    _pedidos.add(pedido);
+  }
+
   Future<List<dynamic>> fetchPedidos(int startPage) async {
     //Check dropdown to change route: Todos, pedidos aprovados, etc.
     String _routeType;
