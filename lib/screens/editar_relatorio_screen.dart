@@ -78,8 +78,10 @@ class _EditarRelatorioScreenState extends State<EditarRelatorioScreen> {
   @override
   void didChangeDependencies() {
     _authStore = Provider.of<AuthProvider>(context);
+
     if (runOnce) {
       _relatorioStore = Provider.of<RelatorioProvider>(context);
+      _relatorioStore.clearRelatorioList();
       _relatorioStore.clearSelectedRelatorio();
       _relatorioStore.setToken(_authStore.token);
       _argMap = ModalRoute.of(context).settings.arguments;

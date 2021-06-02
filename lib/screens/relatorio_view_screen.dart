@@ -502,6 +502,16 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
   }
 
   Widget _relatorioUi(List<dynamic> data, String codPedido) {
+    //get most recent relatório
+    String lastUrl = '';
+    for (int i = 4; i >= 0; i--) {
+      if (data[0]['relatorio_pdf']['relatorio${i + 1}'] != null &&
+          data[0]['relatorio_pdf']['relatorio${i + 1}'].length > 0) {
+        lastUrl = data[0]['relatorio_pdf']['relatorio${i + 1}'];
+        break;
+      }
+    }
+
     return Column(
       children: [
         Wrap(
@@ -521,13 +531,13 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
             ),
             const Divider(thickness: 1),
             //RELATÓRIO PREVIEW (PDF)
-            _relatorioView(data[0]['relatorio_pdf']['relatorio1']),
+            _relatorioView(lastUrl),
             const SizedBox(
               height: 70,
             ),
             ElevatedButton.icon(
               onPressed: () async {
-                await launch(data[0]['relatorio_pdf']['relatorio1']);
+                await launch(lastUrl);
               },
               icon: const Icon(Icons.download_done_rounded),
               label: const Text('Baixar relatório em PDF'),

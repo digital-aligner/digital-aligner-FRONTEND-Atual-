@@ -67,6 +67,7 @@ class _GerarRelatorioScreenState extends State<GerarRelatorioScreen> {
     _authStore = Provider.of<AuthProvider>(context);
     if (runOnce) {
       _relatorioStore = Provider.of<RelatorioProvider>(context);
+      _relatorioStore.clearRelatorioList();
       _relatorioStore.clearSelectedRelatorio();
       _relatorioStore.setToken(_authStore.token);
       final Map _argMap = ModalRoute.of(context).settings.arguments;

@@ -123,52 +123,58 @@ class _RelatorioPPTUploadState extends State<RelatorioPPTUpload>
               currelatorioPPTUpload.id != null
                   ? IconButton(
                       icon: Icon(Icons.delete),
-                      onPressed: () {
-                        if (widget.isEdit) {
-                          //If negitive, error ocurred só delete only from list
-                          if (currelatorioPPTUpload.id < 0) {
-                            setState(() {
-                              _relatorioPPTUploadsList.removeWhere(
-                                (photo) => photo.id == currelatorioPPTUpload.id,
-                              );
-                            });
-                          } else {
-                            _s3RelatorioDeleteStore.setIdToDelete(
-                              currelatorioPPTUpload.id,
-                            );
-                            setState(() {
-                              _relatorioPPTUploadsList.removeWhere(
-                                (relatorioPPTUpload) =>
-                                    relatorioPPTUpload.id ==
+                      onPressed: _relatorioStore.getFstSendingState() ==
+                              _relatorioStore.getFstNotSendingState()
+                          ? () {
+                              if (widget.isEdit) {
+                                //If negitive, error ocurred só delete only from list
+                                if (currelatorioPPTUpload.id < 0) {
+                                  setState(() {
+                                    _relatorioPPTUploadsList.removeWhere(
+                                      (photo) =>
+                                          photo.id == currelatorioPPTUpload.id,
+                                    );
+                                  });
+                                } else {
+                                  _s3RelatorioDeleteStore.setIdToDelete(
                                     currelatorioPPTUpload.id,
-                              );
-                            });
-                          }
-                        } else {
-                          //If negitive, error ocurred só delete only from list
-                          if (currelatorioPPTUpload.id < 0) {
-                            setState(() {
-                              _relatorioPPTUploadsList.removeWhere(
-                                (photo) => photo.id == currelatorioPPTUpload.id,
-                              );
-                            });
-                          } else {
-                            _deleterelatorioPPTUpload(
-                                    _token, currelatorioPPTUpload.id)
-                                .then((res) {
-                              var data = json.decode(res.body);
-                              if (data['id'] != null) {
-                                setState(() {
-                                  _relatorioPPTUploadsList.removeWhere(
-                                    (relatorioPPTUpload) =>
-                                        relatorioPPTUpload.id == data['id'],
                                   );
-                                });
+                                  setState(() {
+                                    _relatorioPPTUploadsList.removeWhere(
+                                      (relatorioPPTUpload) =>
+                                          relatorioPPTUpload.id ==
+                                          currelatorioPPTUpload.id,
+                                    );
+                                  });
+                                }
+                              } else {
+                                //If negitive, error ocurred só delete only from list
+                                if (currelatorioPPTUpload.id < 0) {
+                                  setState(() {
+                                    _relatorioPPTUploadsList.removeWhere(
+                                      (photo) =>
+                                          photo.id == currelatorioPPTUpload.id,
+                                    );
+                                  });
+                                } else {
+                                  _deleterelatorioPPTUpload(
+                                          _token, currelatorioPPTUpload.id)
+                                      .then((res) {
+                                    var data = json.decode(res.body);
+                                    if (data['id'] != null) {
+                                      setState(() {
+                                        _relatorioPPTUploadsList.removeWhere(
+                                          (relatorioPPTUpload) =>
+                                              relatorioPPTUpload.id ==
+                                              data['id'],
+                                        );
+                                      });
+                                    }
+                                  });
+                                }
                               }
-                            });
-                          }
-                        }
-                      },
+                            }
+                          : null,
                     )
                   : Container(),
               const SizedBox(
@@ -252,7 +258,7 @@ class _RelatorioPPTUploadState extends State<RelatorioPPTUpload>
         //STOP UI PROGRESS IF NOT FINISHED
         isUploading = false;
 
-        _relatorioStore.updateRelatorioPPTs3Urls(resData[0]);
+        _relatorioStore.setPptToSend(resData[0]);
 
         setState(() {
           _relatorioPPTUploadsList[posContainingWidget].id = resData[0]['id'];
@@ -320,6 +326,7 @@ class _RelatorioPPTUploadState extends State<RelatorioPPTUpload>
         //pm.thumbnail = resData[i]['formats']['thumbnail']['url'];
         pm.imageUrl = resData[0]['url'];
         _relatorioPPTUploadsList.add(pm);
+        _relatorioStore.updatePptToSend(pm);
       } else {
         _relatorioPPTUploadsList = [];
       }

@@ -31,6 +31,7 @@ class RelatorioPdfUpload extends StatefulWidget {
 }
 
 class _RelatorioPdfUploadState extends State<RelatorioPdfUpload> {
+  AuthProvider _authStore;
   bool _isFetchEdit = true;
   PedidoProvider _novoPedStore;
   RelatorioProvider _relatorioStore;
@@ -123,61 +124,67 @@ class _RelatorioPdfUploadState extends State<RelatorioPdfUpload> {
               currelatorioPdfUpload.id != null
                   ? IconButton(
                       icon: Icon(Icons.delete),
-                      onPressed: () {
-                        if (widget.isEdit) {
-                          //If negative, error ocurred só delete only from list
-                          if (currelatorioPdfUpload.id < 0) {
-                            setState(() {
-                              _relatorioPdfUploadsList.removeWhere(
-                                (photo) => photo.id == currelatorioPdfUpload.id,
-                              );
-                            });
-                            //Block send button in pedido_form
-                            _doesListHaveErrors();
-                          } else {
-                            _s3RelatorioDeleteStore.setIdToDelete(
-                              currelatorioPdfUpload.id,
-                            );
-                            setState(() {
-                              _relatorioPdfUploadsList.removeWhere(
-                                (relatorioPdfUpload) =>
-                                    relatorioPdfUpload.id ==
+                      onPressed: _relatorioStore.getFstSendingState() ==
+                              _relatorioStore.getFstNotSendingState()
+                          ? () {
+                              if (widget.isEdit) {
+                                //If negative, error ocurred só delete only from list
+                                if (currelatorioPdfUpload.id < 0) {
+                                  setState(() {
+                                    _relatorioPdfUploadsList.removeWhere(
+                                      (photo) =>
+                                          photo.id == currelatorioPdfUpload.id,
+                                    );
+                                  });
+                                  //Block send button in pedido_form
+                                  _doesListHaveErrors();
+                                } else {
+                                  _s3RelatorioDeleteStore.setIdToDelete(
                                     currelatorioPdfUpload.id,
-                              );
-                            });
-                            //Block send button in pedido_form
-                            _doesListHaveErrors();
-                          }
-                        } else {
-                          //If negative, error ocurred só delete only from list
-                          if (currelatorioPdfUpload.id < 0) {
-                            setState(() {
-                              _relatorioPdfUploadsList.removeWhere(
-                                (photo) => photo.id == currelatorioPdfUpload.id,
-                              );
-                            });
-                            //Block send button in pedido_form
-                            _doesListHaveErrors();
-                          } else {
-                            _deleterelatorioPdfUpload(
-                              _token,
-                              currelatorioPdfUpload.id,
-                            ).then((res) {
-                              var data = json.decode(res.body);
-                              if (data['id'] != null) {
-                                setState(() {
-                                  _relatorioPdfUploadsList.removeWhere(
-                                    (relatorioPdfUpload) =>
-                                        relatorioPdfUpload.id == data['id'],
                                   );
-                                });
-                                //Block send button in pedido_form
-                                _doesListHaveErrors();
+                                  setState(() {
+                                    _relatorioPdfUploadsList.removeWhere(
+                                      (relatorioPdfUpload) =>
+                                          relatorioPdfUpload.id ==
+                                          currelatorioPdfUpload.id,
+                                    );
+                                  });
+                                  //Block send button in pedido_form
+                                  _doesListHaveErrors();
+                                }
+                              } else {
+                                //If negative, error ocurred só delete only from list
+                                if (currelatorioPdfUpload.id < 0) {
+                                  setState(() {
+                                    _relatorioPdfUploadsList.removeWhere(
+                                      (photo) =>
+                                          photo.id == currelatorioPdfUpload.id,
+                                    );
+                                  });
+                                  //Block send button in pedido_form
+                                  _doesListHaveErrors();
+                                } else {
+                                  _deleterelatorioPdfUpload(
+                                    _token,
+                                    currelatorioPdfUpload.id,
+                                  ).then((res) {
+                                    var data = json.decode(res.body);
+                                    if (data['id'] != null) {
+                                      setState(() {
+                                        _relatorioPdfUploadsList.removeWhere(
+                                          (relatorioPdfUpload) =>
+                                              relatorioPdfUpload.id ==
+                                              data['id'],
+                                        );
+                                      });
+                                      //Block send button in pedido_form
+                                      _doesListHaveErrors();
+                                    }
+                                  });
+                                }
                               }
-                            });
-                          }
-                        }
-                      },
+                            }
+                          : null,
                     )
                   : Container(),
               const SizedBox(
@@ -305,25 +312,27 @@ class _RelatorioPdfUploadState extends State<RelatorioPdfUpload> {
     var resData = json.decode(_response.body);
 
     try {
-      for (int i = 0; i < resData.length; i++) {
-        if (resData[i]['id'] != null) {
-          RelatorioPdfModel pm = RelatorioPdfModel(listId: resData[i]['id']);
-          pm.id = resData[i]['id'];
-          pm.fileName = resData[i]['name'];
+      if (resData[0].containsKey('id')) {
+        for (var rel in resData) {
+          RelatorioPdfModel pm = RelatorioPdfModel(listId: rel['id']);
+          pm.id = rel['id'];
+          pm.fileName = rel['name'];
+          pm.imageUrl = rel['url'];
           //pm.thumbnail = resData[i]['formats']['thumbnail']['url'];
-          pm.imageUrl = resData[i]['url'];
           _relatorioPdfUploadsList.add(pm);
         }
+      } else {
+        _relatorioPdfUploadsList = [];
       }
+
       setState(() {
         _isFetchEdit = false;
       });
     } catch (error) {
-      /*
       setState(() {
         _relatorioPdfUploadsList = [];
         _isFetchEdit = false;
-      });*/
+      });
       print(error);
     }
 
@@ -346,8 +355,8 @@ class _RelatorioPdfUploadState extends State<RelatorioPdfUpload> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    AuthProvider _authStore = Provider.of<AuthProvider>(context);
+  void didChangeDependencies() {
+    _authStore = Provider.of<AuthProvider>(context);
 
     _relatorioStore = Provider.of<RelatorioProvider>(context);
     _novoPedStore = Provider.of<PedidoProvider>(context);
@@ -361,6 +370,13 @@ class _RelatorioPdfUploadState extends State<RelatorioPdfUpload> {
       _getPdfs(_authStore.token);
     }
 
+    _relatorioPdfUploadsList = _relatorioStore.getRelatorioList();
+
+    super.didChangeDependencies();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: 600,
       child: SingleChildScrollView(

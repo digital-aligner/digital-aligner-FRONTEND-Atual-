@@ -4,6 +4,7 @@ import 'package:digital_aligner_app/dados/models/relatorio/Relatorio_pdf.dart';
 import 'package:digital_aligner_app/dados/models/relatorio/Relatorio_ppt.dart';
 import 'package:digital_aligner_app/dados/models/relatorio/relatorio.dart';
 import 'package:digital_aligner_app/widgets/file_uploads/relatorio_pdf_model.dart';
+import 'package:digital_aligner_app/widgets/file_uploads/relatorio_ppt_model.dart';
 //import 'package:digital_aligner_app/widgets/file_uploads/relatorio_ppt_model.dart';
 
 import 'package:flutter/widgets.dart';
@@ -15,6 +16,13 @@ class RelatorioProvider with ChangeNotifier {
   //New relatorioPdfUpload object with id and image url from server
   List<RelatorioPdfModel> _relatorioPdfUploadsList = <RelatorioPdfModel>[];
 
+  List<RelatorioPdfModel> getRelatorioList() {
+    return _relatorioPdfUploadsList;
+  }
+
+  void clearRelatorioList() {
+    _relatorioPdfUploadsList = <RelatorioPdfModel>[];
+  }
   //MANAGE PPT,PDF SEND STATE
 
   static const int _fstNotSending = 0;
@@ -90,26 +98,53 @@ class RelatorioProvider with ChangeNotifier {
     _token = t;
   }
 
-  void updateRelatorioPPTs3Urls(var data) {
+  void setPptToSend(var data) {
     _selectedRelatorio.relatorioPPT.relatorio1 = data['url'];
     _selectedRelatorio.relatorioPPT.relatorio1Id = data['id'];
   }
 
-  void setPdfListForSend(List<RelatorioPdfModel> list) {
-    if (list == null) {
-      _selectedRelatorio.relatorioPdf = RelatorioPdf();
+  void updatePptToSend(RelatorioPPTModel data) {
+    _selectedRelatorio.relatorioPPT.relatorio1 = data.imageUrl;
+    _selectedRelatorio.relatorioPPT.relatorio1Id = data.id;
+  }
+
+  void setPdfListForSend() {
+    //clear list to remove any unwanted links/ids
+    _selectedRelatorio.relatorioPdf = RelatorioPdf();
+
+    if (_relatorioPdfUploadsList == null ||
+        _relatorioPdfUploadsList.length <= 0) {
       return;
     }
-    _selectedRelatorio.relatorioPdf.relatorio1 = list[0].imageUrl;
-    _selectedRelatorio.relatorioPdf.relatorio1Id = list[0].id;
-    _selectedRelatorio.relatorioPdf.relatorio2 = list[1].imageUrl;
-    _selectedRelatorio.relatorioPdf.relatorio2Id = list[1].id;
-    _selectedRelatorio.relatorioPdf.relatorio3 = list[2].imageUrl;
-    _selectedRelatorio.relatorioPdf.relatorio3Id = list[2].id;
-    _selectedRelatorio.relatorioPdf.relatorio4 = list[3].imageUrl;
-    _selectedRelatorio.relatorioPdf.relatorio4Id = list[3].id;
-    _selectedRelatorio.relatorioPdf.relatorio5 = list[4].imageUrl;
-    _selectedRelatorio.relatorioPdf.relatorio5Id = list[4].id;
+
+    for (int i = 0; i < _relatorioPdfUploadsList.length; i++) {
+      if (i == 0) {
+        _selectedRelatorio.relatorioPdf.relatorio1 =
+            _relatorioPdfUploadsList[0].imageUrl;
+        _selectedRelatorio.relatorioPdf.relatorio1Id =
+            _relatorioPdfUploadsList[0].id;
+      } else if (i == 1) {
+        _selectedRelatorio.relatorioPdf.relatorio2 =
+            _relatorioPdfUploadsList[1].imageUrl;
+        _selectedRelatorio.relatorioPdf.relatorio2Id =
+            _relatorioPdfUploadsList[1].id;
+      } else if (i == 2) {
+        _selectedRelatorio.relatorioPdf.relatorio3 =
+            _relatorioPdfUploadsList[2].imageUrl;
+        _selectedRelatorio.relatorioPdf.relatorio3Id =
+            _relatorioPdfUploadsList[2].id;
+      } else if (i == 3) {
+        _selectedRelatorio.relatorioPdf.relatorio4 =
+            _relatorioPdfUploadsList[3].imageUrl;
+        _selectedRelatorio.relatorioPdf.relatorio4Id =
+            _relatorioPdfUploadsList[3].id;
+      } else if (i == 4) {
+        _selectedRelatorio.relatorioPdf.relatorio5 =
+            _relatorioPdfUploadsList[4].imageUrl;
+        _selectedRelatorio.relatorioPdf.relatorio5Id =
+            _relatorioPdfUploadsList[4].id;
+      }
+    }
   }
 
   /*
@@ -196,26 +231,22 @@ class RelatorioProvider with ChangeNotifier {
           _data[0]['relatorio_pdf']['relatorio1'];
       _selectedRelatorio.relatorioPdf.relatorio1Id =
           _data[0]['relatorio_pdf']['relatorio1_id'];
-      _selectedRelatorio.relatorioPdf.relatorio1 =
+      _selectedRelatorio.relatorioPdf.relatorio2 =
           _data[0]['relatorio_pdf']['relatorio2'];
-      _selectedRelatorio.relatorioPdf.relatorio1Id =
+      _selectedRelatorio.relatorioPdf.relatorio2Id =
           _data[0]['relatorio_pdf']['relatorio2_id'];
-      _selectedRelatorio.relatorioPdf.relatorio1 =
+      _selectedRelatorio.relatorioPdf.relatorio3 =
           _data[0]['relatorio_pdf']['relatorio3'];
-      _selectedRelatorio.relatorioPdf.relatorio1Id =
+      _selectedRelatorio.relatorioPdf.relatorio3Id =
           _data[0]['relatorio_pdf']['relatorio3_id'];
-      _selectedRelatorio.relatorioPdf.relatorio1 =
+      _selectedRelatorio.relatorioPdf.relatorio4 =
           _data[0]['relatorio_pdf']['relatorio4'];
-      _selectedRelatorio.relatorioPdf.relatorio1Id =
+      _selectedRelatorio.relatorioPdf.relatorio4Id =
           _data[0]['relatorio_pdf']['relatorio4_id'];
-      _selectedRelatorio.relatorioPdf.relatorio1 =
+      _selectedRelatorio.relatorioPdf.relatorio5 =
           _data[0]['relatorio_pdf']['relatorio5'];
-      _selectedRelatorio.relatorioPdf.relatorio1Id =
+      _selectedRelatorio.relatorioPdf.relatorio5Id =
           _data[0]['relatorio_pdf']['relatorio5_id'];
-      _selectedRelatorio.relatorioPPT.relatorio1 =
-          _data[0]['relatorio_ppt']['relatorio1'];
-      _selectedRelatorio.relatorioPPT.relatorio1Id =
-          _data[0]['relatorio_ppt']['relatorio1_id'];
     } catch (error) {
       print('Error! ' + error.toString());
       return error;
@@ -223,6 +254,8 @@ class RelatorioProvider with ChangeNotifier {
   }
 
   Future<Map<dynamic, dynamic>> enviarRelatorio() async {
+    setPdfListForSend();
+
     var _response = await http.post(Uri.parse(RotasUrl.rotaCriarRelatorio),
         headers: {
           'Content-Type': 'application/json',
@@ -236,6 +269,7 @@ class RelatorioProvider with ChangeNotifier {
   }
 
   Future<Map<dynamic, dynamic>> atualizarRelatorio() async {
+    setPdfListForSend();
     var _response = await http.put(Uri.parse(RotasUrl.rotaAtualizarRelatorio),
         headers: {
           'Content-Type': 'application/json',
