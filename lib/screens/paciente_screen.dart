@@ -4,6 +4,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/providers/pacientes_list_provider.dart';
+import 'package:digital_aligner_app/providers/pedidos_list_provider.dart';
 import 'package:digital_aligner_app/screens/meus_pedidos.dart';
 import 'package:digital_aligner_app/screens/meus_refinamentos.dart';
 import 'package:digital_aligner_app/screens/refinamento_pedido.dart';
@@ -16,6 +17,8 @@ import 'package:provider/provider.dart';
 import '../rotas_url.dart';
 import 'login_screen.dart';
 import 'novo_pedido.dart';
+import 'pedido_view_screen.dart';
+import 'relatorio_view_screen.dart';
 
 class PacienteScreen extends StatefulWidget {
   static const routeName = '/paciente';
@@ -25,6 +28,7 @@ class PacienteScreen extends StatefulWidget {
 
 class _PacienteScreenState extends State<PacienteScreen> {
   AuthProvider _authStore;
+  PedidosListProvider _pedidosListStore;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   var args;
 
@@ -48,14 +52,85 @@ class _PacienteScreenState extends State<PacienteScreen> {
     super.deactivate();
   }
 
+//Text(history['status'] + ' (Visualizar)')
   List<ListTile> _listUi(List data) {
     List<ListTile> l = [];
     for (var history in data) {
       l.add(
         ListTile(
-          onTap: () {},
+          onTap: () {
+            if (history['bool_novo_pedido'] != null &&
+                history['bool_novo_pedido']) {
+              //Manually clear then insert pedido into list
+              _pedidosListStore.putPedidoInList(history['pedido']);
+              //then push route
+              Navigator.of(context).pushNamed(
+                PedidoViewScreen.routeName,
+                arguments: {'index': 0},
+              ).then((didUpdate) {
+                if (didUpdate) {
+                  Future.delayed(Duration(milliseconds: 800), () {
+                    //Update history with new values
+                    setState(() {
+                      _historico = null;
+                      fetchData = true;
+                    });
+                  });
+                }
+              });
+            } else if (history['bool_relatorio_pronto'] != null &&
+                history['bool_relatorio_pronto']) {
+              Navigator.of(context).pushNamed(
+                RelatorioViewScreen.routeName,
+                arguments: {
+                  'pedido': history['pedido'],
+                },
+              ).then((didUpdate) {
+                if (didUpdate) {
+                  Future.delayed(Duration(milliseconds: 800), () {
+                    //Update history with new values
+                    setState(() {
+                      _historico = null;
+                      fetchData = true;
+                    });
+                  });
+                }
+              });
+            } else if (history['bool_relatorio_atualizado'] != null &&
+                history['bool_relatorio_atualizado']) {
+              Navigator.of(context).pushNamed(
+                RelatorioViewScreen.routeName,
+                arguments: {
+                  'pedido': history['pedido'],
+                },
+              ).then((didUpdate) {
+                if (didUpdate) {
+                  Future.delayed(Duration(milliseconds: 800), () {
+                    //Update history with new values
+                    setState(() {
+                      _historico = null;
+                      fetchData = true;
+                    });
+                  });
+                }
+              });
+            }
+          },
           leading: Icon(Icons.assignment_turned_in),
-          title: Text(history['status'] + ' (Visualizar)'),
+          title: RichText(
+            text: TextSpan(
+              children: <TextSpan>[
+                TextSpan(
+                  style: TextStyle(fontFamily: 'Questrial'),
+                  text: history['status'],
+                ),
+                TextSpan(
+                  text: '     visualizar',
+                  style: TextStyle(color: Colors.blue),
+                ),
+              ],
+            ),
+          ),
           subtitle: Row(
             children: [
               Column(
@@ -470,11 +545,16 @@ class _PacienteScreenState extends State<PacienteScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
     _pacienteListStore = Provider.of<PacientesListProvider>(context);
     _authStore = Provider.of<AuthProvider>(context);
+    _pedidosListStore = Provider.of<PedidosListProvider>(context);
     args = ModalRoute.of(context).settings.arguments;
+    super.didChangeDependencies();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     if (!_authStore.isAuth) {
       return LoginScreen();
     }
