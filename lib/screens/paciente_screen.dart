@@ -31,6 +31,9 @@ class _PacienteScreenState extends State<PacienteScreen> {
   PedidosListProvider _pedidosListStore;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   var args;
+  //Calculated dynamically based on history.length
+  //default height
+  double historyHeight = 200;
 
   bool _blockUi = false;
 
@@ -52,7 +55,6 @@ class _PacienteScreenState extends State<PacienteScreen> {
     super.deactivate();
   }
 
-//Text(history['status'] + ' (Visualizar)')
   List<ListTile> _listUi(List data) {
     List<ListTile> l = [];
     for (var history in data) {
@@ -116,21 +118,9 @@ class _PacienteScreenState extends State<PacienteScreen> {
               });
             }
           },
+          title: Text(history['status']),
           leading: Icon(Icons.assignment_turned_in),
-          title: RichText(
-            text: TextSpan(
-              children: <TextSpan>[
-                TextSpan(
-                  style: TextStyle(fontFamily: 'Questrial'),
-                  text: history['status'],
-                ),
-                TextSpan(
-                  text: '     visualizar',
-                  style: TextStyle(color: Colors.blue),
-                ),
-              ],
-            ),
-          ),
+          trailing: Text('visualizar', style: TextStyle(color: Colors.blue)),
           subtitle: Row(
             children: [
               Column(
@@ -169,6 +159,13 @@ class _PacienteScreenState extends State<PacienteScreen> {
         throw _historico[0]['error'];
       }
 
+      //Change ui height
+      if (!_historico[0].containsKey('error') && _historico.length > 0) {
+        setState(() {
+          historyHeight = _historico.length.toDouble() * 80;
+        });
+      }
+
       fetchData = false;
 
       return _historico;
@@ -178,60 +175,17 @@ class _PacienteScreenState extends State<PacienteScreen> {
     }
   }
 
-  Widget _pacienteData(Map args) {
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      alignment: WrapAlignment.center,
-      direction: Axis.horizontal,
+  Widget _pacienteData(Map args, double width) {
+    return Column(
       children: [
         Container(
-          width: 500,
-          height: 320,
-          child: Card(
-            elevation: 10,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ListTile(
-                  leading: Icon(Icons.person),
-                  title: Text(args['nome_paciente']),
-                  trailing: TextButton(
-                    child: const Text('Editar'),
-                    onPressed: () {
-                      _updatePaciente(context);
-                    },
-                  ),
-                  subtitle: Row(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            'Data de Nasc. ' +
-                                _isoDateTimeConversion(
-                                  args['data_nascimento'],
-                                ),
-                          ),
-                          Text(
-                            'Código Paciente: ' + args['codigo_paciente'],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Container(
-          width: 500,
-          height: 320,
+          width: 800,
+          height: 350,
           child: Card(
             elevation: 10,
             child: Column(
               children: [
+                //opções
                 Container(
                   margin: EdgeInsets.symmetric(
                     vertical: 20,
@@ -243,12 +197,45 @@ class _PacienteScreenState extends State<PacienteScreen> {
                     ),
                   ),
                 ),
+                //paciente
+                Card(
+                  elevation: 2,
+                  child: ListTile(
+                    leading: Icon(Icons.person),
+                    title: Text(args['nome_paciente']),
+                    trailing: TextButton(
+                      child: const Text('Editar'),
+                      onPressed: () {
+                        _updatePaciente(context);
+                      },
+                    ),
+                    subtitle: Row(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              'Data de Nasc. ' +
+                                  _isoDateTimeConversion(
+                                    args['data_nascimento'],
+                                  ),
+                            ),
+                            Text(
+                              'Código Paciente: ' + args['codigo_paciente'],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                //solicitar refinamento
                 Card(
                   elevation: 2,
                   child: ListTile(
                     leading: Icon(Icons.assessment_outlined),
-                    title: TextButton(
-                      child: const Text('Novo Refinamento'),
+                    trailing: TextButton(
+                      child: const Text('Solicitar Refinamento'),
                       onPressed: _pacienteIsMine
                           ? () {
                               Navigator.of(context)
@@ -267,6 +254,7 @@ class _PacienteScreenState extends State<PacienteScreen> {
                     ),
                   ),
                 ),
+                /*
                 Card(
                   elevation: 2,
                   child: ListTile(
@@ -334,14 +322,13 @@ class _PacienteScreenState extends State<PacienteScreen> {
                       },
                     ),
                   ),
-                ),
+                ),*/
               ],
             ),
           ),
         ),
         Container(
-          width: 500,
-          height: 400,
+          width: 800,
           child: Card(
             elevation: 10,
             child: Column(
@@ -370,15 +357,12 @@ class _PacienteScreenState extends State<PacienteScreen> {
                               );
                             } else {
                               return Container(
-                                height: 300,
-                                child: Scrollbar(
-                                  isAlwaysShown: true,
-                                  child: ListView(
-                                    children: ListTile.divideTiles(
-                                      context: context,
-                                      tiles: _listUi(snapshot.data),
-                                    ).toList(),
-                                  ),
+                                height: historyHeight,
+                                child: ListView(
+                                  children: ListTile.divideTiles(
+                                    context: context,
+                                    tiles: _listUi(snapshot.data),
+                                  ).toList(),
                                 ),
                               );
                             }
@@ -555,6 +539,8 @@ class _PacienteScreenState extends State<PacienteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+
     if (!_authStore.isAuth) {
       return LoginScreen();
     }
@@ -599,10 +585,10 @@ class _PacienteScreenState extends State<PacienteScreen> {
         showTrackOnHover: true,
         child: SingleChildScrollView(
           child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: 1000,
+            width: width,
+            height: 600 + historyHeight,
             padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-            child: _pacienteData(args),
+            child: _pacienteData(args, width),
           ),
         ),
       ),
