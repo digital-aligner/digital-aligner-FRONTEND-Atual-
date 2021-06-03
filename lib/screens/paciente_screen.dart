@@ -116,6 +116,63 @@ class _PacienteScreenState extends State<PacienteScreen> {
                   });
                 }
               });
+            } else if (history['bool_novo_refinamento'] != null &&
+                history['bool_novo_refinamento']) {
+              //Manually clear then insert pedido into list
+              _pedidosListStore.putPedidoInList(history['pedido']);
+              //then push route
+              Navigator.of(context).pushNamed(
+                PedidoViewScreen.routeName,
+                arguments: {'index': 0},
+              ).then((didUpdate) {
+                if (didUpdate) {
+                  Future.delayed(Duration(milliseconds: 800), () {
+                    //Update history with new values
+                    setState(() {
+                      _historico = null;
+                      fetchData = true;
+                    });
+                  });
+                }
+              });
+            } else if (history['bool_atualizacao_pedido'] != null &&
+                history['bool_atualizacao_pedido']) {
+              //Manually clear then insert pedido into list
+              _pedidosListStore.putPedidoInList(history['pedido']);
+              //then push route
+              Navigator.of(context).pushNamed(
+                PedidoViewScreen.routeName,
+                arguments: {'index': 0},
+              ).then((didUpdate) {
+                if (didUpdate) {
+                  Future.delayed(Duration(milliseconds: 800), () {
+                    //Update history with new values
+                    setState(() {
+                      _historico = null;
+                      fetchData = true;
+                    });
+                  });
+                }
+              });
+            } else if (history['bool_pedido_pronto'] != null &&
+                history['bool_pedido_pronto']) {
+              //Manually clear then insert pedido into list
+              _pedidosListStore.putPedidoInList(history['pedido']);
+              //then push route
+              Navigator.of(context).pushNamed(
+                PedidoViewScreen.routeName,
+                arguments: {'index': 0},
+              ).then((didUpdate) {
+                if (didUpdate) {
+                  Future.delayed(Duration(milliseconds: 800), () {
+                    //Update history with new values
+                    setState(() {
+                      _historico = null;
+                      fetchData = true;
+                    });
+                  });
+                }
+              });
             }
           },
           title: Text(history['status']),

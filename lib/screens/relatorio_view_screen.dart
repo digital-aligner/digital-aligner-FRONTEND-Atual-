@@ -522,7 +522,8 @@ class _RelatorioViewScreenState extends State<RelatorioViewScreen> {
           crossAxisAlignment: WrapCrossAlignment.center,
           children: <Widget>[
             Text(
-              'RELATÓRIO DO PEDIDO: ' + codPedido,
+              '${_isoDateTimeConversion(data[0]['updated_at']) ?? ''} RELATÓRIO DO PEDIDO: ' +
+                  codPedido,
               style: TextStyle(
                 fontSize: 35,
                 //fontFamily: 'BigNoodleTitling',

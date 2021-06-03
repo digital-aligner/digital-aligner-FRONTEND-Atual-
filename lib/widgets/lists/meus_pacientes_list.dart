@@ -99,11 +99,20 @@ class _MeusPacientesListState extends State<MeusPacientesList> {
                                 ),
                                 if (width > mediaQuerySm)
                                   Expanded(
-                                    child: Text(
-                                      '${pacList[index]['historico_pacientes'][0]['status'] ?? '-'}',
-                                      textAlign: TextAlign.start,
-                                      //overflow: TextOverflow.ellipsis,
-                                    ),
+                                    child: pacList[index]
+                                                    ['historico_pacientes'] !=
+                                                null &&
+                                            pacList[index]
+                                                    ['historico_pacientes']
+                                                .isNotEmpty
+                                        ? Text(
+                                            '${pacList[index]['historico_pacientes'][0]['status'] ?? '-'}',
+                                            textAlign: TextAlign.start,
+                                          )
+                                        : Text(
+                                            '-',
+                                            textAlign: TextAlign.start,
+                                          ),
                                   ),
                                 Expanded(
                                   child: Text(

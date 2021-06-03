@@ -577,9 +577,12 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                 'pacienteId': pedList[index]['paciente']['id']
               },
             ).then((didUpdate) {
-              Navigator.pop(context);
-              Future.delayed(Duration(milliseconds: 800),
-                  () => _pedidosListStore.clearPedidosAndUpdate());
+              Navigator.pop(context, true);
+              /*
+              Future.delayed(
+                Duration(milliseconds: 800),
+                () => _pedidosListStore.clearPedidosAndUpdate(),
+              );*/
             });
           },
         ),
@@ -656,7 +659,7 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          if (_authStore.role != 'Credenciado')
+          /*if (_authStore.role != 'Credenciado')
             Container(
               width: 300,
               child: ElevatedButton(
@@ -677,7 +680,7 @@ class _PedidoViewScreenState extends State<PedidoViewScreen> {
                   }
                 },
               ),
-            ),
+            ),*/
         ],
       ),
     );

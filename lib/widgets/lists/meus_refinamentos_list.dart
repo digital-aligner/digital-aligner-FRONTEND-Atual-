@@ -16,6 +16,9 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
 class MeusRefinamentosList extends StatefulWidget {
+  final Function fetchDataHandler;
+
+  MeusRefinamentosList({this.fetchDataHandler});
   @override
   _MeusRefinamentosListState createState() => _MeusRefinamentosListState();
 }
@@ -195,7 +198,16 @@ class _MeusRefinamentosListState extends State<MeusRefinamentosList> {
                           Navigator.of(context).pushNamed(
                             PedidoViewScreen.routeName,
                             arguments: {'index': index},
-                          );
+                          ).then((didUpdate) {
+                            if (didUpdate) {
+                              Future.delayed(Duration(milliseconds: 800), () {
+                                widget.fetchDataHandler(true);
+
+                                _pedidosListStore.clearPedidosAndUpdate();
+                              });
+                            }
+                          });
+                          ;
                         },
                         title: Tooltip(
                           message: 'Visualizar e editar seus refinamentos',
