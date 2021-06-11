@@ -22,36 +22,16 @@ class PrimeiroCadastro extends StatefulWidget {
 
 class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
   AuthProvider _authStore;
-  bool firstFetch = true;
-  bool _sendingCadastro = false;
-  bool _refreshCityData = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  // ----- For flutter web scroll -------
-  ScrollController _scrollController = ScrollController();
 
   //DateFormat formatIso = DateFormat("yyyy-MM-dd");
   DateFormat format = DateFormat("dd/MM/yyyy");
-
-  //GET THE COUNTRY AND STATE VALUES FROM DB
-  List<dynamic> _stateCountryData;
-
-  //For ui
-  List<String> _countries;
-  List<String> _states;
-  List<String> _cities;
 
   String _email;
   String _password;
   String _nome;
   String _sobrenome;
   String _cro_uf;
-  String _endereco;
-  String _complemento;
-  String _bairro;
-  String _cidade;
-  String _uf;
-  String _pais;
 
   String _emailConfirm;
   String _passwordConfirm;
@@ -60,23 +40,13 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
 
   final _controllerCRO = TextEditingController();
   final _controllerCPF = TextEditingController();
-  final _controllerNUM = TextEditingController();
-  final _controllerCEP = TextEditingController();
 
   final _controllerTEL = TextEditingController();
   final _controllerCEL = TextEditingController();
 
   Timer searchOnStoppedTyping;
 
-  Future<dynamic> fetchCitiesData() async {
-    return await _authStore.getCitiesData(
-      local: _stateCountryData,
-      selectedState: _uf,
-      selectedCountry: _pais,
-    );
-  }
-
-  Widget _form(double width) {
+  Widget _form() {
     return Form(
       key: _formKey,
       child: Column(
@@ -1011,35 +981,14 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
 
   @override
   void didChangeDependencies() async {
+    _authStore = Provider.of<AuthProvider>(context, listen: false);
     super.didChangeDependencies();
-
-    if (firstFetch) {
-      _authStore = Provider.of<AuthProvider>(context, listen: false);
-      //GET THE COUNTRY AND STATE VALUES FROM DB
-      _stateCountryData = await _authStore.getCountryAndStateData();
-      //Map countries to ui
-      _countries = _authStore.mapCountriesDataToUiList(_stateCountryData);
-      //Map initial states (will be null to fetch pt-br)
-      _states = _authStore.mapCountryToStatesToUiList(
-        local: _stateCountryData,
-        selectedCountry: _pais,
-      );
-      //manually setting country to Brasil (will change)
-      _pais = 'Brasil';
-
-      setState(() {
-        firstFetch = false;
-      });
-    }
   }
 
   @override
   void dispose() {
     _controllerCRO.dispose();
     _controllerCPF.dispose();
-    _controllerNUM.dispose();
-    _controllerCEP.dispose();
-
     _controllerTEL.dispose();
     _controllerCEL.dispose();
     super.dispose();
@@ -1047,7 +996,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
+    width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: SecondaryAppbar(),
       body: GestureDetector(
@@ -1094,9 +1043,9 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                           ),
                         ),
                         const SizedBox(height: 50),
-                        _form(width),
+                        _form(),
                         const SizedBox(height: 50),
-                        _buttons(width),
+                        _buttons(),
                         const SizedBox(height: 50),
                       ],
                     ),

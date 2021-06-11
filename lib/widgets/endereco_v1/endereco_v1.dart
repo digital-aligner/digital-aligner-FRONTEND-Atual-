@@ -13,10 +13,14 @@ import '../../rotas_url.dart';
 
 class GerenciarEndereco extends StatefulWidget {
   final String enderecoType;
-  // global key recieved from parent (for criar endereco only)
-  final GlobalKey<FormState> formKey;
+  final GlobalKey<FormState> formKey; // for criar endereco only
+  final int userId;
 
-  GerenciarEndereco({this.enderecoType, this.formKey});
+  GerenciarEndereco({
+    @required this.enderecoType,
+    @required this.formKey,
+    this.userId = 0,
+  });
   @override
   _GerenciarEnderecoState createState() => _GerenciarEnderecoState();
 }
@@ -32,14 +36,14 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
   final GlobalKey<FormState> _formKey2 = GlobalKey<FormState>();
 
   //-------------- general variables ----------------
-  String _bairro = '';
-  String _cidade = '';
-  String _complemento = '';
-  String _endereco = '';
-  String _uf = '';
-  String _pais = '';
-  String _numero = '';
-  String _cep = '';
+  String _bairro;
+  String _cidade;
+  String _complemento;
+  String _endereco;
+  String _uf;
+  String _pais;
+  String _numero;
+  String _cep;
 
   AuthProvider _authStore;
   double sWidth;
@@ -240,12 +244,6 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
       ),
            
   */
-
-  @override
-  void didChangeDependencies() {
-    sWidth = MediaQuery.of(context).size.width;
-    super.didChangeDependencies();
-  }
 
   Widget _selecioneEnderecoField() {
     return DropdownSearch<String>(
@@ -498,6 +496,12 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
         ],
       ),
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    sWidth = MediaQuery.of(context).size.width;
+    super.didChangeDependencies();
   }
 
   Widget build(BuildContext context) {
