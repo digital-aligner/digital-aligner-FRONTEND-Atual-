@@ -487,6 +487,9 @@ class _EnderecoState extends State<Endereco> {
                 //hint: 'country in menu mode',
                 popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
                 onChanged: (value) async {
+                  //clear to force user select new uf and city
+
+                  _selectedCidade = '';
                   _selectedUf = value;
                 },
                 selectedItem: _selectedUf,
@@ -592,7 +595,15 @@ class _EnderecoState extends State<Endereco> {
   }
 
   Future<List<String>> _fetchCities() async {
-    final response = await http.get(Uri.parse(RotasUrl.rotaCidadesV1));
+    //can't fetch states if no state is selected
+    if (_selectedUf.length == 0) {
+      return [];
+    }
+    final response = await http.get(
+      Uri.parse(
+        RotasUrl.rotaCidadesV1 + '?estado=' + _selectedUf,
+      ),
+    );
     List<String> cities = [];
     List<dynamic> cityData = json.decode(response.body);
     cityData.forEach((c) {
@@ -615,7 +626,7 @@ class _EnderecoState extends State<Endereco> {
     List<String> states = [];
     List<dynamic> statesData = json.decode(response.body);
     statesData.forEach((c) {
-      states.add(c['estados']);
+      states.add(c['estado']);
     });
 
     return states;
