@@ -5,6 +5,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
 import 'package:digital_aligner_app/functions/system_functions.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
+import 'package:digital_aligner_app/providers/cadastro_provider.dart';
 import 'package:digital_aligner_app/widgets/endereco_v1/endereco_v1.dart';
 
 import 'package:dropdown_search/dropdown_search.dart';
@@ -23,16 +24,11 @@ class PrimeiroCadastro extends StatefulWidget {
 
 class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
   AuthProvider _authStore;
+  CadastroProvider _cadastroStore;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   double width;
   //DateFormat formatIso = DateFormat("yyyy-MM-dd");
   DateFormat format = DateFormat("dd/MM/yyyy");
-
-  String _email;
-  String _password;
-  String _nome;
-  String _sobrenome;
-  String _cro_uf;
 
   String _emailConfirm;
   String _passwordConfirm;
@@ -67,7 +63,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       child: TextFormField(
                         maxLength: 29,
                         onSaved: (String value) {
-                          _nome = value;
+                          _cadastroStore.novoCad.nome = value;
                         },
                         validator: (value) {
                           if (value.isEmpty) {
@@ -90,7 +86,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       child: TextFormField(
                         maxLength: 29,
                         onSaved: (String value) {
-                          _sobrenome = value;
+                          _cadastroStore.novoCad.sobrenome = value;
                         },
                         validator: (value) {
                           if (value.isEmpty) {
@@ -120,7 +116,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                               height: 80,
                               child: TextFormField(
                                 onSaved: (String value) {
-                                  _controllerCPF.text =
+                                  _cadastroStore.novoCad.username =
                                       SystemFunctions.formatCpfRemoveFormating(
                                     cpf: value,
                                   );
@@ -180,7 +176,8 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                               height: 80,
                               child: DateTimeField(
                                 onSaved: (value) {
-                                  _controllerDataNasc.text = value.toString();
+                                  _cadastroStore.novoCad.data_nasc =
+                                      value.toString();
                                 },
                                 validator: (value) {
                                   if (value == null) {
@@ -222,10 +219,14 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                         direction:
                             width > 600 ? Axis.horizontal : Axis.vertical,
                         children: [
+                          //fix cro uf
                           Expanded(
                             child: Container(
                               height: 80,
                               child: DropdownSearch<String>(
+                                onSaved: (value) {
+                                  _cadastroStore.novoCad.cro_uf = value;
+                                },
                                 validator: (value) {
                                   if (value == null) {
                                     return 'Por favor selecione CRO (UF)';
@@ -245,9 +246,6 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 //hint: 'country in menu mode',
                                 popupItemDisabled:
                                     (String s) => /*s.startsWith('I')*/ null,
-                                onChanged: (value) {
-                                  _cro_uf = value;
-                                },
                                 selectedItem: _cro_uf,
                               ),
                             ),
@@ -259,7 +257,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                               child: TextFormField(
                                 maxLength: 30,
                                 onSaved: (String value) {
-                                  _controllerCRO.text = value;
+                                  _cadastroStore.novoCad.cro_num = value;
                                 },
                                 validator: (value) {
                                   if (value.length == 0) {
@@ -285,7 +283,6 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                         ],
                       ),
                     ),
-                    //ENDEREÇO WILL BE HERE
                     const Divider(thickness: 1),
                     const SizedBox(height: 20),
                     Endereco(
@@ -307,8 +304,9 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                               height: 80,
                               child: TextFormField(
                                 onSaved: (String value) {
-                                  _controllerTEL.text = SystemFunctions
-                                      .formatTelefoneRemoveFormating(
+                                  _cadastroStore.novoCad.telefone =
+                                      SystemFunctions
+                                          .formatTelefoneRemoveFormating(
                                     telefone: value,
                                   );
                                 },
@@ -364,8 +362,9 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                               height: 80,
                               child: TextFormField(
                                 onSaved: (String value) {
-                                  _controllerCEL.text = SystemFunctions
-                                      .formatCellphoneRemoveFormating(
+                                  _cadastroStore.novoCad.celular =
+                                      SystemFunctions
+                                          .formatCellphoneRemoveFormating(
                                     cellphone: value,
                                   );
                                 },
@@ -434,7 +433,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                               child: TextFormField(
                                 maxLength: 200,
                                 onSaved: (String value) {
-                                  _email = value;
+                                  _cadastroStore.novoCad.email = value;
                                 },
                                 validator: (value) {
                                   if (value.length == 0) {
@@ -500,7 +499,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 maxLength: 30,
                                 obscureText: true,
                                 onSaved: (String value) {
-                                  _password = value;
+                                  _cadastroStore.novoCad.password = value;
                                 },
                                 validator: (value) {
                                   if (value.length == 0) {
@@ -583,7 +582,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
             onPressed: () {
               if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
-                _enviarCadastro().then((data) {
+                _cadastroStore.enviarPrimeiroCadastro().then((data) {
                   if (data['statusCode'] == 200) {
                     ScaffoldMessenger.of(context).removeCurrentSnackBar();
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -635,45 +634,6 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
     );
   }
 
-  Future<Map> _enviarCadastro() async {
-    /*
-    Map<String, dynamic> _cadastro = {
-      'bairro': _bairro,
-      'celular': _controllerCEL.text,
-      'cep': _controllerCEP.text,
-      'cidade': _cidade,
-      'complemento': _complemento,
-      'cro_num': _controllerCRO.text,
-      'cro_uf': _cro_uf,
-      'data_nasc': _controllerDataNasc.text,
-      'email': _email,
-      'endereco': _endereco,
-      'nome': _nome,
-      'numero': _controllerNUM.text,
-      'sobrenome': _sobrenome,
-      'telefone': _controllerTEL.text,
-      'uf': _uf,
-      'pais': _pais,
-      'username': _controllerCPF.text,
-      'password': _password,
-    };
-
-    //Changing iso string to local (just for input view)
-    DateTime dataNasc = DateTime.parse(_controllerDataNasc.text).toLocal();
-    _controllerDataNasc.text =
-        DateFormat('dd/MM/yyyy').format(dataNasc).toString();
-
-    var _response = await http.post(
-      Uri.parse(RotasUrl.rotaCadastro),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(_cadastro),
-    );
-
-    Map data = json.decode(_response.body);
-
-    return data;*/
-  }
-
   Widget _headline() {
     return Center(
       child: const Text(
@@ -690,6 +650,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
   @override
   void didChangeDependencies() async {
     _authStore = Provider.of<AuthProvider>(context, listen: false);
+    _cadastroStore = Provider.of<CadastroProvider>(context);
     super.didChangeDependencies();
   }
 

@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:digital_aligner_app/dados/models/cadastro/novo_cadastro_model.dart';
+
 import '../dados/models/cadastro/cadastro_model.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -7,6 +9,9 @@ import 'package:http/http.dart' as http;
 import '../rotas_url.dart';
 
 class CadastroProvider with ChangeNotifier {
+  // FOR FIRST TIME CADASTRO
+  NovoCadastroModel novoCad = NovoCadastroModel();
+
   //Converted json string to map
   List<dynamic> _cadastros;
   //Currently selected cadastro obj
@@ -86,6 +91,27 @@ class CadastroProvider with ChangeNotifier {
 
   void setMyCad(List<dynamic> data) {
     _selectedCad = CadastroModel.fromJson(data[0]);
+  }
+
+  Future<Map> enviarPrimeiroCadastro() async {
+    /*
+    //Changing iso string to local (just for input view)
+    DateTime dataNasc = DateTime.parse(_controllerDataNasc.text).toLocal();
+    _controllerDataNasc.text =
+        DateFormat('dd/MM/yyyy').format(dataNasc).toString();
+    */
+
+    var _response = await http.post(
+      Uri.parse(RotasUrl.rotaCadastro),
+      headers: {'Content-Type': 'application/json'},
+      body: novoCad.toJson(),
+    );
+
+    Map data = json.decode(_response.body);
+
+    if (data['statusCode'] == 200) novoCad = NovoCadastroModel();
+
+    return data;
   }
 
   Future<List<dynamic>> fetchMyCadastro() async {
