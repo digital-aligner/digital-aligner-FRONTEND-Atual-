@@ -7,7 +7,7 @@ class RotasUrl {
   static const rotaModInfWebView =
       'https://app.digitalaligner.com.br/stl_viewer/modelo_inf_viewer.html';
 
-  static const rotaBase = 'https://aqueous-wave-03435.herokuapp.com/';
+  static const rotaBase = 'http://localhost:1337/';
   static const rotaGetPaisesAndState = rotaBase + 'paises';
   static const rotaGetCities = rotaBase + 'cidades/';
   static const rotaLogin = rotaBase + 'auth/local/';
@@ -65,6 +65,11 @@ class RotasUrl {
   static const rotaDadosBaseRelatorio = rotaBase + 'dados-base-relatorio/';
   static const rotaRecuperarSenha = rotaBase + 'recuperar-senha/';
   static const rotaRecuperarSenhaNova = rotaBase + 'recuperar-senha-nova/';
+
+  //ROTAS VERSÃO V1
+  static const rotaPaisesV1 = rotaBase + 'paises-v1';
+  static const rotaCidadesV1 = rotaBase + 'cidades-v1';
+  static const rotaEstadosV1 = rotaBase + 'estados-v1';
   //Note: These delete routes only used on editing screens (editar pedido, editar relatório)
   //Not for deleting pedido or relatório
   static const rotaDeleteS3 = rotaBase + 'upload/files/';

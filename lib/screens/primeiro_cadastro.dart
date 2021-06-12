@@ -5,6 +5,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
 import 'package:digital_aligner_app/functions/system_functions.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
+import 'package:digital_aligner_app/widgets/endereco_v1/endereco_v1.dart';
 
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class PrimeiroCadastro extends StatefulWidget {
 class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
   AuthProvider _authStore;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  double width;
   //DateFormat formatIso = DateFormat("yyyy-MM-dd");
   DateFormat format = DateFormat("dd/MM/yyyy");
 
@@ -239,7 +240,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 mode: Mode.MENU,
                                 showSearchBox: true,
                                 showSelectedItem: true,
-                                items: _states,
+                                items: [],
                                 label: 'CRO (UF): *',
                                 //hint: 'country in menu mode',
                                 popupItemDisabled:
@@ -284,309 +285,15 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                         ],
                       ),
                     ),
+                    //ENDEREÇO WILL BE HERE
                     const Divider(thickness: 1),
-                    //endereco
-                    Container(
-                      margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
-                      height: 80,
-                      child: TextFormField(
-                        maxLength: 60,
-                        onSaved: (String value) {
-                          _endereco = value;
-                        },
-                        validator: (value) {
-                          if (value.length == 0) {
-                            return 'Por favor insira seu endereço';
-                          }
-                          return null;
-                        },
-                        initialValue: null,
-                        decoration: const InputDecoration(
-                          counterText: '',
-                          labelText: 'Endereço: *',
-                          border: const OutlineInputBorder(),
-                        ),
-                      ),
+                    const SizedBox(height: 20),
+                    Endereco(
+                      enderecoType: 'criar endereco',
+                      formKey: _formKey,
                     ),
-                    const SizedBox(height: 10),
-                    //número / complemento
-                    Container(
-                      width: width,
-                      height: width > 600 ? 80 : 180,
-                      child: Flex(
-                        direction:
-                            width > 600 ? Axis.horizontal : Axis.vertical,
-                        children: <Widget>[
-                          Expanded(
-                            child: Container(
-                              height: 80,
-                              child: TextFormField(
-                                maxLength: 10,
-                                onSaved: (String value) {
-                                  _controllerNUM.text = value;
-                                },
-                                validator: (value) {
-                                  if (value.length == 0) {
-                                    return 'Por favor insira o número';
-                                  }
-                                  return null;
-                                },
-                                controller: _controllerNUM,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.allow(
-                                      RegExp(r'[0-9]')),
-                                ],
-                                initialValue: null,
-                                decoration: InputDecoration(
-                                  counterText: '',
-                                  labelText: 'Número: *',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            child: Container(
-                              height: 80,
-                              child: TextFormField(
-                                maxLength: 40,
-                                onSaved: (String value) {
-                                  _complemento = value;
-                                },
-                                validator: (value) {
-                                  if (value.length == 0) {
-                                    return 'Por favor insira o complemento';
-                                  }
-                                  return null;
-                                },
-                                initialValue: null,
-                                decoration: InputDecoration(
-                                  counterText: '',
-                                  labelText: 'Complemento: *',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    //bairro
-                    Container(
-                      height: 80,
-                      child: TextFormField(
-                        maxLength: 60,
-                        onSaved: (String value) {
-                          _bairro = value;
-                        },
-                        validator: (value) {
-                          if (value.length == 0) {
-                            return 'Por favor insira seu bairro';
-                          }
-                          return null;
-                        },
-                        initialValue: null,
-                        decoration: InputDecoration(
-                          counterText: '',
-                          labelText: 'Bairro: *',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    //cep
-                    Container(
-                      height: 80,
-                      child: TextFormField(
-                        onSaved: (String value) {
-                          _controllerCEP.text =
-                              SystemFunctions.formatCepRemoveFormating(
-                            cep: value,
-                          );
-                        },
-                        validator: (value) {
-                          if (value.length == 0) {
-                            return 'Por favor insira seu CEP';
-                          }
-                          return null;
-                        },
-                        onChanged: (value) async {
-                          const duration = Duration(milliseconds: 500);
-                          if (searchOnStoppedTyping != null) {
-                            setState(() => searchOnStoppedTyping.cancel());
-                          }
-                          setState(
-                            () => searchOnStoppedTyping = new Timer(
-                              duration,
-                              () {
-                                if (value.length == 8) {
-                                  String fCep = SystemFunctions.formatCep(
-                                    cep: value,
-                                  );
-                                  _controllerCEP.text = fCep;
-                                }
-                              },
-                            ),
-                          );
-                        },
-                        maxLength: 8,
-                        controller: _controllerCEP,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                        ],
-                        initialValue: null,
-                        decoration: InputDecoration(
-                          //To hide cep length num
-                          counterText: '',
-                          labelText: 'CEP: *',
-
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    //país
-                    Container(
-                      height: 80,
-                      child: DropdownSearch<String>(
-                        validator: (value) {
-                          if (value == null) {
-                            return 'Por favor escolha um pais';
-                          }
-                          return null;
-                        },
-                        dropdownSearchDecoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                        ),
-                        mode: Mode.MENU,
-                        showSearchBox: true,
-                        showSelectedItem: true,
-                        items: _countries,
-                        label: 'País: *',
-                        //hint: 'country in menu mode',
-                        popupItemDisabled:
-                            (String s) => /*s.startsWith('I')*/ null,
-                        onChanged: (value) {
-                          setState(() {
-                            _pais = value;
-                            _states = _authStore.mapCountryToStatesToUiList(
-                              local: _stateCountryData,
-                              selectedCountry: _pais,
-                            );
-                          });
-                        },
-                        selectedItem: _pais,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    //uf
-                    Container(
-                      width: width,
-                      height: width > 600 ? 80 : 180,
-                      child: Flex(
-                        direction:
-                            width > 600 ? Axis.horizontal : Axis.vertical,
-                        children: [
-                          Expanded(
-                            child: Container(
-                              height: 80,
-                              child: DropdownSearch<String>(
-                                validator: (value) {
-                                  if (value == null) {
-                                    return 'Por favor escolha uf';
-                                  }
-                                  return null;
-                                },
-                                dropdownSearchDecoration: InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  contentPadding:
-                                      EdgeInsets.fromLTRB(10, 10, 10, 10),
-                                ),
-                                mode: Mode.MENU,
-                                showSearchBox: true,
-                                showSelectedItem: true,
-                                items: _states,
-                                label: 'UF: *',
-                                //hint: 'country in menu mode',
-                                popupItemDisabled:
-                                    (String s) => /*s.startsWith('I')*/ null,
-                                onChanged: (value) async {
-                                  setState(() {
-                                    _uf = value;
-                                    _refreshCityData = true;
-                                  });
-                                  _cities = await fetchCitiesData();
-                                  //set a default value
-                                  if (_cities.length > 0) {
-                                    setState(() {
-                                      _cidade = _cities[0];
-                                      _refreshCityData = false;
-                                    });
-                                  }
-                                },
-                                selectedItem: _uf,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          if (_refreshCityData)
-                            Column(
-                              children: [
-                                CircularProgressIndicator(
-                                  valueColor: new AlwaysStoppedAnimation<Color>(
-                                    Colors.blue,
-                                  ),
-                                ),
-                              ],
-                            )
-                          else
-                            Expanded(
-                              child: Container(
-                                height: 80,
-                                child: DropdownSearch<String>(
-                                  //To fix ui not updating on state change
-                                  dropdownBuilder:
-                                      (context, selectedItem, itemAsString) {
-                                    return Text(_cidade ?? '');
-                                  },
-                                  onSaved: (String value) {
-                                    _cidade = value;
-                                  },
-                                  validator: (String value) {
-                                    if (value == null) {
-                                      return 'Por favor escolha cidade';
-                                    }
-                                    return value.isEmpty ? 'Campo vazio' : null;
-                                  },
-                                  dropdownSearchDecoration: InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    contentPadding:
-                                        EdgeInsets.fromLTRB(10, 10, 10, 10),
-                                  ),
-                                  mode: Mode.MENU,
-                                  showSearchBox: true,
-                                  showSelectedItem: true,
-                                  items: _cities,
-                                  label: 'Cidade: *',
-                                  //hint: 'country in menu mode',
-                                  popupItemDisabled:
-                                      (String s) => /*s.startsWith('I')*/ null,
-                                  onChanged: (value) {
-                                    _cidade = value;
-                                  },
-                                  selectedItem: _cidade,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    const Divider(thickness: 1),
+                    const SizedBox(width: 20),
+                    //cellphone/telephone
                     Container(
                       width: width,
                       height: width > 600 ? 80 : 180,
@@ -711,6 +418,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       ),
                     ),
                     const Divider(thickness: 1),
+                    //email
                     Container(
                       width: width,
                       height: width > 600 ? 80 : 180,
@@ -776,6 +484,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       ),
                     ),
                     const SizedBox(height: 10),
+                    //password
                     Container(
                       width: width,
                       height: width > 600 ? 80 : 180,
@@ -856,7 +565,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
     );
   }
 
-  Widget _buttons(double width) {
+  Widget _buttons() {
     return Flex(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -865,58 +574,43 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
         Container(
           width: 300,
           child: ElevatedButton(
-            child: !_sendingCadastro
-                ? const Text(
-                    'ENVIAR INFORMAÇÕES',
-                    style: const TextStyle(
-                      color: Colors.white,
-                    ),
-                  )
-                : CircularProgressIndicator(
-                    valueColor: new AlwaysStoppedAnimation<Color>(
-                      Colors.blue,
-                    ),
-                  ),
-            onPressed: !_sendingCadastro
-                ? () {
-                    if (_formKey.currentState.validate()) {
-                      _formKey.currentState.save();
-                      setState(() {
-                        _sendingCadastro = true;
-                      });
-                      _enviarCadastro().then((data) {
-                        print(data);
-                        if (data['statusCode'] == 200) {
-                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              duration: const Duration(seconds: 5),
-                              content: Text(
-                                'Seu cadastro está sendo averiguado e será aprovado em até 48h.',
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          );
-                          Navigator.pop(context);
-                        } else {
-                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              duration: const Duration(seconds: 3),
-                              content: Text(
-                                data['message'],
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          );
-                        }
-                        setState(() {
-                          _sendingCadastro = false;
-                        });
-                      });
-                    }
+            child: const Text(
+              'ENVIAR INFORMAÇÕES',
+              style: const TextStyle(
+                color: Colors.white,
+              ),
+            ),
+            onPressed: () {
+              if (_formKey.currentState.validate()) {
+                _formKey.currentState.save();
+                _enviarCadastro().then((data) {
+                  if (data['statusCode'] == 200) {
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: const Duration(seconds: 5),
+                        content: Text(
+                          'Seu cadastro está sendo averiguado e será aprovado em até 48h.',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
+                    Navigator.pop(context);
+                  } else {
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: const Duration(seconds: 3),
+                        content: Text(
+                          data['message'],
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
                   }
-                : null,
+                });
+              }
+            },
           ),
         ),
         const SizedBox(
@@ -942,6 +636,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
   }
 
   Future<Map> _enviarCadastro() async {
+    /*
     Map<String, dynamic> _cadastro = {
       'bairro': _bairro,
       'celular': _controllerCEL.text,
@@ -976,7 +671,20 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
 
     Map data = json.decode(_response.body);
 
-    return data;
+    return data;*/
+  }
+
+  Widget _headline() {
+    return Center(
+      child: const Text(
+        'CADASTRO',
+        style: const TextStyle(
+          color: Colors.indigo,
+          fontSize: 50,
+          fontFamily: 'BigNoodleTitling',
+        ),
+      ),
+    );
   }
 
   @override
@@ -1015,40 +723,17 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
               height: width > 600 ? 1700 : 2300,
               child: Column(
                 children: <Widget>[
-                  if (firstFetch && _stateCountryData == null)
-                    Container(
-                      padding: EdgeInsets.only(top: 40),
-                      width: width,
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          valueColor: new AlwaysStoppedAnimation<Color>(
-                            Colors.blue,
-                          ),
-                        ),
-                      ),
-                    ),
-                  if (!firstFetch && _stateCountryData != null)
-                    Column(
-                      children: <Widget>[
-                        const SizedBox(height: 50),
-                        //HEADLINE TEXT
-                        Center(
-                          child: const Text(
-                            'CADASTRO',
-                            style: const TextStyle(
-                              color: Colors.indigo,
-                              fontSize: 50,
-                              fontFamily: 'BigNoodleTitling',
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 50),
-                        _form(),
-                        const SizedBox(height: 50),
-                        _buttons(),
-                        const SizedBox(height: 50),
-                      ],
-                    ),
+                  Column(
+                    children: <Widget>[
+                      const SizedBox(height: 50),
+                      _headline(),
+                      const SizedBox(height: 50),
+                      _form(),
+                      const SizedBox(height: 50),
+                      _buttons(),
+                      const SizedBox(height: 50),
+                    ],
+                  ),
                 ],
               ),
             ),

@@ -11,21 +11,21 @@ import 'package:http/http.dart' as http;
 
 import '../../rotas_url.dart';
 
-class GerenciarEndereco extends StatefulWidget {
+class Endereco extends StatefulWidget {
   final String enderecoType;
   final GlobalKey<FormState> formKey; // for criar endereco only
   final int userId;
 
-  GerenciarEndereco({
+  Endereco({
     @required this.enderecoType,
-    @required this.formKey,
+    this.formKey,
     this.userId = 0,
   });
   @override
-  _GerenciarEnderecoState createState() => _GerenciarEnderecoState();
+  _EnderecoState createState() => _EnderecoState();
 }
 
-class _GerenciarEnderecoState extends State<GerenciarEndereco> {
+class _EnderecoState extends State<Endereco> {
   //The types allowed
   final String _type1 = 'criar endereco';
   final String _type2 = 'gerenciar endereco';
@@ -33,7 +33,7 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
 
   //-------------- formkey for gerenciar endereco --------
 
-  final GlobalKey<FormState> _formKey2 = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   //-------------- general variables ----------------
   String _bairro;
@@ -45,9 +45,16 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
   String _numero;
   String _cep;
 
+  //selected variables (for dropdowns)
+  String _selectedCidade = '';
+  String _selectedUf = '';
+  String _selectedPais = '';
+
   AuthProvider _authStore;
   double sWidth;
   bool sendingEndereco = false;
+
+  static validateForm() {}
 
   Widget _type2Btns() {
     /*
@@ -395,15 +402,23 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
     return Container(
       height: 80,
       child: DropdownSearch<String>(
-        //To fix ui not updating on state change
-        dropdownBuilder: (context, selectedItem, itemAsString) {
-          return Text(_pais);
+        emptyBuilder: (buildContext, string) {
+          return Center(child: Text('Sem dados'));
+        },
+        loadingBuilder: (buildContext, string) {
+          return Center(child: Text('Carregando...'));
+        },
+        errorBuilder: (buildContext, string, dynamic) {
+          return Center(child: Text('Erro'));
+        },
+        onFind: (string) {
+          return _fetchCountries();
         },
         onSaved: (String value) {
           _pais = value;
         },
         validator: (String value) {
-          return value.isEmpty ? 'Campo vazio' : null;
+          return value == null || value.isEmpty ? 'Campo vazio' : null;
         },
         dropdownSearchDecoration: InputDecoration(
           border: OutlineInputBorder(),
@@ -416,13 +431,18 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
         label: 'País: *',
         hint: 'País: *',
         popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
-        onChanged: (value) {},
-        selectedItem: _pais,
+        onChanged: (value) {
+          //clear to force user select new uf and city
+          _selectedUf = '';
+          _selectedCidade = '';
+          _selectedPais = value;
+        },
+        selectedItem: _selectedPais,
       ),
     );
   }
 
-  Widget _ufeCidadeField() {
+  Widget _ufCidadeField() {
     return Container(
       width: sWidth,
       height: sWidth > 600 ? 80 : 180,
@@ -434,29 +454,43 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
             child: Container(
               height: 80,
               child: DropdownSearch<String>(
-                  //To fix ui not updating on state change
-                  dropdownBuilder: (context, selectedItem, itemAsString) {
-                    return Text(_uf);
-                  },
-                  onSaved: (String value) {
-                    _uf = value;
-                  },
-                  validator: (String value) {
-                    return value.isEmpty ? 'Campo vazio' : null;
-                  },
-                  dropdownSearchDecoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                  ),
-                  mode: Mode.MENU,
-                  showSearchBox: true,
-                  showSelectedItem: true,
-                  items: [],
-                  label: 'UF: *',
-                  //hint: 'country in menu mode',
-                  popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
-                  onChanged: (value) async {},
-                  selectedItem: _uf),
+                dropdownBuilder: (buildContext, string, string2) {
+                  return Text(_selectedUf);
+                },
+                emptyBuilder: (buildContext, string) {
+                  return Center(child: Text('Sem dados'));
+                },
+                loadingBuilder: (buildContext, string) {
+                  return Center(child: Text('Carregando...'));
+                },
+                errorBuilder: (buildContext, string, dynamic) {
+                  return Center(child: Text('Erro'));
+                },
+                onFind: (string) {
+                  return _fetchStates();
+                },
+                onSaved: (String value) {
+                  _uf = value;
+                },
+                validator: (String value) {
+                  return value == null || value.isEmpty ? 'Campo vazio' : null;
+                },
+                dropdownSearchDecoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                ),
+                mode: Mode.MENU,
+                showSearchBox: true,
+                showSelectedItem: true,
+                items: [],
+                label: 'UF: *',
+                //hint: 'country in menu mode',
+                popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
+                onChanged: (value) async {
+                  _selectedUf = value;
+                },
+                selectedItem: _selectedUf,
+              ),
             ),
           ),
           const SizedBox(width: 20),
@@ -465,15 +499,26 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
             child: Container(
               height: 80,
               child: DropdownSearch<String>(
-                //To fix ui not updating on state change
-                dropdownBuilder: (context, selectedItem, itemAsString) {
-                  return Text(_cidade);
+                dropdownBuilder: (buildContext, string, string2) {
+                  return Text(_selectedCidade);
+                },
+                emptyBuilder: (buildContext, string) {
+                  return Center(child: Text('Sem dados'));
+                },
+                loadingBuilder: (buildContext, string) {
+                  return Center(child: Text('Carregando...'));
+                },
+                errorBuilder: (buildContext, string, dynamic) {
+                  return Center(child: Text('Erro'));
+                },
+                onFind: (string) {
+                  return _fetchCities();
                 },
                 onSaved: (String value) {
                   _cidade = value;
                 },
                 validator: (String value) {
-                  return value.isEmpty ? 'Campo vazio' : null;
+                  return value == null || value.isEmpty ? 'Campo vazio' : null;
                 },
                 dropdownSearchDecoration: InputDecoration(
                   border: OutlineInputBorder(),
@@ -487,9 +532,9 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
                 //hint: 'country in menu mode',
                 popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
                 onChanged: (value) {
-                  _cidade = value;
+                  _selectedCidade = value;
                 },
-                selectedItem: _cidade,
+                selectedItem: _selectedCidade,
               ),
             ),
           ),
@@ -498,32 +543,95 @@ class _GerenciarEnderecoState extends State<GerenciarEndereco> {
     );
   }
 
+  //if no formkey passed from parent, then create a form as will be for editing
+  Widget _type2Form() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          _selecioneEnderecoField(),
+          const SizedBox(height: 25),
+          _enderecoField(),
+          _numeroEComplementoField(),
+          _bairroField(),
+          _cepField(),
+          _paisField(),
+          _ufCidadeField(),
+          if (widget.enderecoType == _type2) _type2Btns(),
+        ],
+      ),
+    );
+  }
+
+  Widget _type1Form() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        _enderecoField(),
+        _numeroEComplementoField(),
+        _bairroField(),
+        _cepField(),
+        _paisField(),
+        _ufCidadeField(),
+      ],
+    );
+  }
+
+  //Manage async localization data (city, state and country)
+
+  Future<List<String>> _fetchCountries() async {
+    final response = await http.get(Uri.parse(RotasUrl.rotaPaisesV1));
+    List<String> countries = [];
+    List<dynamic> countryData = json.decode(response.body);
+    countryData.forEach((c) {
+      countries.add(c['pais']);
+    });
+    print(countries);
+    return countries;
+  }
+
+  Future<List<String>> _fetchCities() async {
+    final response = await http.get(Uri.parse(RotasUrl.rotaCidadesV1));
+    List<String> cities = [];
+    List<dynamic> cityData = json.decode(response.body);
+    cityData.forEach((c) {
+      cities.add(c['cidade']);
+    });
+
+    return cities;
+  }
+
+  Future<List<String>> _fetchStates() async {
+    //can't fetch states if no country is selected
+    if (_selectedPais.length == 0) {
+      return [];
+    }
+    final response = await http.get(
+      Uri.parse(
+        RotasUrl.rotaEstadosV1 + '?pais=' + _selectedPais,
+      ),
+    );
+    List<String> states = [];
+    List<dynamic> statesData = json.decode(response.body);
+    statesData.forEach((c) {
+      states.add(c['estados']);
+    });
+
+    return states;
+  }
+
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     sWidth = MediaQuery.of(context).size.width;
+
     super.didChangeDependencies();
   }
 
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      child: Form(
-        key: widget.enderecoType == _type1 ? widget.formKey : _formKey2,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            _selecioneEnderecoField(),
-            const SizedBox(height: 25),
-            _enderecoField(),
-            _numeroEComplementoField(),
-            _bairroField(),
-            _cepField(),
-            _paisField(),
-            _ufeCidadeField(),
-            if (widget.enderecoType == _type2) _type2Btns(),
-          ],
-        ),
-      ),
+      child: widget.formKey != null ? _type1Form() : _type2Form(),
     );
   }
 }
