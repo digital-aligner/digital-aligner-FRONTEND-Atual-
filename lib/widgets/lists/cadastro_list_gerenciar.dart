@@ -174,7 +174,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
             ),
           ),
         ),
-        //Cro uf
+        //Email
         ResponsiveGridCol(
           xs: 6,
           lg: 6,
@@ -352,33 +352,32 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    (cadList[index]['endereco_usuarios'][0]['endereco'] ?? '') +
+                    (cadList[index]['enderecos_v1'][0]['endereco'] ?? '') +
                         ', ' +
-                        (cadList[index]['endereco_usuarios'][0]['numero'] ??
-                            ''),
+                        (cadList[index]['enderecos_v1'][0]['numero'] ?? ''),
                     style: const TextStyle(
                       fontSize: 16,
                       //fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    cadList[index]['endereco_usuarios'][0]['bairro'] ?? '',
+                    cadList[index]['enderecos_v1'][0]['bairro'] ?? '',
                     style: const TextStyle(
                       fontSize: 16,
                       //fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    (cadList[index]['endereco_usuarios'][0]['cidade'] ?? '') +
+                    (cadList[index]['enderecos_v1'][0]['cidade'] ?? '') +
                         ' - ' +
-                        (cadList[index]['endereco_usuarios'][0]['uf'] ?? ''),
+                        (cadList[index]['enderecos_v1'][0]['uf'] ?? ''),
                     style: const TextStyle(
                       fontSize: 16,
                       //fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    cadList[index]['endereco_usuarios'][0]['cep'] ?? '',
+                    cadList[index]['enderecos_v1'][0]['cep'] ?? '',
                     style: const TextStyle(
                       fontSize: 16,
                       //fontWeight: FontWeight.bold,
@@ -436,49 +435,6 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                     ),
                     actions: [
                       Container(
-                        width: 220,
-                        height: 50,
-                        child: SwitchListTile(
-                            activeColor: Colors.blue,
-                            title: const Text('Cadista?'),
-                            value: cadList[index]['is_cadista'],
-                            onChanged: (bool value) {
-                              cadastroStore
-                                  .sendCadistaState(cadList[index]['id'], value)
-                                  .then((data) {
-                                if (!data.containsKey('error')) {
-                                  ScaffoldMessenger.of(context)
-                                      .removeCurrentSnackBar();
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      duration: const Duration(seconds: 8),
-                                      content: value
-                                          ? const Text(
-                                              'Acesso de cadista liberado!',
-                                            )
-                                          : const Text(
-                                              'Acesso de cadista removido!',
-                                            ),
-                                    ),
-                                  );
-                                  Navigator.pop(context, true);
-                                } else {
-                                  ScaffoldMessenger.of(context)
-                                      .removeCurrentSnackBar();
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      duration: const Duration(seconds: 8),
-                                      content: Text('Algo deu errado'),
-                                    ),
-                                  );
-                                }
-                              });
-                            },
-                            secondary: const Icon(
-                              Icons.engineering,
-                            )),
-                      ),
-                      Container(
                         width: 270,
                         height: 50,
                         child: SwitchListTile(
@@ -502,49 +458,6 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                                             )
                                           : const Text(
                                               'Acesso de representante removido!',
-                                            ),
-                                    ),
-                                  );
-                                  Navigator.pop(context, true);
-                                } else {
-                                  ScaffoldMessenger.of(context)
-                                      .removeCurrentSnackBar();
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      duration: const Duration(seconds: 8),
-                                      content: const Text('Algo deu errado'),
-                                    ),
-                                  );
-                                }
-                              });
-                            },
-                            secondary: const Icon(
-                              Icons.supervisor_account,
-                            )),
-                      ),
-                      Container(
-                        width: 270,
-                        height: 50,
-                        child: SwitchListTile(
-                            activeColor: Colors.blue,
-                            title: const Text('Revisor?'),
-                            value: cadList[index]['is_revisor'] ?? false,
-                            onChanged: (bool value) {
-                              cadastroStore
-                                  .sendRevisorState(cadList[index]['id'], value)
-                                  .then((data) {
-                                if (!data.containsKey('error')) {
-                                  ScaffoldMessenger.of(context)
-                                      .removeCurrentSnackBar();
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      duration: const Duration(seconds: 8),
-                                      content: value
-                                          ? const Text(
-                                              'Acesso de revisor liberado!',
-                                            )
-                                          : const Text(
-                                              'Acesso de revisor removido!',
                                             ),
                                     ),
                                   );
@@ -679,49 +592,6 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                 ),
                 actions: [
                   Container(
-                    width: 220,
-                    height: 50,
-                    child: SwitchListTile(
-                        activeColor: Colors.blue,
-                        title: const Text('Cadista?'),
-                        value: cadList[index]['is_cadista'],
-                        onChanged: (bool value) {
-                          cadastroStore
-                              .sendCadistaState(cadList[index]['id'], value)
-                              .then((data) {
-                            if (!data.containsKey('error')) {
-                              ScaffoldMessenger.of(context)
-                                  .removeCurrentSnackBar();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  duration: const Duration(seconds: 8),
-                                  content: value
-                                      ? const Text(
-                                          'Acesso de cadista liberado!',
-                                        )
-                                      : const Text(
-                                          'Acesso de cadista removido!',
-                                        ),
-                                ),
-                              );
-                              Navigator.pop(context, true);
-                            } else {
-                              ScaffoldMessenger.of(context)
-                                  .removeCurrentSnackBar();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  duration: const Duration(seconds: 8),
-                                  content: Text('Algo deu errado'),
-                                ),
-                              );
-                            }
-                          });
-                        },
-                        secondary: const Icon(
-                          Icons.engineering,
-                        )),
-                  ),
-                  Container(
                     width: 270,
                     height: 50,
                     child: SwitchListTile(
@@ -745,49 +615,6 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                                         )
                                       : const Text(
                                           'Acesso de representante removido!',
-                                        ),
-                                ),
-                              );
-                              Navigator.pop(context, true);
-                            } else {
-                              ScaffoldMessenger.of(context)
-                                  .removeCurrentSnackBar();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  duration: const Duration(seconds: 8),
-                                  content: const Text('Algo deu errado'),
-                                ),
-                              );
-                            }
-                          });
-                        },
-                        secondary: const Icon(
-                          Icons.supervisor_account,
-                        )),
-                  ),
-                  Container(
-                    width: 270,
-                    height: 50,
-                    child: SwitchListTile(
-                        activeColor: Colors.blue,
-                        title: const Text('Revisor?'),
-                        value: cadList[index]['is_revisor'] ?? false,
-                        onChanged: (bool value) {
-                          cadastroStore
-                              .sendRevisorState(cadList[index]['id'], value)
-                              .then((data) {
-                            if (!data.containsKey('error')) {
-                              ScaffoldMessenger.of(context)
-                                  .removeCurrentSnackBar();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  duration: const Duration(seconds: 8),
-                                  content: value
-                                      ? const Text(
-                                          'Acesso de revisor liberado!',
-                                        )
-                                      : const Text(
-                                          'Acesso de revisor removido!',
                                         ),
                                 ),
                               );

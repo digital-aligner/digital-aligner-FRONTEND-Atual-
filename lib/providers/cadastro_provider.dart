@@ -104,7 +104,7 @@ class CadastroProvider with ChangeNotifier {
     var _response = await http.post(
       Uri.parse(RotasUrl.rotaCadastro),
       headers: {'Content-Type': 'application/json'},
-      body: novoCad.toJson(),
+      body: json.encode(novoCad.toJson()),
     );
 
     Map data = json.decode(_response.body);

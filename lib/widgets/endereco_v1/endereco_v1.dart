@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:digital_aligner_app/providers/auth_provider.dart';
+import 'package:digital_aligner_app/providers/cadastro_provider.dart';
+import 'package:digital_aligner_app/widgets/endereco_v1/endereco_model_.dart';
 
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +28,9 @@ class Endereco extends StatefulWidget {
 }
 
 class _EnderecoState extends State<Endereco> {
+  AuthProvider _authStore;
+  CadastroProvider _cadastroStore;
+
   //The types allowed
   final String _type1 = 'criar endereco';
   final String _type2 = 'gerenciar endereco';
@@ -36,25 +41,58 @@ class _EnderecoState extends State<Endereco> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   //-------------- general variables ----------------
-  String _bairro;
-  String _cidade;
-  String _complemento;
-  String _endereco;
-  String _uf;
-  String _pais;
-  String _numero;
-  String _cep;
 
-  //selected variables (for dropdowns)
-  String _selectedCidade = '';
-  String _selectedUf = '';
-  String _selectedPais = '';
+  EnderecoModel _endModel = EnderecoModel(
+    bairro: '',
+    cep: '',
+    cidade: '',
+    complemento: '',
+    endereco: '',
+    numero: '',
+    pais: '',
+    uf: '',
+  );
 
-  AuthProvider _authStore;
   double sWidth;
   bool sendingEndereco = false;
 
-  static validateForm() {}
+  //For handling type2 Gerenciar endereco
+  Future<List<EnderecoModel>> _fetchUserEndereco() async {
+    final response = await http.get(
+      Uri.parse(
+        RotasUrl.rotaEnderecosV1 + '?userId=' + widget.userId.toString(),
+      ),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${_authStore.token}',
+      },
+    );
+    try {
+      List<dynamic> _enderecos = json.decode(response.body);
+      if (_enderecos[0].containsKey('endereco')) {
+        List<EnderecoModel> eModel = [];
+        _enderecos.forEach((e) {
+          eModel.add(
+            EnderecoModel(
+              bairro: e['bairro'],
+              cep: e['cep'],
+              cidade: e['cidade'],
+              complemento: e['complemento'],
+              endereco: e['endereco'],
+              numero: e['numero'],
+              pais: e['pais'],
+              uf: e['uf'],
+            ),
+          );
+        });
+        return eModel;
+      }
+    } catch (e) {
+      print(e);
+      return [];
+    }
+    return [];
+  }
 
   Widget _type2Btns() {
     /*
@@ -237,36 +275,35 @@ class _EnderecoState extends State<Endereco> {
     } */
   }
 
-  /*
-
-      Column(
-        children: [
-          const SizedBox(height: 50),
-          CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(
-              Colors.blue,
-            ),
-          ),
-        ],
-      ),
-           
-  */
-
   Widget _selecioneEnderecoField() {
-    return DropdownSearch<String>(
+    return DropdownSearch<EnderecoModel>(
       dropdownSearchDecoration: InputDecoration(
         border: OutlineInputBorder(),
         contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
       ),
-      maxHeight: 350,
+      emptyBuilder: (buildContext, string) {
+        return Center(child: Text('Sem dados'));
+      },
+      loadingBuilder: (buildContext, string) {
+        return Center(child: Text('Carregando...'));
+      },
+      errorBuilder: (buildContext, string, dynamic) {
+        return Center(child: Text('Erro'));
+      },
+      onFind: (string) => _fetchUserEndereco(),
+      itemAsString: (EnderecoModel e) => e.endereco,
       mode: Mode.MENU,
-      showSearchBox: true,
-      showSelectedItem: true,
-      items: ['test'],
       label: 'Selecione endereço: *',
-      popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
-      onChanged: (value) async {},
-      selectedItem: 'test',
+      onChanged: (EnderecoModel selectedEnd) {
+        _endModel.bairro = selectedEnd.bairro;
+        _endModel.cidade = selectedEnd.cidade;
+        _endModel.complemento = selectedEnd.complemento;
+        _endModel.endereco = selectedEnd.endereco;
+        _endModel.uf = selectedEnd.uf;
+        _endModel.pais = selectedEnd.pais;
+        _endModel.numero = selectedEnd.numero;
+        _endModel.cep = selectedEnd.cep;
+      },
     );
   }
 
@@ -275,9 +312,14 @@ class _EnderecoState extends State<Endereco> {
       margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
       height: 80,
       child: TextFormField(
+        initialValue: _endModel.endereco,
         maxLength: 60,
         onSaved: (String value) {
-          _endereco = value;
+          if (widget.enderecoType == _type1) {
+            _cadastroStore.novoCad.endereco = value;
+          } else {
+            _endModel.endereco = value;
+          }
         },
         validator: (String value) {
           return value.isEmpty ? 'Campo vazio' : null;
@@ -305,7 +347,11 @@ class _EnderecoState extends State<Endereco> {
               child: TextFormField(
                 maxLength: 10,
                 onSaved: (String value) {
-                  _numero = value;
+                  if (widget.enderecoType == _type1) {
+                    _cadastroStore.novoCad.numero = value;
+                  } else {
+                    _endModel.numero = value;
+                  }
                 },
                 validator: (String value) {
                   return value.isEmpty ? 'Campo vazio' : null;
@@ -314,7 +360,7 @@ class _EnderecoState extends State<Endereco> {
                 inputFormatters: <TextInputFormatter>[
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                 ],
-                initialValue: null,
+                initialValue: _endModel.numero,
                 decoration: InputDecoration(
                   counterText: '',
                   labelText: 'Número: *',
@@ -329,9 +375,14 @@ class _EnderecoState extends State<Endereco> {
             child: Container(
               height: 80,
               child: TextFormField(
+                initialValue: _endModel.complemento,
                 maxLength: 40,
                 onSaved: (String value) {
-                  _complemento = value;
+                  if (widget.enderecoType == _type1) {
+                    _cadastroStore.novoCad.complemento = value;
+                  } else {
+                    _endModel.complemento = value;
+                  }
                 },
                 validator: (String value) {
                   return value.isEmpty ? 'Campo vazio' : null;
@@ -354,9 +405,14 @@ class _EnderecoState extends State<Endereco> {
     return Container(
       height: 80,
       child: TextFormField(
+        initialValue: _endModel.bairro,
         maxLength: 60,
         onSaved: (String value) {
-          _bairro = value;
+          if (widget.enderecoType == _type1) {
+            _cadastroStore.novoCad.bairro = value;
+          } else {
+            _endModel.bairro = value;
+          }
         },
         validator: (String value) {
           return value.isEmpty ? 'Campo vazio' : null;
@@ -376,7 +432,11 @@ class _EnderecoState extends State<Endereco> {
       height: 80,
       child: TextFormField(
         onSaved: (String value) {
-          _cep = value;
+          if (widget.enderecoType == _type1) {
+            _cadastroStore.novoCad.cep = value;
+          } else {
+            _endModel.cep = value;
+          }
         },
         validator: (String value) {
           return value.isEmpty ? 'Campo vazio' : null;
@@ -386,7 +446,7 @@ class _EnderecoState extends State<Endereco> {
         inputFormatters: <TextInputFormatter>[
           FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
         ],
-        initialValue: null,
+        initialValue: _endModel.cep,
         decoration: InputDecoration(
           //To hide cep length num
           counterText: '',
@@ -415,7 +475,11 @@ class _EnderecoState extends State<Endereco> {
           return _fetchCountries();
         },
         onSaved: (String value) {
-          _pais = value;
+          if (widget.enderecoType == _type1) {
+            _cadastroStore.novoCad.pais = value;
+          } else {
+            _endModel.pais = value;
+          }
         },
         validator: (String value) {
           return value == null || value.isEmpty ? 'Campo vazio' : null;
@@ -433,11 +497,11 @@ class _EnderecoState extends State<Endereco> {
         popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
         onChanged: (value) {
           //clear to force user select new uf and city
-          _selectedUf = '';
-          _selectedCidade = '';
-          _selectedPais = value;
+          _endModel.uf = '';
+          _endModel.cidade = '';
+          _endModel.pais = value;
         },
-        selectedItem: _selectedPais,
+        selectedItem: _endModel.pais,
       ),
     );
   }
@@ -455,7 +519,7 @@ class _EnderecoState extends State<Endereco> {
               height: 80,
               child: DropdownSearch<String>(
                 dropdownBuilder: (buildContext, string, string2) {
-                  return Text(_selectedUf);
+                  return Text(_endModel.uf);
                 },
                 emptyBuilder: (buildContext, string) {
                   return Center(child: Text('Sem dados'));
@@ -470,7 +534,11 @@ class _EnderecoState extends State<Endereco> {
                   return _fetchStates();
                 },
                 onSaved: (String value) {
-                  _uf = value;
+                  if (widget.enderecoType == _type1) {
+                    _cadastroStore.novoCad.uf = value;
+                  } else {
+                    _endModel.uf = value;
+                  }
                 },
                 validator: (String value) {
                   return value == null || value.isEmpty ? 'Campo vazio' : null;
@@ -489,10 +557,10 @@ class _EnderecoState extends State<Endereco> {
                 onChanged: (value) async {
                   //clear to force user select new uf and city
 
-                  _selectedCidade = '';
-                  _selectedUf = value;
+                  _endModel.cidade = '';
+                  _endModel.uf = value;
                 },
-                selectedItem: _selectedUf,
+                selectedItem: _endModel.uf,
               ),
             ),
           ),
@@ -503,7 +571,7 @@ class _EnderecoState extends State<Endereco> {
               height: 80,
               child: DropdownSearch<String>(
                 dropdownBuilder: (buildContext, string, string2) {
-                  return Text(_selectedCidade);
+                  return Text(_endModel.cidade);
                 },
                 emptyBuilder: (buildContext, string) {
                   return Center(child: Text('Sem dados'));
@@ -518,7 +586,11 @@ class _EnderecoState extends State<Endereco> {
                   return _fetchCities();
                 },
                 onSaved: (String value) {
-                  _cidade = value;
+                  if (widget.enderecoType == _type1) {
+                    _cadastroStore.novoCad.cidade = value;
+                  } else {
+                    _endModel.cidade = value;
+                  }
                 },
                 validator: (String value) {
                   return value == null || value.isEmpty ? 'Campo vazio' : null;
@@ -535,9 +607,9 @@ class _EnderecoState extends State<Endereco> {
                 //hint: 'country in menu mode',
                 popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
                 onChanged: (value) {
-                  _selectedCidade = value;
+                  _endModel.cidade = value;
                 },
-                selectedItem: _selectedCidade,
+                selectedItem: _endModel.cidade,
               ),
             ),
           ),
@@ -561,7 +633,7 @@ class _EnderecoState extends State<Endereco> {
           _cepField(),
           _paisField(),
           _ufCidadeField(),
-          if (widget.enderecoType == _type2) _type2Btns(),
+          //if (widget.enderecoType == _type2) _type2Btns(),
         ],
       ),
     );
@@ -596,12 +668,12 @@ class _EnderecoState extends State<Endereco> {
 
   Future<List<String>> _fetchCities() async {
     //can't fetch states if no state is selected
-    if (_selectedUf.length == 0) {
+    if (_endModel.uf.length == 0) {
       return [];
     }
     final response = await http.get(
       Uri.parse(
-        RotasUrl.rotaCidadesV1 + '?estado=' + _selectedUf,
+        RotasUrl.rotaCidadesV1 + '?estado=' + _endModel.uf,
       ),
     );
     List<String> cities = [];
@@ -615,12 +687,12 @@ class _EnderecoState extends State<Endereco> {
 
   Future<List<String>> _fetchStates() async {
     //can't fetch states if no country is selected
-    if (_selectedPais.length == 0) {
+    if (_endModel.pais.length == 0) {
       return [];
     }
     final response = await http.get(
       Uri.parse(
-        RotasUrl.rotaEstadosV1 + '?pais=' + _selectedPais,
+        RotasUrl.rotaEstadosV1 + '?pais=' + _endModel.pais,
       ),
     );
     List<String> states = [];
@@ -635,14 +707,17 @@ class _EnderecoState extends State<Endereco> {
   @override
   void didChangeDependencies() async {
     sWidth = MediaQuery.of(context).size.width;
-
+    _cadastroStore = Provider.of<CadastroProvider>(context);
+    _authStore = Provider.of<AuthProvider>(context, listen: false);
     super.didChangeDependencies();
   }
 
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      child: widget.formKey != null ? _type1Form() : _type2Form(),
+      child: widget.formKey != null || widget.userId <= 0
+          ? _type1Form()
+          : _type2Form(),
     );
   }
 }

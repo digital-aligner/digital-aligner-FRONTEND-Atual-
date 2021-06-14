@@ -30,8 +30,12 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
   //DateFormat formatIso = DateFormat("yyyy-MM-dd");
   DateFormat format = DateFormat("dd/MM/yyyy");
 
+  bool _sendingForm = false;
+
   String _emailConfirm;
   String _passwordConfirm;
+
+  String _selectedCroUf = '';
 
   final _controllerDataNasc = TextEditingController();
 
@@ -42,6 +46,26 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
   final _controllerCEL = TextEditingController();
 
   Timer searchOnStoppedTyping;
+
+  Future<List<String>> _fetchStates() async {
+    //can't fetch states if no country is selected
+    /*
+    if (_selectedPais.length == 0) {
+      return [];
+    }*/
+    final response = await http.get(
+      Uri.parse(
+        RotasUrl.rotaEstadosV1 + '?pais=Brasil',
+      ),
+    );
+    List<String> states = [];
+    List<dynamic> statesData = json.decode(response.body);
+    statesData.forEach((c) {
+      states.add(c['estado']);
+    });
+
+    return states;
+  }
 
   Widget _form() {
     return Form(
@@ -224,14 +248,29 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                             child: Container(
                               height: 80,
                               child: DropdownSearch<String>(
+                                dropdownBuilder:
+                                    (buildContext, string, string2) {
+                                  return Text(_selectedCroUf);
+                                },
+                                emptyBuilder: (buildContext, string) {
+                                  return Center(child: Text('Sem dados'));
+                                },
+                                loadingBuilder: (buildContext, string) {
+                                  return Center(child: Text('Carregando...'));
+                                },
+                                errorBuilder: (buildContext, string, dynamic) {
+                                  return Center(child: Text('Erro'));
+                                },
+                                onFind: (string) {
+                                  return _fetchStates();
+                                },
                                 onSaved: (value) {
                                   _cadastroStore.novoCad.cro_uf = value;
                                 },
                                 validator: (value) {
-                                  if (value == null) {
-                                    return 'Por favor selecione CRO (UF)';
-                                  }
-                                  return null;
+                                  return value == null || value.isEmpty
+                                      ? 'Por favor selecione CRO (UF)'
+                                      : null;
                                 },
                                 dropdownSearchDecoration: InputDecoration(
                                   border: OutlineInputBorder(),
@@ -246,7 +285,10 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 //hint: 'country in menu mode',
                                 popupItemDisabled:
                                     (String s) => /*s.startsWith('I')*/ null,
-                                selectedItem: _cro_uf,
+                                onChanged: (value) {
+                                  _selectedCroUf = value;
+                                },
+                                selectedItem: _selectedCroUf,
                               ),
                             ),
                           ),
@@ -573,43 +615,58 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
         Container(
           width: 300,
           child: ElevatedButton(
-            child: const Text(
-              'ENVIAR INFORMAÇÕES',
-              style: const TextStyle(
-                color: Colors.white,
-              ),
-            ),
-            onPressed: () {
-              if (_formKey.currentState.validate()) {
-                _formKey.currentState.save();
-                _cadastroStore.enviarPrimeiroCadastro().then((data) {
-                  if (data['statusCode'] == 200) {
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 5),
-                        content: Text(
-                          'Seu cadastro está sendo averiguado e será aprovado em até 48h.',
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    );
-                    Navigator.pop(context);
-                  } else {
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 3),
-                        content: Text(
-                          data['message'],
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    );
+            child: !_sendingForm
+                ? const Text(
+                    'ENVIAR INFORMAÇÕES',
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  )
+                : const Text(
+                    'AGUARDE...',
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+            onPressed: !_sendingForm
+                ? () {
+                    if (_formKey.currentState.validate()) {
+                      _formKey.currentState.save();
+                      setState(() {
+                        _sendingForm = true;
+                      });
+                      _cadastroStore.enviarPrimeiroCadastro().then((data) {
+                        if (data['statusCode'] == 200) {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 5),
+                              content: Text(
+                                'Seu cadastro está sendo averiguado e será aprovado em até 48h.',
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          );
+                          Navigator.pop(context);
+                        } else {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 3),
+                              content: Text(
+                                data['message'] ?? '',
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          );
+                        }
+                        setState(() {
+                          _sendingForm = false;
+                        });
+                      });
+                    }
                   }
-                });
-              }
-            },
+                : null,
           ),
         ),
         const SizedBox(

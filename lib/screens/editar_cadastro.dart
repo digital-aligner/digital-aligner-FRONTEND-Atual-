@@ -6,7 +6,6 @@ import 'package:digital_aligner_app/dados/models/cadastro/representante_model.da
 import 'package:digital_aligner_app/dados/models/cadastro/role_model.dart';
 
 import '../rotas_url.dart';
-import '../widgets/gerenciar_endereco.dart';
 
 import '../dados/models/cadastro/cadastro_model.dart';
 
@@ -25,6 +24,8 @@ import '../providers/auth_provider.dart';
 
 import 'login_screen.dart';
 import '../appbar/SecondaryAppbar.dart';
+
+import '../widgets/endereco_v1/endereco_v1.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -802,8 +803,9 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                     ),
                                   ),
                                   const SizedBox(height: 20),
-                                  GerenciarEndereco(
-                                    idUsuario: sc.id,
+                                  Endereco(
+                                    enderecoType: 'gerenciar endereco',
+                                    userId: sc.id,
                                   ),
                                   const SizedBox(height: 40),
                                   //Aprovação de Usuário
