@@ -4,6 +4,7 @@ import 'package:digital_aligner_app/appbar/MyDrawer.dart';
 
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/screens/login_screen.dart';
+import 'package:digital_aligner_app/screens/screens_pedidos_v1/uploader/file_uploader.dart';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -166,6 +167,18 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     );
   }
 
+  Widget _carregarArquivos() {
+    return Column(
+      children: <Widget>[
+        FileUploader(
+          filesQt: 16,
+          acceptedFileExt: ['jpg', 'jpeg', 'jpe', 'gif', 'png'],
+          sendButtonText: 'CARREGAR FOTOGRAFIAS',
+        ),
+      ],
+    );
+  }
+
   @override
   void didChangeDependencies() {
     _authStore = Provider.of<AuthProvider>(context);
@@ -194,6 +207,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               children: <Widget>[
                 _header(),
                 _form(),
+                _carregarArquivos(),
               ],
             ),
           ),
