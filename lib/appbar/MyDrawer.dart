@@ -9,6 +9,7 @@ import 'package:digital_aligner_app/screens/administrativo/meus_setups.dart';
 import 'package:digital_aligner_app/screens/administrativo/minhas_revisoes.dart';
 import 'package:digital_aligner_app/screens/novo_paciente.dart';
 import 'package:digital_aligner_app/screens/perfil.dart';
+import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
 
 import '../screens/meus_pacientes.dart';
 import 'package:flutter/material.dart';
@@ -238,7 +239,7 @@ class _MyDrawerState extends State<MyDrawer> {
                 ),
                 onTap: () {
                   Navigator.of(context).pushReplacementNamed(
-                    NovoPaciente.routeName,
+                    PedidoV1Screen.routeName,
                   );
                 },
               ),

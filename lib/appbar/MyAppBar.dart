@@ -5,6 +5,7 @@ import 'package:digital_aligner_app/screens/administrativo/meus_setups.dart';
 import 'package:digital_aligner_app/screens/administrativo/minhas_revisoes.dart';
 import 'package:digital_aligner_app/screens/novo_paciente.dart';
 import 'package:digital_aligner_app/screens/perfil.dart';
+import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../screens/administrativo/gerenciar_permissoes.dart';
@@ -436,8 +437,12 @@ class _MyAppBarState extends State<MyAppBar> {
         Route route = ModalRoute.of(context);
         final routeName = route.settings.name;
         print(routeName);
+        /*
         if (routeName != null && routeName != '/novo-paciente') {
           Navigator.of(context).pushReplacementNamed(NovoPaciente.routeName);
+        }*/
+        if (routeName != null && routeName != '/pedido-v1') {
+          Navigator.of(context).pushReplacementNamed(PedidoV1Screen.routeName);
         }
       },
       icon: const Icon(Icons.add),

@@ -166,25 +166,23 @@ class _PerfilState extends State<Perfil> {
               children: [
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(data[0]['endereco_usuarios'][0]['endereco'] +
-                          ', ' +
-                          data[0]['endereco_usuarios'][0]['numero']) ??
-                      '',
+                  child: Text(data[0]['enderecos_v1'][0]['endereco'] ??
+                      '' + ', ' + data[0]['enderecos_v1'][0]['numero'] ??
+                      ''),
                 ),
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(data[0]['endereco_usuarios'][0]['bairro']) ?? '',
+                  child: Text(data[0]['enderecos_v1'][0]['bairro'] ?? ''),
                 ),
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(data[0]['endereco_usuarios'][0]['cidade'] +
-                          ' - ' +
-                          data[0]['endereco_usuarios'][0]['uf']) ??
-                      '',
+                  child: Text(data[0]['enderecos_v1'][0]['cidade'] ??
+                      '' + ' - ' + data[0]['enderecos_v1'][0]['estado'] ??
+                      ''),
                 ),
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(data[0]['endereco_usuarios'][0]['cep']) ?? '',
+                  child: Text(data[0]['enderecos_v1'][0]['cep'] ?? ''),
                 ),
               ],
             ),

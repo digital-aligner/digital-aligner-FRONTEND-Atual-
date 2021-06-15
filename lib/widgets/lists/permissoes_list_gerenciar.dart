@@ -341,33 +341,32 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    (cadList[index]['endereco_usuarios'][0]['endereco'] ?? '') +
+                    (cadList[index]['enderecos_v1'][0]['endereco'] ?? '') +
                         ', ' +
-                        (cadList[index]['endereco_usuarios'][0]['numero'] ??
-                            ''),
+                        (cadList[index]['enderecos_v1'][0]['numero'] ?? ''),
                     style: const TextStyle(
                       fontSize: 16,
                       //fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    cadList[index]['endereco_usuarios'][0]['bairro'] ?? '',
+                    cadList[index]['enderecos_v1'][0]['bairro'] ?? '',
                     style: const TextStyle(
                       fontSize: 16,
                       //fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    (cadList[index]['endereco_usuarios'][0]['cidade'] ?? '') +
+                    (cadList[index]['enderecos_v1'][0]['cidade'] ?? '') +
                         ' - ' +
-                        (cadList[index]['endereco_usuarios'][0]['uf'] ?? ''),
+                        (cadList[index]['enderecos_v1'][0]['uf'] ?? ''),
                     style: const TextStyle(
                       fontSize: 16,
                       //fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    cadList[index]['endereco_usuarios'][0]['cep'] ?? '',
+                    cadList[index]['enderecos_v1'][0]['cep'] ?? '',
                     style: const TextStyle(
                       fontSize: 16,
                       //fontWeight: FontWeight.bold,

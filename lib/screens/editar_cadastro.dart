@@ -99,6 +99,20 @@ class _EditarCadastroState extends State<EditarCadastro> {
   //onboarding data list
   List<dynamic> _onboardings;
 
+  Future<List<String>> _fetchStates() async {
+    final response = await http.get(
+      Uri.parse(
+        RotasUrl.rotaEstadosV1 + '?pais=Brasil',
+      ),
+    );
+    List<String> states = [];
+    List<dynamic> statesData = json.decode(response.body);
+    statesData.forEach((c) {
+      states.add(c['estado']);
+    });
+    return states;
+  }
+
   Future<List<dynamic>> fetchCountrysAndStates() async {
     //Fetch data if last fetch was with error
     if (_countryAndStates != null &&
@@ -414,84 +428,38 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                     ),
                                   ),
                                   const SizedBox(height: 10),
+                                  //cro uf
                                   Container(
                                     height: 80,
                                     child: DropdownSearch<String>(
+                                      dropdownBuilder:
+                                          (buildContext, string, string2) {
+                                        return Text(sc.cro_uf);
+                                      },
+                                      emptyBuilder: (buildContext, string) {
+                                        return Center(child: Text('Sem dados'));
+                                      },
+                                      loadingBuilder: (buildContext, string) {
+                                        return Center(
+                                            child: Text('Carregando...'));
+                                      },
                                       errorBuilder:
-                                          (context, searchEntry, exception) {
-                                        return Center(
-                                            child: const Text(
-                                                'Algum erro ocorreu.'));
+                                          (buildContext, string, dynamic) {
+                                        return Center(child: Text('Erro'));
                                       },
-                                      emptyBuilder: (context, searchEntry) {
-                                        return Center(
-                                            child: const Text('Nada'));
-                                      },
-                                      loadingBuilder: (context, searchEntry) {
-                                        return Center(
-                                          child: CircularProgressIndicator(
-                                            valueColor:
-                                                new AlwaysStoppedAnimation<
-                                                    Color>(
-                                              Colors.blue,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      onFind: (_) async {
-                                        await fetchCountrysAndStates();
-                                        //Error handling
-                                        if (_countryAndStates[0]
-                                            .containsKey('error')) {
-                                          if (_countryAndStates[0]
-                                                  ['statusCode'] !=
-                                              404) {
-                                            //Will go to errorBuilder
-                                            throw Error();
-                                          } else {
-                                            //Will go to emptyBuilder
-                                            return null;
-                                          }
-                                        }
-                                        List<String> _croUfUi = [];
-                                        //Check countries for matching uf and return the ufs
-                                        for (var _pais in _countryAndStates) {
-                                          if (_pais['pais'] == 'Portugal') {
-                                            for (var _estado
-                                                in _pais['estado_portugals']) {
-                                              if (_estado['estado'] ==
-                                                  sc.cro_uf) {
-                                                for (var _estado in _pais[
-                                                    'estado_portugals']) {
-                                                  _croUfUi.add(
-                                                    _estado['estado'],
-                                                  );
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                        for (var _pais in _countryAndStates) {
-                                          if (_pais['pais'] == 'Brasil') {
-                                            for (var _estado
-                                                in _pais['estado_brasils']) {
-                                              if (_estado['estado'] ==
-                                                  sc.cro_uf) {
-                                                for (var _estado in _pais[
-                                                    'estado_brasils']) {
-                                                  _croUfUi.add(
-                                                    _estado['estado'],
-                                                  );
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-
-                                        return _croUfUi;
+                                      onFind: (string) {
+                                        return _fetchStates();
                                       },
                                       onSaved: (String value) {
                                         sc.cro_uf = value;
+                                      },
+                                      onChanged: (String value) {
+                                        sc.cro_uf = value;
+                                      },
+                                      validator: (String value) {
+                                        return value == null || value.isEmpty
+                                            ? 'Campo vazio'
+                                            : null;
                                       },
                                       dropdownSearchDecoration: InputDecoration(
                                         border: OutlineInputBorder(),
@@ -502,13 +470,10 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                       showSearchBox: true,
                                       showSelectedItem: true,
                                       label: 'CRO (UF): *',
-                                      //hint: 'country in menu mode',
-                                      popupItemDisabled: (String
-                                          s) => /*s.startsWith('I')*/ null,
-                                      onChanged: (value) {},
                                       selectedItem: sc.cro_uf,
                                     ),
                                   ),
+
                                   const SizedBox(height: 10),
                                   //cro número
                                   Container(

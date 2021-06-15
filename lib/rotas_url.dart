@@ -71,6 +71,8 @@ class RotasUrl {
   static const rotaCidadesV1 = rotaBase + 'cidades-v1';
   static const rotaEstadosV1 = rotaBase + 'estados-v1';
   static const rotaEnderecosV1 = rotaBase + 'enderecos-v1';
+  static const rotaPedidosV1 = rotaBase + 'pedidos-v1/';
+
   //Note: These delete routes only used on editing screens (editar pedido, editar relatório)
   //Not for deleting pedido or relatório
   static const rotaDeleteS3 = rotaBase + 'upload/files/';

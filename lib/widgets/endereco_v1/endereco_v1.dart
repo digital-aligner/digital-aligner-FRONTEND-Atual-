@@ -42,19 +42,24 @@ class _EnderecoState extends State<Endereco> {
 
   //-------------- general variables ----------------
 
-  EnderecoModel _endModel = EnderecoModel(
-    bairro: '',
-    cep: '',
-    cidade: '',
-    complemento: '',
-    endereco: '',
-    numero: '',
-    pais: '',
-    uf: '',
-  );
+  //for update
+  int _endId = 0;
+
+  //textediting controller (just for ui text change)
+  final TextEditingController _endSelecionadoController =
+      TextEditingController();
+  final TextEditingController _bairroController = TextEditingController();
+  final TextEditingController _enderecoController = TextEditingController();
+  final TextEditingController _numeroController = TextEditingController();
+  final TextEditingController _complementoController = TextEditingController();
+  final TextEditingController _cepController = TextEditingController();
+  final TextEditingController _ufController = TextEditingController();
+  final TextEditingController _cidadeController = TextEditingController();
+  final TextEditingController _paisController = TextEditingController();
 
   double sWidth;
   bool sendingEndereco = false;
+  bool _novoEndereco = false;
 
   //For handling type2 Gerenciar endereco
   Future<List<EnderecoModel>> _fetchUserEndereco() async {
@@ -74,6 +79,7 @@ class _EnderecoState extends State<Endereco> {
         _enderecos.forEach((e) {
           eModel.add(
             EnderecoModel(
+              id: e['id'],
               bairro: e['bairro'],
               cep: e['cep'],
               cidade: e['cidade'],
@@ -81,7 +87,7 @@ class _EnderecoState extends State<Endereco> {
               endereco: e['endereco'],
               numero: e['numero'],
               pais: e['pais'],
-              uf: e['uf'],
+              uf: e['estado'],
             ),
           );
         });
@@ -94,189 +100,282 @@ class _EnderecoState extends State<Endereco> {
     return [];
   }
 
-  Widget _type2Btns() {
-    /*
-    if (_novoEndereco) {
-      return Container(
-        width: 300,
-        child: ElevatedButton(
-          onPressed: !sendingEndereco
-              ? () {
-                  if (_formKey.currentState.validate()) {
-                    setState(() {
-                      sendingEndereco = true;
-                    });
-                    _formKey.currentState.save();
-                    _sendEndereco().then((_data) {
-                      if (!_data[0].containsKey('error')) {
-                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            duration: const Duration(seconds: 4),
-                            content: Text(
-                              _data[0]['message'],
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            duration: const Duration(seconds: 8),
-                            content: Text(
-                              _data[0]['message'],
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        );
-                      }
-                      setState(() {
-                        sendingEndereco = false;
-                      });
-                    });
-                  }
+  Widget _novoEndBtn() {
+    return Container(
+      width: 300,
+      child: ElevatedButton(
+        onPressed: () {
+          setState(() {
+            _endId = 0;
+            _endSelecionadoController.text = '';
+            _novoEndereco = true;
+            _bairroController.text = '';
+            _enderecoController.text = '';
+            _numeroController.text = '';
+            _complementoController.text = '';
+            _cepController.text = '';
+            _ufController.text = '';
+            _cidadeController.text = '';
+            _paisController.text = '';
+          });
+        },
+        child: const Text(
+          'NOVO ENDERECO',
+          style: const TextStyle(
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _enviarNovoEndBtn() {
+    return Container(
+      width: 300,
+      child: ElevatedButton(
+        onPressed: sendingEndereco
+            ? null
+            : () async {
+                setState(() {
+                  _endId = 0;
+                  sendingEndereco = true;
+                });
+                bool result = await _sendEndereco();
+                if (result) {
+                  setState(() {
+                    sendingEndereco = false;
+                    _novoEndereco = false;
+                    _bairroController.text = '';
+                    _enderecoController.text = '';
+                    _numeroController.text = '';
+                    _complementoController.text = '';
+                    _cepController.text = '';
+                    _ufController.text = '';
+                    _cidadeController.text = '';
+                    _paisController.text = '';
+                  });
+                } else {
+                  setState(() {
+                    sendingEndereco = false;
+                  });
                 }
-              : null,
-          child: !sendingEndereco
-              ? const Text(
-                  'ENVIAR ENDEREÇO',
-                  style: const TextStyle(
-                    color: Colors.white,
-                  ),
-                )
-              : CircularProgressIndicator(
-                  valueColor: new AlwaysStoppedAnimation<Color>(
-                    Colors.blue,
-                  ),
+              },
+        child: sendingEndereco
+            ? const Text(
+                'AGUARDE...',
+                style: const TextStyle(
+                  color: Colors.white,
                 ),
-        ),
-      );
-    } else if (_atualizarEndereco) {
-      return Container(
-        width: sWidth,
-        height: sWidth > 600 ? 100 : 180,
-        child: Flex(
-          mainAxisAlignment: MainAxisAlignment.center,
-          direction: sWidth > 800 ? Axis.horizontal : Axis.vertical,
-          children: <Widget>[
-            //Atualizar
-            Container(
-              width: sWidth < 400 ? 200 : 300,
-              child: ElevatedButton(
-                onPressed: !sendingEndereco
-                    ? () {
-                        if (_formKey.currentState.validate()) {
-                          setState(() {
-                            sendingEndereco = true;
-                          });
-                          _formKey.currentState.save();
-                          _updateEndereco().then((_data) {
-                            if (!_data[0].containsKey('error')) {
-                              ScaffoldMessenger.of(context)
-                                  .removeCurrentSnackBar();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  duration: const Duration(seconds: 4),
-                                  content: const Text(
-                                    'Endereço atualizado',
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  duration: const Duration(seconds: 4),
-                                  content: Text(
-                                    'Erro ao atualizar endereço.',
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              );
-                            }
-                            setState(() {
-                              sendingEndereco = false;
-                            });
-                          });
-                        }
-                      }
-                    : null,
-                child: !sendingEndereco
-                    ? const Text(
-                        'ATUALIZAR ENDEREÇO',
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ),
-                      )
-                    : CircularProgressIndicator(
-                        valueColor: new AlwaysStoppedAnimation<Color>(
-                          Colors.blue,
-                        ),
-                      ),
-              ),
-            ),
-            if (sWidth < 800)
-              const SizedBox(height: 20)
-            else
-              const SizedBox(width: 20),
-            //Deletar
-            Container(
-              width: sWidth < 400 ? 200 : 300,
-              child: ElevatedButton(
-                onPressed: true
-                    ? null
-                    : () {
-                        //blocked the functionality
-                        if (_formKey.currentState.validate()) {
-                          _formKey.currentState.save();
-                          _deleteEndereco().then((_data) {
-                            if (!_data[0].containsKey('error')) {
-                              _restartInicialValues();
-                              _clearInputFields();
-                              _getAllData();
-                              ScaffoldMessenger.of(context)
-                                  .removeCurrentSnackBar();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  duration: const Duration(seconds: 4),
-                                  content: Text(
-                                    _data[0]['message'],
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  duration: const Duration(seconds: 8),
-                                  content: Text(
-                                    _data[0]['message'],
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              );
-                            }
-                          });
-                        }
-                      },
-                child: const Text(
-                  'DELETAR ENDEREÇO',
-                  style: const TextStyle(
-                    color: Colors.white,
-                  ),
+              )
+            : const Text(
+                'ENVIAR ENDEREÇO',
+                style: const TextStyle(
+                  color: Colors.white,
                 ),
               ),
-            ),
-          ],
-        ),
+      ),
+    );
+  }
+
+  Future<bool> _sendEndereco() async {
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+
+      //create model and convert to map
+      EnderecoModel _endToSend = EnderecoModel(
+        bairro: _bairroController.text,
+        cep: _cepController.text,
+        cidade: _cidadeController.text,
+        complemento: _complementoController.text,
+        endereco: _enderecoController.text,
+        numero: _numeroController.text,
+        pais: _paisController.text,
+        uf: _ufController.text,
+        usuario: widget.userId,
       );
-    } else {
-      return Container();
-    } */
+      //send
+      var _response = await http.post(
+        Uri.parse(RotasUrl.rotaEnderecosV1),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${_authStore.token}',
+        },
+        body: json.encode(_endToSend.toJson()),
+      );
+      try {
+        var _respData = json.decode(_response.body);
+        if (_respData.containsKey('error')) return throw (_respData['error']);
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: const Duration(seconds: 4),
+            content: Text(
+              'Endereço enviado com sucesso',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        );
+        return true;
+      } catch (e) {
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: const Duration(seconds: 4),
+            content: Text(
+              'Algo deu errado',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        );
+        print(e);
+        return false;
+      }
+    }
+    return false;
+  }
+
+  Future<bool> _atualizarEndereco() async {
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+
+      //create model and convert to map
+      EnderecoModel _endToSend = EnderecoModel(
+        bairro: _bairroController.text,
+        cep: _cepController.text,
+        cidade: _cidadeController.text,
+        complemento: _complementoController.text,
+        endereco: _enderecoController.text,
+        numero: _numeroController.text,
+        pais: _paisController.text,
+        uf: _ufController.text,
+        usuario: widget.userId,
+      );
+      //send
+      var _response = await http.put(
+        Uri.parse(RotasUrl.rotaEnderecosV1 + '/' + _endId.toString()),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${_authStore.token}',
+        },
+        body: json.encode(_endToSend.toJson()),
+      );
+      try {
+        print(_response.body);
+        var _respData = json.decode(_response.body);
+        if (_respData.containsKey('error')) return throw (_respData['error']);
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: const Duration(seconds: 4),
+            content: Text(
+              'Endereço atualizado com sucesso',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        );
+        return true;
+      } catch (e) {
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: const Duration(seconds: 4),
+            content: Text(
+              'Algo deu errado',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        );
+        print(e);
+        return false;
+      }
+    }
+    return false;
+  }
+
+  Widget _manageNovoEndBtns() {
+    return Wrap(
+      runAlignment: WrapAlignment.spaceAround,
+      children: [
+        _novoEndBtn(),
+        const SizedBox(
+          height: 10,
+          width: 10,
+        ),
+        if (_novoEndereco) _enviarNovoEndBtn(),
+      ],
+    );
+  }
+
+  Widget _atualizarEndBtn() {
+    return Container(
+      width: 300,
+      child: ElevatedButton(
+        onPressed: sendingEndereco
+            ? null
+            : () async {
+                setState(() {
+                  sendingEndereco = true;
+                });
+                bool result = await _atualizarEndereco();
+                if (result) {
+                  setState(() {
+                    sendingEndereco = false;
+                    _novoEndereco = false;
+                    _bairroController.text = '';
+                    _enderecoController.text = '';
+                    _numeroController.text = '';
+                    _complementoController.text = '';
+                    _cepController.text = '';
+                    _ufController.text = '';
+                    _cidadeController.text = '';
+                    _paisController.text = '';
+                  });
+                } else {
+                  setState(() {
+                    sendingEndereco = false;
+                  });
+                }
+              },
+        child: sendingEndereco
+            ? const Text(
+                'AGUARDE...',
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              )
+            : const Text(
+                'ATUALIZAR',
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+      ),
+    );
+  }
+
+  Widget _manageAtualizarEndBtns() {
+    return _atualizarEndBtn();
+  }
+
+  Widget _manageEndBtns() {
+    return Wrap(
+      runAlignment: WrapAlignment.spaceAround,
+      children: [
+        _manageNovoEndBtns(),
+        const SizedBox(
+          height: 10,
+          width: 10,
+        ),
+        if (_endId > 0) _manageAtualizarEndBtns(),
+      ],
+    );
   }
 
   Widget _selecioneEnderecoField() {
     return DropdownSearch<EnderecoModel>(
+      dropdownBuilder: (buildContext, string, string2) {
+        return Text(_endSelecionadoController.text);
+      },
       dropdownSearchDecoration: InputDecoration(
         border: OutlineInputBorder(),
         contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
@@ -295,14 +394,19 @@ class _EnderecoState extends State<Endereco> {
       mode: Mode.MENU,
       label: 'Selecione endereço: *',
       onChanged: (EnderecoModel selectedEnd) {
-        _endModel.bairro = selectedEnd.bairro;
-        _endModel.cidade = selectedEnd.cidade;
-        _endModel.complemento = selectedEnd.complemento;
-        _endModel.endereco = selectedEnd.endereco;
-        _endModel.uf = selectedEnd.uf;
-        _endModel.pais = selectedEnd.pais;
-        _endModel.numero = selectedEnd.numero;
-        _endModel.cep = selectedEnd.cep;
+        _endSelecionadoController.text = selectedEnd.endereco;
+        setState(() {
+          _endId = selectedEnd.id;
+          _novoEndereco = false;
+        });
+        _bairroController.text = selectedEnd.bairro;
+        _cidadeController.text = selectedEnd.cidade;
+        _complementoController.text = selectedEnd.complemento;
+        _enderecoController.text = selectedEnd.endereco;
+        _ufController.text = selectedEnd.uf;
+        _paisController.text = selectedEnd.pais;
+        _numeroController.text = selectedEnd.numero;
+        _cepController.text = selectedEnd.cep;
       },
     );
   }
@@ -312,13 +416,13 @@ class _EnderecoState extends State<Endereco> {
       margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
       height: 80,
       child: TextFormField(
-        initialValue: _endModel.endereco,
+        controller: _enderecoController,
         maxLength: 60,
         onSaved: (String value) {
           if (widget.enderecoType == _type1) {
             _cadastroStore.novoCad.endereco = value;
           } else {
-            _endModel.endereco = value;
+            _enderecoController.text = value;
           }
         },
         validator: (String value) {
@@ -345,12 +449,13 @@ class _EnderecoState extends State<Endereco> {
             child: Container(
               height: 80,
               child: TextFormField(
+                controller: _numeroController,
                 maxLength: 10,
                 onSaved: (String value) {
                   if (widget.enderecoType == _type1) {
                     _cadastroStore.novoCad.numero = value;
                   } else {
-                    _endModel.numero = value;
+                    _numeroController.text = value;
                   }
                 },
                 validator: (String value) {
@@ -360,7 +465,6 @@ class _EnderecoState extends State<Endereco> {
                 inputFormatters: <TextInputFormatter>[
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                 ],
-                initialValue: _endModel.numero,
                 decoration: InputDecoration(
                   counterText: '',
                   labelText: 'Número: *',
@@ -375,13 +479,13 @@ class _EnderecoState extends State<Endereco> {
             child: Container(
               height: 80,
               child: TextFormField(
-                initialValue: _endModel.complemento,
+                controller: _complementoController,
                 maxLength: 40,
                 onSaved: (String value) {
                   if (widget.enderecoType == _type1) {
                     _cadastroStore.novoCad.complemento = value;
                   } else {
-                    _endModel.complemento = value;
+                    _complementoController.text = value;
                   }
                 },
                 validator: (String value) {
@@ -405,13 +509,13 @@ class _EnderecoState extends State<Endereco> {
     return Container(
       height: 80,
       child: TextFormField(
-        initialValue: _endModel.bairro,
+        controller: _bairroController,
         maxLength: 60,
         onSaved: (String value) {
           if (widget.enderecoType == _type1) {
             _cadastroStore.novoCad.bairro = value;
           } else {
-            _endModel.bairro = value;
+            _bairroController.text = value;
           }
         },
         validator: (String value) {
@@ -431,11 +535,12 @@ class _EnderecoState extends State<Endereco> {
     return Container(
       height: 80,
       child: TextFormField(
+        controller: _cepController,
         onSaved: (String value) {
           if (widget.enderecoType == _type1) {
             _cadastroStore.novoCad.cep = value;
           } else {
-            _endModel.cep = value;
+            _cepController.text = value;
           }
         },
         validator: (String value) {
@@ -446,7 +551,6 @@ class _EnderecoState extends State<Endereco> {
         inputFormatters: <TextInputFormatter>[
           FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
         ],
-        initialValue: _endModel.cep,
         decoration: InputDecoration(
           //To hide cep length num
           counterText: '',
@@ -462,6 +566,9 @@ class _EnderecoState extends State<Endereco> {
     return Container(
       height: 80,
       child: DropdownSearch<String>(
+        dropdownBuilder: (buildContext, string, string2) {
+          return Text(_paisController.text);
+        },
         emptyBuilder: (buildContext, string) {
           return Center(child: Text('Sem dados'));
         },
@@ -478,7 +585,7 @@ class _EnderecoState extends State<Endereco> {
           if (widget.enderecoType == _type1) {
             _cadastroStore.novoCad.pais = value;
           } else {
-            _endModel.pais = value;
+            _paisController.text = value;
           }
         },
         validator: (String value) {
@@ -491,17 +598,16 @@ class _EnderecoState extends State<Endereco> {
         mode: Mode.MENU,
         showSearchBox: true,
         showSelectedItem: true,
-        items: [],
         label: 'País: *',
         hint: 'País: *',
         popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
         onChanged: (value) {
           //clear to force user select new uf and city
-          _endModel.uf = '';
-          _endModel.cidade = '';
-          _endModel.pais = value;
+          _ufController.text = '';
+          _cidadeController.text = '';
+          _paisController.text = value;
         },
-        selectedItem: _endModel.pais,
+        selectedItem: _paisController.text,
       ),
     );
   }
@@ -519,7 +625,7 @@ class _EnderecoState extends State<Endereco> {
               height: 80,
               child: DropdownSearch<String>(
                 dropdownBuilder: (buildContext, string, string2) {
-                  return Text(_endModel.uf);
+                  return Text(_ufController.text);
                 },
                 emptyBuilder: (buildContext, string) {
                   return Center(child: Text('Sem dados'));
@@ -537,7 +643,7 @@ class _EnderecoState extends State<Endereco> {
                   if (widget.enderecoType == _type1) {
                     _cadastroStore.novoCad.uf = value;
                   } else {
-                    _endModel.uf = value;
+                    _ufController.text = value;
                   }
                 },
                 validator: (String value) {
@@ -550,17 +656,15 @@ class _EnderecoState extends State<Endereco> {
                 mode: Mode.MENU,
                 showSearchBox: true,
                 showSelectedItem: true,
-                items: [],
                 label: 'UF: *',
                 //hint: 'country in menu mode',
                 popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
-                onChanged: (value) async {
+                onChanged: (String value) async {
                   //clear to force user select new uf and city
-
-                  _endModel.cidade = '';
-                  _endModel.uf = value;
+                  _cidadeController.text = '';
+                  _ufController.text = value;
                 },
-                selectedItem: _endModel.uf,
+                selectedItem: _ufController.text,
               ),
             ),
           ),
@@ -571,7 +675,7 @@ class _EnderecoState extends State<Endereco> {
               height: 80,
               child: DropdownSearch<String>(
                 dropdownBuilder: (buildContext, string, string2) {
-                  return Text(_endModel.cidade);
+                  return Text(_cidadeController.text);
                 },
                 emptyBuilder: (buildContext, string) {
                   return Center(child: Text('Sem dados'));
@@ -589,7 +693,7 @@ class _EnderecoState extends State<Endereco> {
                   if (widget.enderecoType == _type1) {
                     _cadastroStore.novoCad.cidade = value;
                   } else {
-                    _endModel.cidade = value;
+                    _cidadeController.text = value;
                   }
                 },
                 validator: (String value) {
@@ -602,14 +706,13 @@ class _EnderecoState extends State<Endereco> {
                 mode: Mode.MENU,
                 showSearchBox: true,
                 showSelectedItem: true,
-                items: [],
                 label: 'Cidade: *',
                 //hint: 'country in menu mode',
                 popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
                 onChanged: (value) {
-                  _endModel.cidade = value;
+                  _cidadeController.text = value;
                 },
-                selectedItem: _endModel.cidade,
+                selectedItem: _cidadeController.text,
               ),
             ),
           ),
@@ -633,7 +736,7 @@ class _EnderecoState extends State<Endereco> {
           _cepField(),
           _paisField(),
           _ufCidadeField(),
-          //if (widget.enderecoType == _type2) _type2Btns(),
+          _manageEndBtns(),
         ],
       ),
     );
@@ -668,12 +771,12 @@ class _EnderecoState extends State<Endereco> {
 
   Future<List<String>> _fetchCities() async {
     //can't fetch states if no state is selected
-    if (_endModel.uf.length == 0) {
+    if (_ufController.text.length == 0) {
       return [];
     }
     final response = await http.get(
       Uri.parse(
-        RotasUrl.rotaCidadesV1 + '?estado=' + _endModel.uf,
+        RotasUrl.rotaCidadesV1 + '?estado=' + _ufController.text,
       ),
     );
     List<String> cities = [];
@@ -687,12 +790,12 @@ class _EnderecoState extends State<Endereco> {
 
   Future<List<String>> _fetchStates() async {
     //can't fetch states if no country is selected
-    if (_endModel.pais.length == 0) {
+    if (_paisController.text.length == 0) {
       return [];
     }
     final response = await http.get(
       Uri.parse(
-        RotasUrl.rotaEstadosV1 + '?pais=' + _endModel.pais,
+        RotasUrl.rotaEstadosV1 + '?pais=' + _paisController.text,
       ),
     );
     List<String> states = [];
@@ -702,6 +805,20 @@ class _EnderecoState extends State<Endereco> {
     });
 
     return states;
+  }
+
+  @override
+  void dispose() {
+    _endSelecionadoController.dispose();
+    _bairroController.dispose();
+    _enderecoController.dispose();
+    _numeroController.dispose();
+    _complementoController.dispose();
+    _cepController.dispose();
+    _ufController.dispose();
+    _cidadeController.dispose();
+    _paisController.dispose();
+    super.dispose();
   }
 
   @override

@@ -1,4 +1,5 @@
 class EnderecoModel {
+  int id;
   String bairro;
   String cidade;
   String complemento;
@@ -7,7 +8,9 @@ class EnderecoModel {
   String pais;
   String numero;
   String cep;
+  int usuario;
   EnderecoModel({
+    this.id,
     this.bairro,
     this.cidade,
     this.complemento,
@@ -16,5 +19,20 @@ class EnderecoModel {
     this.pais,
     this.numero,
     this.cep,
+    this.usuario,
   });
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'bairro': bairro,
+      'cidade': cidade,
+      'complemento': complemento,
+      'endereco': endereco,
+      'estado': uf,
+      'pais': pais,
+      'numero': numero,
+      'cep': cep,
+      'usuario': usuario,
+    };
+  }
 }

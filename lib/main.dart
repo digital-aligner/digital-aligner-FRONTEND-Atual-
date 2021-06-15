@@ -12,6 +12,7 @@ import 'package:digital_aligner_app/screens/paciente_screen.dart';
 import 'package:digital_aligner_app/screens/pedido_view_screen.dart';
 import 'package:digital_aligner_app/screens/perfil.dart';
 import 'package:digital_aligner_app/screens/refinamento_pedido.dart';
+import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
 
 import './providers/pedidos_list_provider.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pedido.dart';
@@ -203,6 +204,7 @@ class MyApp extends StatelessWidget {
             MeusSetups.routeName: (ctx) => MeusSetups(),
             MinhasRevisoes.routeName: (ctx) => MinhasRevisoes(),
             RelatorioViewScreen.routeName: (ctx) => RelatorioViewScreen(),
+            PedidoV1Screen.routeName: (ctx) => PedidoV1Screen(),
           },
         ),
       ),
