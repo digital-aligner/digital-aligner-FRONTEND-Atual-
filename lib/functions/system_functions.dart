@@ -1,5 +1,6 @@
 class SystemFunctions {
-  static String formatCpf({String cpf}) {
+  static String formatCpf({String cpf = ''}) {
+    if (cpf.isEmpty) return cpf;
     String _formatedCpf = cpf.substring(0, 3) +
         '.' +
         cpf.substring(3, 6) +
@@ -10,23 +11,27 @@ class SystemFunctions {
     return _formatedCpf;
   }
 
-  static String formatCpfRemoveFormating({String cpf}) {
+  static String formatCpfRemoveFormating({String cpf = ''}) {
+    if (cpf.isEmpty) return cpf;
     String removeCpfDots = cpf.replaceAll('.', '');
     String removeCpfDash = removeCpfDots.replaceAll('-', '');
     return removeCpfDash;
   }
 
-  static String formatCep({String cep}) {
+  static String formatCep({String cep = ''}) {
+    if (cep.isEmpty) return cep;
     String _formatedCep = cep.substring(0, 5) + '-' + cep.substring(5, 8);
     return _formatedCep;
   }
 
-  static String formatCepRemoveFormating({String cep}) {
+  static String formatCepRemoveFormating({String cep = ''}) {
+    if (cep.isEmpty) return cep;
     String removeCepDash = cep.replaceAll('-', '');
     return removeCepDash;
   }
 
-  static String formatTelefone({String telefone}) {
+  static String formatTelefone({String telefone = ''}) {
+    if (telefone.isEmpty) return telefone;
     String _formatedTelefone = '(' +
         telefone.substring(0, 2) +
         ')' +
@@ -37,7 +42,8 @@ class SystemFunctions {
     return _formatedTelefone;
   }
 
-  static String formatTelefoneRemoveFormating({String telefone}) {
+  static String formatTelefoneRemoveFormating({String telefone = ''}) {
+    if (telefone.isEmpty) return telefone;
     String removedBracket1 = telefone.replaceAll('(', '');
     String removedBracket2 = removedBracket1.replaceAll(')', '');
     String removedSpace = removedBracket2.replaceAll(' ', '');
@@ -45,7 +51,8 @@ class SystemFunctions {
     return removedDash;
   }
 
-  static String formatCellphone({String cellphone}) {
+  static String formatCellphone({String cellphone = ''}) {
+    if (cellphone.isEmpty) return cellphone;
     String formatedCellphone = '(' +
         cellphone.substring(0, 2) +
         ')' +
@@ -56,7 +63,8 @@ class SystemFunctions {
     return formatedCellphone;
   }
 
-  static String formatCellphoneRemoveFormating({String cellphone}) {
+  static String formatCellphoneRemoveFormating({String cellphone = ''}) {
+    if (cellphone.isEmpty) return cellphone;
     String removedBracket1 = cellphone.replaceAll('(', '');
     String removedBracket2 = removedBracket1.replaceAll(')', '');
     String removedSpace = removedBracket2.replaceAll(' ', '');

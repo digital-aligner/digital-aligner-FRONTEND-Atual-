@@ -25,12 +25,12 @@ class GerenciarPedidos extends StatefulWidget {
 class _GerenciarPedidosState extends State<GerenciarPedidos> {
   bool fetchData = true;
 
-  AuthProvider authStore;
-  PedidosListProvider _pedidosListStore;
+  AuthProvider? authStore;
+  PedidosListProvider? _pedidosListStore;
 
   bool isGerenciarPedido = true;
 
-  Timer searchOnStoppedTyping;
+  Timer? searchOnStoppedTyping;
 
   final TextEditingController _searchField = TextEditingController();
 
@@ -45,7 +45,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
   @override
   void dispose() {
     _searchField.dispose();
-    _pedidosListStore.clearPedidosOnLeave();
+    _pedidosListStore!.clearPedidosOnLeave();
     super.dispose();
   }
 
@@ -57,18 +57,18 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
     setState(() {
       //page to 0 before fetch
       _startPage = 0;
-      _pedidosListStore.setDropdownValue('Todos');
+      _pedidosListStore!.setDropdownValue('Todos');
       _searchField.text = '';
-      _pedidosListStore.setQuery('');
+      _pedidosListStore!.setQuery('');
     });
     //fetchData before set state (fixes not updating bug)
     fetchData = true;
-    _pedidosListStore.clearPedidosAndUpdate();
+    _pedidosListStore!.clearPedidosAndUpdate();
   }
 
   Widget _getHeaders(double sWidth) {
     //Will be used to check and change ui based on search
-    if (_pedidosListStore.getDropdownValue() == 'Todos') {
+    if (_pedidosListStore!.getDropdownValue() == 'Todos') {
       return Row(
         children: [
           const SizedBox(width: 20),
@@ -145,7 +145,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
           const SizedBox(width: 20),
         ],
       );
-    } else if (_pedidosListStore.getDropdownValue() == 'Pedidos Aprovados') {
+    } else if (_pedidosListStore!.getDropdownValue() == 'Pedidos Aprovados') {
       return Row(
         children: [
           const SizedBox(width: 20),
@@ -234,7 +234,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
           const SizedBox(width: 20),
         ],
       );
-    } else if (_pedidosListStore.getDropdownValue() == 'Refinamentos') {
+    } else if (_pedidosListStore!.getDropdownValue() == 'Refinamentos') {
       return Row(
         children: [
           const SizedBox(width: 20),
@@ -311,7 +311,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
           const SizedBox(width: 20),
         ],
       );
-    } else if (_pedidosListStore.getDropdownValue() ==
+    } else if (_pedidosListStore!.getDropdownValue() ==
         'Alterações de Pedidos') {
       return Row(
         children: [
@@ -395,7 +395,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
           const SizedBox(width: 20),
         ],
       );
-    } else if (_pedidosListStore.getDropdownValue() == 'Pedidos Alterados') {
+    } else if (_pedidosListStore!.getDropdownValue() == 'Pedidos Alterados') {
       return Row(
         children: [
           const SizedBox(width: 20),
@@ -505,7 +505,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
         direction: sWidth > 800 ? Axis.horizontal : Axis.vertical,
         children: [
           DropdownButton<String>(
-            value: _pedidosListStore.getDropdownValue(),
+            value: _pedidosListStore!.getDropdownValue(),
             icon: const Icon(Icons.arrow_downward_outlined),
             iconSize: 24,
             elevation: 16,
@@ -514,17 +514,17 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
               height: 0,
               color: Colors.deepPurpleAccent,
             ),
-            onChanged: (String newValue) {
+            onChanged: (String? newValue) {
               setState(() {
                 //page to 0 before fetch
                 _startPage = 0;
-                _pedidosListStore.setDropdownValue(newValue);
+                _pedidosListStore!.setDropdownValue(newValue ?? '');
                 _searchField.text = '';
-                _pedidosListStore.setQuery('');
+                _pedidosListStore!.setQuery('');
               });
               //fetchData before set state (fixes not updating bug)
               fetchData = true;
-              _pedidosListStore.clearPedidosAndUpdate();
+              _pedidosListStore!.clearPedidosAndUpdate();
             },
             items: <String>[
               'Todos',
@@ -553,7 +553,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                 fetchData = true;
                 const duration = Duration(milliseconds: 500);
                 if (searchOnStoppedTyping != null) {
-                  setState(() => searchOnStoppedTyping.cancel());
+                  setState(() => searchOnStoppedTyping!.cancel());
                 }
                 setState(
                   () => searchOnStoppedTyping = new Timer(
@@ -570,8 +570,8 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
   }
 
   void _searchBoxQuery(String value) {
-    _pedidosListStore.setQuery(value);
-    _pedidosListStore.clearPedidosAndUpdate();
+    _pedidosListStore!.setQuery(value);
+    _pedidosListStore!.clearPedidosAndUpdate();
   }
 
   @override
@@ -585,10 +585,10 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
     authStore = Provider.of<AuthProvider>(context);
 
     _pedidosListStore = Provider.of<PedidosListProvider>(context);
-    _pedidosListStore.setToken(authStore.token);
+    _pedidosListStore!.setToken(authStore!.token);
 
     if (fetchData) {
-      _pedidosListStore.fetchPedidos(_startPage).then((List<dynamic> pedidos) {
+      _pedidosListStore!.fetchPedidos(_startPage).then((List<dynamic> pedidos) {
         if (pedidos.length <= 0) {
           _blockForwardBtn = true;
         } else if (pedidos[0].containsKey('error')) {
@@ -606,12 +606,12 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
 
   @override
   Widget build(BuildContext context) {
-    if (!authStore.isAuth) {
+    if (!authStore!.isAuth) {
       return LoginScreen();
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (authStore.role == 'Credenciado') {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      if (authStore!.role == 'Credenciado') {
         Navigator.of(context).pushNamedAndRemoveUntil(
           MeusPacientes.routeName,
           (Route<dynamic> route) => false,
@@ -638,11 +638,11 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
             ),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                  colors: [Colors.white, Colors.grey[100]],
+                  colors: [Colors.white, Color(0xFFdbdbdb)],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter),
             ),
-            child: authStore.role != 'Credenciado'
+            child: authStore!.role != 'Credenciado'
                 ? Column(
                     children: [
                       const SizedBox(height: 20),
@@ -680,7 +680,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                       //TOP TEXT
                       _getHeaders(sWidth),
                       const SizedBox(height: 20),
-                      if (_pedidosListStore.getPedidosList() == null)
+                      if (_pedidosListStore!.getPedidosList().isEmpty)
                         Center(
                           child: CircularProgressIndicator(
                             valueColor: new AlwaysStoppedAnimation<Color>(
@@ -688,12 +688,12 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                             ),
                           ),
                         )
-                      else if (_pedidosListStore
+                      else if (_pedidosListStore!
                           .getPedidosList()[0]
                           .containsKey('error'))
                         Container(
                           child: Text(
-                            _pedidosListStore.getPedidosList()[0]['message'],
+                            _pedidosListStore!.getPedidosList()[0]['message'],
                           ),
                         )
                       else
@@ -726,7 +726,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                                         _startPage = _startPage - 10;
                                       });
                                     }
-                                    _pedidosListStore.clearPedidosAndUpdate();
+                                    _pedidosListStore!.clearPedidosAndUpdate();
                                   },
                             icon: const Icon(Icons.arrow_back),
                             label: const Text('Anterior'),
@@ -745,7 +745,7 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
                                       _blockPageBtns = true;
                                       _startPage = _startPage + 10;
                                     });
-                                    _pedidosListStore.clearPedidosAndUpdate();
+                                    _pedidosListStore!.clearPedidosAndUpdate();
                                   },
                             icon: const Icon(Icons.arrow_forward),
                             label: const Text('Próximo'),

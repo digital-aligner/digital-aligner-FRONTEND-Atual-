@@ -11,16 +11,16 @@ class CadastroEnderecoModel {
   String codigoEndereco;
 
   CadastroEnderecoModel({
-    this.id,
-    this.endereco,
-    this.numero,
-    this.complemento,
-    this.bairro,
-    this.pais,
-    this.cidade,
-    this.uf,
-    this.cep,
-    this.codigoEndereco,
+    this.id = 0,
+    this.endereco = '',
+    this.numero = '',
+    this.complemento = '',
+    this.bairro = '',
+    this.pais = '',
+    this.cidade = '',
+    this.uf = '',
+    this.cep = '',
+    this.codigoEndereco = '',
   });
 
   factory CadastroEnderecoModel.fromJson(Map<String, dynamic> data) {

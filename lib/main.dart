@@ -2,21 +2,11 @@ import 'package:digital_aligner_app/page_transition_web.dart';
 import 'package:digital_aligner_app/providers/check_new_data_provider.dart';
 import 'package:digital_aligner_app/providers/pacientes_list_provider.dart';
 import 'package:digital_aligner_app/providers/relatorio_provider.dart';
-import 'package:digital_aligner_app/providers/s3_delete_provider.dart';
-import 'package:digital_aligner_app/providers/s3_relatorio_delete_provider.dart';
-import 'package:digital_aligner_app/screens/gerar_relatorio_screen.dart';
-import 'package:digital_aligner_app/screens/meus_refinamentos.dart';
-import 'package:digital_aligner_app/screens/administrativo/meus_setups.dart';
-import 'package:digital_aligner_app/screens/administrativo/minhas_revisoes.dart';
-import 'package:digital_aligner_app/screens/paciente_screen.dart';
-import 'package:digital_aligner_app/screens/pedido_view_screen.dart';
 import 'package:digital_aligner_app/screens/perfil.dart';
-import 'package:digital_aligner_app/screens/refinamento_pedido.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
 
 import './providers/pedidos_list_provider.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pedido.dart';
-import 'package:digital_aligner_app/screens/editar_pedido.dart';
 
 import './screens/administrativo/gerenciar_permissoes.dart';
 import 'package:flutter/material.dart';
@@ -25,11 +15,7 @@ import 'package:provider/provider.dart';
 
 import './screens/login_screen.dart';
 import 'screens/administrativo/gerenciar_pacientes.dart';
-import 'screens/editar_relatorio_screen.dart';
 import 'screens/meus_pacientes.dart';
-import 'screens/meus_pedidos.dart';
-import 'screens/novo_paciente.dart';
-import 'screens/novo_pedido.dart';
 import './screens/loading_screen.dart';
 import './screens/administrativo/gerenciar_cadastro.dart';
 import './screens/editar_cadastro.dart';
@@ -38,7 +24,6 @@ import 'providers/login_form_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/pedido_provider.dart';
 import 'providers/cadastro_provider.dart';
-import 'screens/relatorio_view_screen.dart';
 
 import 'dart:js' as js;
 
@@ -47,7 +32,7 @@ void main() {
 }
 
 Map<String, String> _queryStrings() {
-  Uri uri = Uri.tryParse(js.context['location']['href']);
+  Uri? uri = Uri.tryParse(js.context['location']['href']);
   List<String> uriStringAfterQuestionMark = uri.toString().split('?');
   //If the url has no query strings, its length will be 1
   if (uriStringAfterQuestionMark.length == 1) return Map<String, String>();
@@ -83,12 +68,6 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (ctx) => RelatorioProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (ctx) => S3DeleteProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (ctx) => S3RelatorioDeleteProvider(),
         ),
         ChangeNotifierProvider(
           create: (ctx) => CheckNewDataProvider(),
@@ -185,25 +164,12 @@ class MyApp extends StatelessWidget {
           ),
           routes: {
             MeusPacientes.routeName: (ctx) => MeusPacientes(),
-            NovoPaciente.routeName: (ctx) => NovoPaciente(),
             GerenciarCadastros.routeName: (ctx) => GerenciarCadastros(),
             GerenciarPedidos.routeName: (ctx) => GerenciarPedidos(),
             EditarCadastro.routeName: (ctx) => EditarCadastro(),
-            EditarPedido.routeName: (ctx) => EditarPedido(),
             GerenciarPermissoes.routeName: (ctx) => GerenciarPermissoes(),
             GerenciarPacientes.routeName: (ctx) => GerenciarPacientes(),
-            GerarRelatorioScreen.routeName: (ctx) => GerarRelatorioScreen(),
-            PacienteScreen.routeName: (ctx) => PacienteScreen(),
-            EditarRelatorioScreen.routeName: (ctx) => EditarRelatorioScreen(),
-            MeusPedidos.routeName: (ctx) => MeusPedidos(),
-            NovoPedido.routeName: (ctx) => NovoPedido(),
-            RefinamentoPedido.routeName: (ctx) => RefinamentoPedido(),
-            MeusRefinamentos.routeName: (ctx) => MeusRefinamentos(),
             Perfil.routeName: (ctx) => Perfil(),
-            PedidoViewScreen.routeName: (ctx) => PedidoViewScreen(),
-            MeusSetups.routeName: (ctx) => MeusSetups(),
-            MinhasRevisoes.routeName: (ctx) => MinhasRevisoes(),
-            RelatorioViewScreen.routeName: (ctx) => RelatorioViewScreen(),
             PedidoV1Screen.routeName: (ctx) => PedidoV1Screen(),
           },
         ),

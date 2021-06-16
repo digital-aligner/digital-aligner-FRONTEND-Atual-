@@ -1,0 +1,1 @@
+class PedidoV1Model {}

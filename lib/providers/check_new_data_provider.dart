@@ -6,7 +6,7 @@ import 'dart:convert';
 class CheckNewDataProvider with ChangeNotifier {
   int novosPedidosCount = -1;
 
-  String _token;
+  String _token = '';
   //public var
   bool _fetchData = true;
 
@@ -84,10 +84,7 @@ class CheckNewDataProvider with ChangeNotifier {
           body: json.encode({'visualizado': visualizado}));
     } catch (error) {
       print(error);
-      return 0;
+      return;
     }
   }
-
-
-
 }

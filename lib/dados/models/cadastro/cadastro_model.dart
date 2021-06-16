@@ -9,7 +9,7 @@ class CadastroModel {
   String usernameCpf;
   String email;
   bool blocked;
-  RoleModel role;
+  RoleModel? role;
   String nome;
   String sobrenome;
   String cro_uf;
@@ -17,23 +17,23 @@ class CadastroModel {
   String data_nasc;
   String telefone;
   String celular;
-  AprovacaoUsuarioModel aprovacao_usuario;
-  RepresentanteModel representante;
-  OnboardingModel onboarding;
+  AprovacaoUsuarioModel? aprovacao_usuario;
+  RepresentanteModel? representante;
+  OnboardingModel? onboarding;
 
   CadastroModel({
-    this.id,
-    this.usernameCpf,
-    this.email,
-    this.blocked,
+    this.id = 0,
+    this.usernameCpf = '',
+    this.email = '',
+    this.blocked = true,
     this.role,
-    this.nome,
-    this.sobrenome,
-    this.cro_uf,
-    this.cro_num,
-    this.data_nasc,
-    this.telefone,
-    this.celular,
+    this.nome = '',
+    this.sobrenome = '',
+    this.cro_uf = '',
+    this.cro_num = '',
+    this.data_nasc = '',
+    this.telefone = '',
+    this.celular = '',
     this.aprovacao_usuario,
     this.representante,
     this.onboarding,
@@ -90,7 +90,7 @@ class CadastroModel {
       'username': usernameCpf,
       'email': email,
       'blocked': blocked,
-      'role': role.toJson(),
+      'role': role!.toJson(),
       'nome': nome,
       'sobrenome': sobrenome,
       'cro_uf': cro_uf,
@@ -98,9 +98,9 @@ class CadastroModel {
       'data_nasc': data_nasc,
       'telefone': telefone,
       'celular': celular,
-      'aprovacao_usuario': aprovacao_usuario.toJson(),
-      'representante': representante.toJson(),
-      'onboarding': onboarding.toJson(),
+      'aprovacao_usuario': aprovacao_usuario!.toJson(),
+      'representante': representante!.toJson(),
+      'onboarding': onboarding!.toJson(),
     };
   }
 }

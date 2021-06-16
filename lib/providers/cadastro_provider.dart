@@ -13,11 +13,11 @@ class CadastroProvider with ChangeNotifier {
   NovoCadastroModel novoCad = NovoCadastroModel();
 
   //Converted json string to map
-  List<dynamic> _cadastros;
+  List<dynamic> _cadastros = [];
   //Currently selected cadastro obj
-  CadastroModel _selectedCad;
+  CadastroModel? _selectedCad;
   //Token for requests
-  String _token;
+  String _token = '';
 
   //For gerenciar cadastro screen
   String _cadDropdownValue = 'Todos';
@@ -48,7 +48,7 @@ class CadastroProvider with ChangeNotifier {
   }
 
   void clearCadastrosAndUpdate() {
-    _cadastros = null;
+    _cadastros = [];
     _selectedCad = null;
     notifyListeners();
   }
@@ -57,12 +57,12 @@ class CadastroProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  CadastroModel selectedCad() {
+  CadastroModel? selectedCad() {
     return _selectedCad;
   }
 
   void clearCadastros() {
-    _cadastros = null;
+    _cadastros = [];
     _cadDropdownValue = 'Todos';
     _permDropdownValue = 'Todos';
     _queryString = '';
@@ -73,7 +73,7 @@ class CadastroProvider with ChangeNotifier {
   }
 
   void clearToken() {
-    _token = null;
+    _token = '';
   }
 
   void setToken(var t) {
@@ -144,7 +144,7 @@ class CadastroProvider with ChangeNotifier {
     };
 
     //Check dropdown to change route: Todos, pedidos aprovados, etc.
-    String _routeType;
+    String _routeType = '';
     if (_cadDropdownValue == 'Todos') {
       _routeType = RotasUrl.rotaCadastro;
     } else if (_cadDropdownValue == 'Aprovado') {
@@ -190,7 +190,7 @@ class CadastroProvider with ChangeNotifier {
     };
 
     //Check dropdown to change route: Todos, pedidos aprovados, etc.
-    String _routeType;
+    String _routeType = '';
     if (_permDropdownValue == 'Todos') {
       _routeType = RotasUrl.rotaCadastro;
     } else if (_permDropdownValue == 'Administrador') {
@@ -337,13 +337,13 @@ class CadastroProvider with ChangeNotifier {
 
   Future<dynamic> enviarCadastro() async {
     var _response = await http.put(
-        Uri.parse(RotasUrl.rotaCadastro + _selectedCad.id.toString()),
+        Uri.parse(RotasUrl.rotaCadastro + _selectedCad!.id.toString()),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': 'Bearer $_token'
         },
-        body: json.encode(_selectedCad.toJson()));
+        body: json.encode(_selectedCad!.toJson()));
 
     Map _data = json.decode(_response.body);
 
@@ -351,9 +351,9 @@ class CadastroProvider with ChangeNotifier {
   }
 
   //Converted json string to map
-  List<dynamic> _aprovTableMap;
+  List<dynamic> _aprovTableMap = [];
   //List of string just for widget
-  List<String> _aprovTableList;
+  List<String> _aprovTableList = [];
 
   List<String> getAprovTableList() {
     return _aprovTableList;
@@ -362,13 +362,13 @@ class CadastroProvider with ChangeNotifier {
   void handleAprovRelation(String status) {
     _aprovTableMap.forEach((element) {
       if (element['status'] == status) {
-        _selectedCad.aprovacao_usuario.id = element['id'];
-        _selectedCad.aprovacao_usuario.status = status;
+        _selectedCad!.aprovacao_usuario!.id = element['id'];
+        _selectedCad!.aprovacao_usuario!.status = status;
 
         if (element['status'] != 'Aprovado') {
-          _selectedCad.blocked = true;
+          _selectedCad!.blocked = true;
         } else {
-          _selectedCad.blocked = false;
+          _selectedCad!.blocked = false;
         }
       }
     });

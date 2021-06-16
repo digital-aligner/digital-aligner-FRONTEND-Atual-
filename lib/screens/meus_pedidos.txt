@@ -1,32 +1,28 @@
 import 'dart:async';
 
+import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
+import 'package:digital_aligner_app/providers/pedidos_list_provider.dart';
+import 'package:digital_aligner_app/widgets/lists/meus_pedidos_list.dart';
 
-import '../providers/pacientes_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 //appbar
-import '../appbar/MyAppBar.dart';
-import '../appbar/MyDrawer.dart';
-//data providers store
-import '../providers/auth_provider.dart';
 
 //widgets
-import '../widgets/lists/meus_pacientes_list.dart';
-
 import 'login_screen.dart';
 
-class MeusPacientes extends StatefulWidget {
-  static const routeName = '/meus-pacientes';
+class MeusPedidos extends StatefulWidget {
+  static const routeName = '/meus-pedidos';
 
   @override
-  _MeusPacientesState createState() => _MeusPacientesState();
+  _MeusPedidosState createState() => _MeusPedidosState();
 }
 
-class _MeusPacientesState extends State<MeusPacientes> {
+class _MeusPedidosState extends State<MeusPedidos> {
   bool fetchData = true;
   late AuthProvider authStore;
-  late PacientesListProvider _pacientesListStore;
+  late PedidosListProvider _pedidosListStore;
 
   bool isMeusPedido = true;
 
@@ -39,62 +35,147 @@ class _MeusPacientesState extends State<MeusPacientes> {
   bool _blockPageBtns = true;
   bool _blockForwardBtn = true;
 
+  int mediaQuerySm = 576;
   int mediaQueryMd = 768;
 
+  /*
   @override
   void deactivate() {
-    _pacientesListStore.clearPacientes();
+    _pedidosListStore.clearPedidosOnLeave();
+    //_pedidosListStore.clearSelectedPed();
 
     super.deactivate();
+  }*/
+
+  void fetchDataHandler(bool value) {
+    fetchData = value;
   }
 
-  Widget _getHeaders({int mediaQuerySm = 0, double width = 0}) {
-    return Row(
-      children: [
-        const SizedBox(width: 20),
-        Expanded(
-          child: Text(
-            'Data',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black54,
+  @override
+  void dispose() {
+    _pedidosListStore.clearPedidosOnLeave();
+    super.dispose();
+  }
+
+  Widget _getHeaders(double sWidth) {
+    if (isMeusPedido) {
+      return Row(
+        children: [
+          const SizedBox(width: 20),
+          if (sWidth > mediaQuerySm)
+            Expanded(
+              child: Text(
+                'Data',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                //overflow: TextOverflow.ellipsis,
+              ),
             ),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        if (width > mediaQuerySm)
           Expanded(
             child: Text(
-              'Histórico recente',
+              'Pedido',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.black54,
               ),
+              //overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (sWidth > mediaQueryMd)
+            Expanded(
+              child: const Text(
+                'Paciente',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                //overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          if (authStore.role != 'Credenciado')
+            Expanded(
+              child: const Text(
+                'Status',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                //overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          /*
+          Expanded(
+            child: const Text(
+              'Responsável',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
               overflow: TextOverflow.ellipsis,
             ),
-          ),
-        Expanded(
-          child: Text(
-            'Nome Paciente',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black54,
+          ),*/
+          if (authStore.role == 'Credenciado' && sWidth > mediaQuerySm)
+            Expanded(
+              child: const Text(
+                'Opções',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                //overflow: TextOverflow.ellipsis,
+              ),
             ),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        SizedBox(width: 20),
-      ],
-    );
+          const SizedBox(width: 20),
+        ],
+      );
+    }
+    return Container(child: const Text(''));
   }
 
   Widget _searchBox() {
     return Row(
       children: [
-        Expanded(child: TextField(
+        /*
+        DropdownButton<String>(
+          value: dropdownValue,
+          icon: const Icon(Icons.arrow_downward_outlined),
+          iconSize: 24,
+          elevation: 16,
+          style: const TextStyle(color: Colors.deepPurple),
+          underline: Container(
+            height: 0,
+            color: Colors.deepPurpleAccent,
+          ),
+          onChanged: (String newValue) {
+            setState(() {
+              dropdownValue = newValue;
+            });
+          },
+          items: <String>[
+            'Todos',
+            'Pedidos Aprovados',
+            'Pedidos Alterados',
+          ].map<DropdownMenuItem<String>>((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value),
+            );
+          }).toList(),
+        ),*/
+        const SizedBox(width: 20),
+        Expanded(
+            child: TextField(
+          decoration: InputDecoration(
+            hintText: 'Informe o código do pedido',
+          ),
           onChanged: (value) async {
             //page to 0 before fetch
             _startPage = 0;
@@ -116,8 +197,20 @@ class _MeusPacientesState extends State<MeusPacientes> {
   }
 
   void _searchBoxQuery(String value) {
-    _pacientesListStore.setQuery(value);
-    _pacientesListStore.clearPacientesAndUpdate();
+    _pedidosListStore.setQuery(value);
+    _pedidosListStore.clearPedidosAndUpdate();
+  }
+
+  void refreshPageFetchNewList() {
+    setState(() {
+      //page to 0 before fetch
+      _startPage = 0;
+      _pedidosListStore.setDropdownValue('Todos');
+      _pedidosListStore.setQuery('');
+    });
+    //fetchData before set state (fixes not updating bug)
+    fetchData = true;
+    _pedidosListStore.clearPedidosAndUpdate();
   }
 
   @override
@@ -130,17 +223,17 @@ class _MeusPacientesState extends State<MeusPacientes> {
 
     authStore = Provider.of<AuthProvider>(context);
 
-    _pacientesListStore = Provider.of<PacientesListProvider>(context);
-    _pacientesListStore.setToken(authStore.token);
-    _pacientesListStore.setUserId(authStore.id);
+    _pedidosListStore = Provider.of<PedidosListProvider>(context);
+    _pedidosListStore.setToken(authStore.token);
+    final Map? args = ModalRoute.of(context)!.settings.arguments as Map;
 
     if (fetchData) {
-      _pacientesListStore
-          .fetchPacientes(_startPage)
-          .then((List<dynamic> cadastros) {
-        if (cadastros.length <= 0) {
+      _pedidosListStore
+          .fetchMeusPedidos(args['id'], _startPage)
+          .then((List<dynamic> pedidos) {
+        if (pedidos.length <= 0) {
           _blockForwardBtn = true;
-        } else if (cadastros[0].containsKey('error')) {
+        } else if (pedidos[0].containsKey('error')) {
           _blockForwardBtn = true;
         } else {
           _blockForwardBtn = false;
@@ -153,30 +246,17 @@ class _MeusPacientesState extends State<MeusPacientes> {
     }
   }
 
-  void refreshPageFetchNewList() {
-    setState(() {
-      //page to 0 before fetch
-      _startPage = 0;
-      _pacientesListStore.setQuery('');
-    });
-    //fetchData before set state (fixes not updating bug)
-    fetchData = true;
-    _pacientesListStore.clearPacientesAndUpdate();
-  }
-
   @override
   Widget build(BuildContext context) {
     if (!authStore.isAuth) {
       return LoginScreen();
     }
-
-    final double sWidth = MediaQuery.of(context).size.width;
-    final int mediaQuerySm = 576;
+    double sWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: MyAppBar(),
+      appBar: SecondaryAppbar(),
       // *BUG* Verify closing drawer automaticlly when under 1200
-      drawer: sWidth < 1200 ? MyDrawer() : null,
+      //drawer: sWidth < 1200 ? MyDrawer() : null,
       body: Scrollbar(
         thickness: 15,
         isAlwaysShown: true,
@@ -189,7 +269,7 @@ class _MeusPacientesState extends State<MeusPacientes> {
             ),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                  colors: [Colors.white, Color(0xFFdbdbdb)],
+                  colors: [Colors.white, Colors.grey[100]],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter),
             ),
@@ -197,7 +277,7 @@ class _MeusPacientesState extends State<MeusPacientes> {
               children: [
                 const SizedBox(height: 20),
                 Text(
-                  'Meus Pacientes',
+                  'Meus Pedidos',
                   style: Theme.of(context).textTheme.headline1,
                 ),
                 const SizedBox(height: 20),
@@ -218,6 +298,7 @@ class _MeusPacientesState extends State<MeusPacientes> {
                   label: const Text('Atualizar'),
                   icon: Icon(Icons.refresh),
                 ),
+
                 const SizedBox(height: 40),
                 _searchBox(),
                 const SizedBox(
@@ -227,12 +308,9 @@ class _MeusPacientesState extends State<MeusPacientes> {
                   ),
                 ),
                 //TOP TEXT
-                _getHeaders(
-                  width: sWidth,
-                  mediaQuerySm: mediaQuerySm,
-                ),
+                _getHeaders(sWidth),
                 const SizedBox(height: 20),
-                if (_pacientesListStore.getPacientesList().isEmpty)
+                if (_pedidosListStore.getPedidosList().isEmpty)
                   Center(
                     child: CircularProgressIndicator(
                       valueColor: new AlwaysStoppedAnimation<Color>(
@@ -240,19 +318,21 @@ class _MeusPacientesState extends State<MeusPacientes> {
                       ),
                     ),
                   )
-                else if (_pacientesListStore
-                    .getPacientesList()[0]
+                else if (_pedidosListStore
+                    .getPedidosList()[0]
                     .containsKey('error'))
                   Container(
                     child: Text(
-                      _pacientesListStore.getPacientesList()[0]['message'] ??
-                          '',
+                      _pedidosListStore.getPedidosList()[0]['message'],
                     ),
                   )
                 else
                   Expanded(
-                    child: MeusPacientesList(),
+                    child: MeusPedidosList(
+                      fetchDataHandler: fetchDataHandler,
+                    ),
                   ),
+
                 Flex(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -275,7 +355,7 @@ class _MeusPacientesState extends State<MeusPacientes> {
                                   _startPage = _startPage - 10;
                                 });
                               }
-                              _pacientesListStore.clearPacientesAndUpdate();
+                              _pedidosListStore.clearPedidosAndUpdate();
                             },
                       icon: const Icon(Icons.arrow_back),
                       label: const Text('Anterior'),
@@ -294,7 +374,7 @@ class _MeusPacientesState extends State<MeusPacientes> {
                                 _blockPageBtns = true;
                                 _startPage = _startPage + 10;
                               });
-                              _pacientesListStore.clearPacientesAndUpdate();
+                              _pedidosListStore.clearPedidosAndUpdate();
                             },
                       icon: const Icon(Icons.arrow_forward),
                       label: const Text('Próximo'),

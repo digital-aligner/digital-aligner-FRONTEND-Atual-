@@ -2,7 +2,7 @@ class OnboardingModel {
   int id;
   String onboarding;
 
-  OnboardingModel({this.id, this.onboarding});
+  OnboardingModel({this.id = 0, this.onboarding = ''});
 
   factory OnboardingModel.fromJson(Map<String, dynamic> data) {
     if (data.isEmpty) {

@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import '../rotas_url.dart';
 
 class PedidosListProvider with ChangeNotifier {
-  String _token;
+  String _token = '';
   String _queryString = '';
   String _dropownValue = 'Todos';
 
@@ -28,18 +28,18 @@ class PedidosListProvider with ChangeNotifier {
   //---- GERENCIAR PEDIDO ------
 
   //Converted json string to map
-  List<dynamic> _pedidos;
+  List<dynamic> _pedidos = [];
 
   //For when leaving screen and running deactivate state
   void clearPedidosOnLeave() {
-    _pedidos = null;
+    _pedidos = [];
     _queryString = '';
     _dropownValue = 'Todos';
   }
 
   //For clearing and updating ui with query search
   void clearPedidosAndUpdate() {
-    _pedidos = null;
+    _pedidos = [];
     notifyListeners();
   }
 
@@ -76,7 +76,7 @@ class PedidosListProvider with ChangeNotifier {
 
   Future<List<dynamic>> fetchPedidos(int startPage) async {
     //Check dropdown to change route: Todos, pedidos aprovados, etc.
-    String _routeType;
+    String _routeType = '';
     if (_dropownValue == 'Todos') {
       _routeType = RotasUrl.rotaPedidos;
     } else if (_dropownValue == 'Pedidos Aprovados') {

@@ -10,16 +10,16 @@ class EnderecoModel {
   String cep;
   int usuario;
   EnderecoModel({
-    this.id,
-    this.bairro,
-    this.cidade,
-    this.complemento,
-    this.endereco,
-    this.uf,
-    this.pais,
-    this.numero,
-    this.cep,
-    this.usuario,
+    this.id = 0,
+    this.bairro = '',
+    this.cidade = '',
+    this.complemento = '',
+    this.endereco = '',
+    this.uf = '',
+    this.pais = '',
+    this.numero = '',
+    this.cep = '',
+    this.usuario = 0,
   });
   Map<String, dynamic> toJson() {
     return {

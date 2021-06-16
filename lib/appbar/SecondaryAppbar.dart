@@ -22,7 +22,7 @@ class SecondaryAppbar extends StatelessWidget implements PreferredSizeWidget {
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.lightBlue[900], Theme.of(context).primaryColor],
+                colors: [Color(0xff2240b5), Theme.of(context).primaryColor],
                 stops: [0.5, 1.0],
               ),
             ),

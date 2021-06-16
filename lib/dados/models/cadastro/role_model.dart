@@ -2,7 +2,7 @@ class RoleModel {
   int id;
   String name;
 
-  RoleModel({this.id, this.name});
+  RoleModel({this.id = 0, this.name = ''});
 
   factory RoleModel.fromJson(Map<String, dynamic> data) {
     return RoleModel(

@@ -1,8 +1,4 @@
 import 'package:digital_aligner_app/providers/check_new_data_provider.dart';
-import 'package:digital_aligner_app/screens/gerar_relatorio_screen.dart';
-
-import 'package:digital_aligner_app/screens/pedido_view_screen.dart';
-import 'package:digital_aligner_app/screens/relatorio_view_screen.dart';
 
 import 'package:flutter/rendering.dart';
 
@@ -16,7 +12,7 @@ import 'package:flutter/material.dart';
 //import 'dart:html' as html;
 
 class PedidoListGerenciar extends StatefulWidget {
-  final Function fetchDataHandler;
+  final Function? fetchDataHandler;
 
   PedidoListGerenciar({this.fetchDataHandler});
 
@@ -25,12 +21,12 @@ class PedidoListGerenciar extends StatefulWidget {
 }
 
 class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
-  PedidosListProvider _pedidosListStore;
-  CheckNewDataProvider checkDataStore;
-  List<dynamic> pedList;
-  List<bool> pedListViewed;
+  late PedidosListProvider _pedidosListStore;
+  late CheckNewDataProvider checkDataStore;
+  List<dynamic> pedList = [];
+  List<bool> pedListViewed = [];
 
-  CheckNewDataProvider _cndp;
+  late CheckNewDataProvider _cndp;
   bool _absorbPointerBool = false;
 
   int mediaQuerySm = 576;
@@ -51,7 +47,7 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
             setState(() {
               _absorbPointerBool = true;
             });
-
+/*
             Navigator.of(context).pushNamed(
               GerarRelatorioScreen.routeName,
               arguments: {
@@ -73,6 +69,7 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                 });
               }
             });
+*/
           },
         ),
       );
@@ -90,26 +87,31 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
             setState(() {
               _absorbPointerBool = true;
             });
-
+            /*
             Navigator.of(context).pushNamed(
               RelatorioViewScreen.routeName,
               arguments: {
                 'pedido': pedList[index],
               },
+
+
             ).then((didUpdate) {
               if (didUpdate == null) {
                 setState(() {
                   _absorbPointerBool = false;
                 });
               }
-              if (didUpdate) {
+              if (didUpdate as bool) {
+                /*
                 Future.delayed(Duration(milliseconds: 800), () {
                   widget.fetchDataHandler(true);
                   _absorbPointerBool = false;
                   _pedidosListStore.clearPedidosAndUpdate();
-                });
+                });*/
               }
             });
+
+*/
           },
         ),
       );
@@ -128,7 +130,7 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
   }
 
   String _isoDateToLocal(String isoDateString) {
-    if (isoDateString == null || isoDateString == '') {
+    if (isoDateString == '') {
       return '';
     }
 
@@ -501,7 +503,6 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
     pedListViewed = [];
     pedList.forEach((pedido) {
       pedListViewed.add(pedido['visualizado']);
-
     });
     final double sWidth = MediaQuery.of(context).size.width;
     final double sHeight = MediaQuery.of(context).size.height;
@@ -551,6 +552,7 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                         setState(() {
                           _absorbPointerBool = true;
                         });
+                        /*
                         Navigator.of(context).pushNamed(
                           PedidoViewScreen.routeName,
                           arguments: {'index': index},
@@ -560,14 +562,16 @@ class _PedidoListGerenciarState extends State<PedidoListGerenciar> {
                               _absorbPointerBool = false;
                             });
                           }
-                          if (didUpdate) {
+                          if (didUpdate as bool) {
                             Future.delayed(Duration(milliseconds: 800), () {
-                              widget.fetchDataHandler(true);
+                              widget.fetchDataHandler!(true);
                               _absorbPointerBool = false;
                               _pedidosListStore.clearPedidosAndUpdate();
                             });
                           }
                         });
+
+*/
                       },
                       title: Tooltip(
                         message: 'Visualizar, editar e deletar pedidos',

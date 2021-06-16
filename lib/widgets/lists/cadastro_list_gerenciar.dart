@@ -10,7 +10,7 @@ import '../../screens/editar_cadastro.dart';
 import 'package:flutter/material.dart';
 
 class CadastroListGerenciar extends StatefulWidget {
-  final Function fetchDataHandler;
+  final Function? fetchDataHandler;
 
   CadastroListGerenciar({this.fetchDataHandler});
 
@@ -19,9 +19,9 @@ class CadastroListGerenciar extends StatefulWidget {
 }
 
 class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
-  CadastroProvider cadastroStore;
-  List<dynamic> cadList;
-  AuthProvider authStore;
+  late CadastroProvider cadastroStore;
+  List<dynamic> cadList = [];
+  late AuthProvider authStore;
   bool _dialogOpen = false;
   bool _sendingCadastro = false;
 
@@ -165,8 +165,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                '${cadList[index]['cro_uf'] + ' - ' + cadList[index]['cro_num']}' ??
-                    '',
+                '${cadList[index]['cro_uf'] ?? '' + ' - ' + cadList[index]['cro_num'] ?? ''}',
                 style: TextStyle(
                   fontSize: 16,
                 ),
@@ -202,7 +201,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                '${cadList[index]['email']}' ?? '',
+                '${cadList[index]['email'] ?? ''}',
                 style: TextStyle(
                   fontSize: 16,
                 ),
@@ -275,7 +274,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                '${cadList[index]['telefone']}' ?? '',
+                '${cadList[index]['telefone'] ?? ''}',
                 style: TextStyle(
                   fontSize: 16,
                 ),
@@ -420,8 +419,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                         children: [
                           Container(
                             child: Text(
-                              '${cadList[index]['nome'] + ' ' + cadList[index]['sobrenome']}' ??
-                                  '',
+                              '${cadList[index]['nome'] ?? '' + ' ' + cadList[index]['sobrenome'] ?? ''}',
                               style: TextStyle(
                                 fontSize: 35,
                                 color: Colors.black54,
@@ -538,11 +536,11 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                                   EditarCadastro.routeName,
                                 )
                                     .then((didUpdate) {
-                                  if (didUpdate) {
+                                  if (didUpdate as bool) {
                                     _dialogOpen = false;
                                     Future.delayed(Duration(milliseconds: 800),
                                         () {
-                                      widget.fetchDataHandler(true);
+                                      widget.fetchDataHandler!(true);
                                       _absorbPointerBool = false;
                                       cadastroStore.clearCadastrosAndUpdate();
                                     });
@@ -575,8 +573,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                         children: [
                           Container(
                             child: Text(
-                              '${cadList[index]['nome'] + ' ' + cadList[index]['sobrenome']}' ??
-                                  '',
+                              '${cadList[index]['nome'] ?? '' + ' ' + cadList[index]['sobrenome'] ?? ''}',
                               style: TextStyle(
                                 fontSize: 35,
                                 color: Colors.black54,
@@ -695,10 +692,10 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                               EditarCadastro.routeName,
                             )
                                 .then((didUpdate) {
-                              if (didUpdate) {
+                              if (didUpdate as bool) {
                                 _dialogOpen = false;
                                 Future.delayed(Duration(milliseconds: 800), () {
-                                  widget.fetchDataHandler(true);
+                                  widget.fetchDataHandler!(true);
                                   _absorbPointerBool = false;
                                   cadastroStore.clearCadastrosAndUpdate();
                                 });
@@ -727,7 +724,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     //For direct url access
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       if (Navigator.canPop(context) && !_dialogOpen) {
         Navigator.pop(context);
       }
@@ -736,7 +733,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
     cadastroStore = Provider.of<CadastroProvider>(context);
     cadList = cadastroStore.getCadastros();
     authStore = Provider.of<AuthProvider>(context);
-    if (cadList == null) {
+    if (cadList.isEmpty) {
       return Container(
         child: Align(
           alignment: Alignment.topCenter,
@@ -805,7 +802,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                           if (didUpdate) {
                             _dialogOpen = false;
                             Future.delayed(Duration(milliseconds: 800), () {
-                              widget.fetchDataHandler(true);
+                              widget.fetchDataHandler!(true);
                               _absorbPointerBool = false;
                               cadastroStore.clearCadastrosAndUpdate();
                             });

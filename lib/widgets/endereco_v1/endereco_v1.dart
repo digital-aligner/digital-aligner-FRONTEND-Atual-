@@ -14,8 +14,8 @@ import 'package:http/http.dart' as http;
 import '../../rotas_url.dart';
 
 class Endereco extends StatefulWidget {
-  final String enderecoType;
-  final GlobalKey<FormState> formKey; // for criar endereco only
+  final String? enderecoType;
+  final GlobalKey<FormState>? formKey; // for criar endereco only
   final int userId;
 
   Endereco({
@@ -28,8 +28,8 @@ class Endereco extends StatefulWidget {
 }
 
 class _EnderecoState extends State<Endereco> {
-  AuthProvider _authStore;
-  CadastroProvider _cadastroStore;
+  AuthProvider? _authStore;
+  CadastroProvider? _cadastroStore;
 
   //The types allowed
   final String _type1 = 'criar endereco';
@@ -57,7 +57,7 @@ class _EnderecoState extends State<Endereco> {
   final TextEditingController _cidadeController = TextEditingController();
   final TextEditingController _paisController = TextEditingController();
 
-  double sWidth;
+  double sWidth = 0;
   bool sendingEndereco = false;
   bool _novoEndereco = false;
 
@@ -69,7 +69,7 @@ class _EnderecoState extends State<Endereco> {
       ),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${_authStore.token}',
+        'Authorization': 'Bearer ${_authStore!.token}',
       },
     );
     try {
@@ -178,8 +178,8 @@ class _EnderecoState extends State<Endereco> {
   }
 
   Future<bool> _sendEndereco() async {
-    if (_formKey.currentState.validate()) {
-      _formKey.currentState.save();
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
 
       //create model and convert to map
       EnderecoModel _endToSend = EnderecoModel(
@@ -198,7 +198,7 @@ class _EnderecoState extends State<Endereco> {
         Uri.parse(RotasUrl.rotaEnderecosV1),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${_authStore.token}',
+          'Authorization': 'Bearer ${_authStore!.token}',
         },
         body: json.encode(_endToSend.toJson()),
       );
@@ -235,8 +235,8 @@ class _EnderecoState extends State<Endereco> {
   }
 
   Future<bool> _atualizarEndereco() async {
-    if (_formKey.currentState.validate()) {
-      _formKey.currentState.save();
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
 
       //create model and convert to map
       EnderecoModel _endToSend = EnderecoModel(
@@ -255,7 +255,7 @@ class _EnderecoState extends State<Endereco> {
         Uri.parse(RotasUrl.rotaEnderecosV1 + '/' + _endId.toString()),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${_authStore.token}',
+          'Authorization': 'Bearer ${_authStore!.token}',
         },
         body: json.encode(_endToSend.toJson()),
       );
@@ -393,8 +393,8 @@ class _EnderecoState extends State<Endereco> {
       itemAsString: (EnderecoModel e) => e.endereco,
       mode: Mode.MENU,
       label: 'Selecione endereço: *',
-      onChanged: (EnderecoModel selectedEnd) {
-        _endSelecionadoController.text = selectedEnd.endereco;
+      onChanged: (EnderecoModel? selectedEnd) {
+        _endSelecionadoController.text = selectedEnd!.endereco;
         setState(() {
           _endId = selectedEnd.id;
           _novoEndereco = false;
@@ -418,15 +418,15 @@ class _EnderecoState extends State<Endereco> {
       child: TextFormField(
         controller: _enderecoController,
         maxLength: 60,
-        onSaved: (String value) {
+        onSaved: (String? value) {
           if (widget.enderecoType == _type1) {
-            _cadastroStore.novoCad.endereco = value;
+            _cadastroStore!.novoCad.endereco = value ?? '';
           } else {
-            _enderecoController.text = value;
+            _enderecoController.text = value ?? '';
           }
         },
-        validator: (String value) {
-          return value.isEmpty ? 'Campo vazio' : null;
+        validator: (String? value) {
+          return value!.isEmpty ? 'Campo vazio' : null;
         },
         decoration: const InputDecoration(
           counterText: '',
@@ -451,15 +451,15 @@ class _EnderecoState extends State<Endereco> {
               child: TextFormField(
                 controller: _numeroController,
                 maxLength: 10,
-                onSaved: (String value) {
+                onSaved: (String? value) {
                   if (widget.enderecoType == _type1) {
-                    _cadastroStore.novoCad.numero = value;
+                    _cadastroStore!.novoCad.numero = value ?? '';
                   } else {
-                    _numeroController.text = value;
+                    _numeroController.text = value ?? '';
                   }
                 },
-                validator: (String value) {
-                  return value.isEmpty ? 'Campo vazio' : null;
+                validator: (String? value) {
+                  return value == null || value.isEmpty ? 'Campo vazio' : null;
                 },
                 keyboardType: TextInputType.number,
                 inputFormatters: <TextInputFormatter>[
@@ -481,15 +481,15 @@ class _EnderecoState extends State<Endereco> {
               child: TextFormField(
                 controller: _complementoController,
                 maxLength: 40,
-                onSaved: (String value) {
+                onSaved: (String? value) {
                   if (widget.enderecoType == _type1) {
-                    _cadastroStore.novoCad.complemento = value;
+                    _cadastroStore!.novoCad.complemento = value ?? '';
                   } else {
-                    _complementoController.text = value;
+                    _complementoController.text = value ?? '';
                   }
                 },
-                validator: (String value) {
-                  return value.isEmpty ? 'Campo vazio' : null;
+                validator: (String? value) {
+                  return value == null || value.isEmpty ? 'Campo vazio' : null;
                 },
                 decoration: InputDecoration(
                   counterText: '',
@@ -511,15 +511,15 @@ class _EnderecoState extends State<Endereco> {
       child: TextFormField(
         controller: _bairroController,
         maxLength: 60,
-        onSaved: (String value) {
+        onSaved: (String? value) {
           if (widget.enderecoType == _type1) {
-            _cadastroStore.novoCad.bairro = value;
+            _cadastroStore!.novoCad.bairro = value ?? '';
           } else {
-            _bairroController.text = value;
+            _bairroController.text = value ?? '';
           }
         },
-        validator: (String value) {
-          return value.isEmpty ? 'Campo vazio' : null;
+        validator: (String? value) {
+          return value!.isEmpty ? 'Campo vazio' : null;
         },
         decoration: InputDecoration(
           counterText: '',
@@ -536,15 +536,15 @@ class _EnderecoState extends State<Endereco> {
       height: 80,
       child: TextFormField(
         controller: _cepController,
-        onSaved: (String value) {
+        onSaved: (String? value) {
           if (widget.enderecoType == _type1) {
-            _cadastroStore.novoCad.cep = value;
+            _cadastroStore!.novoCad.cep = value ?? '';
           } else {
-            _cepController.text = value;
+            _cepController.text = value ?? '';
           }
         },
-        validator: (String value) {
-          return value.isEmpty ? 'Campo vazio' : null;
+        validator: (String? value) {
+          return value!.isEmpty ? 'Campo vazio' : null;
         },
         maxLength: 8,
         keyboardType: TextInputType.number,
@@ -581,14 +581,14 @@ class _EnderecoState extends State<Endereco> {
         onFind: (string) {
           return _fetchCountries();
         },
-        onSaved: (String value) {
+        onSaved: (String? value) {
           if (widget.enderecoType == _type1) {
-            _cadastroStore.novoCad.pais = value;
+            _cadastroStore!.novoCad.pais = value ?? '';
           } else {
-            _paisController.text = value;
+            _paisController.text = value ?? '';
           }
         },
-        validator: (String value) {
+        validator: (String? value) {
           return value == null || value.isEmpty ? 'Campo vazio' : null;
         },
         dropdownSearchDecoration: InputDecoration(
@@ -600,12 +600,11 @@ class _EnderecoState extends State<Endereco> {
         showSelectedItem: true,
         label: 'País: *',
         hint: 'País: *',
-        popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
         onChanged: (value) {
           //clear to force user select new uf and city
           _ufController.text = '';
           _cidadeController.text = '';
-          _paisController.text = value;
+          _paisController.text = value ?? '';
         },
         selectedItem: _paisController.text,
       ),
@@ -639,14 +638,14 @@ class _EnderecoState extends State<Endereco> {
                 onFind: (string) {
                   return _fetchStates();
                 },
-                onSaved: (String value) {
+                onSaved: (String? value) {
                   if (widget.enderecoType == _type1) {
-                    _cadastroStore.novoCad.uf = value;
+                    _cadastroStore!.novoCad.uf = value ?? '';
                   } else {
-                    _ufController.text = value;
+                    _ufController.text = value ?? '';
                   }
                 },
-                validator: (String value) {
+                validator: (String? value) {
                   return value == null || value.isEmpty ? 'Campo vazio' : null;
                 },
                 dropdownSearchDecoration: InputDecoration(
@@ -657,12 +656,10 @@ class _EnderecoState extends State<Endereco> {
                 showSearchBox: true,
                 showSelectedItem: true,
                 label: 'UF: *',
-                //hint: 'country in menu mode',
-                popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
-                onChanged: (String value) async {
+                onChanged: (String? value) async {
                   //clear to force user select new uf and city
                   _cidadeController.text = '';
-                  _ufController.text = value;
+                  _ufController.text = value ?? '';
                 },
                 selectedItem: _ufController.text,
               ),
@@ -689,14 +686,14 @@ class _EnderecoState extends State<Endereco> {
                 onFind: (string) {
                   return _fetchCities();
                 },
-                onSaved: (String value) {
+                onSaved: (String? value) {
                   if (widget.enderecoType == _type1) {
-                    _cadastroStore.novoCad.cidade = value;
+                    _cadastroStore!.novoCad.cidade = value ?? '';
                   } else {
-                    _cidadeController.text = value;
+                    _cidadeController.text = value ?? '';
                   }
                 },
-                validator: (String value) {
+                validator: (String? value) {
                   return value == null || value.isEmpty ? 'Campo vazio' : null;
                 },
                 dropdownSearchDecoration: InputDecoration(
@@ -707,10 +704,8 @@ class _EnderecoState extends State<Endereco> {
                 showSearchBox: true,
                 showSelectedItem: true,
                 label: 'Cidade: *',
-                //hint: 'country in menu mode',
-                popupItemDisabled: (String s) => /*s.startsWith('I')*/ null,
                 onChanged: (value) {
-                  _cidadeController.text = value;
+                  _cidadeController.text = value ?? '';
                 },
                 selectedItem: _cidadeController.text,
               ),

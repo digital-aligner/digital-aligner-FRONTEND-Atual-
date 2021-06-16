@@ -9,7 +9,7 @@ import '../rotas_url.dart';
 class CriarNovaSenha extends StatefulWidget {
   final Map<String, String> queryStringsForPasswordReset;
 
-  CriarNovaSenha({this.queryStringsForPasswordReset});
+  CriarNovaSenha({this.queryStringsForPasswordReset = const {'': ''}});
 
   @override
   _CriarNovaSenhaState createState() => _CriarNovaSenhaState();
@@ -19,8 +19,8 @@ class _CriarNovaSenhaState extends State<CriarNovaSenha> {
   final _formKey = GlobalKey<FormState>();
   bool _sendingRequest = false;
 
-  String _password;
-  String _passwordConfirm;
+  String _password = '';
+  String _passwordConfirm = '';
 
   Future<Map> _sendPassword() async {
     Map<String, dynamic> _data = {
@@ -54,8 +54,8 @@ class _CriarNovaSenhaState extends State<CriarNovaSenha> {
               height: 80,
               child: TextFormField(
                 obscureText: true,
-                onSaved: (String value) async {
-                  _password = value;
+                onSaved: (String? value) async {
+                  _password = value ?? '';
                   Map result = await _sendPassword();
                   if (result.containsKey('statusCode')) {
                     if (result['statusCode'] == 200) {
@@ -76,7 +76,7 @@ class _CriarNovaSenhaState extends State<CriarNovaSenha> {
                   });
                 },
                 validator: (value) {
-                  if (value.length < 6) {
+                  if (value!.length < 6) {
                     return 'Sua senha deve ter no mínimo 6 characteres';
                   }
                   if (value.length == 0) {
@@ -104,7 +104,7 @@ class _CriarNovaSenhaState extends State<CriarNovaSenha> {
                   _passwordConfirm = value;
                 },
                 validator: (value) {
-                  if (value.length < 6) {
+                  if (value!.length < 6) {
                     return 'Sua senha deve ter no mínimo 6 characteres';
                   }
                   if (value.length == 0) {
@@ -126,11 +126,11 @@ class _CriarNovaSenhaState extends State<CriarNovaSenha> {
                 child: ElevatedButton(
                   onPressed: !_sendingRequest
                       ? () {
-                          if (_formKey.currentState.validate()) {
+                          if (_formKey.currentState!.validate()) {
                             setState(() {
                               _sendingRequest = true;
                             });
-                            _formKey.currentState.save();
+                            _formKey.currentState!.save();
                           }
                         }
                       : null,

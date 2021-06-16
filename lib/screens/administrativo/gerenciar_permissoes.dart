@@ -24,9 +24,9 @@ class GerenciarPermissoes extends StatefulWidget {
 class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
   bool fetchData = true;
 
-  CadastroProvider cadastroStore;
-  AuthProvider authStore;
-  Timer searchOnStoppedTyping;
+  CadastroProvider? cadastroStore;
+  AuthProvider? authStore;
+  Timer? searchOnStoppedTyping;
 
   final TextEditingController _searchField = TextEditingController();
 
@@ -45,7 +45,7 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
   @override
   void dispose() {
     _searchField.dispose();
-    cadastroStore.clearCadastros();
+    cadastroStore!.clearCadastros();
     super.dispose();
   }
 
@@ -53,13 +53,13 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
     setState(() {
       //page to 0 before fetch
       _startPage = 0;
-      cadastroStore.setCadDropdownValue('Todos');
+      cadastroStore!.setCadDropdownValue('Todos');
       _searchField.text = '';
-      cadastroStore.setQuery('');
+      cadastroStore!.setQuery('');
     });
     //fetchData before set state (fixes not updating bug)
     fetchData = true;
-    cadastroStore.clearCadastrosAndUpdate();
+    cadastroStore!.clearCadastrosAndUpdate();
   }
 
   Widget _searchBox(double width) {
@@ -72,7 +72,7 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
         direction: width > 800 ? Axis.horizontal : Axis.vertical,
         children: [
           DropdownButton<String>(
-            value: cadastroStore.getPermDropdownValue(),
+            value: cadastroStore!.getPermDropdownValue(),
             icon: const Icon(Icons.arrow_downward_outlined),
             iconSize: 24,
             elevation: 16,
@@ -81,17 +81,17 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
               height: 0,
               color: Colors.deepPurpleAccent,
             ),
-            onChanged: (String newValue) {
+            onChanged: (String? newValue) {
               setState(() {
                 //page to 0 before fetch
                 _startPage = 0;
-                cadastroStore.setPermDropdownValue(newValue);
+                cadastroStore!.setPermDropdownValue(newValue ?? '');
                 _searchField.text = '';
-                cadastroStore.setQuery('');
+                cadastroStore!.setQuery('');
               });
               //fetchData before set state (fixes not updating bug)
               fetchData = true;
-              cadastroStore.clearCadastrosAndUpdate();
+              cadastroStore!.clearCadastrosAndUpdate();
             },
             items: <String>[
               'Todos',
@@ -118,7 +118,7 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
                 fetchData = true;
                 const duration = Duration(milliseconds: 500);
                 if (searchOnStoppedTyping != null) {
-                  setState(() => searchOnStoppedTyping.cancel());
+                  setState(() => searchOnStoppedTyping!.cancel());
                 }
                 setState(
                   () => searchOnStoppedTyping = new Timer(
@@ -135,8 +135,8 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
   }
 
   void _searchBoxQuery(String value) {
-    cadastroStore.setQuery(value);
-    cadastroStore.clearCadastrosAndUpdate();
+    cadastroStore!.setQuery(value);
+    cadastroStore!.clearCadastrosAndUpdate();
   }
 
   Widget _getHeaders(double width) {
@@ -200,10 +200,10 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
 
     cadastroStore = Provider.of<CadastroProvider>(context);
     authStore = Provider.of<AuthProvider>(context);
-    cadastroStore.setToken(authStore.token);
+    cadastroStore!.setToken(authStore!.token);
 
     if (fetchData) {
-      cadastroStore
+      cadastroStore!
           .fetchCadastrosPerm(_startPage)
           .then((List<dynamic> cadastros) {
         if (cadastros.length <= 0) {
@@ -223,12 +223,12 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
 
   @override
   Widget build(BuildContext context) {
-    if (!authStore.isAuth) {
+    if (!authStore!.isAuth) {
       return LoginScreen();
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (authStore.role == 'Credenciado' || authStore.role == 'Gerente') {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      if (authStore!.role == 'Credenciado' || authStore!.role == 'Gerente') {
         Navigator.of(context).pushNamedAndRemoveUntil(
           MeusPacientes.routeName,
           (Route<dynamic> route) => false,
@@ -255,11 +255,11 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
             ),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                  colors: [Colors.white, Colors.grey[100]],
+                  colors: [Colors.white, Color(0xFFdbdbdb)],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter),
             ),
-            child: authStore.role != 'Credenciado'
+            child: authStore!.role != 'Credenciado'
                 ? Column(
                     children: [
                       const SizedBox(height: 20),
@@ -298,7 +298,7 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
                       //TOP TEXT
                       _getHeaders(sWidth),
                       const SizedBox(height: 20),
-                      if (cadastroStore.getCadastros() == null)
+                      if (cadastroStore!.getCadastros().isEmpty)
                         Center(
                           child: CircularProgressIndicator(
                             valueColor: new AlwaysStoppedAnimation<Color>(
@@ -306,12 +306,12 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
                             ),
                           ),
                         )
-                      else if (cadastroStore
+                      else if (cadastroStore!
                           .getCadastros()[0]
                           .containsKey('error'))
                         Container(
                           child: Text(
-                            cadastroStore.getCadastros()[0]['message'] ?? '',
+                            cadastroStore!.getCadastros()[0]['message'] ?? '',
                           ),
                         )
                       else
@@ -343,7 +343,7 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
                                         _startPage = _startPage - 10;
                                       });
                                     }
-                                    cadastroStore.clearCadastrosAndUpdate();
+                                    cadastroStore!.clearCadastrosAndUpdate();
                                   },
                             icon: const Icon(Icons.arrow_back),
                             label: const Text('Anterior'),
@@ -362,7 +362,7 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
                                       _blockPageBtns = true;
                                       _startPage = _startPage + 10;
                                     });
-                                    cadastroStore.clearCadastrosAndUpdate();
+                                    cadastroStore!.clearCadastrosAndUpdate();
                                   },
                             icon: const Icon(Icons.arrow_forward),
                             label: const Text('Próximo'),

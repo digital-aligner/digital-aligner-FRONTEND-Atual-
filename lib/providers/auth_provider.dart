@@ -7,20 +7,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider with ChangeNotifier {
   //Dados token
-  String _token;
-  DateTime _expiryDate;
+  String _token = '';
+  DateTime? _expiryDate;
 
   //Dados usuário
-  int _userId;
-  String _userName;
-  String _role;
+  int _userId = 0;
+  String _userName = '';
+  String _role = '';
 
   int get id {
     return _userId;
   }
 
   bool get isAuth {
-    return token != null;
+    if (_token.isEmpty) return false;
+    return true;
   }
 
   String get name {
@@ -32,12 +33,12 @@ class AuthProvider with ChangeNotifier {
   }
 
   String get token {
-    if (_expiryDate != null &&
-        _expiryDate.isAfter(DateTime.now()) &&
-        _token != null) {
+    if (_expiryDate == null && _token.isNotEmpty) {
+      return '';
+    } else if (_expiryDate!.isAfter(DateTime.now())) {
       return _token;
     }
-    return null;
+    return '';
   }
 
   Future<bool> tryAutoLogin() async {
@@ -45,8 +46,9 @@ class AuthProvider with ChangeNotifier {
     if (!prefs.containsKey('digitalAlignerData')) {
       return false;
     }
-    final extractedUserData = json.decode(prefs.getString('digitalAlignerData'))
-        as Map<String, Object>;
+    final extractedUserData =
+        json.decode(prefs.getString('digitalAlignerData') ?? '')
+            as Map<String, dynamic>;
     final expiryDate = DateTime.parse(extractedUserData['expiryDate']);
 
     if (expiryDate.isBefore(DateTime.now())) {
@@ -63,10 +65,10 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> logout() async {
-    _token = null;
-    _userId = null;
-    _userName = null;
-    _role = null;
+    _token = 'null';
+    _userId = 0;
+    _userName = '';
+    _role = '';
     _expiryDate = null;
 
     final prefs = await SharedPreferences.getInstance();
@@ -127,7 +129,7 @@ class AuthProvider with ChangeNotifier {
         'userId': _userId,
         'userName': _userName,
         'role': _role,
-        'expiryDate': _expiryDate.toIso8601String(),
+        'expiryDate': _expiryDate!.toIso8601String(),
       });
       prefs.setString('digitalAlignerData', userData);
 
@@ -159,105 +161,5 @@ class AuthProvider with ChangeNotifier {
       countries.add(local[i]['pais']);
     }
     return countries;
-  }
-
-  List<String> mapCountryToStatesToUiList({
-    List<dynamic> local,
-    String selectedCountry,
-  }) {
-    //If no country is selected, then return default states to display
-    if (selectedCountry == null) {
-      List<String> states = [];
-      for (int i = 0; i < local[0]['estado_brasils'].length; i++) {
-        states.add(local[0]['estado_brasils'][i]['estado']);
-      }
-      return states;
-    }
-
-    if (selectedCountry == 'Brasil') {
-      List<String> states = [];
-      for (int i = 0; i < local[0]['estado_brasils'].length; i++) {
-        states.add(local[0]['estado_brasils'][i]['estado']);
-      }
-      return states;
-    }
-    if (selectedCountry == 'Portugal') {
-      List<String> states = [];
-      for (int i = 0; i < local[1]['estado_portugals'].length; i++) {
-        states.add(local[1]['estado_portugals'][i]['estado']);
-      }
-      return states;
-    }
-    return null;
-  }
-
-  Future<dynamic> getCitiesData({
-    List<dynamic> local,
-    String selectedState,
-    String selectedCountry,
-  }) async {
-    int stateId = 0;
-
-    if (selectedState == '') {
-      return [];
-    }
-
-    //get the id from the list based on selected state
-    if (selectedCountry == 'Brasil') {
-      for (int i = 0; i < local[0]['estado_brasils'].length; i++) {
-        if (local[0]['estado_brasils'][i]['estado'] == selectedState) {
-          stateId = local[0]['estado_brasils'][i]['id'];
-        }
-      }
-    }
-
-    var _response = await http.get(
-      Uri.parse(
-        RotasUrl.rotaGetCities + '?stateId=' + stateId.toString(),
-      ),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    );
-
-    List<dynamic> responseData = json.decode(_response.body);
-
-    if (responseData[0].containsKey('error')) {
-      return [];
-    } else {
-      List<String> cities = [];
-      responseData.forEach((city) => cities.add(city['city_name']));
-      return cities;
-    }
-  }
-
-  List<String> mapStatesToCitiesToUiList({
-    List<dynamic> local,
-    String selectedCountry,
-  }) {
-    //If no country is selected, then return default states to display
-    if (selectedCountry == null) {
-      List<String> states = [];
-      for (int i = 0; i < local[0]['estado_brasils'].length; i++) {
-        states.add(local[0]['estado_brasils'][i]['estado']);
-      }
-      return states;
-    }
-
-    if (selectedCountry == 'Brasil') {
-      List<String> states = [];
-      for (int i = 0; i < local[0]['estado_brasils'].length; i++) {
-        states.add(local[0]['estado_brasils'][i]['estado']);
-      }
-      return states;
-    }
-    if (selectedCountry == 'Portugal') {
-      List<String> states = [];
-      for (int i = 0; i < local[1]['estado_portugals'].length; i++) {
-        states.add(local[1]['estado_portugals'][i]['estado']);
-      }
-      return states;
-    }
-    return null;
   }
 }

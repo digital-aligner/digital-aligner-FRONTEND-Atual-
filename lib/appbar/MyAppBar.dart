@@ -1,12 +1,9 @@
 import 'package:digital_aligner_app/providers/check_new_data_provider.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pacientes.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pedido.dart';
-import 'package:digital_aligner_app/screens/administrativo/meus_setups.dart';
-import 'package:digital_aligner_app/screens/administrativo/minhas_revisoes.dart';
-import 'package:digital_aligner_app/screens/novo_paciente.dart';
+
 import 'package:digital_aligner_app/screens/perfil.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
-import 'package:just_audio/just_audio.dart';
 
 import '../screens/administrativo/gerenciar_permissoes.dart';
 import 'package:flutter/material.dart';
@@ -28,23 +25,21 @@ class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _MyAppBarState extends State<MyAppBar> {
-  CheckNewDataProvider checkDataStore;
-  AuthProvider authStore;
+  CheckNewDataProvider? checkDataStore;
+  AuthProvider? authStore;
   int novosPedidosCount = -1;
   bool timerBlock = false;
-  //NEW AUDIO FEATURE
-  AudioPlayer player;
+
   var duration;
 
   Future<void> checkForNewPedidosTimer() async {
     timerBlock = true;
     while (true) {
       await Future.delayed(Duration(seconds: 60));
-      await checkDataStore.checkNovosPedidoCount();
+      await checkDataStore!.checkNovosPedidoCount();
       if (novosPedidosCount > 0 &&
-          novosPedidosCount < checkDataStore.novosPedidosCount) {
-        novosPedidosCount = checkDataStore.novosPedidosCount;
-        player.play();
+          novosPedidosCount < checkDataStore!.novosPedidosCount) {
+        novosPedidosCount = checkDataStore!.novosPedidosCount;
         ScaffoldMessenger.of(context).removeCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -59,28 +54,17 @@ class _MyAppBarState extends State<MyAppBar> {
     }
   }
 
-  Future<void> initializeAudioPlayerDuration() async {
-    duration = await player.setAsset('audios/notification_sound.mp3');
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    player = AudioPlayer();
-    initializeAudioPlayerDuration();
-  }
-
   @override
   void didChangeDependencies() async {
     authStore = Provider.of<AuthProvider>(context);
     checkDataStore = Provider.of<CheckNewDataProvider>(context);
-    if (authStore.role == 'Administrador' || authStore.role == 'Gerente') {
-      novosPedidosCount = checkDataStore.novosPedidosCount;
-      if (checkDataStore.getFetchDataBool()) {
-        checkDataStore.setfetchDataBool(false);
-        checkDataStore.setToken(authStore.token);
-        await checkDataStore.fetchNovoPedidoCount();
-        novosPedidosCount = checkDataStore.novosPedidosCount;
+    if (authStore!.role == 'Administrador' || authStore!.role == 'Gerente') {
+      novosPedidosCount = checkDataStore!.novosPedidosCount;
+      if (checkDataStore!.getFetchDataBool()) {
+        checkDataStore!.setfetchDataBool(false);
+        checkDataStore!.setToken(authStore!.token);
+        await checkDataStore!.fetchNovoPedidoCount();
+        novosPedidosCount = checkDataStore!.novosPedidosCount;
       }
       if (timerBlock == false) {
         checkForNewPedidosTimer();
@@ -98,7 +82,7 @@ class _MyAppBarState extends State<MyAppBar> {
       flexibleSpace: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.lightBlue[900], Theme.of(context).primaryColor],
+            colors: [Color(0xffadd8e6), Theme.of(context).primaryColor],
             stops: [0.5, 1.0],
           ),
         ),
@@ -115,17 +99,18 @@ class _MyAppBarState extends State<MyAppBar> {
       ),
       actions: sWidth > 1200
           ? <Widget>[
-              _navUsuario(context, authStore.name),
+              _navUsuario(context, authStore!.name),
               const SizedBox(width: 30),
-              _navAdmin(context, authStore.role),
-              if (authStore.role == 'Credenciado') const SizedBox(width: 30),
-              if (authStore.role == 'Credenciado') _navPainelPacientes(context),
-              if (authStore.role == 'Credenciado') const SizedBox(width: 30),
-              if (authStore.role == 'Credenciado') _navNovoPaciente(context),
+              _navAdmin(context, authStore!.role),
+              if (authStore!.role == 'Credenciado') const SizedBox(width: 30),
+              if (authStore!.role == 'Credenciado')
+                _navPainelPacientes(context),
+              if (authStore!.role == 'Credenciado') const SizedBox(width: 30),
+              if (authStore!.role == 'Credenciado') _navNovoPaciente(context),
               const SizedBox(width: 30),
               _midia(context),
               const SizedBox(width: 30),
-              _sair(context, authStore),
+              _sair(context, authStore!),
               const Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
@@ -146,8 +131,8 @@ class _MyAppBarState extends State<MyAppBar> {
   Widget _navUsuario(context, name) {
     return TextButton.icon(
       onPressed: () {
-        Route route = ModalRoute.of(context);
-        final routeName = route.settings.name;
+        ModalRoute<Object?>? route = ModalRoute.of(context);
+        final routeName = route!.settings.name;
         if (routeName != null && routeName != '/perfil') {
           //Remove any messages (if any) on changing routes
           ScaffoldMessenger.of(context).removeCurrentSnackBar();
@@ -177,7 +162,7 @@ class _MyAppBarState extends State<MyAppBar> {
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.pressed))
               return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return null; // Use the component's default.
+            return Color(0xffadd8e6); // Use the component's default.
           },
         ),
       ),
@@ -211,9 +196,9 @@ class _MyAppBarState extends State<MyAppBar> {
               tooltip: 'Mostrar mais!',
               onSelected: (selectedValue) {
                 if (selectedValue == 'Gerenciar Cadastros') {
-                  checkDataStore.setfetchDataBool(true);
-                  Route route = ModalRoute.of(context);
-                  final routeName = route.settings.name;
+                  checkDataStore!.setfetchDataBool(true);
+                  ModalRoute<Object?>? route = ModalRoute.of(context);
+                  final routeName = route!.settings.name;
                   if (routeName != null &&
                       routeName != '/gerenciar-cadastros') {
                     //Remove any messages (if any) on changing routes
@@ -222,9 +207,9 @@ class _MyAppBarState extends State<MyAppBar> {
                         .pushReplacementNamed(GerenciarCadastros.routeName);
                   }
                 } else if (selectedValue == 'Gerenciar Permissões') {
-                  checkDataStore.setfetchDataBool(true);
-                  Route route = ModalRoute.of(context);
-                  final routeName = route.settings.name;
+                  checkDataStore!.setfetchDataBool(true);
+                  ModalRoute<Object?>? route = ModalRoute.of(context);
+                  final routeName = route!.settings.name;
                   if (routeName != null &&
                       routeName != '/gerenciar-permissoes') {
                     //Remove any messages (if any) on changing routes
@@ -233,9 +218,9 @@ class _MyAppBarState extends State<MyAppBar> {
                         .pushReplacementNamed(GerenciarPermissoes.routeName);
                   }
                 } else if (selectedValue == 'Gerenciar Pedidos') {
-                  checkDataStore.setfetchDataBool(true);
-                  Route route = ModalRoute.of(context);
-                  final routeName = route.settings.name;
+                  checkDataStore!.setfetchDataBool(true);
+                  ModalRoute<Object?>? route = ModalRoute.of(context);
+                  final routeName = route!.settings.name;
 
                   if (routeName != null && routeName != '/gerenciar-pedidos') {
                     //Remove any messages (if any) on changing routes
@@ -244,15 +229,15 @@ class _MyAppBarState extends State<MyAppBar> {
                         .pushReplacementNamed(GerenciarPedidos.routeName);
                   }
                 } else if (selectedValue == 'Gerenciar Pacientes') {
-                  checkDataStore.setfetchDataBool(true);
-                  Route route = ModalRoute.of(context);
-                  final routeName = route.settings.name;
+                  checkDataStore!.setfetchDataBool(true);
+                  ModalRoute<Object?>? route = ModalRoute.of(context);
+                  final routeName = route!.settings.name;
 
                   if (routeName != null &&
                       routeName != '/gerenciar-pacientes') {
                     //Remove any messages (if any) on changing routes
                     ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    checkDataStore.setfetchDataBool(true);
+                    checkDataStore!.setfetchDataBool(true);
 
                     Navigator.of(context)
                         .pushReplacementNamed(GerenciarPacientes.routeName);
@@ -260,29 +245,12 @@ class _MyAppBarState extends State<MyAppBar> {
                 } else if (selectedValue == 'Meus Setups') {
                   //Remove any messages (if any) on changing routes
                   ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  checkDataStore.setfetchDataBool(true);
-                  Route route = ModalRoute.of(context);
-                  final routeName = route.settings.name;
+                  checkDataStore!.setfetchDataBool(true);
+                  ModalRoute<Object?>? route = ModalRoute.of(context);
+                  final routeName = route!.settings.name;
 
-                  if (routeName != null && routeName != '/meus-setups') {
-                    //Remove any messages (if any) on changing routes
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    Navigator.of(context)
-                        .pushReplacementNamed(MeusSetups.routeName);
-                  }
-                } else if (selectedValue == 'Minhas Revisões') {
-                  //Remove any messages (if any) on changing routes
-                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  checkDataStore.setfetchDataBool(true);
-                  Route route = ModalRoute.of(context);
-                  final routeName = route.settings.name;
-
-                  if (routeName != null && routeName != '/minhas-revisoes') {
-                    checkDataStore.setfetchDataBool(true);
-                    Navigator.of(context)
-                        .pushReplacementNamed(MinhasRevisoes.routeName);
-                  }
-                }
+                  if (routeName != null && routeName != '/meus-setups') {}
+                } else if (selectedValue == 'Minhas Revisões') {}
               },
               itemBuilder: (_) => [
                 PopupMenuItem(
@@ -391,8 +359,8 @@ class _MyAppBarState extends State<MyAppBar> {
   Widget _navPainelPacientes(context) {
     return TextButton.icon(
       onPressed: () {
-        Route route = ModalRoute.of(context);
-        final routeName = route.settings.name;
+        ModalRoute<Object?>? route = ModalRoute.of(context);
+        final routeName = route!.settings.name;
         print(routeName);
         if (routeName != null && routeName != '/meus-pacientes') {
           //Remove any messages (if any) on changing routes
@@ -423,7 +391,7 @@ class _MyAppBarState extends State<MyAppBar> {
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.pressed))
               return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return null; // Use the component's default.
+            return Color(0xffadd8e6); // Use the component's default.
           },
         ),
       ),
@@ -434,8 +402,8 @@ class _MyAppBarState extends State<MyAppBar> {
   Widget _navNovoPaciente(context) {
     return TextButton.icon(
       onPressed: () {
-        Route route = ModalRoute.of(context);
-        final routeName = route.settings.name;
+        ModalRoute<Object?>? route = ModalRoute.of(context);
+        final routeName = route!.settings.name;
         print(routeName);
         /*
         if (routeName != null && routeName != '/novo-paciente') {
@@ -468,7 +436,7 @@ class _MyAppBarState extends State<MyAppBar> {
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.pressed))
               return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return null; // Use the component's default.
+            return Color(0xffadd8e6); // Use the component's default.
           },
         ),
       ),
@@ -501,7 +469,7 @@ class _MyAppBarState extends State<MyAppBar> {
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.pressed))
               return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return null; // Use the component's default.
+            return Color(0xffadd8e6); // Use the component's default.
           },
         ),
       ),
@@ -556,7 +524,7 @@ class _MyAppBarState extends State<MyAppBar> {
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.pressed))
               return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return null; // Use the component's default.
+            return Color(0xffadd8e6); // Use the component's default.
           },
         ),
       ),
@@ -583,7 +551,7 @@ class _MyAppBarState extends State<MyAppBar> {
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.pressed))
               return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return null; // Use the component's default.
+            return Color(0xffadd8e6); // Use the component's default.
           },
         ),
       ),
@@ -610,7 +578,7 @@ class _MyAppBarState extends State<MyAppBar> {
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.pressed))
               return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return null; // Use the component's default.
+            return Color(0xffadd8e6); // Use the component's default.
           },
         ),
       ),
@@ -637,7 +605,7 @@ class _MyAppBarState extends State<MyAppBar> {
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.pressed))
               return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return null; // Use the component's default.
+            return Color(0xffadd8e6); // Use the component's default.
           },
         ),
       ),

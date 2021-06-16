@@ -19,8 +19,8 @@ class Perfil extends StatefulWidget {
 }
 
 class _PerfilState extends State<Perfil> {
-  CadastroProvider cadastroStore;
-  AuthProvider authStore;
+  late CadastroProvider cadastroStore;
+  late AuthProvider authStore;
 
 /*
   @override
@@ -42,14 +42,13 @@ class _PerfilState extends State<Perfil> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                    data[0]['nome'] + ' ' + data[0]['sobrenome'],
-                    style: const TextStyle(
-                      color: Colors.black54,
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ) ??
-                  '',
+                data[0]['nome'] ?? '' + ' ' + data[0]['sobrenome'] ?? '',
+                style: const TextStyle(
+                  color: Colors.black54,
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
         ),
@@ -87,7 +86,7 @@ class _PerfilState extends State<Perfil> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(data[0]['username']) ?? '',
+              child: Text(data[0]['username'] ?? ''),
             ),
           ),
         ),
@@ -112,7 +111,8 @@ class _PerfilState extends State<Perfil> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(data[0]['cro_uf'] + ' - ' + data[0]['cro_num']) ?? '',
+              child: Text(
+                  data[0]['cro_uf'] ?? '' + ' - ' + data[0]['cro_num'] ?? ''),
             ),
           ),
         ),
@@ -137,9 +137,11 @@ class _PerfilState extends State<Perfil> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(DateFormat('dd/MM/yyyy')
-                      .format(DateTime.parse(data[0]['data_nasc'])) ??
-                  ''),
+              child: Text(
+                DateFormat('dd/MM/yyyy').format(
+                  DateTime.parse(data[0]['data_nasc'] ?? ''),
+                ),
+              ),
             ),
           ),
         ),
@@ -209,7 +211,7 @@ class _PerfilState extends State<Perfil> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(data[0]['telefone']) ?? '',
+              child: Text(data[0]['telefone'] ?? ''),
             ),
           ),
         ),
@@ -234,7 +236,7 @@ class _PerfilState extends State<Perfil> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(data[0]['celular']) ?? '',
+              child: Text(data[0]['celular'] ?? ''),
             ),
           ),
         ),
@@ -259,7 +261,7 @@ class _PerfilState extends State<Perfil> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(data[0]['email']) ?? '',
+              child: Text(data[0]['email'] ?? ''),
             ),
           ),
         ),
@@ -315,24 +317,29 @@ class _PerfilState extends State<Perfil> {
                     style: Theme.of(context).textTheme.headline1,
                   ),
                 ),
-                if (cadastroStore.getCadastros() == null)
+                if (cadastroStore.getCadastros().isEmpty)
                   FutureBuilder(
                     future: cadastroStore.fetchMyCadastro(),
                     builder: (context, snapshot) {
+                      List<dynamic> data = snapshot.data as List<dynamic>;
                       if (snapshot.connectionState == ConnectionState.done) {
                         if (snapshot.data == null) {
                           return Container(
                             child: Text(
                                 'Erro ao se connectar. Verifique sua conexão ou tente novamente mais tarde.'),
                           );
-                        } else if (snapshot.data[0].containsKey('error')) {
+                        } else if (data[0].containsKey('error')) {
                           return Container(
                             child: Text(
-                              snapshot.data[0]['message'] ?? '',
+                              data[0]['message'],
                             ),
                           );
                         } else {
-                          return _userDataUi(snapshot.data, sWidth, sHeight);
+                          return _userDataUi(
+                            snapshot.data as List<dynamic>,
+                            sWidth,
+                            sHeight,
+                          );
                         }
                       } else {
                         return Center(
@@ -344,7 +351,7 @@ class _PerfilState extends State<Perfil> {
                       }
                     },
                   ),
-                if (cadastroStore.getCadastros() != null)
+                if (cadastroStore.getCadastros().isNotEmpty)
                   _userDataUi(
                     cadastroStore.getCadastros(),
                     sWidth,
@@ -369,11 +376,12 @@ class _PerfilState extends State<Perfil> {
                           EditarCadastro.routeName,
                         )
                             .then((value) {
-                          if (value) {
-                            Future.delayed(Duration(microseconds: 600))
-                                .then((value) => setState(() {
-                                      firstFetch = true;
-                                    }));
+                          if (value as bool) {
+                            Future.delayed(Duration(microseconds: 600)).then(
+                              (value) => setState(() {
+                                firstFetch = true;
+                              }),
+                            );
                           }
                         });
                       },

@@ -19,8 +19,8 @@ class PedidoV1Screen extends StatefulWidget {
 
 class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  AuthProvider _authStore;
-  Size _screenSize;
+  AuthProvider? _authStore;
+  Size? _screenSize;
 
   final _nomePacContr = TextEditingController();
   final _dataNascContr = TextEditingController();
@@ -40,12 +40,12 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       child: TextFormField(
         maxLength: 60,
         enabled: true,
-        validator: (String value) {
+        validator: (String? value) {
           return value == null || value.isEmpty ? 'Campo vazio' : null;
         },
         initialValue: _nomePacContr.text,
         onSaved: (value) {
-          _nomePacContr.text = value;
+          _nomePacContr.text = value ?? '';
         },
         decoration: const InputDecoration(
           border: const OutlineInputBorder(),
@@ -60,7 +60,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: DateTimeField(
-        onSaved: (DateTime value) {
+        onSaved: (DateTime? value) {
           _dataNascContr.text = value.toString();
         },
         validator: (value) {
@@ -102,9 +102,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               title: const Text('Ambos os arcos'),
               value: 'Ambos os arcos',
               groupValue: _tratarContr.text,
-              onChanged: (String value) {
+              onChanged: (String? value) {
                 setState(() {
-                  _tratarContr.text = value;
+                  _tratarContr.text = value ?? '';
                 });
               },
             ),
@@ -116,9 +116,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               title: const Text('Apenas o superior'),
               value: 'Apenas o superior',
               groupValue: _tratarContr.text,
-              onChanged: (String value) {
+              onChanged: (String? value) {
                 setState(() {
-                  _tratarContr.text = value;
+                  _tratarContr.text = value ?? '';
                 });
               },
             ),
@@ -130,9 +130,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               title: const Text('Apenas o inferior'),
               value: 'Apenas o inferior',
               groupValue: _tratarContr.text,
-              onChanged: (String value) {
+              onChanged: (String? value) {
                 setState(() {
-                  _tratarContr.text = value;
+                  _tratarContr.text = value ?? '';
                 });
               },
             ),
@@ -188,13 +188,13 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_authStore.isAuth) {
+    if (!_authStore!.isAuth) {
       return LoginScreen();
     }
     return Scaffold(
       appBar: MyAppBar(),
       // *BUG* Verify closing drawer automaticlly when under 1200
-      drawer: _screenSize.width < 1200 ? MyDrawer() : null,
+      drawer: _screenSize!.width < 1200 ? MyDrawer() : null,
       body: Scrollbar(
         thickness: 15,
         isAlwaysShown: true,

@@ -23,10 +23,10 @@ class GerenciarCadastros extends StatefulWidget {
 class _GerenciarCadastrosState extends State<GerenciarCadastros> {
   bool fetchData = true;
 
-  CadastroProvider cadastroStore;
-  AuthProvider authStore;
+  CadastroProvider? cadastroStore;
+  AuthProvider? authStore;
 
-  Timer searchOnStoppedTyping;
+  Timer? searchOnStoppedTyping;
 
   //For page managmente (0-10-20 equals page 0,1,2)
   int _startPage = 0;
@@ -44,7 +44,7 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
   @override
   void dispose() {
     _searchField.dispose();
-    cadastroStore.clearCadastros();
+    cadastroStore!.clearCadastros();
     super.dispose();
   }
 
@@ -52,13 +52,13 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
     setState(() {
       //page to 0 before fetch
       _startPage = 0;
-      cadastroStore.setCadDropdownValue('Todos');
+      cadastroStore!.setCadDropdownValue('Todos');
       _searchField.text = '';
-      cadastroStore.setQuery('');
+      cadastroStore!.setQuery('');
     });
     //fetchData before set state (fixes not updating bug)
     fetchData = true;
-    cadastroStore.clearCadastrosAndUpdate();
+    cadastroStore!.clearCadastrosAndUpdate();
   }
 
   Widget _searchBox(double width) {
@@ -71,7 +71,7 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
         direction: width > 800 ? Axis.horizontal : Axis.vertical,
         children: [
           DropdownButton<String>(
-            value: cadastroStore.getCadDropdownValue(),
+            value: cadastroStore!.getCadDropdownValue(),
             icon: const Icon(Icons.arrow_downward_outlined),
             iconSize: 24,
             elevation: 16,
@@ -80,17 +80,17 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
               height: 0,
               color: Colors.deepPurpleAccent,
             ),
-            onChanged: (String newValue) {
+            onChanged: (String? newValue) {
               setState(() {
                 //page to 0 before fetch
                 _startPage = 0;
-                cadastroStore.setCadDropdownValue(newValue);
+                cadastroStore!.setCadDropdownValue(newValue ?? '');
                 _searchField.text = '';
-                cadastroStore.setQuery('');
+                cadastroStore!.setQuery('');
               });
               //fetchData before set state (fixes not updating bug)
               fetchData = true;
-              cadastroStore.clearCadastrosAndUpdate();
+              cadastroStore!.clearCadastrosAndUpdate();
             },
             items: <String>[
               'Todos',
@@ -117,7 +117,7 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
               fetchData = true;
               const duration = Duration(milliseconds: 500);
               if (searchOnStoppedTyping != null) {
-                setState(() => searchOnStoppedTyping.cancel());
+                setState(() => searchOnStoppedTyping!.cancel());
               }
               setState(
                 () => searchOnStoppedTyping = new Timer(
@@ -184,8 +184,8 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
   }
 
   void _searchBoxQuery(String value) {
-    cadastroStore.setQuery(value);
-    cadastroStore.clearCadastrosAndUpdate();
+    cadastroStore!.setQuery(value);
+    cadastroStore!.clearCadastrosAndUpdate();
   }
 
   @override
@@ -198,10 +198,10 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
 
     cadastroStore = Provider.of<CadastroProvider>(context);
     authStore = Provider.of<AuthProvider>(context);
-    cadastroStore.setToken(authStore.token);
+    cadastroStore!.setToken(authStore!.token);
 
     if (fetchData) {
-      cadastroStore.fetchCadastros(_startPage).then((List<dynamic> cadastros) {
+      cadastroStore!.fetchCadastros(_startPage).then((List<dynamic> cadastros) {
         if (cadastros.length <= 0) {
           _blockForwardBtn = true;
         } else if (cadastros[0].containsKey('error')) {
@@ -219,12 +219,12 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
 
   @override
   Widget build(BuildContext context) {
-    if (!authStore.isAuth) {
+    if (!authStore!.isAuth) {
       return LoginScreen();
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (authStore.role == 'Credenciado') {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      if (authStore!.role == 'Credenciado') {
         Navigator.of(context).pushNamedAndRemoveUntil(
           MeusPacientes.routeName,
           (Route<dynamic> route) => false,
@@ -251,11 +251,11 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
             ),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                  colors: [Colors.white, Colors.grey[100]],
+                  colors: [Colors.white, Color(0xFFdbdbdb)],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter),
             ),
-            child: authStore.role != 'Credenciado'
+            child: authStore!.role != 'Credenciado'
                 ? Column(
                     children: [
                       const SizedBox(height: 20),
@@ -294,7 +294,7 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
                       //TOP TEXT
                       _getHeaders(sWidth),
                       const SizedBox(height: 20),
-                      if (cadastroStore.getCadastros() == null)
+                      if (cadastroStore!.getCadastros().isEmpty)
                         Center(
                           child: CircularProgressIndicator(
                             valueColor: new AlwaysStoppedAnimation<Color>(
@@ -302,12 +302,12 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
                             ),
                           ),
                         )
-                      else if (cadastroStore
+                      else if (cadastroStore!
                           .getCadastros()[0]
                           .containsKey('error'))
                         Container(
                           child: Text(
-                            cadastroStore.getCadastros()[0]['message'] ?? '',
+                            cadastroStore!.getCadastros()[0]['message'] ?? '',
                           ),
                         )
                       else
@@ -340,7 +340,7 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
                                         _startPage = _startPage - 10;
                                       });
                                     }
-                                    cadastroStore.clearCadastrosAndUpdate();
+                                    cadastroStore!.clearCadastrosAndUpdate();
                                   },
                             icon: const Icon(Icons.arrow_back),
                             label: const Text('Anterior'),
@@ -359,7 +359,7 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
                                       _blockPageBtns = true;
                                       _startPage = _startPage + 10;
                                     });
-                                    cadastroStore.clearCadastrosAndUpdate();
+                                    cadastroStore!.clearCadastrosAndUpdate();
                                   },
                             icon: const Icon(Icons.arrow_forward),
                             label: const Text('Próximo'),

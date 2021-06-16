@@ -86,18 +86,15 @@ class _EditarCadastroState extends State<EditarCadastro> {
     super.dispose();
   }
 
-  AuthProvider authStore;
-  CadastroProvider cadastroStore;
-  CadastroModel sc;
-
-  //countrys and states data list
-  List<dynamic> _countryAndStates;
+  late AuthProvider authStore;
+  late CadastroProvider cadastroStore;
+  CadastroModel? sc;
 
   //Representantes data list
-  List<dynamic> _representantes;
+  List<dynamic> _representantes = [];
 
   //onboarding data list
-  List<dynamic> _onboardings;
+  List<dynamic> _onboardings = [];
 
   Future<List<String>> _fetchStates() async {
     final response = await http.get(
@@ -113,33 +110,10 @@ class _EditarCadastroState extends State<EditarCadastro> {
     return states;
   }
 
-  Future<List<dynamic>> fetchCountrysAndStates() async {
-    //Fetch data if last fetch was with error
-    if (_countryAndStates != null &&
-        !_countryAndStates[0].containsKey('error')) {
-      return _representantes;
-    }
-    Map<String, String> requestHeaders = {
-      'Content-type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer ${authStore.token}',
-    };
-
-    try {
-      final response = await http.get(
-        Uri.parse(RotasUrl.rotaGetPaisesAndState),
-        headers: requestHeaders,
-      );
-      _countryAndStates = json.decode(response.body);
-    } catch (error) {
-      print(error.toString());
-    }
-    return _countryAndStates;
-  }
-
   Future<List<dynamic>> fetchRepresentantes() async {
     //Fetch cadistas if last fetch was with error
-    if (_representantes != null && !_representantes[0].containsKey('error')) {
+    if (_representantes.isNotEmpty &&
+        !_representantes[0].containsKey('error')) {
       return _representantes;
     }
     Map<String, String> requestHeaders = {
@@ -162,7 +136,7 @@ class _EditarCadastroState extends State<EditarCadastro> {
 
   Future<List<dynamic>> fetchOnboarding() async {
     //Fetch onboarding if last fetch was with error
-    if (_onboardings != null && !_onboardings[0].containsKey('error')) {
+    if (_onboardings.isNotEmpty & !_onboardings[0].containsKey('error')) {
       return _onboardings;
     }
     Map<String, String> requestHeaders = {
@@ -190,41 +164,31 @@ class _EditarCadastroState extends State<EditarCadastro> {
 
     //to prevent errors on null (will be null on direct url access)
     if (cadastroStore.selectedCad() == null) {
-      sc = CadastroModel();
-      sc.usernameCpf = '';
-      sc.email = '';
-      sc.blocked = true;
-      sc.role = RoleModel();
-      sc.nome = '';
-      sc.sobrenome = '';
-      sc.cro_uf = '';
-      sc.cro_num = '';
-      sc.data_nasc = '';
-      sc.telefone = '';
-      sc.celular = '';
-      sc.aprovacao_usuario = AprovacaoUsuarioModel();
-      sc.aprovacao_usuario.status = '';
+      sc = CadastroModel(
+        role: RoleModel(),
+        aprovacao_usuario: AprovacaoUsuarioModel(),
+      );
     } else {
       if (_firstFetch) {
         //Selected cadastro
         sc = cadastroStore.selectedCad();
 
-        DateTime d = DateTime.parse(sc.data_nasc);
+        DateTime d = DateTime.parse(sc!.data_nasc);
 
         //Inserting data onto fields
         _controllerDataNasc.text = DateFormat('dd/MM/yyyy').format(d);
 
-        _controllerCRO.text = sc.cro_num;
-        _controllerCPF.text = sc.usernameCpf;
+        _controllerCRO.text = sc!.cro_num;
+        _controllerCPF.text = sc!.usernameCpf;
 
-        _controllerTEL.text = sc.telefone;
-        _controllerCEL.text = sc.celular;
+        _controllerTEL.text = sc!.telefone;
+        _controllerCEL.text = sc!.celular;
       }
     }
 
     //Direct acess to url, pop page to remove duplicate.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (sc.id == null) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      if (sc!.id == 0) {
         Navigator.pop(context);
       }
       _firstFetch = false;
@@ -255,7 +219,7 @@ class _EditarCadastroState extends State<EditarCadastro> {
           height: sHeight,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-                colors: [Colors.white, Colors.grey[100]],
+                colors: [Colors.white, Color(0xFFdbdbdb)],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter),
           ),
@@ -297,12 +261,12 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                     height: 80,
                                     child: TextFormField(
                                       maxLength: 29,
-                                      initialValue: sc.nome,
-                                      onSaved: (String value) {
-                                        sc.nome = value;
+                                      initialValue: sc!.nome,
+                                      onSaved: (String? value) {
+                                        sc!.nome = value ?? '';
                                       },
                                       validator: (value) {
-                                        if (value.isEmpty) {
+                                        if (value!.isEmpty) {
                                           return 'Por favor insira seu nome.';
                                         }
                                         return null;
@@ -321,12 +285,12 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                     height: 80,
                                     child: TextFormField(
                                       maxLength: 29,
-                                      initialValue: sc.sobrenome,
-                                      onSaved: (String value) {
-                                        sc.sobrenome = value;
+                                      initialValue: sc!.sobrenome,
+                                      onSaved: (String? value) {
+                                        sc!.sobrenome = value ?? '';
                                       },
                                       validator: (value) {
-                                        if (value.isEmpty) {
+                                        if (value!.isEmpty) {
                                           return 'Por favor insira seu sobrenome.';
                                         }
                                         return null;
@@ -352,12 +316,12 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                           child: Container(
                                             height: 80,
                                             child: TextFormField(
-                                              onSaved: (String value) {
-                                                sc.usernameCpf = value;
+                                              onSaved: (String? value) {
+                                                sc!.usernameCpf = value ?? '';
                                               },
                                               enabled: false,
                                               validator: (value) {
-                                                if (value.length < 11) {
+                                                if (value!.length < 11) {
                                                   return 'Por favor insira seu cpf';
                                                 }
                                                 return null;
@@ -386,11 +350,11 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                           child: Container(
                                             height: 80,
                                             child: DateTimeField(
-                                              onSaved: (DateTime value) {
+                                              onSaved: (DateTime? value) {
                                                 //If doesnt change date value, its null.
                                                 //Send date loaded in controller
                                                 if (value != null) {
-                                                  sc.data_nasc =
+                                                  sc!.data_nasc =
                                                       value.toIso8601String();
                                                 }
                                               },
@@ -434,7 +398,7 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                     child: DropdownSearch<String>(
                                       dropdownBuilder:
                                           (buildContext, string, string2) {
-                                        return Text(sc.cro_uf);
+                                        return Text(sc!.cro_uf);
                                       },
                                       emptyBuilder: (buildContext, string) {
                                         return Center(child: Text('Sem dados'));
@@ -450,13 +414,13 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                       onFind: (string) {
                                         return _fetchStates();
                                       },
-                                      onSaved: (String value) {
-                                        sc.cro_uf = value;
+                                      onSaved: (String? value) {
+                                        sc!.cro_uf = value ?? '';
                                       },
-                                      onChanged: (String value) {
-                                        sc.cro_uf = value;
+                                      onChanged: (String? value) {
+                                        sc!.cro_uf = value ?? '';
                                       },
-                                      validator: (String value) {
+                                      validator: (String? value) {
                                         return value == null || value.isEmpty
                                             ? 'Campo vazio'
                                             : null;
@@ -470,7 +434,7 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                       showSearchBox: true,
                                       showSelectedItem: true,
                                       label: 'CRO (UF): *',
-                                      selectedItem: sc.cro_uf,
+                                      selectedItem: sc!.cro_uf,
                                     ),
                                   ),
 
@@ -480,8 +444,8 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                     height: 80,
                                     child: TextFormField(
                                       maxLength: 30,
-                                      onSaved: (String value) {
-                                        sc.cro_num = value;
+                                      onSaved: (String? value) {
+                                        sc!.cro_num = value ?? '';
                                       },
                                       controller: _controllerCRO,
                                       keyboardType: TextInputType.number,
@@ -500,7 +464,7 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                   const SizedBox(height: 10),
                                   //representante
                                   if (authStore.role != 'Credenciado' &&
-                                      sc.id != authStore.id)
+                                      sc!.id != authStore.id)
                                     DropdownSearch<String>(
                                       label: 'Representante:',
                                       errorBuilder:
@@ -536,7 +500,7 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                             throw Error();
                                           } else {
                                             //Will go to emptyBuilder
-                                            return null;
+                                            return [];
                                           }
                                         }
                                         List<String> _repUi = [];
@@ -562,41 +526,37 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                       mode: Mode.MENU,
                                       showSearchBox: true,
                                       showSelectedItem: true,
-                                      //items: _enderecoUiList,
-                                      //label: 'UF: *',
-                                      //hint: 'UF: *',
-                                      popupItemDisabled: (String
-                                          s) => /*s.startsWith('I')*/ null,
                                       onChanged: (value) {
                                         String _selectedCpf =
-                                            _getCpfFromSelectedValue(value);
+                                            _getCpfFromSelectedValue(
+                                                value ?? '');
                                         //Match with list of representantes cpf
                                         for (var _representante
                                             in _representantes) {
                                           if (_representante['username'] ==
                                               _selectedCpf) {
-                                            sc.representante =
+                                            sc!.representante =
                                                 RepresentanteModel.fromJson(
                                               _representante,
                                             );
                                           }
                                         }
                                       },
-                                      selectedItem: sc.representante.id == -1
+                                      selectedItem: sc!.representante!.id == -1
                                           ? 'selecione um representante'
-                                          : sc.representante.nome +
+                                          : sc!.representante!.nome +
                                               ' ' +
-                                              sc.representante.sobrenome +
+                                              sc!.representante!.sobrenome +
                                               ' | ' +
                                               _formatCpf(
-                                                sc.representante.usernameCpf,
+                                                sc!.representante!.usernameCpf,
                                               ),
                                     ),
                                   if (authStore.role != 'Credenciado')
                                     const SizedBox(height: 40),
                                   //onboarding
                                   if (authStore.role != 'Credenciado' &&
-                                      sc.id != authStore.id)
+                                      sc!.id != authStore.id)
                                     DropdownSearch<String>(
                                       label: 'Onboarding:',
                                       errorBuilder:
@@ -633,7 +593,7 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                             throw Error();
                                           } else {
                                             //Will go to emptyBuilder
-                                            return null;
+                                            return [];
                                           }
                                         }
                                         List<String> _onboardingUi = [];
@@ -656,23 +616,21 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                       //items: _enderecoUiList,
                                       //label: 'UF: *',
                                       //hint: 'UF: *',
-                                      popupItemDisabled: (String
-                                          s) => /*s.startsWith('I')*/ null,
                                       onChanged: (value) {
                                         //Match with list of representantes cpf
                                         for (var _onboarding in _onboardings) {
                                           if (_onboarding['onboarding'] ==
                                               value) {
-                                            sc.onboarding =
+                                            sc!.onboarding =
                                                 OnboardingModel.fromJson(
                                               _onboarding,
                                             );
                                           }
                                         }
                                       },
-                                      selectedItem: sc.onboarding.id == -1
+                                      selectedItem: sc!.onboarding!.id == -1
                                           ? 'Selecionar qual onboarding participou'
-                                          : sc.onboarding.onboarding,
+                                          : sc!.onboarding!.onboarding,
                                     ),
 
                                   const Divider(
@@ -693,8 +651,8 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                                 0, 25, 0, 0),
                                             height: 80,
                                             child: TextFormField(
-                                              onSaved: (String value) {
-                                                sc.telefone = value;
+                                              onSaved: (String? value) {
+                                                sc!.telefone = value ?? '';
                                               },
                                               maxLength: 10,
                                               controller: _controllerTEL,
@@ -727,8 +685,8 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                                 0, 25, 0, 0),
                                             height: 80,
                                             child: TextFormField(
-                                              onSaved: (String value) {
-                                                sc.celular = value;
+                                              onSaved: (String? value) {
+                                                sc!.celular = value ?? '';
                                               },
                                               maxLength: 11,
                                               controller: _controllerCEL,
@@ -770,13 +728,13 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                   const SizedBox(height: 20),
                                   Endereco(
                                     enderecoType: 'gerenciar endereco',
-                                    userId: sc.id,
+                                    userId: sc!.id,
                                   ),
                                   const SizedBox(height: 40),
                                   //Aprovação de Usuário
                                   if (_firstFetch &&
                                       authStore.role != 'Credenciado' &&
-                                      sc.id != authStore.id)
+                                      sc!.id != authStore.id)
                                     Container(
                                       height: 80,
                                       child: FutureBuilder(
@@ -786,9 +744,10 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                           if (snapshot.connectionState ==
                                               ConnectionState.done) {
                                             return DropdownSearch<String>(
-                                              onSaved: (String value) {
+                                              onSaved: (String? value) {
                                                 cadastroStore
-                                                    .handleAprovRelation(value);
+                                                    .handleAprovRelation(
+                                                        value ?? '');
                                               },
                                               dropdownSearchDecoration:
                                                   InputDecoration(
@@ -800,13 +759,12 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                               mode: Mode.MENU,
                                               showSearchBox: false,
                                               showSelectedItem: true,
-                                              items: snapshot.data,
+                                              items:
+                                                  snapshot.data as List<String>,
                                               label: 'Aprovação do Usuário: *',
-                                              popupItemDisabled: (String
-                                                  s) => /*s.startsWith('I')*/ null,
                                               onChanged: print,
                                               selectedItem:
-                                                  sc.aprovacao_usuario.status,
+                                                  sc!.aprovacao_usuario!.status,
                                             );
                                           } else {
                                             return Center(
@@ -822,13 +780,13 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                     ),
                                   if (!_firstFetch &&
                                       authStore.role != 'Credenciado' &&
-                                      sc.id != authStore.id)
+                                      sc!.id != authStore.id)
                                     Container(
                                       height: 80,
                                       child: DropdownSearch<String>(
-                                          onSaved: (String value) {
-                                            cadastroStore
-                                                .handleAprovRelation(value);
+                                          onSaved: (String? value) {
+                                            cadastroStore.handleAprovRelation(
+                                                value ?? '');
                                           },
                                           dropdownSearchDecoration:
                                               InputDecoration(
@@ -839,15 +797,12 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                           mode: Mode.MENU,
                                           showSearchBox: false,
                                           showSelectedItem: true,
-                                          items: cadastroStore
-                                                  .getAprovTableList() ??
-                                              [''],
+                                          items:
+                                              cadastroStore.getAprovTableList(),
                                           label: 'Aprovação do Usuário: *',
-                                          popupItemDisabled: (String
-                                              s) => /*s.startsWith('I')*/ null,
                                           onChanged: print,
                                           selectedItem:
-                                              sc.aprovacao_usuario.status),
+                                              sc!.aprovacao_usuario!.status),
                                     ),
                                   const SizedBox(height: 40),
                                 ],
@@ -872,9 +827,9 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                         ),
                                   onPressed: !_sendingCadastro
                                       ? () {
-                                          if (_formKey.currentState
+                                          if (_formKey.currentState!
                                               .validate()) {
-                                            _formKey.currentState.save();
+                                            _formKey.currentState!.save();
                                             setState(() {
                                               _sendingCadastro = true;
                                             });

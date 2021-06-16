@@ -27,14 +27,14 @@ class GerenciarPacientes extends StatefulWidget {
 class _GerenciarPacientesState extends State<GerenciarPacientes> {
   bool fetchData = true;
 
-  AuthProvider authStore;
-  PacientesListProvider _pacientesListStore;
+  AuthProvider? authStore;
+  PacientesListProvider? _pacientesListStore;
 
   bool isMeusPedido = true;
 
   String dropdownValue = 'Todos';
 
-  Timer searchOnStoppedTyping;
+  Timer? searchOnStoppedTyping;
 
   //For page managmente (0-10-20 equals page 0,1,2)
   int _startPage = 0;
@@ -46,7 +46,7 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
 
   @override
   void dispose() {
-    _pacientesListStore.clearPacientes();
+    _pacientesListStore!.clearPacientes();
     super.dispose();
   }
 
@@ -54,11 +54,11 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
     setState(() {
       //page to 0 before fetch
       _startPage = 0;
-      _pacientesListStore.setQuery('');
+      _pacientesListStore!.setQuery('');
     });
     //fetchData before set state (fixes not updating bug)
     fetchData = true;
-    _pacientesListStore.clearPacientesAndUpdate();
+    _pacientesListStore!.clearPacientesAndUpdate();
   }
 
   Widget _getHeaders(double width) {
@@ -118,7 +118,7 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
             fetchData = true;
             const duration = Duration(milliseconds: 500);
             if (searchOnStoppedTyping != null) {
-              setState(() => searchOnStoppedTyping.cancel());
+              setState(() => searchOnStoppedTyping!.cancel());
             }
             setState(
               () => searchOnStoppedTyping = new Timer(
@@ -133,8 +133,8 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
   }
 
   void _searchBoxQuery(String value) {
-    _pacientesListStore.setQuery(value);
-    _pacientesListStore.clearPacientesAndUpdate();
+    _pacientesListStore!.setQuery(value);
+    _pacientesListStore!.clearPacientesAndUpdate();
   }
 
   @override
@@ -148,11 +148,11 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
     authStore = Provider.of<AuthProvider>(context);
 
     _pacientesListStore = Provider.of<PacientesListProvider>(context);
-    _pacientesListStore.setToken(authStore.token);
-    _pacientesListStore.setUserId(authStore.id);
+    _pacientesListStore!.setToken(authStore!.token);
+    _pacientesListStore!.setUserId(authStore!.id);
 
     if (fetchData) {
-      _pacientesListStore
+      _pacientesListStore!
           .fetchAllPacientes(_startPage)
           .then((List<dynamic> cadastros) {
         if (cadastros.length <= 0) {
@@ -172,12 +172,12 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
 
   @override
   Widget build(BuildContext context) {
-    if (!authStore.isAuth) {
+    if (!authStore!.isAuth) {
       return LoginScreen();
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (authStore.role == 'Credenciado') {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      if (authStore!.role == 'Credenciado') {
         Navigator.of(context).pushNamedAndRemoveUntil(
           MeusPacientes.routeName,
           (Route<dynamic> route) => false,
@@ -203,7 +203,7 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
             ),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                  colors: [Colors.white, Colors.grey[100]],
+                  colors: [Colors.white, Color(0xFFdbdbdb)],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter),
             ),
@@ -244,7 +244,7 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
                 //TOP TEXT
                 _getHeaders(sWidth),
                 const SizedBox(height: 20),
-                if (_pacientesListStore.getPacientesList() == null)
+                if (_pacientesListStore!.getPacientesList().isEmpty)
                   Center(
                     child: CircularProgressIndicator(
                       valueColor: new AlwaysStoppedAnimation<Color>(
@@ -252,12 +252,12 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
                       ),
                     ),
                   )
-                else if (_pacientesListStore
+                else if (_pacientesListStore!
                     .getPacientesList()[0]
                     .containsKey('error'))
                   Container(
                     child: Text(
-                      _pacientesListStore.getPacientesList()[0]['message'] ??
+                      _pacientesListStore!.getPacientesList()[0]['message'] ??
                           '',
                     ),
                   )
@@ -288,7 +288,7 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
                                   _startPage = _startPage - 10;
                                 });
                               }
-                              _pacientesListStore.clearPacientesAndUpdate();
+                              _pacientesListStore!.clearPacientesAndUpdate();
                             },
                       icon: const Icon(Icons.arrow_back),
                       label: const Text('Anterior'),
@@ -307,7 +307,7 @@ class _GerenciarPacientesState extends State<GerenciarPacientes> {
                                 _blockPageBtns = true;
                                 _startPage = _startPage + 10;
                               });
-                              _pacientesListStore.clearPacientesAndUpdate();
+                              _pacientesListStore!.clearPacientesAndUpdate();
                             },
                       icon: const Icon(Icons.arrow_forward),
                       label: const Text('Próximo'),

@@ -12,7 +12,7 @@ import 'dart:html' as html;
 
 class LoginScreen extends StatefulWidget {
   final Map<String, String> queryStringsForPasswordReset;
-  LoginScreen({this.queryStringsForPasswordReset});
+  LoginScreen({this.queryStringsForPasswordReset = const {}});
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -60,14 +60,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _form({
-    BuildContext context,
-    bool isMobile,
-    BoxConstraints constraints,
+    BuildContext? context,
+    bool isMobile = false,
+    BoxConstraints constraints = const BoxConstraints(),
   }) {
-    //final double _desktopHeight = 500;
-    //final double _mobileHeight = 450;
     final LoginFormProvider _loginStore =
-        Provider.of<LoginFormProvider>(context);
+        Provider.of<LoginFormProvider>(context!);
     return _isLoading
         ? Center(
             child: CircularProgressIndicator(
@@ -191,10 +189,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _layoutDesktop(
-    BuildContext ctx,
-    BoxConstraints c,
+    BuildContext? ctx,
+    BoxConstraints? c,
   ) {
-    final cor = Theme.of(ctx).primaryColor;
+    final Color cor = Theme.of(ctx!).primaryColor;
     // Outer card with shadow
     return Center(
       child: Card(
@@ -215,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [cor, Colors.indigo[700]],
+                        colors: [cor, Color(0xff2240b5)],
                       ),
                     ),
                     child: Column(
@@ -319,7 +317,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 flex: 2,
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: _form(context: ctx, isMobile: false, constraints: c),
+                  child: _form(context: ctx, isMobile: false, constraints: c!),
                 ),
               )
             ],
@@ -333,7 +331,7 @@ class _LoginScreenState extends State<LoginScreen> {
     BuildContext ctx,
     BoxConstraints c,
   ) {
-    final cor = Theme.of(ctx).primaryColor;
+    final Color cor = Theme.of(ctx).primaryColor;
     // Outer card with shadow
     return Center(
       child: Card(
@@ -354,7 +352,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [cor, Colors.indigo[700]],
+                        colors: [cor, Color(0xff2240b5)],
                       ),
                     ),
                     child: Column(
@@ -432,7 +430,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     AuthProvider authStore = Provider.of<AuthProvider>(context);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
       if (Navigator.canPop(context) && !_cadastroScreenOpen) {
         Navigator.pop(context);
       }

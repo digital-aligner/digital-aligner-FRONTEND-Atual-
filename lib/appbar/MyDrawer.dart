@@ -1,13 +1,7 @@
-import 'package:digital_aligner_app/providers/cadastro_provider.dart';
-import 'package:digital_aligner_app/providers/pedido_provider.dart';
-import 'package:digital_aligner_app/providers/pedidos_list_provider.dart';
-import 'package:digital_aligner_app/providers/relatorio_provider.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pacientes.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pedido.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_permissoes.dart';
-import 'package:digital_aligner_app/screens/administrativo/meus_setups.dart';
-import 'package:digital_aligner_app/screens/administrativo/minhas_revisoes.dart';
-import 'package:digital_aligner_app/screens/novo_paciente.dart';
+
 import 'package:digital_aligner_app/screens/perfil.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
 
@@ -60,8 +54,8 @@ class _MyDrawerState extends State<MyDrawer> {
                 ),
               ),
               onTap: () {
-                Route route = ModalRoute.of(context);
-                final routeName = route.settings.name;
+                ModalRoute<Object?>? route = ModalRoute.of(context);
+                final routeName = route!.settings.name;
                 if (routeName != null && routeName != '/perfil') {
                   Navigator.of(context).pushReplacementNamed(Perfil.routeName);
                 }
@@ -105,16 +99,18 @@ class _MyDrawerState extends State<MyDrawer> {
                               Navigator.of(context).pushReplacementNamed(
                                   GerenciarPermissoes.routeName);
                             } else if (selectedValue == 'Gerenciar Pedidos') {
-                              Route route = ModalRoute.of(context);
-                              final routeName = route.settings.name;
+                              ModalRoute<Object?>? route =
+                                  ModalRoute.of(context);
+                              final routeName = route!.settings.name;
                               if (routeName != null &&
                                   routeName != '/gerenciar-pedidos') {
                                 Navigator.of(context).pushReplacementNamed(
                                     GerenciarPedidos.routeName);
                               }
                             } else if (selectedValue == 'Gerenciar Pacientes') {
-                              Route route = ModalRoute.of(context);
-                              final routeName = route.settings.name;
+                              ModalRoute<Object?>? route =
+                                  ModalRoute.of(context);
+                              final routeName = route!.settings.name;
 
                               if (routeName != null &&
                                   routeName != '/gerenciar-pacientes') {
@@ -122,23 +118,19 @@ class _MyDrawerState extends State<MyDrawer> {
                                     GerenciarPacientes.routeName);
                               }
                             } else if (selectedValue == 'Meus Setups') {
-                              Route route = ModalRoute.of(context);
-                              final routeName = route.settings.name;
+                              ModalRoute<Object?>? route =
+                                  ModalRoute.of(context);
+                              final routeName = route!.settings.name;
 
                               if (routeName != null &&
-                                  routeName != '/meus-setups') {
-                                Navigator.of(context)
-                                    .pushReplacementNamed(MeusSetups.routeName);
-                              }
+                                  routeName != '/meus-setups') {}
                             } else if (selectedValue == 'Minhas Revisões') {
-                              Route route = ModalRoute.of(context);
-                              final routeName = route.settings.name;
+                              ModalRoute<Object?>? route =
+                                  ModalRoute.of(context);
+                              final routeName = route!.settings.name;
 
                               if (routeName != null &&
-                                  routeName != '/minhas-revisoes') {
-                                Navigator.of(context).pushReplacementNamed(
-                                    MinhasRevisoes.routeName);
-                              }
+                                  routeName != '/minhas-revisoes') {}
                             }
                           },
                           itemBuilder: (_) => [

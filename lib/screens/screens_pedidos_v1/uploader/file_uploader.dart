@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
-import 'package:digital_aligner_app/providers/s3_delete_provider.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:digital_aligner_app/providers/auth_provider.dart';
@@ -12,8 +10,6 @@ import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
 import '../../../rotas_url.dart';
-
-//https://stackoverflow.com/questions/63314063/upload-image-file-to-strapi-flutter-web
 
 class FileModel {
   int id;
@@ -34,9 +30,9 @@ class FileModel {
 }
 
 class FileUploader extends StatefulWidget {
-  final int filesQt;
-  final List<String> acceptedFileExt;
-  final String sendButtonText;
+  final int? filesQt;
+  final List<String>? acceptedFileExt;
+  final String? sendButtonText;
   FileUploader({
     @required this.filesQt,
     @required this.acceptedFileExt,
@@ -48,8 +44,8 @@ class FileUploader extends StatefulWidget {
 }
 
 class _FileUploaderState extends State<FileUploader> {
-  AuthProvider _authStore;
-  PedidoProvider _novoPedStore;
+  late AuthProvider _authStore;
+  late PedidoProvider _novoPedStore;
 
   List<PlatformFile> _filesData = <PlatformFile>[];
   List<FileModel> _serverFiles = [];
@@ -59,14 +55,15 @@ class _FileUploaderState extends State<FileUploader> {
   bool isUploading = false;
 
   Future<void> _openFileExplorer() async {
-    FilePickerResult result = await FilePicker.platform.pickFiles(
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: widget.acceptedFileExt,
       allowMultiple: true,
       withReadStream: true,
     );
     if (result != null) {
-      if (result.files.length + _serverFiles.length <= widget.filesQt) {
+      if (result.files.length + _serverFiles.length <=
+          int.parse(widget.filesQt.toString())) {
         _filesData = result.files;
       } else {
         throw ('Selecione até ${widget.filesQt.toString()} arquivos.');
@@ -88,7 +85,7 @@ class _FileUploaderState extends State<FileUploader> {
 
     request.files.add(http.MultipartFile(
       'files',
-      currentFile.readStream,
+      currentFile.readStream!,
       currentFile.size,
       filename: currentFile.name,
     ));
@@ -241,15 +238,18 @@ class _FileUploaderState extends State<FileUploader> {
               setState(() {
                 isUploading = true;
               });
-              for (var file in _filesData) {
-                await _sendFile(file);
+              if (_filesData.isNotEmpty) {
+                for (var file in _filesData) {
+                  await _sendFile(file);
+                }
               }
+
               setState(() {
                 isUploading = false;
               });
             },
       child: Text(
-        widget.sendButtonText,
+        widget.sendButtonText!,
         style: const TextStyle(
           color: Colors.white,
         ),

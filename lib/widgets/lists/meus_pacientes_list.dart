@@ -1,5 +1,4 @@
 import 'package:digital_aligner_app/providers/pacientes_list_provider.dart';
-import 'package:digital_aligner_app/screens/paciente_screen.dart';
 
 import 'package:intl/intl.dart';
 
@@ -15,8 +14,8 @@ class MeusPacientesList extends StatefulWidget {
 }
 
 class _MeusPacientesListState extends State<MeusPacientesList> {
-  PacientesListProvider _pacienteListStore;
-  List<dynamic> pacList;
+  late PacientesListProvider _pacienteListStore;
+  List<dynamic> pacList = [];
 
   //static ValueKey key = ValueKey('key_0');
   //static ValueKey key1 = ValueKey('key_1');
@@ -37,7 +36,7 @@ class _MeusPacientesListState extends State<MeusPacientesList> {
 
     pacList = _pacienteListStore.getPacientesList();
 
-    if (pacList == null) {
+    if (pacList.isEmpty) {
       return Container(
         child: Align(
           alignment: Alignment.topCenter,
@@ -69,6 +68,7 @@ class _MeusPacientesListState extends State<MeusPacientesList> {
                 Expanded(
                   child: ListTile(
                     onTap: () {
+                      /*
                       Navigator.of(context).pushNamed(
                         PacienteScreen.routeName,
                         arguments: {
@@ -79,7 +79,7 @@ class _MeusPacientesListState extends State<MeusPacientesList> {
                           'users_permissions_user': pacList[index]
                               ['users_permissions_user'],
                         },
-                      );
+                      );*/
                     },
                     title: Tooltip(
                       message: 'Visualizar e editar seus pacientes',

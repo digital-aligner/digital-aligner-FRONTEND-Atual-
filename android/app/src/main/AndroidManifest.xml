@@ -1,10 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.digital_aligner_app">
-    <uses-permission android:name="android.permission.INTERNET" />
-
+    package="com.example.digital_aligner_front">
    <application
-        android:label="digital_aligner_app"
-        android:usesCleartextTraffic="true"
+        android:label="digital_aligner_front"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

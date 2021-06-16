@@ -5,8 +5,8 @@ import 'package:http/http.dart' as http;
 import '../rotas_url.dart';
 
 class PacientesListProvider with ChangeNotifier {
-  String _token;
-  int _id;
+  String _token = '';
+  int _id = 0;
   String _queryString = '';
 
   void setToken(String t) {
@@ -20,16 +20,16 @@ class PacientesListProvider with ChangeNotifier {
   //---- GERENCIAR PACIENTES ------
 
   //Converted json string to map
-  List<dynamic> _pacientes;
+  List<dynamic> _pacientes = [];
 
   void clearPacientes() {
-    _pacientes = null;
+    _pacientes = [];
     _queryString = '';
   }
 
   //For clearing and updating ui with query search
   void clearPacientesAndUpdate() {
-    _pacientes = null;
+    _pacientes = [];
     notifyListeners();
   }
 
@@ -66,7 +66,7 @@ class PacientesListProvider with ChangeNotifier {
       return _pacientes;
     } catch (error) {
       print(error);
-      return error;
+      return [];
     }
   }
 

@@ -2,7 +2,7 @@ class AprovacaoUsuarioModel {
   int id;
   String status;
 
-  AprovacaoUsuarioModel({this.id, this.status});
+  AprovacaoUsuarioModel({this.id = 0, this.status = ''});
 
   factory AprovacaoUsuarioModel.fromJson(Map<String, dynamic> data) {
     return AprovacaoUsuarioModel(

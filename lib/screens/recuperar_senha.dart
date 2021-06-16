@@ -44,7 +44,7 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
           children: <Widget>[
             TextFormField(
               onSaved: (value) async {
-                Map result = await _recoverPasswordRequest(value);
+                Map result = await _recoverPasswordRequest(value ?? '');
                 if (result.containsKey('statusCode')) {
                   if (result['statusCode'] == 200) {
                     Navigator.pop(context);
@@ -62,7 +62,7 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
                 });
               },
               validator: (value) {
-                return value.length == 0 ? 'Insira seu email' : null;
+                return value!.length == 0 ? 'Insira seu email' : null;
               },
               decoration: InputDecoration(
                 labelText: 'Email',
@@ -77,11 +77,11 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
                 child: ElevatedButton(
                   onPressed: !_sendingRequest
                       ? () {
-                          if (_formKey.currentState.validate()) {
+                          if (_formKey.currentState!.validate()) {
                             setState(() {
                               _sendingRequest = true;
                             });
-                            _formKey.currentState.save();
+                            _formKey.currentState!.save();
                           }
                         }
                       : null,

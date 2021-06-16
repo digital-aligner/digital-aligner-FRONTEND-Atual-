@@ -1,4 +1,4 @@
-# digital_aligner_app
+# digital_aligner_front
 
 A new Flutter project.
 

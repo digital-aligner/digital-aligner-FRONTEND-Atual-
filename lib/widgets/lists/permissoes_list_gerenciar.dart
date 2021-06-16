@@ -15,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class PermissoesListGerenciar extends StatefulWidget {
-  final Function fetchDataHandler;
+  final Function? fetchDataHandler;
 
   PermissoesListGerenciar({this.fetchDataHandler});
   @override
@@ -24,9 +24,9 @@ class PermissoesListGerenciar extends StatefulWidget {
 }
 
 class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
-  CadastroProvider cadastroStore;
-  List<dynamic> cadList;
-  AuthProvider authStore;
+  late CadastroProvider cadastroStore;
+  List<dynamic> cadList = [];
+  late AuthProvider authStore;
 
   bool _absorbPointerBool = false;
 
@@ -154,8 +154,7 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                '${cadList[index]['cro_uf'] + ' - ' + cadList[index]['cro_num']}' ??
-                    '',
+                '${cadList[index]['cro_uf'] ?? '' + ' - ' + cadList[index]['cro_num'] ?? ''}',
                 style: TextStyle(
                   fontSize: 16,
                 ),
@@ -191,7 +190,7 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                '${cadList[index]['email']}' ?? '',
+                '${cadList[index]['email'] ?? ''}',
                 style: TextStyle(
                   fontSize: 16,
                 ),
@@ -264,7 +263,7 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                '${cadList[index]['telefone']}' ?? '',
+                '${cadList[index]['telefone'] ?? ''}',
                 style: TextStyle(
                   fontSize: 16,
                 ),
@@ -407,8 +406,7 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
                         children: [
                           Container(
                             child: Text(
-                              '${cadList[index]['nome'] + ' ' + cadList[index]['sobrenome']}' ??
-                                  '',
+                              '${cadList[index]['nome'] ?? '' + ' ' + cadList[index]['sobrenome'] ?? ''}',
                               style: TextStyle(
                                 fontSize: 35,
                                 color: Colors.black54,
@@ -540,8 +538,7 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
                       children: [
                         Container(
                           child: Text(
-                            '${cadList[index]['nome'] + ' ' + cadList[index]['sobrenome']}' ??
-                                '',
+                            '${cadList[index]['nome'] ?? '' + ' ' + cadList[index]['sobrenome'] ?? ''}',
                             style: TextStyle(
                               fontSize: 35,
                               color: Colors.black54,
@@ -780,7 +777,7 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
                         }
                         if (didUpdate) {
                           Future.delayed(Duration(milliseconds: 800), () {
-                            widget.fetchDataHandler(true);
+                            widget.fetchDataHandler!(true);
                             _absorbPointerBool = false;
                             cadastroStore.clearCadastrosAndUpdate();
                           });

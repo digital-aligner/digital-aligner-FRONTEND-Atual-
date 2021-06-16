@@ -9,11 +9,11 @@ class RepresentanteModel {
   String sobrenome;
 
   RepresentanteModel({
-    this.id,
-    this.usernameCpf,
-    this.email,
-    this.nome,
-    this.sobrenome,
+    this.id = 0,
+    this.usernameCpf = '',
+    this.email = '',
+    this.nome = '',
+    this.sobrenome = '',
   });
 
   factory RepresentanteModel.fromJson(Map<String, dynamic> data) {

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:cpfcnpj/cpfcnpj.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
 import 'package:digital_aligner_app/functions/system_functions.dart';
@@ -23,17 +22,17 @@ class PrimeiroCadastro extends StatefulWidget {
 }
 
 class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
-  AuthProvider _authStore;
-  CadastroProvider _cadastroStore;
+  late AuthProvider _authStore;
+  late CadastroProvider _cadastroStore;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  double width;
+  double width = 0;
   //DateFormat formatIso = DateFormat("yyyy-MM-dd");
   DateFormat format = DateFormat("dd/MM/yyyy");
 
   bool _sendingForm = false;
 
-  String _emailConfirm;
-  String _passwordConfirm;
+  String _emailConfirm = '';
+  String _passwordConfirm = '';
 
   String _selectedCroUf = '';
 
@@ -45,7 +44,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
   final _controllerTEL = TextEditingController();
   final _controllerCEL = TextEditingController();
 
-  Timer searchOnStoppedTyping;
+  Timer? searchOnStoppedTyping;
 
   Future<List<String>> _fetchStates() async {
     //can't fetch states if no country is selected
@@ -86,11 +85,11 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       height: 80,
                       child: TextFormField(
                         maxLength: 29,
-                        onSaved: (String value) {
-                          _cadastroStore.novoCad.nome = value;
+                        onSaved: (String? value) {
+                          _cadastroStore.novoCad.nome = value ?? '';
                         },
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value!.isEmpty) {
                             return 'Por favor insira seu nome.';
                           }
                           return null;
@@ -109,11 +108,11 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       height: 80,
                       child: TextFormField(
                         maxLength: 29,
-                        onSaved: (String value) {
-                          _cadastroStore.novoCad.sobrenome = value;
+                        onSaved: (String? value) {
+                          _cadastroStore.novoCad.sobrenome = value ?? '';
                         },
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value!.isEmpty) {
                             return 'Por favor insira seu sobrenome.';
                           }
                           return null;
@@ -139,28 +138,29 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                             child: Container(
                               height: 80,
                               child: TextFormField(
-                                onSaved: (String value) {
+                                onSaved: (String? value) {
                                   _cadastroStore.novoCad.username =
                                       SystemFunctions.formatCpfRemoveFormating(
-                                    cpf: value,
+                                    cpf: value ?? '',
                                   );
                                 },
                                 validator: (value) {
-                                  if (value.length < 11) {
+                                  if (value!.length < 11) {
                                     return 'Por favor insira seu cpf';
                                   }
+                                  /*
                                   // Validar CPF
                                   if (CPF.isValid(value)) {
                                     return null;
                                   } else {
                                     return 'Este CPF é inválido. Por favor verifique';
-                                  }
+                                  }*/
                                 },
                                 onChanged: (value) async {
                                   const duration = Duration(milliseconds: 500);
                                   if (searchOnStoppedTyping != null) {
                                     setState(
-                                        () => searchOnStoppedTyping.cancel());
+                                        () => searchOnStoppedTyping!.cancel());
                                   }
                                   setState(
                                     () => searchOnStoppedTyping = new Timer(
@@ -265,7 +265,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                   return _fetchStates();
                                 },
                                 onSaved: (value) {
-                                  _cadastroStore.novoCad.cro_uf = value;
+                                  _cadastroStore.novoCad.cro_uf = value ?? '';
                                 },
                                 validator: (value) {
                                   return value == null || value.isEmpty
@@ -282,11 +282,8 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 showSelectedItem: true,
                                 items: [],
                                 label: 'CRO (UF): *',
-                                //hint: 'country in menu mode',
-                                popupItemDisabled:
-                                    (String s) => /*s.startsWith('I')*/ null,
                                 onChanged: (value) {
-                                  _selectedCroUf = value;
+                                  _selectedCroUf = value ?? '';
                                 },
                                 selectedItem: _selectedCroUf,
                               ),
@@ -298,11 +295,11 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                               height: 80,
                               child: TextFormField(
                                 maxLength: 30,
-                                onSaved: (String value) {
-                                  _cadastroStore.novoCad.cro_num = value;
+                                onSaved: (String? value) {
+                                  _cadastroStore.novoCad.cro_num = value ?? '';
                                 },
                                 validator: (value) {
-                                  if (value.length == 0) {
+                                  if (value!.length == 0) {
                                     return 'Por favor escolha CRO';
                                   }
                                   return null;
@@ -345,15 +342,15 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                               margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
                               height: 80,
                               child: TextFormField(
-                                onSaved: (String value) {
+                                onSaved: (String? value) {
                                   _cadastroStore.novoCad.telefone =
                                       SystemFunctions
                                           .formatTelefoneRemoveFormating(
-                                    telefone: value,
+                                    telefone: value ?? '',
                                   );
                                 },
                                 validator: (value) {
-                                  if (value.length == 0) {
+                                  if (value!.length == 0) {
                                     return 'Por favor insira seu número de telefone';
                                   }
                                   return null;
@@ -362,7 +359,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                   const duration = Duration(milliseconds: 500);
                                   if (searchOnStoppedTyping != null) {
                                     setState(
-                                        () => searchOnStoppedTyping.cancel());
+                                        () => searchOnStoppedTyping!.cancel());
                                   }
                                   setState(
                                     () => searchOnStoppedTyping = new Timer(
@@ -403,15 +400,15 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                               margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
                               height: 80,
                               child: TextFormField(
-                                onSaved: (String value) {
+                                onSaved: (String? value) {
                                   _cadastroStore.novoCad.celular =
                                       SystemFunctions
                                           .formatCellphoneRemoveFormating(
-                                    cellphone: value,
+                                    cellphone: value ?? '',
                                   );
                                 },
                                 validator: (value) {
-                                  if (value.length == 0) {
+                                  if (value!.length == 0) {
                                     return 'Por favor insira seu número de celular';
                                   }
                                   return null;
@@ -420,7 +417,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                   const duration = Duration(milliseconds: 500);
                                   if (searchOnStoppedTyping != null) {
                                     setState(
-                                        () => searchOnStoppedTyping.cancel());
+                                        () => searchOnStoppedTyping!.cancel());
                                   }
                                   setState(
                                     () => searchOnStoppedTyping = new Timer(
@@ -474,11 +471,11 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                               height: 80,
                               child: TextFormField(
                                 maxLength: 200,
-                                onSaved: (String value) {
-                                  _cadastroStore.novoCad.email = value;
+                                onSaved: (String? value) {
+                                  _cadastroStore.novoCad.email = value ?? '';
                                 },
                                 validator: (value) {
-                                  if (value.length == 0) {
+                                  if (value!.length == 0) {
                                     return 'Por favor insira seu email';
                                   }
                                   if (value != _emailConfirm) {
@@ -507,7 +504,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                   _emailConfirm = value;
                                 },
                                 validator: (value) {
-                                  if (value.length == 0) {
+                                  if (value!.length == 0) {
                                     return 'Por favor confirme seu email';
                                   }
                                   return null;
@@ -540,11 +537,11 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                               child: TextFormField(
                                 maxLength: 30,
                                 obscureText: true,
-                                onSaved: (String value) {
-                                  _cadastroStore.novoCad.password = value;
+                                onSaved: (String? value) {
+                                  _cadastroStore.novoCad.password = value ?? '';
                                 },
                                 validator: (value) {
-                                  if (value.length == 0) {
+                                  if (value!.length == 0) {
                                     return 'Por favor insira sua senha';
                                   }
                                   if (value.length < 6) {
@@ -576,7 +573,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                   _passwordConfirm = value;
                                 },
                                 validator: (value) {
-                                  if (value.length == 0) {
+                                  if (value!.length == 0) {
                                     return 'Por favor confirme sua senha';
                                   }
                                   return null;
@@ -630,8 +627,8 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                   ),
             onPressed: !_sendingForm
                 ? () {
-                    if (_formKey.currentState.validate()) {
-                      _formKey.currentState.save();
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
                       setState(() {
                         _sendingForm = true;
                       });
@@ -732,28 +729,21 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
             currentFocus.unfocus();
           }
         },
-        child: Scrollbar(
+        child: RawScrollbar(
+          thumbColor: Colors.grey,
           thickness: 15,
           isAlwaysShown: true,
-          showTrackOnHover: true,
           child: SingleChildScrollView(
-            child: Container(
-              height: width > 600 ? 1700 : 2300,
-              child: Column(
-                children: <Widget>[
-                  Column(
-                    children: <Widget>[
-                      const SizedBox(height: 50),
-                      _headline(),
-                      const SizedBox(height: 50),
-                      _form(),
-                      const SizedBox(height: 50),
-                      _buttons(),
-                      const SizedBox(height: 50),
-                    ],
-                  ),
-                ],
-              ),
+            child: Column(
+              children: <Widget>[
+                const SizedBox(height: 50),
+                _headline(),
+                const SizedBox(height: 50),
+                _form(),
+                const SizedBox(height: 50),
+                _buttons(),
+                const SizedBox(height: 50),
+              ],
             ),
           ),
         ),

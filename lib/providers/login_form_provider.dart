@@ -1,16 +1,16 @@
 import 'package:flutter/foundation.dart';
 
 class LoginFormProvider with ChangeNotifier {
-  String _email;
-  String _senha;
+  String? _email;
+  String? _senha;
   bool _salvarLogin = false;
 
   String get email {
-    return _email;
+    return _email ?? '';
   }
 
   String get senha {
-    return _senha;
+    return _senha ?? '';
   }
 
   bool get salvarLogin {
