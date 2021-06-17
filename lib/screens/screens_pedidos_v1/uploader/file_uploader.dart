@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
+import 'package:digital_aligner_app/screens/screens_pedidos_v1/uploader/model/FileModel.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:digital_aligner_app/providers/auth_provider.dart';
@@ -11,39 +12,17 @@ import 'package:provider/provider.dart';
 
 import '../../../rotas_url.dart';
 
-//------------------------ file model -----------------------
-
-class FileModel {
-  int id;
-  String imageUrl;
-  String thumbnail;
-  String fileName;
-  double progress;
-  bool hasError;
-
-  FileModel({
-    this.id = 0,
-    this.imageUrl = '',
-    this.thumbnail = '',
-    this.fileName = '',
-    this.progress = 0,
-    this.hasError = false,
-  });
-}
-
-// ----------------------------------------------------------
-
 class FileUploader extends StatefulWidget {
   final int? filesQt;
   final List<String>? acceptedFileExt;
   final String? sendButtonText;
-  final bool? firstPedidoSaveToProvider;
+  final bool firstPedidoSaveToProvider;
 
   FileUploader({
     @required this.filesQt,
     @required this.acceptedFileExt,
     @required this.sendButtonText,
-    @required this.firstPedidoSaveToProvider,
+    this.firstPedidoSaveToProvider = false,
   });
 
   @override
@@ -52,7 +31,7 @@ class FileUploader extends StatefulWidget {
 
 class _FileUploaderState extends State<FileUploader> {
   late AuthProvider _authStore;
-  late PedidoProvider _novoPedStore;
+  late PedidoProvider _pedidoStore;
 
   List<PlatformFile> _filesData = <PlatformFile>[];
   List<FileModel> _serverFiles = [];
@@ -60,8 +39,11 @@ class _FileUploaderState extends State<FileUploader> {
   //manage ui states
   bool isDeleting = false;
   bool isUploading = false;
+  double progress = 0;
 
-  void _firstPedidoSaveToProvider() {}
+  void _firstPedidoSaveToProvider() {
+    _pedidoStore.saveFilesForFirstPedido(_serverFiles);
+  }
 
   Future<void> _openFileExplorer() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -104,10 +86,10 @@ class _FileUploaderState extends State<FileUploader> {
   void _fakeTimer() {
     const oneSec = const Duration(milliseconds: 100);
     Timer.periodic(oneSec, (Timer t) {
-      if (!_serverFiles.last.hasError && _serverFiles.last.progress < 1) {
+      if (_serverFiles.last.id != -1 && progress < 1) {
         setState(() {
-          double currentProgess = _serverFiles.last.progress;
-          _serverFiles.last.progress = currentProgess + 0.01;
+          double currentProgess = progress;
+          progress = currentProgess + 0.01;
         });
       } else {
         t.cancel();
@@ -131,7 +113,7 @@ class _FileUploaderState extends State<FileUploader> {
   Future<void> _sendFile(PlatformFile currentFile) async {
     //create file model and insert in list
     setState(() {
-      _serverFiles.add(FileModel());
+      _serverFiles.add(FileModel.fromJson(null));
     });
 
     //build request
@@ -149,25 +131,20 @@ class _FileUploaderState extends State<FileUploader> {
 
       //put timer progress at 1
       setState(() {
-        _serverFiles.last.progress = 1;
+        progress = 1;
       });
 
       if (resData[0].containsKey('id')) {
         setState(() {
-          _serverFiles.last.id = resData[0]['id'];
-          _serverFiles.last.fileName = resData[0]['name'] ?? '';
-          _serverFiles.last.thumbnail =
-              resData[0]['formats']['thumbnail']['url'] ?? '';
-          _serverFiles.last.imageUrl = resData[0]['url'] ?? '';
+          _serverFiles.removeLast();
+          _serverFiles.add(FileModel.fromJson(resData[0]));
+          progress = 0;
         });
       }
     } catch (e) {
       setState(() {
-        _serverFiles.last.fileName =
-            'Erro de conexão. Por favor tente novamente.';
-        _serverFiles.last.thumbnail = 'logos/error.jpg';
-        _serverFiles.last.imageUrl = '';
-        _serverFiles.last.hasError = true;
+        _serverFiles.last.id = -1;
+        progress = 0;
       });
       print(e);
     }
@@ -190,23 +167,28 @@ class _FileUploaderState extends State<FileUploader> {
   }
 
   Widget _fileUiImg(int pos) {
-    if (_serverFiles[pos].hasError) {
+    if (_serverFiles[pos].id == -1) {
       return const Image(
         fit: BoxFit.cover,
         width: 100,
         image: const AssetImage('logos/error.jpg'),
       );
-    } else if (_serverFiles[pos].progress == 1) {
+    } else {
       return Image.network(
-        _serverFiles[pos].thumbnail,
+        _serverFiles[pos].url ?? '',
         width: 100,
         height: 100,
         fit: BoxFit.cover,
-      );
-    } else {
-      return SizedBox(
-        child: Text('Carregando...'),
-        width: 100,
+        errorBuilder: (context, error, stackTrace) {
+          return Center(
+            child: Center(
+              child: CircularProgressIndicator(
+                value: progress,
+                valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+              ),
+            ),
+          );
+        },
       );
     }
   }
@@ -220,14 +202,14 @@ class _FileUploaderState extends State<FileUploader> {
         child: Stack(
           children: <Widget>[
             _fileUiImg(pos),
-            if (_serverFiles[pos].progress < 1)
+            if (isUploading && pos == _serverFiles.length)
               Center(
                 child: CircularProgressIndicator(
-                  value: _serverFiles[pos].progress,
+                  value: progress,
                   valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
                 ),
               ),
-            if (_serverFiles[pos].progress == 1 || _serverFiles[pos].hasError)
+            if (!isUploading)
               IconButton(
                 color: Colors.blueAccent,
                 icon: const Icon(Icons.delete),
@@ -236,10 +218,14 @@ class _FileUploaderState extends State<FileUploader> {
                     : () async {
                         setState(() => isDeleting = true);
                         bool result =
-                            await _newFiledelete(_serverFiles[pos].id);
+                            await _newFiledelete(_serverFiles[pos].id as int);
                         if (result)
                           setState(() {
                             _serverFiles.remove(_serverFiles[pos]);
+                            if (widget.firstPedidoSaveToProvider) {
+                              _firstPedidoSaveToProvider();
+                            }
+
                             isDeleting = false;
                           });
                       },
@@ -273,6 +259,10 @@ class _FileUploaderState extends State<FileUploader> {
               if (_filesData.isNotEmpty) {
                 for (var file in _filesData) {
                   await _sendFile(file);
+                  if (widget.firstPedidoSaveToProvider as bool) {
+                    _firstPedidoSaveToProvider();
+                  }
+                  _filesData = [];
                 }
               }
 
@@ -292,7 +282,7 @@ class _FileUploaderState extends State<FileUploader> {
   @override
   void didChangeDependencies() {
     _authStore = Provider.of<AuthProvider>(context);
-    _novoPedStore = Provider.of<PedidoProvider>(context);
+    _pedidoStore = Provider.of<PedidoProvider>(context);
     super.didChangeDependencies();
   }
 

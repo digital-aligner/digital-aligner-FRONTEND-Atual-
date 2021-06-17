@@ -1,12 +1,17 @@
 class FileModelSizes {
-  String thumbnail;
+  String? thumbnail;
 
   FileModelSizes({this.thumbnail = ''});
 
-  factory FileModelSizes.fromJson(Map<String, dynamic> data) {
+  factory FileModelSizes.fromJson(Map<String, dynamic>? data) {
     return FileModelSizes(
-      thumbnail: data['url'] ?? '',
+      thumbnail: data?['url'] ?? '',
     );
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      'thumbnail': thumbnail,
+    };
   }
 }
 
@@ -16,19 +21,24 @@ class FileModelFormats {
 
   FileModelFormats({this.thumbnail});
 
-  factory FileModelFormats.fromJson(Map<String, dynamic> data) {
+  factory FileModelFormats.fromJson(Map<String, dynamic>? data) {
     return FileModelFormats(
-      thumbnail: data['thumbnail']['url'] ?? '',
+      thumbnail: FileModelSizes.fromJson(data?['thumbnail']),
     );
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      'thumbnail': thumbnail,
+    };
   }
 }
 
 // ------------------------------------------------------------------
 
 class FileModel {
-  int id;
-  String name;
-  String url;
+  int? id;
+  String? name;
+  String? url;
   FileModelFormats? formats;
 
   FileModel({
@@ -38,12 +48,12 @@ class FileModel {
     this.formats,
   });
 
-  factory FileModel.fromJson(Map<String, dynamic> data) {
+  factory FileModel.fromJson(Map<String, dynamic>? data) {
     return FileModel(
-      id: data['id'] ?? 0,
-      name: data['name'] ?? '',
-      url: data['url'] ?? '',
-      formats: FileModelFormats.fromJson(data['formats']),
+      id: data?['id'] ?? 0,
+      name: data?['name'] ?? '',
+      url: data?['url'] ?? '',
+      formats: FileModelFormats.fromJson(data?['formats']),
     );
   }
 
@@ -52,6 +62,7 @@ class FileModel {
       'id': id,
       'name': name,
       'url': url,
+      'formats': formats!.toJson(),
     };
   }
 }

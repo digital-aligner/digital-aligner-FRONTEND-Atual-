@@ -5,6 +5,9 @@ import 'package:digital_aligner_app/appbar/MyDrawer.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/screens/login_screen.dart';
+import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/paciente_v1_model.dart';
+import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/pedido_v1_model.dart';
+import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/usuario_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/uploader/file_uploader.dart';
 
 import 'package:flutter/material.dart';
@@ -28,6 +31,27 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   final _dataNascContr = TextEditingController();
   final _tratarContr = TextEditingController();
 
+  PedidoV1Model _mapFieldsToPedidoV1() {
+    try {
+      PedidoV1Model p = PedidoV1Model(
+        paciente: PacienteV1Model(
+          nomePaciente: _nomePacContr.text,
+          dataNascimento: _dataNascContr.text,
+        ),
+        tratar: _tratarContr.text,
+        usuario: UsuarioV1Model(id: _authStore!.id),
+      );
+
+      return p;
+    } catch (e) {
+      print('mapFieldsToPedidoV1 ->' + e.toString());
+      return PedidoV1Model();
+    }
+  }
+
+  //manage ui states
+  bool isSending = false;
+
   @override
   void dispose() {
     _nomePacContr.dispose();
@@ -48,6 +72,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         initialValue: _nomePacContr.text,
         onSaved: (value) {
           _nomePacContr.text = value ?? '';
+        },
+        onChanged: (value) {
+          _nomePacContr.text = value;
         },
         decoration: const InputDecoration(
           border: const OutlineInputBorder(),
@@ -174,11 +201,54 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       children: <Widget>[
         FileUploader(
           filesQt: 16,
-          acceptedFileExt: ['jpg', 'jpeg', 'jpe', 'gif', 'png'],
+          acceptedFileExt: ['jpg', 'jpeg', 'png'],
           sendButtonText: 'CARREGAR FOTOGRAFIAS',
-          firstPedidoSaveToProvider: false,
+          firstPedidoSaveToProvider: true,
         ),
       ],
+    );
+  }
+
+  ScaffoldFeatureController _msgPacienteCriado() {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 2),
+        content: Text(
+          'Paciente criado com sucesso',
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+
+  Widget _sendButton() {
+    return ElevatedButton(
+      onPressed: isSending
+          ? null
+          : () async {
+              setState(() {
+                isSending = true;
+              });
+
+              PedidoV1Model p = _mapFieldsToPedidoV1();
+              bool result = await _pedidoStore!.enviarPrimeiroPedido(
+                p,
+                _authStore!.token,
+              );
+              if (result) {
+                _msgPacienteCriado();
+              }
+              setState(() {
+                isSending = false;
+              });
+            },
+      child: Text(
+        isSending ? 'aguarde...' : 'Enviar',
+        style: const TextStyle(
+          color: Colors.white,
+        ),
+      ),
     );
   }
 
@@ -212,6 +282,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                 _header(),
                 _form(),
                 _carregarArquivos(),
+                _sendButton(),
               ],
             ),
           ),
