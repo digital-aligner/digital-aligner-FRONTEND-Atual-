@@ -52,6 +52,7 @@ class _FileUploaderState extends State<FileUploader> {
       allowMultiple: true,
       withReadStream: true,
     );
+
     if (result != null) {
       if (result.files.length + _serverFiles.length <=
           int.parse(widget.filesQt.toString())) {
@@ -97,13 +98,13 @@ class _FileUploaderState extends State<FileUploader> {
     });
   }
 
-  ScaffoldFeatureController _scaffoldMessage() {
+  ScaffoldFeatureController _scaffoldMessage(String e) {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         duration: const Duration(seconds: 2),
         content: Text(
-          'Nenhum arquivo escolhido',
+          e,
           textAlign: TextAlign.center,
         ),
       ),
@@ -167,7 +168,25 @@ class _FileUploaderState extends State<FileUploader> {
   }
 
   Widget _fileUiImg(int pos) {
-    if (_serverFiles[pos].id == -1) {
+    if (widget.acceptedFileExt?[0] == 'stl') {
+      return Stack(
+        children: [
+          const Image(
+            fit: BoxFit.cover,
+            width: 100,
+            image: const AssetImage('logos/cubo.jpg'),
+          ),
+          Center(
+            child: Center(
+              child: CircularProgressIndicator(
+                value: progress == 1 ? progress = 0 : progress,
+                valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+              ),
+            ),
+          ),
+        ],
+      );
+    } else if (_serverFiles[pos].id == -1) {
       return const Image(
         fit: BoxFit.cover,
         width: 100,
@@ -249,8 +268,8 @@ class _FileUploaderState extends State<FileUploader> {
       onPressed: isUploading || isDeleting
           ? null
           : () async {
-              await _openFileExplorer().catchError((_) {
-                _scaffoldMessage();
+              await _openFileExplorer().catchError((e) {
+                _scaffoldMessage(e);
               });
 
               setState(() {

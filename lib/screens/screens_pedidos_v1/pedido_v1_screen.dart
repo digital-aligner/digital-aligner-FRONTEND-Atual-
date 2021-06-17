@@ -205,6 +205,12 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           sendButtonText: 'CARREGAR FOTOGRAFIAS',
           firstPedidoSaveToProvider: true,
         ),
+        FileUploader(
+          filesQt: 1,
+          acceptedFileExt: ['stl'],
+          sendButtonText: 'CARREGAR MODELO SUPERIOR',
+          firstPedidoSaveToProvider: true,
+        ),
       ],
     );
   }
