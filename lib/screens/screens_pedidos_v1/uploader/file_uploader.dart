@@ -11,6 +11,8 @@ import 'package:provider/provider.dart';
 
 import '../../../rotas_url.dart';
 
+//------------------------ file model -----------------------
+
 class FileModel {
   int id;
   String imageUrl;
@@ -29,14 +31,19 @@ class FileModel {
   });
 }
 
+// ----------------------------------------------------------
+
 class FileUploader extends StatefulWidget {
   final int? filesQt;
   final List<String>? acceptedFileExt;
   final String? sendButtonText;
+  final bool? firstPedidoSaveToProvider;
+
   FileUploader({
     @required this.filesQt,
     @required this.acceptedFileExt,
     @required this.sendButtonText,
+    @required this.firstPedidoSaveToProvider,
   });
 
   @override
@@ -53,6 +60,8 @@ class _FileUploaderState extends State<FileUploader> {
   //manage ui states
   bool isDeleting = false;
   bool isUploading = false;
+
+  void _firstPedidoSaveToProvider() {}
 
   Future<void> _openFileExplorer() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(

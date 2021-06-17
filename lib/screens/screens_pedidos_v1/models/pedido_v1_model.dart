@@ -12,24 +12,18 @@ class PedidoV1Model {
   });
 
   factory PedidoV1Model.fromJson(Map<String, dynamic> data) {
+    List<FileModel> f = [];
     //fotografias list to objects list
     if (data['fotografias'] != null) {
-      List<dynamic> f = [];
       data['fotografias'].forEach((fotografia) {
-        f.add(
-          FileModel(
-            id: fotografia['id'] ?? 0,
-            name: fotografia['name'] ?? '',
-            url: fotografia['url'] ?? '',
-          ),
-        );
+        f.add(FileModel.fromJson(fotografia));
       });
     }
 
     return PedidoV1Model(
       id: data['id'] ?? 0,
       tratar: data['tratar'] ?? '',
-      fotografias: data['fotografias'] ?? [],
+      fotografias: f,
     );
   }
 

@@ -3,6 +3,7 @@ import 'package:digital_aligner_app/appbar/MyAppBar.dart';
 import 'package:digital_aligner_app/appbar/MyDrawer.dart';
 
 import 'package:digital_aligner_app/providers/auth_provider.dart';
+import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/screens/login_screen.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/uploader/file_uploader.dart';
 
@@ -19,6 +20,7 @@ class PedidoV1Screen extends StatefulWidget {
 
 class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  PedidoProvider? _pedidoStore;
   AuthProvider? _authStore;
   Size? _screenSize;
 
@@ -174,6 +176,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           filesQt: 16,
           acceptedFileExt: ['jpg', 'jpeg', 'jpe', 'gif', 'png'],
           sendButtonText: 'CARREGAR FOTOGRAFIAS',
+          firstPedidoSaveToProvider: false,
         ),
       ],
     );
@@ -182,6 +185,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   @override
   void didChangeDependencies() {
     _authStore = Provider.of<AuthProvider>(context);
+    _pedidoStore = Provider.of<PedidoProvider>(context);
     _screenSize = MediaQuery.of(context).size;
     super.didChangeDependencies();
   }
