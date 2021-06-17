@@ -217,16 +217,10 @@ class _EditarCadastroState extends State<EditarCadastro> {
         child: Container(
           width: sWidth,
           height: sHeight,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-                colors: [Colors.white, Color(0xFFdbdbdb)],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter),
-          ),
-          child: Scrollbar(
-              isAlwaysShown: true,
+          child: RawScrollbar(
+              thumbColor: Colors.grey,
               thickness: 15,
-              showTrackOnHover: true,
+              isAlwaysShown: true,
               child: SingleChildScrollView(
                 child: Row(
                   children: [

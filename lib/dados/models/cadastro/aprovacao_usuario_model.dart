@@ -6,8 +6,8 @@ class AprovacaoUsuarioModel {
 
   factory AprovacaoUsuarioModel.fromJson(Map<String, dynamic> data) {
     return AprovacaoUsuarioModel(
-      id: data['id'],
-      status: data['status'],
+      id: data['id'] ?? 0,
+      status: data['status'] ?? '',
     );
   }
 

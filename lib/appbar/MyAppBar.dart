@@ -80,12 +80,14 @@ class _MyAppBarState extends State<MyAppBar> {
     return AppBar(
       centerTitle: sWidth > 1200 ? false : true,
       flexibleSpace: Container(
+        color: Color(0xff2240b5),
+        /*
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xffadd8e6), Theme.of(context).primaryColor],
+            colors: [Color(0xff2240b5), Theme.of(context).primaryColor],
             stops: [0.5, 1.0],
           ),
-        ),
+        ),*/
       ),
       elevation: 0,
       title: Image.asset(
@@ -162,7 +164,7 @@ class _MyAppBarState extends State<MyAppBar> {
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.pressed))
               return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return Color(0xffadd8e6); // Use the component's default.
+            return Color(0xff2240b5); // Use the component's default.
           },
         ),
       ),
@@ -391,7 +393,7 @@ class _MyAppBarState extends State<MyAppBar> {
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.pressed))
               return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return Color(0xffadd8e6); // Use the component's default.
+            return Color(0xff2240b5); // Use the component's default.
           },
         ),
       ),
@@ -436,7 +438,7 @@ class _MyAppBarState extends State<MyAppBar> {
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.pressed))
               return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return Color(0xffadd8e6); // Use the component's default.
+            return Color(0xff2240b5); // Use the component's default.
           },
         ),
       ),
@@ -469,7 +471,7 @@ class _MyAppBarState extends State<MyAppBar> {
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.pressed))
               return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return Color(0xffadd8e6); // Use the component's default.
+            return Color(0xff2240b5); // Use the component's default.
           },
         ),
       ),
@@ -524,7 +526,7 @@ class _MyAppBarState extends State<MyAppBar> {
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.pressed))
               return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return Color(0xffadd8e6); // Use the component's default.
+            return Color(0xff2240b5); // Use the component's default.
           },
         ),
       ),
@@ -551,7 +553,7 @@ class _MyAppBarState extends State<MyAppBar> {
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.pressed))
               return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return Color(0xffadd8e6); // Use the component's default.
+            return Color(0xff2240b5); // Use the component's default.
           },
         ),
       ),
@@ -578,7 +580,7 @@ class _MyAppBarState extends State<MyAppBar> {
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.pressed))
               return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return Color(0xffadd8e6); // Use the component's default.
+            return Color(0xff2240b5); // Use the component's default.
           },
         ),
       ),
@@ -605,7 +607,7 @@ class _MyAppBarState extends State<MyAppBar> {
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.pressed))
               return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return Color(0xffadd8e6); // Use the component's default.
+            return Color(0xff2240b5); // Use the component's default.
           },
         ),
       ),

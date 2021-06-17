@@ -36,11 +36,11 @@ class RepresentanteModel {
     }
 
     return RepresentanteModel(
-      id: data['id'],
-      usernameCpf: data['username'],
-      email: data['email'],
-      nome: data['nome'],
-      sobrenome: data['sobrenome'],
+      id: data['id'] ?? 0,
+      usernameCpf: data['username'] ?? '',
+      email: data['email'] ?? '',
+      nome: data['nome'] ?? '',
+      sobrenome: data['sobrenome'] ?? '',
     );
   }
   //Just returning id for db update

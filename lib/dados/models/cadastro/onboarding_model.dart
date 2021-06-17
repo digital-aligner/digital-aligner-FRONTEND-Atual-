@@ -12,8 +12,8 @@ class OnboardingModel {
       };
     }
     return OnboardingModel(
-      id: data['id'],
-      onboarding: data['onboarding'],
+      id: data['id'] ?? 0,
+      onboarding: data['onboarding'] ?? '',
     );
   }
   //Just returning id for db update

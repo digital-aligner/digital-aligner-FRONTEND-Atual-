@@ -106,6 +106,19 @@ class _FileUploaderState extends State<FileUploader> {
     });
   }
 
+  ScaffoldFeatureController _scaffoldMessage() {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 2),
+        content: Text(
+          'Nenhum arquivo escolhido',
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+
   Future<void> _sendFile(PlatformFile currentFile) async {
     //create file model and insert in list
     setState(() {
@@ -168,18 +181,25 @@ class _FileUploaderState extends State<FileUploader> {
   }
 
   Widget _fileUiImg(int pos) {
-    return _serverFiles[pos].hasError
-        ? const Image(
-            fit: BoxFit.cover,
-            width: 100,
-            image: const AssetImage('logos/error.jpg'),
-          )
-        : Image.network(
-            _serverFiles[pos].thumbnail,
-            width: 100,
-            height: 100,
-            fit: BoxFit.cover,
-          );
+    if (_serverFiles[pos].hasError) {
+      return const Image(
+        fit: BoxFit.cover,
+        width: 100,
+        image: const AssetImage('logos/error.jpg'),
+      );
+    } else if (_serverFiles[pos].progress == 1) {
+      return Image.network(
+        _serverFiles[pos].thumbnail,
+        width: 100,
+        height: 100,
+        fit: BoxFit.cover,
+      );
+    } else {
+      return SizedBox(
+        child: Text('Carregando...'),
+        width: 100,
+      );
+    }
   }
 
   Widget _fileUi(int pos) {
@@ -234,7 +254,10 @@ class _FileUploaderState extends State<FileUploader> {
       onPressed: isUploading || isDeleting
           ? null
           : () async {
-              await _openFileExplorer();
+              await _openFileExplorer().catchError((_) {
+                _scaffoldMessage();
+              });
+
               setState(() {
                 isUploading = true;
               });

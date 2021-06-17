@@ -22,14 +22,6 @@ class _PerfilState extends State<Perfil> {
   late CadastroProvider cadastroStore;
   late AuthProvider authStore;
 
-/*
-  @override
-  void deactivate() {
-    cadastroStore.clearCadastros();
-    cadastroStore.clearSelectedCad();
-    super.deactivate();
-  }*/
-
   Widget _userDataUi(List<dynamic> data, double sWidth, double sHeight) {
     return ResponsiveGridRow(
       children: [
@@ -296,10 +288,10 @@ class _PerfilState extends State<Perfil> {
       appBar: MyAppBar(),
       // *BUG* Verify closing drawer automaticlly when under 1200
       drawer: sWidth < 1200 ? MyDrawer() : null,
-      body: Scrollbar(
+      body: RawScrollbar(
+        thumbColor: Colors.grey,
         thickness: 15,
         isAlwaysShown: true,
-        showTrackOnHover: true,
         child: SingleChildScrollView(
           child: Container(
             height: 1000,
@@ -321,7 +313,11 @@ class _PerfilState extends State<Perfil> {
                   FutureBuilder(
                     future: cadastroStore.fetchMyCadastro(),
                     builder: (context, snapshot) {
-                      List<dynamic> data = snapshot.data as List<dynamic>;
+                      List<dynamic> data = [];
+                      if (snapshot.data != null) {
+                        data = snapshot.data as List<dynamic>;
+                      }
+
                       if (snapshot.connectionState == ConnectionState.done) {
                         if (snapshot.data == null) {
                           return Container(
@@ -365,7 +361,7 @@ class _PerfilState extends State<Perfil> {
                   children: [
                     TextButton(
                       child: const Text(
-                        "Editar Cadastro",
+                        'Editar Cadastro',
                         style: TextStyle(
                           color: Colors.lightBlue,
                         ),
@@ -376,12 +372,14 @@ class _PerfilState extends State<Perfil> {
                           EditarCadastro.routeName,
                         )
                             .then((value) {
-                          if (value as bool) {
-                            Future.delayed(Duration(microseconds: 600)).then(
-                              (value) => setState(() {
-                                firstFetch = true;
-                              }),
-                            );
+                          if (value != null) {
+                            if (value as bool) {
+                              Future.delayed(Duration(microseconds: 600)).then(
+                                (value) => setState(() {
+                                  firstFetch = true;
+                                }),
+                              );
+                            }
                           }
                         });
                       },

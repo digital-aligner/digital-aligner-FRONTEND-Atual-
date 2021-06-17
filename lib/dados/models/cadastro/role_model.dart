@@ -6,8 +6,8 @@ class RoleModel {
 
   factory RoleModel.fromJson(Map<String, dynamic> data) {
     return RoleModel(
-      id: data['id'],
-      name: data['name'],
+      id: data['id'] ?? 0,
+      name: data['name'] ?? '',
     );
   }
 

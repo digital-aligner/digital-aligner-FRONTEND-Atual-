@@ -126,12 +126,14 @@ class CadastroProvider with ChangeNotifier {
         Uri.parse(RotasUrl.rotaUserMe),
         headers: requestHeaders,
       );
+
       _cadastros = json.decode(response.body);
 
       setMyCad(_cadastros);
+
       return _cadastros;
     } catch (error) {
-      print('Ops, error occurred! Status code: ' + error.toString());
+      print('xx1' + error.toString());
     }
     return _cadastros;
   }

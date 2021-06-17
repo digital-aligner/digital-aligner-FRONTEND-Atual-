@@ -195,10 +195,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       appBar: MyAppBar(),
       // *BUG* Verify closing drawer automaticlly when under 1200
       drawer: _screenSize!.width < 1200 ? MyDrawer() : null,
-      body: Scrollbar(
+      body: RawScrollbar(
+        thumbColor: Colors.grey,
         thickness: 15,
         isAlwaysShown: true,
-        showTrackOnHover: true,
         child: SingleChildScrollView(
           child: Container(
             height: 1000,
