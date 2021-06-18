@@ -32,10 +32,12 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   final _nomePacContr = TextEditingController();
   final _dataNascContr = TextEditingController();
   final _tratarContr = TextEditingController();
+
   final _linhaMediaSupContr = TextEditingController();
   final _linhaMediaInfContr = TextEditingController();
   final _overJetContr = TextEditingController();
   final _overbiteContr = TextEditingController();
+
   //ui
   double textSize = 18;
   bool mmLinhaMediaSupVis = false;
@@ -44,6 +46,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   bool mmOverbiteVis2 = false;
   bool mmOverbiteVis3 = false;
   bool mmOverbiteVis4 = false;
+
+  String mmLinhaMediaGPOvalue = '';
+
+  bool firstRun = true;
 
   PedidoV1Model _mapFieldsToPedidoV1() {
     try {
@@ -283,6 +289,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   groupValue: _linhaMediaSupContr.text,
                   onChanged: (String? value) {
                     setState(() {
+                      mmLinhaMediaGPOvalue = '';
                       mmLinhaMediaSupVis = false;
                       _linhaMediaSupContr.text = value ?? '';
                     });
@@ -298,6 +305,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   groupValue: _linhaMediaSupContr.text,
                   onChanged: (String? value) {
                     setState(() {
+                      mmLinhaMediaGPOvalue = '';
                       mmLinhaMediaSupVis = false;
                       _linhaMediaSupContr.text = value ?? '';
                     });
@@ -313,6 +321,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   groupValue: _linhaMediaSupContr.text,
                   onChanged: (String? value) {
                     setState(() {
+                      mmLinhaMediaGPOvalue = '';
                       mmLinhaMediaSupVis = false;
                       _linhaMediaSupContr.text = value ?? '';
                     });
@@ -325,10 +334,11 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   activeColor: Colors.blue,
                   title: const Text('Qnt? (mm)'),
                   value: '0',
-                  groupValue: _linhaMediaSupContr.text,
+                  groupValue: mmLinhaMediaGPOvalue,
                   onChanged: (String? value) {
                     setState(() {
-                      _linhaMediaSupContr.text = '0';
+                      _linhaMediaSupContr.text = '';
+                      mmLinhaMediaGPOvalue = value ?? '';
                       mmLinhaMediaSupVis = true;
                     });
                   },
@@ -349,10 +359,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      //_nomePacContr.text = value ?? '';
-                    },
-                    onChanged: (value) {
-                      //_nomePacContr.text = value;
+                      _linhaMediaSupContr.text = value ?? '';
                     },
                     controller: _linhaMediaSupContr,
                     keyboardType: TextInputType.number,
@@ -1506,6 +1513,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     _authStore = Provider.of<AuthProvider>(context);
     _pedidoStore = Provider.of<PedidoProvider>(context);
     _screenSize = MediaQuery.of(context).size;
+    if (firstRun) {
+      _pedidoStore!.clearDataOnRouteChange();
+      firstRun = false;
+    }
     super.didChangeDependencies();
   }
 
@@ -1524,7 +1535,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         isAlwaysShown: true,
         child: SingleChildScrollView(
           child: Container(
-            height: 2500,
+            height: 3000,
             padding: const EdgeInsets.symmetric(horizontal: 100),
             child: Column(
               children: <Widget>[

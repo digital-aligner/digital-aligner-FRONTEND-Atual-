@@ -11,6 +11,11 @@ class PedidoProvider with ChangeNotifier {
   //for first pedido send
   List<FileModel> _serverFiles = [];
 
+  void clearDataOnRouteChange() {
+    _pedidosV1List = [];
+    _serverFiles = [];
+  }
+
   void saveFilesForFirstPedido(List<FileModel> f) {
     _serverFiles = f;
   }
@@ -35,7 +40,11 @@ class PedidoProvider with ChangeNotifier {
       );
       try {
         var data = json.decode(_response.body);
-        if (data.containsKey('id')) return true;
+        if (data.containsKey('id')) {
+          _pedidosV1List = [];
+          _pedidosV1List = [];
+          return true;
+        }
       } catch (e) {
         print(e);
         return false;
