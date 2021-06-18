@@ -49,6 +49,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.3
   group_button: ^2.2.2
+  checkbox_grouped: ^1.4.0
   #just_audio: ^0.7.5
 
 #TEMPORARY SOLUTION. When migrating to null safety remove.
