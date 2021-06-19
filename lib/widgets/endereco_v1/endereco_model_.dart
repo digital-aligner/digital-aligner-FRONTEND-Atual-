@@ -9,6 +9,7 @@ class EnderecoModel {
   String numero;
   String cep;
   int usuario;
+
   EnderecoModel({
     this.id = 0,
     this.bairro = '',
@@ -21,6 +22,14 @@ class EnderecoModel {
     this.cep = '',
     this.usuario = 0,
   });
+
+  factory EnderecoModel.fromJson(Map<String, dynamic> data) {
+    //just using this for relations to other entities
+    return EnderecoModel(
+      id: data['id'] ?? 0,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

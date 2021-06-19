@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:digital_aligner_app/appbar/MyAppBar.dart';
 import 'package:digital_aligner_app/appbar/MyDrawer.dart';
-import 'package:checkbox_grouped/checkbox_grouped.dart';
+
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/screens/login_screen.dart';
@@ -9,12 +11,16 @@ import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/paciente_v
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/pedido_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/usuario_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/uploader/file_uploader.dart';
+import 'package:digital_aligner_app/widgets/endereco_v1/endereco_model_.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:group_button/group_button.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+import '../../rotas_url.dart';
 
 class PedidoV1Screen extends StatefulWidget {
   static const routeName = '/pedido-v1';
@@ -28,57 +34,32 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   PedidoProvider? _pedidoStore;
   AuthProvider? _authStore;
   Size? _screenSize;
-
+  //dados paciente
   final _nomePacContr = TextEditingController();
   final _dataNascContr = TextEditingController();
+  //queixa e obj
+  final _queixaPaciente = TextEditingController();
   final _tratarContr = TextEditingController();
-
+  //linha media
   final _linhaMediaSupContr = TextEditingController();
   final _linhaMediaInfContr = TextEditingController();
+  //overjet
   final _overJetContr = TextEditingController();
+  //overbite
   final _overbiteContr = TextEditingController();
-  //falta connectar
-  final _resApinhSupContr = TextEditingController();
-  final _resApinhInfContr = TextEditingController();
-  final _extrVirtualDentesContr = TextEditingController();
-  final _naoMovimentarDentesContr = TextEditingController();
-  final _naoColocarAttachDentesContr = TextEditingController();
-
-  //ok
-  String _opcAceitoDesgInter = '';
-  String _opcAceitoDesgInterGPO = '';
-
-  //ui
-  double textSize = 18;
-  bool mmLinhaMediaSupVis = false;
-  bool mmLinhaMediaInfVis = false;
-  bool mmOverbiteVis1 = false;
-  bool mmOverbiteVis2 = false;
-  bool mmOverbiteVis3 = false;
-  bool mmOverbiteVis4 = false;
-
-  //for managing mm formfield
-  String mmLinhaMediaSupGPOvalue = '';
-  String mmLinhaMediaInfGPOvalue = '';
-  String overbiteGPOvalue = '';
-
-  //multiple form select values helper
-  String resApinSup = '';
-  String resApinInf = '';
-
-  GroupController resApinSupController = GroupController(
-    initSelectedItem: [],
-    isMultipleSelection: true,
-  );
-
-  final List<String> resApin = const [
+  //res apinh
+  final List<String> resApinUiList = const [
     'DIP (Desgaste Interproximal)',
     'Distalização sequencial',
     'Expansão (posterior)',
     'Inclinação anteriores',
   ];
-
-  final List<String> dentesSupList = const [
+  final List<int> resApinSupUiSelectedPos = [];
+  final List<int> resApinInfUiSelectedPos = [];
+  final _resApinSupContr = TextEditingController();
+  final _resApinInfContr = TextEditingController();
+  //dentes geral
+  final List<String> dentesUiList = const [
     '18',
     '17',
     '16',
@@ -95,8 +76,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     '26',
     '27',
     '28',
-  ];
-  final List<String> dentesInfList = const [
     '48',
     '47',
     '46',
@@ -114,29 +93,41 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     '37',
     '38',
   ];
+  //dentes -> extração virtual
+  final List<int> extracaoVirtualUiSelectedPos = [];
+  final _extracaoVirtualContr = TextEditingController();
+  //dentes -> não movimentar seguintes elementos
+  final List<int> naoMovimentarUiSelectedPos = [];
+  final _naoMovimentarContr = TextEditingController();
+  //dentes -> não colocar attachments
+  final List<int> naoColocarAttachUiSelectedPos = [];
+  final _naoColocarAttachContr = TextEditingController();
+  //opcionais
+  final _opcAceitoDip = TextEditingController();
+  final _opcRecorteElastico = TextEditingController();
+  final _opcRecorteBotao = TextEditingController();
+  final _opcBracoForca = TextEditingController();
+  //link para documentação
+  final _linkDocumentacao = TextEditingController();
+  //endereco selecionado
+  List<EnderecoModel> eModel = [];
+  EnderecoModel enderecoSelecionado = EnderecoModel();
+  //termos
+  String termos = '';
 
-  List<int> extrVirtualDentesSelected = [];
-  List<int> naoMovimentarDentesSelected = [];
-  List<int> naoColocarAttachDentesSelected = [];
+  //ui
+  double textSize = 18;
+  bool mmLinhaMediaSupVis = false;
+  bool mmLinhaMediaInfVis = false;
+  bool mmOverbiteVis1 = false;
+  bool mmOverbiteVis2 = false;
+  bool mmOverbiteVis3 = false;
+  bool mmOverbiteVis4 = false;
+  bool modeloEmGesso = false;
+
+  String mmLinhaMediaGPOvalue = '';
 
   bool firstRun = true;
-
-  String _mapSelectedIntsToString({
-    List<String> btnList = const [],
-    List<int> btnSelectedList = const [],
-  }) {
-    String btnString = '';
-
-    for (int i = 0; i < btnSelectedList.length; i++) {
-      if (i == btnSelectedList.length - 1) {
-        btnString += btnList[btnSelectedList[i]];
-      } else {
-        btnString += btnList[btnSelectedList[i]] + ', ';
-      }
-    }
-
-    return btnString;
-  }
 
   PedidoV1Model _mapFieldsToPedidoV1() {
     try {
@@ -156,6 +147,25 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     }
   }
 
+  String _mapIntListToString(
+    List<int> selectedIntList,
+    List<String> uiStringList,
+  ) {
+    String s = '';
+    for (int i = 0; i < selectedIntList.length; i++) {
+      if (i == selectedIntList.length - 1) {
+        s += uiStringList[selectedIntList[i]];
+      } else {
+        s += uiStringList[selectedIntList[i]] + ', ';
+      }
+    }
+    return s;
+  }
+
+  List<int> _mapStringToSelectedIntList(String s, List<String> uiStringList) {
+    return [];
+  }
+
   //manage ui states
   bool isSending = false;
 
@@ -163,16 +173,22 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   void dispose() {
     _nomePacContr.dispose();
     _dataNascContr.dispose();
+    _queixaPaciente.dispose();
     _tratarContr.dispose();
     _linhaMediaSupContr.dispose();
     _linhaMediaInfContr.dispose();
     _overJetContr.dispose();
     _overbiteContr.dispose();
-    _resApinhSupContr.dispose();
-    _resApinhInfContr.dispose();
-    _extrVirtualDentesContr.dispose();
-    _naoMovimentarDentesContr.dispose();
-    _naoColocarAttachDentesContr.dispose();
+    _resApinSupContr.dispose();
+    _resApinInfContr.dispose();
+    _extracaoVirtualContr.dispose();
+    _naoMovimentarContr.dispose();
+    _naoColocarAttachContr.dispose();
+    _opcAceitoDip.dispose();
+    _opcRecorteElastico.dispose();
+    _opcRecorteBotao.dispose();
+    _opcBracoForca.dispose();
+    _linkDocumentacao.dispose();
     super.dispose();
   }
 
@@ -385,7 +401,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   groupValue: _linhaMediaSupContr.text,
                   onChanged: (String? value) {
                     setState(() {
-                      mmLinhaMediaSupGPOvalue = '';
+                      mmLinhaMediaGPOvalue = '';
                       mmLinhaMediaSupVis = false;
                       _linhaMediaSupContr.text = value ?? '';
                     });
@@ -401,7 +417,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   groupValue: _linhaMediaSupContr.text,
                   onChanged: (String? value) {
                     setState(() {
-                      mmLinhaMediaSupGPOvalue = '';
+                      mmLinhaMediaGPOvalue = '';
                       mmLinhaMediaSupVis = false;
                       _linhaMediaSupContr.text = value ?? '';
                     });
@@ -417,7 +433,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   groupValue: _linhaMediaSupContr.text,
                   onChanged: (String? value) {
                     setState(() {
-                      mmLinhaMediaSupGPOvalue = '';
+                      mmLinhaMediaGPOvalue = '';
                       mmLinhaMediaSupVis = false;
                       _linhaMediaSupContr.text = value ?? '';
                     });
@@ -430,11 +446,11 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   activeColor: Colors.blue,
                   title: const Text('Qnt? (mm)'),
                   value: '0',
-                  groupValue: mmLinhaMediaSupGPOvalue,
+                  groupValue: mmLinhaMediaGPOvalue,
                   onChanged: (String? value) {
                     setState(() {
                       _linhaMediaSupContr.text = '';
-                      mmLinhaMediaSupGPOvalue = value ?? '';
+                      mmLinhaMediaGPOvalue = value ?? '';
                       mmLinhaMediaSupVis = true;
                     });
                   },
@@ -511,7 +527,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   groupValue: _linhaMediaInfContr.text,
                   onChanged: (String? value) {
                     setState(() {
-                      mmLinhaMediaInfGPOvalue = '';
                       mmLinhaMediaInfVis = false;
                       _linhaMediaInfContr.text = value ?? '';
                     });
@@ -527,7 +542,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   groupValue: _linhaMediaInfContr.text,
                   onChanged: (String? value) {
                     setState(() {
-                      mmLinhaMediaInfGPOvalue = '';
                       mmLinhaMediaInfVis = false;
                       _linhaMediaInfContr.text = value ?? '';
                     });
@@ -543,7 +557,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   groupValue: _linhaMediaInfContr.text,
                   onChanged: (String? value) {
                     setState(() {
-                      mmLinhaMediaInfGPOvalue = '';
                       mmLinhaMediaInfVis = false;
                       _linhaMediaInfContr.text = value ?? '';
                     });
@@ -556,11 +569,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   activeColor: Colors.blue,
                   title: const Text('Qnt? (mm)'),
                   value: '0',
-                  groupValue: mmLinhaMediaInfGPOvalue,
+                  groupValue: _linhaMediaInfContr.text,
                   onChanged: (String? value) {
                     setState(() {
-                      _linhaMediaInfContr.text = '';
-                      mmLinhaMediaInfGPOvalue = value ?? '';
+                      _linhaMediaInfContr.text = '0';
                       mmLinhaMediaInfVis = true;
                     });
                   },
@@ -581,7 +593,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      _linhaMediaInfContr.text = value ?? '';
+                      //_nomePacContr.text = value ?? '';
+                    },
+                    onChanged: (value) {
+                      //_nomePacContr.text = value;
                     },
                     controller: _linhaMediaInfContr,
                     keyboardType: TextInputType.number,
@@ -711,7 +726,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   groupValue: _overbiteContr.text,
                   onChanged: (String? value) {
                     setState(() {
-                      overbiteGPOvalue = '';
                       mmOverbiteVis1 = false;
                       mmOverbiteVis2 = false;
                       mmOverbiteVis3 = false;
@@ -727,11 +741,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   activeColor: Colors.blue,
                   title: const Text('Intruir anterior sup'),
                   value: '0',
-                  groupValue: overbiteGPOvalue,
+                  groupValue: _overbiteContr.text,
                   onChanged: (String? value) {
                     setState(() {
-                      overbiteGPOvalue = value ?? '';
-                      _overbiteContr.text = '';
+                      _overbiteContr.text = value ?? '';
                       mmOverbiteVis1 = true;
                       mmOverbiteVis2 = false;
                       mmOverbiteVis3 = false;
@@ -755,7 +768,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      _overbiteContr.text = value ?? '';
+                      //_nomePacContr.text = value ?? '';
+                    },
+                    onChanged: (value) {
+                      //_nomePacContr.text = value;
                     },
                     controller: _overbiteContr,
                     keyboardType: TextInputType.number,
@@ -777,11 +793,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   activeColor: Colors.blue,
                   title: const Text('Intruir anterior inf'),
                   value: '2',
-                  groupValue: overbiteGPOvalue,
+                  groupValue: _overbiteContr.text,
                   onChanged: (String? value) {
                     setState(() {
-                      overbiteGPOvalue = value ?? '';
-                      _overbiteContr.text = '';
+                      _overbiteContr.text = value ?? '';
                       mmOverbiteVis1 = false;
                       mmOverbiteVis2 = true;
                       mmOverbiteVis3 = false;
@@ -805,7 +820,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      _overbiteContr.text = value ?? '';
+                      //_nomePacContr.text = value ?? '';
+                    },
+                    onChanged: (value) {
+                      //_nomePacContr.text = value;
                     },
                     controller: _overbiteContr,
                     keyboardType: TextInputType.number,
@@ -827,11 +845,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   activeColor: Colors.blue,
                   title: const Text('Extruir posterior sup'),
                   value: '3',
-                  groupValue: overbiteGPOvalue,
+                  groupValue: _overbiteContr.text,
                   onChanged: (String? value) {
                     setState(() {
-                      overbiteGPOvalue = value ?? '';
-                      _overbiteContr.text = '';
+                      _overbiteContr.text = value ?? '';
                       mmOverbiteVis1 = false;
                       mmOverbiteVis2 = false;
                       mmOverbiteVis3 = true;
@@ -855,7 +872,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      _overbiteContr.text = value ?? '';
+                      //_nomePacContr.text = value ?? '';
+                    },
+                    onChanged: (value) {
+                      //_nomePacContr.text = value;
                     },
                     controller: _overbiteContr,
                     keyboardType: TextInputType.number,
@@ -877,11 +897,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   activeColor: Colors.blue,
                   title: const Text('Extruir posterior inf'),
                   value: '4',
-                  groupValue: overbiteGPOvalue,
+                  groupValue: _overbiteContr.text,
                   onChanged: (String? value) {
                     setState(() {
-                      overbiteGPOvalue = value ?? '';
-                      _overbiteContr.text = '';
+                      _overbiteContr.text = value ?? '';
                       mmOverbiteVis1 = false;
                       mmOverbiteVis2 = false;
                       mmOverbiteVis3 = false;
@@ -905,7 +924,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      _overbiteContr.text = value ?? '';
+                      //_nomePacContr.text = value ?? '';
+                    },
+                    onChanged: (value) {
+                      //_nomePacContr.text = value;
                     },
                     controller: _overbiteContr,
                     keyboardType: TextInputType.number,
@@ -961,28 +983,36 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               ),
             ),
           ),
-          SimpleGroupedCheckbox<String>(
-            onItemSelected: (dynamic selected) {
-              resApinSup = '';
-              for (var i = 0; i < selected.length; i++) {
-                if (i == selected.length - 1) {
-                  resApinSup += selected[i];
-                } else {
-                  resApinSup += selected[i] + ', ';
-                }
+          GroupButton(
+            selectedButtons: [],
+            selectedColor: Colors.blue,
+            isRadio: false,
+            spacing: 10,
+            onSelected: (index, isSelected) {
+              if (isSelected) {
+                resApinSupUiSelectedPos.add(index);
+                _resApinSupContr.text = _mapIntListToString(
+                  resApinSupUiSelectedPos,
+                  resApinUiList,
+                );
+              } else {
+                resApinSupUiSelectedPos.remove(index);
+                _resApinSupContr.text = _mapIntListToString(
+                  resApinSupUiSelectedPos,
+                  resApinUiList,
+                );
               }
             },
-            controller: resApinSupController,
-            itemsTitle: resApin,
-            values: resApin,
-            activeColor: Colors.blue,
-            checkFirstElement: false,
+            buttons: resApinUiList,
+          ),
+          Expanded(
+            child: Container(),
           ),
         ],
       ),
     );
   }
-  /*
+
   Widget _resApinhInf() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -1000,31 +1030,27 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               ),
             ),
           ),
-          Wrap(
-            alignment: WrapAlignment.spaceAround,
-            direction: Axis.horizontal,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              GroupButton(
-                selectedColor: Colors.blue,
-                isRadio: false,
-                selectedButtons: resApinhInfSelectedValues,
-                spacing: 10,
-                onSelected: (index, isSelected) {
-                  if (isSelected) {
-                    resApinhInfSelectedValues.add(index);
-                  } else {
-                    resApinhInfSelectedValues.remove(index);
-                  }
-                },
-                buttons: [
-                  'DIP (Desgaste Interproximal)',
-                  'Distalização sequencial',
-                  'Expansão (posterior)',
-                  'Inclinação anteriores',
-                ],
-              )
-            ],
+          GroupButton(
+            selectedButtons: [],
+            selectedColor: Colors.blue,
+            isRadio: false,
+            spacing: 10,
+            onSelected: (index, isSelected) {
+              if (isSelected) {
+                resApinInfUiSelectedPos.add(index);
+                _resApinInfContr.text = _mapIntListToString(
+                  resApinInfUiSelectedPos,
+                  resApinUiList,
+                );
+              } else {
+                resApinInfUiSelectedPos.remove(index);
+                _resApinInfContr.text = _mapIntListToString(
+                  resApinInfUiSelectedPos,
+                  resApinUiList,
+                );
+              }
+            },
+            buttons: resApinUiList,
           ),
           Expanded(
             child: Container(),
@@ -1032,7 +1058,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         ],
       ),
     );
-  }*/
+  }
 
   Widget _extraVirtDentesTexto() {
     return Padding(
@@ -1050,45 +1076,30 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   Widget _extraVirtDentes() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Wrap(
-        alignment: WrapAlignment.center,
-        direction: Axis.horizontal,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          GroupButton(
-            selectedButtons: extrVirtualDentesSelected,
-            buttonHeight: 35,
-            buttonWidth: 35,
-            selectedColor: Colors.blue,
-            isRadio: false,
-            spacing: 10,
-            onSelected: (index, isSelected) {
-              if (isSelected) {
-                extrVirtualDentesSelected.add(index);
-              } else {
-                extrVirtualDentesSelected.remove(index);
-              }
-            },
-            buttons: dentesSupList,
-          ),
-          const SizedBox(height: 100),
-          GroupButton(
-            selectedButtons: extrVirtualDentesSelected,
-            buttonHeight: 35,
-            buttonWidth: 35,
-            selectedColor: Colors.blue,
-            isRadio: false,
-            spacing: 10,
-            onSelected: (index, isSelected) {
-              if (isSelected) {
-                extrVirtualDentesSelected.add(index);
-              } else {
-                extrVirtualDentesSelected.remove(index);
-              }
-            },
-            buttons: dentesInfList,
-          )
-        ],
+      child: GroupButton(
+        buttonHeight: 35,
+        buttonWidth: 35,
+        selectedColor: Colors.blue,
+        isRadio: false,
+        spacing: 10,
+        onSelected: (index, isSelected) {
+          if (isSelected) {
+            extracaoVirtualUiSelectedPos.add(index);
+            _extracaoVirtualContr.text = _mapIntListToString(
+              extracaoVirtualUiSelectedPos,
+              dentesUiList,
+            );
+            print(_extracaoVirtualContr.text);
+          } else {
+            extracaoVirtualUiSelectedPos.remove(index);
+            _extracaoVirtualContr.text = _mapIntListToString(
+              extracaoVirtualUiSelectedPos,
+              dentesUiList,
+            );
+            print(_extracaoVirtualContr.text);
+          }
+        },
+        buttons: dentesUiList,
       ),
     );
   }
@@ -1109,45 +1120,30 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   Widget _naoMovElem() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Wrap(
-        alignment: WrapAlignment.center,
-        direction: Axis.horizontal,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          GroupButton(
-            selectedButtons: naoMovimentarDentesSelected,
-            buttonHeight: 35,
-            buttonWidth: 35,
-            selectedColor: Colors.blue,
-            isRadio: false,
-            spacing: 10,
-            onSelected: (index, isSelected) {
-              if (isSelected) {
-                naoMovimentarDentesSelected.add(index);
-              } else {
-                naoMovimentarDentesSelected.remove(index);
-              }
-            },
-            buttons: dentesSupList,
-          ),
-          const SizedBox(height: 100),
-          GroupButton(
-            selectedButtons: naoMovimentarDentesSelected,
-            buttonHeight: 35,
-            buttonWidth: 35,
-            selectedColor: Colors.blue,
-            isRadio: false,
-            spacing: 10,
-            onSelected: (index, isSelected) {
-              if (isSelected) {
-                naoMovimentarDentesSelected.add(index);
-              } else {
-                naoMovimentarDentesSelected.remove(index);
-              }
-            },
-            buttons: dentesInfList,
-          )
-        ],
+      child: GroupButton(
+        buttonHeight: 35,
+        buttonWidth: 35,
+        selectedColor: Colors.blue,
+        isRadio: false,
+        spacing: 10,
+        onSelected: (index, isSelected) {
+          if (isSelected) {
+            naoMovimentarUiSelectedPos.add(index);
+            _naoMovimentarContr.text = _mapIntListToString(
+              naoMovimentarUiSelectedPos,
+              dentesUiList,
+            );
+            print(_naoMovimentarContr.text);
+          } else {
+            naoMovimentarUiSelectedPos.remove(index);
+            _naoMovimentarContr.text = _mapIntListToString(
+              naoMovimentarUiSelectedPos,
+              dentesUiList,
+            );
+            print(_naoMovimentarContr.text);
+          }
+        },
+        buttons: dentesUiList,
       ),
     );
   }
@@ -1168,45 +1164,43 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   Widget _naoColocarAttach() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Wrap(
-        alignment: WrapAlignment.center,
-        direction: Axis.horizontal,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          GroupButton(
-            selectedButtons: naoColocarAttachDentesSelected,
-            buttonHeight: 35,
-            buttonWidth: 35,
-            selectedColor: Colors.blue,
-            isRadio: false,
-            spacing: 10,
-            onSelected: (index, isSelected) {
-              if (isSelected) {
-                naoColocarAttachDentesSelected.add(index);
-              } else {
-                naoColocarAttachDentesSelected.remove(index);
-              }
-            },
-            buttons: dentesSupList,
-          ),
-          const SizedBox(height: 100),
-          GroupButton(
-            selectedButtons: naoColocarAttachDentesSelected,
-            buttonHeight: 35,
-            buttonWidth: 35,
-            selectedColor: Colors.blue,
-            isRadio: false,
-            spacing: 10,
-            onSelected: (index, isSelected) {
-              if (isSelected) {
-                naoColocarAttachDentesSelected.add(index);
-              } else {
-                naoColocarAttachDentesSelected.remove(index);
-              }
-            },
-            buttons: dentesInfList,
-          )
-        ],
+      child: GroupButton(
+        buttonHeight: 35,
+        buttonWidth: 35,
+        selectedColor: Colors.blue,
+        isRadio: false,
+        spacing: 10,
+        onSelected: (index, isSelected) {
+          if (isSelected) {
+            naoColocarAttachUiSelectedPos.add(index);
+            _naoColocarAttachContr.text = _mapIntListToString(
+              naoColocarAttachUiSelectedPos,
+              dentesUiList,
+            );
+            print(_naoColocarAttachContr.text);
+          } else {
+            naoColocarAttachUiSelectedPos.remove(index);
+            _naoColocarAttachContr.text = _mapIntListToString(
+              naoColocarAttachUiSelectedPos,
+              dentesUiList,
+            );
+            print(_naoColocarAttachContr.text);
+          }
+        },
+        buttons: dentesUiList,
+      ),
+    );
+  }
+
+  Widget _opcionaisTexto() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      child: Text(
+        'Opcionais',
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: textSize,
+        ),
       ),
     );
   }
@@ -1215,38 +1209,37 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          RadioListTile<String>(
-            activeColor: Colors.blue,
-            title: const Text('Aceito desgates interproximais (DIP)'),
-            value: 'Aceito desgates interproximais (DIP)',
-            groupValue: _opcAceitoDesgInterGPO,
-            onChanged: (String? value) {
-              if (_opcAceitoDesgInter.isEmpty) {
-                setState(() {
-                  _opcAceitoDesgInter = value ?? '';
-                });
-              } else {}
-            },
-          ),
-        ],
-      ),
-    );
+          SizedBox(
+            width: 500,
+            child: GroupButton(
+              selectedColor: Colors.blue,
+              isRadio: false,
+              spacing: 10,
+              onSelected: (index, isSelected) {
+                if (isSelected) {
+                  _opcAceitoDip.text = 'Aceito desgastes interproximais (DIP)';
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Wrap(
-                runAlignment: WrapAlignment.center,
-                alignment: WrapAlignment.center,
-                direction: Axis.horizontal,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  GroupButton(
+                  print(_opcAceitoDip.text);
+                } else {
+                  _opcAceitoDip.text = '';
+                  print(_opcAceitoDip.text);
+                }
+              },
+              buttons: [
+                'Aceito desgastes interproximais (DIP)',
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: 500,
+            child: Wrap(
+              children: [
+                IgnorePointer(
+                  child: GroupButton(
+                    selectedButtons: [0],
                     selectedColor: Colors.blue,
                     isRadio: false,
                     spacing: 10,
@@ -1254,189 +1247,312 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                       print(isSelected);
                     },
                     buttons: [
-                      'Aceito desgastes interproximais (DIP)',
+                      'Recorte para elástico no alinhador (especificar dente)',
                     ],
                   ),
-                  const SizedBox(width: 20),
-                  SizedBox(
-                    child: Row(
-                      children: [
-                        GroupButton(
-                          selectedColor: Colors.blue,
-                          isRadio: false,
-                          spacing: 10,
-                          onSelected: (index, isSelected) {
-                            print(isSelected);
-                          },
-                          buttons: [
-                            'Recorte para elástico no alinhador (especificar dente)',
-                          ],
-                        ),
-                        Visibility(
-                          visible: true,
-                          child: SizedBox(
-                            height: 40,
-                            width: 80,
-                            child: TextFormField(
-                              maxLength: 5,
-                              enabled: true,
-                              validator: (String? value) {
-                                /*
-                            return value == null || value.isEmpty
-                                ? 'Campo vazio'
-                                : null;*/
-                              },
-                              //initialValue: _nomePacContr.text,
-                              onSaved: (value) {
-                                //_nomePacContr.text = value ?? '';
-                              },
-                              onChanged: (value) {
-                                //_nomePacContr.text = value;
-                              },
-                              controller: _overbiteContr,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(r'[,0-9]')),
-                              ],
-                              decoration: const InputDecoration(
-                                hintText: 'mm',
-                                border: const OutlineInputBorder(),
-                                counterText: '',
-                                labelText: 'mm',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                ),
+                SizedBox(
+                  height: 40,
+                  width: 120,
+                  child: TextFormField(
+                    maxLength: 11,
+                    enabled: true,
+                    validator: (String? value) {
+                      /*
+                  return value == null || value.isEmpty
+                      ? 'Campo vazio'
+                      : null;*/
+                    },
+                    //initialValue: _nomePacContr.text,
+                    onSaved: (value) {
+                      //_nomePacContr.text = value ?? '';
+                    },
+                    onChanged: (value) {
+                      //_nomePacContr.text = value;
+                    },
+                    controller: _opcRecorteElastico,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
+                    ],
+                    decoration: const InputDecoration(
+                      hintText: '18,17,16,15',
+                      border: const OutlineInputBorder(),
+                      counterText: '',
+                      labelText: 'Dentes',
                     ),
                   ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Wrap(
-                runAlignment: WrapAlignment.center,
-                alignment: WrapAlignment.center,
-                direction: Axis.horizontal,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  SizedBox(
-                    child: Row(
-                      children: [
-                        GroupButton(
-                          selectedColor: Colors.blue,
-                          isRadio: false,
-                          spacing: 10,
-                          onSelected: (index, isSelected) {
-                            print(isSelected);
-                          },
-                          buttons: [
-                            'Recorte no alinhador para botão (especificar dente)',
-                          ],
-                        ),
-                        Visibility(
-                          visible: true,
-                          child: SizedBox(
-                            height: 40,
-                            width: 80,
-                            child: TextFormField(
-                              maxLength: 5,
-                              enabled: true,
-                              validator: (String? value) {
-                                /*
-                            return value == null || value.isEmpty
-                                ? 'Campo vazio'
-                                : null;*/
-                              },
-                              //initialValue: _nomePacContr.text,
-                              onSaved: (value) {
-                                //_nomePacContr.text = value ?? '';
-                              },
-                              onChanged: (value) {
-                                //_nomePacContr.text = value;
-                              },
-                              controller: _overbiteContr,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(r'[,0-9]')),
-                              ],
-                              decoration: const InputDecoration(
-                                hintText: 'mm',
-                                border: const OutlineInputBorder(),
-                                counterText: '',
-                                labelText: 'mm',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+          SizedBox(
+            width: 500,
+            child: Wrap(
+              children: [
+                IgnorePointer(
+                  child: GroupButton(
+                    selectedButtons: [0],
+                    selectedColor: Colors.blue,
+                    isRadio: false,
+                    spacing: 10,
+                    onSelected: (index, isSelected) {},
+                    buttons: [
+                      'Recorte no alinhador para botão (especificar dente)',
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 40,
+                  width: 120,
+                  child: TextFormField(
+                    maxLength: 11,
+                    enabled: true,
+                    validator: (String? value) {
+                      /*
+              return value == null || value.isEmpty
+                  ? 'Campo vazio'
+                  : null;*/
+                    },
+                    //initialValue: _nomePacContr.text,
+                    onSaved: (value) {
+                      //_nomePacContr.text = value ?? '';
+                    },
+                    onChanged: (value) {
+                      //_nomePacContr.text = value;
+                    },
+                    controller: _opcRecorteBotao,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
+                    ],
+                    decoration: const InputDecoration(
+                      hintText: '18,17,16,15',
+                      border: const OutlineInputBorder(),
+                      counterText: '',
+                      labelText: 'Dentes',
                     ),
                   ),
-                  const SizedBox(width: 20),
-                  SizedBox(
-                    child: Row(
-                      children: [
-                        GroupButton(
-                          selectedColor: Colors.blue,
-                          isRadio: false,
-                          spacing: 10,
-                          onSelected: (index, isSelected) {
-                            print(isSelected);
-                          },
-                          buttons: [
-                            'Alívio no alinhador para braço de força (especificar dente)',
-                          ],
-                        ),
-                        Visibility(
-                          visible: true,
-                          child: SizedBox(
-                            height: 40,
-                            width: 80,
-                            child: TextFormField(
-                              maxLength: 5,
-                              enabled: true,
-                              validator: (String? value) {
-                                /*
-                            return value == null || value.isEmpty
-                                ? 'Campo vazio'
-                                : null;*/
-                              },
-                              //initialValue: _nomePacContr.text,
-                              onSaved: (value) {
-                                //_nomePacContr.text = value ?? '';
-                              },
-                              onChanged: (value) {
-                                //_nomePacContr.text = value;
-                              },
-                              controller: _overbiteContr,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(r'[,0-9]')),
-                              ],
-                              decoration: const InputDecoration(
-                                hintText: 'mm',
-                                border: const OutlineInputBorder(),
-                                counterText: '',
-                                labelText: 'mm',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: 500,
+            child: Wrap(
+              children: [
+                IgnorePointer(
+                  child: GroupButton(
+                    selectedButtons: [0],
+                    selectedColor: Colors.blue,
+                    isRadio: false,
+                    spacing: 10,
+                    onSelected: (index, isSelected) {},
+                    buttons: [
+                      'Alívio no alinhador para braço de força (especificar dente)',
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 40,
+                  width: 120,
+                  child: TextFormField(
+                    maxLength: 11,
+                    enabled: true,
+                    validator: (String? value) {
+                      /*
+                    return value == null || value.isEmpty
+                  ? 'Campo vazio'
+                  : null;*/
+                    },
+                    //initialValue: _nomePacContr.text,
+                    onSaved: (value) {
+                      //_nomePacContr.text = value ?? '';
+                    },
+                    onChanged: (value) {
+                      //_nomePacContr.text = value;
+                    },
+                    controller: _opcBracoForca,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
+                    ],
+                    decoration: const InputDecoration(
+                      hintText: '18,17,16,15',
+                      border: const OutlineInputBorder(),
+                      counterText: '',
+                      labelText: 'Dentes',
                     ),
                   ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _carregarModelosDigitaisTexto() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      child: Text(
+        'Modelos digitais',
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: textSize,
+        ),
+      ),
+    );
+  }
+
+  Widget _formatoDeModelos() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: GroupButton(
+        selectedColor: Colors.blue,
+        selectedButton: modeloEmGesso ? 1 : 0,
+        isRadio: true,
+        spacing: 10,
+        onSelected: (index, isSelected) {
+          if (isSelected && index == 1) {
+            setState(() {
+              modeloEmGesso = true;
+            });
+          } else {
+            setState(() {
+              modeloEmGesso = false;
+            });
+          }
+        },
+        buttons: [
+          'Digital (em arquivos .stl',
+          'Gesso (gesso em pedra tipo IV)'
+        ],
+      ),
+    );
+  }
+
+  Widget _modelosDigitais() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Column(
+        children: [
+          FileUploader(
+            filesQt: 1,
+            acceptedFileExt: ['stl'],
+            sendButtonText: 'CARREGAR MODELO SUPERIOR',
+            firstPedidoSaveToProvider: true,
+          ),
+          const SizedBox(height: 20),
+          FileUploader(
+            filesQt: 1,
+            acceptedFileExt: ['stl'],
+            sendButtonText: 'CARREGAR MODELO INFERIOR',
+            firstPedidoSaveToProvider: true,
+          ),
+          _linkDoc(),
+        ],
+      ),
+    );
+  }
+
+  Widget _carregarFotografiasTexto() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      child: Text(
+        'Fotografias',
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: textSize,
+        ),
+      ),
+    );
+  }
+
+  Widget _carregarFotografias() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: FileUploader(
+        filesQt: 16,
+        acceptedFileExt: ['jpg', 'jpeg', 'png'],
+        sendButtonText: 'CARREGAR FOTOGRAFIAS',
+        firstPedidoSaveToProvider: true,
+      ),
+    );
+  }
+
+  Widget _carregarRadiografiasTexto() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      child: Text(
+        'Radiografias',
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: textSize,
+        ),
+      ),
+    );
+  }
+
+  Widget _carregarRadiografias() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: FileUploader(
+        filesQt: 16,
+        acceptedFileExt: ['jpg', 'jpeg', 'png'],
+        sendButtonText: 'CARREGAR RADIOGRAFIAS',
+        firstPedidoSaveToProvider: true,
+      ),
+    );
+  }
+
+  Widget _modeloEmGessoTexto() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      child: Text(
+        '• AVISO PARA MODELOS EM GESSO: \n• Os modelos de gesso enviados devem ser feitos com Gesso pedra tipo IV, sempre superior e inferior.Deve ser enviado o registro de oclusão do paciente juntamente com os modelos em gesso. Devem estar bem embalados, para evitar a quebra.Se possível, a base do modelo deve vir recortada. Enviar com as informações referentes ao paciente (nome, data de nascimento e dentista responsável pelo caso). *Os casos que não seguirem essas recomendações não serão *O prazo para planejamento só será contado a partir do recebimento da documentação completa (fotos, radiografia e a prescrição do pedido devem ser enviados via plataforma Digital Aligner \n• Favor enviar os modelos em gesso para o escaneamento no endereço abaixo: UPDENTALL TECNOLOGIA EM ODONTOLOGIA LTDA. Rua das Pernambucanas, 407, sala 1305 Graças 52011 010 Recife, PE',
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 16,
+        ),
+      ),
+    );
+  }
+
+  Widget _manageModelType() {
+    if (modeloEmGesso) {
+      return _modeloEmGessoTexto();
+    } else {
+      return _modelosDigitais();
+    }
+  }
+
+  Widget _linkDoc() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: TextFormField(
+        maxLength: 255,
+        enabled: true,
+        validator: (String? value) {},
+        initialValue: _linkDocumentacao.text,
+        onSaved: (value) {
+          _linkDocumentacao.text = value ?? '';
+        },
+        decoration: const InputDecoration(
+          helperStyle: TextStyle(
+            fontSize: 16,
+          ),
+          helperText:
+              'Caso tenha problema em carregar os arquivos, compartilhe no We Transfer , One Drive, Google Drive, copie e cole o link aqui',
+          hintText:
+              'Caso tenha problema em carregar os arquivos, compartilhe no We Transfer , One Drive, Google Drive, copie e cole o link aqui',
+          border: const OutlineInputBorder(),
+          counterText: '',
+          labelText: 'Link *',
+        ),
       ),
     );
   }
@@ -1458,14 +1574,24 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           _overBite(),
           _textoResApin(),
           _resApinhSup(),
-          //_resApinhInf(),
+          _resApinhInf(),
           _extraVirtDentesTexto(),
           _extraVirtDentes(),
           _naoMovElemTexto(),
           _naoMovElem(),
           _naoColocarAttachTexto(),
           _naoColocarAttach(),
-          _opcionais()
+          _opcionaisTexto(),
+          _opcionais(),
+          _carregarFotografiasTexto(),
+          _carregarFotografias(),
+          _carregarRadiografiasTexto(),
+          _carregarRadiografias(),
+          _carregarModelosDigitaisTexto(),
+          _formatoDeModelos(),
+          _manageModelType(),
+          _enderecoSelection(),
+          _termos(),
         ],
       ),
     );
@@ -1483,22 +1609,133 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     );
   }
 
-  Widget _carregarArquivos() {
+  Future<List<EnderecoModel>> _fetchUserEndereco() async {
+    final response = await http.get(
+      Uri.parse(
+        RotasUrl.rotaEnderecosV1 + '?userId=' + _authStore!.id.toString(),
+      ),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${_authStore!.token}',
+      },
+    );
+    try {
+      List<dynamic> _enderecos = json.decode(response.body);
+      if (_enderecos[0].containsKey('endereco')) {
+        eModel = [];
+        _enderecos.forEach((e) {
+          eModel.add(
+            EnderecoModel(
+              id: e['id'],
+              bairro: e['bairro'],
+              cep: e['cep'],
+              cidade: e['cidade'],
+              complemento: e['complemento'],
+              endereco: e['endereco'],
+              numero: e['numero'],
+              pais: e['pais'],
+              uf: e['estado'],
+            ),
+          );
+        });
+        return eModel;
+      }
+    } catch (e) {
+      print(e);
+      return [];
+    }
+    return [];
+  }
+
+  Widget _enderecoSelection() {
     return Column(
-      children: <Widget>[
-        FileUploader(
-          filesQt: 16,
-          acceptedFileExt: ['jpg', 'jpeg', 'png'],
-          sendButtonText: 'CARREGAR FOTOGRAFIAS',
-          firstPedidoSaveToProvider: true,
+      children: [
+        DropdownSearch<EnderecoModel>(
+          dropdownBuilder: (buildContext, string, string2) {
+            if (eModel.length == 0) {
+              return Text('sem endereços');
+            }
+            return Text(eModel[0].endereco);
+          },
+          dropdownSearchDecoration: InputDecoration(
+            border: OutlineInputBorder(),
+            contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          ),
+          emptyBuilder: (buildContext, string) {
+            return Center(child: Text('Sem dados'));
+          },
+          loadingBuilder: (buildContext, string) {
+            return Center(child: Text('Carregando...'));
+          },
+          errorBuilder: (buildContext, string, dynamic) {
+            return Center(child: Text('Erro'));
+          },
+          onFind: (string) => _fetchUserEndereco(),
+          itemAsString: (EnderecoModel e) => e.endereco,
+          mode: Mode.MENU,
+          label: 'Selecione endereço: *',
+          onChanged: (EnderecoModel? selectedEnd) {
+            setState(() {
+              enderecoSelecionado = selectedEnd ?? EnderecoModel();
+            });
+          },
         ),
-        FileUploader(
-          filesQt: 1,
-          acceptedFileExt: ['stl'],
-          sendButtonText: 'CARREGAR MODELO SUPERIOR',
-          firstPedidoSaveToProvider: true,
+        const SizedBox(
+          height: 20,
         ),
+        eModel.length == 0
+            ? Text('')
+            : Text(
+                '*Endereço de entrega* \nEndereço: ${enderecoSelecionado.endereco}\nNúmero: ${enderecoSelecionado.numero}\nComplemento: ${enderecoSelecionado.complemento}\nBairro: ${enderecoSelecionado.bairro}\nCEP: ${enderecoSelecionado.cep}\nPaís: ${enderecoSelecionado.pais}\nUF: ${enderecoSelecionado.uf}\nCidade: ${enderecoSelecionado.cidade}',
+                style: TextStyle(
+                  fontSize: 18,
+                ),
+              ),
       ],
+    );
+  }
+
+//Taxa de Planejamento: Estou ciente que caso o planejamento não seja aprovado em até 60 dias, será cobrado o valor de R$ 350,00
+  Widget _termos() {
+    Future<dynamic> getAlert() {
+      return showDialog(
+        context: context,
+        builder: (context) {
+          return SizedBox(
+            child: AlertDialog(
+              title: Text('Termos'),
+              content: RawScrollbar(
+                  thumbColor: Colors.grey,
+                  thickness: 15,
+                  isAlwaysShown: true,
+                  child: SingleChildScrollView(child: Text(termos))),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('fechar'),
+                )
+              ],
+            ),
+          );
+        },
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: GroupButton(
+        selectedColor: Colors.blue,
+        isRadio: false,
+        spacing: 10,
+        onSelected: (index, isSelected) {
+          if (isSelected) {
+            getAlert();
+          }
+        },
+        buttons: [
+          'Li e estou de acordo com os termos',
+        ],
+      ),
     );
   }
 
@@ -1545,11 +1782,19 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     );
   }
 
+  Future<void> _getTermos() async {
+    String t = await rootBundle.loadString('assets/texts/termos.txt');
+    setState(() {
+      termos = t;
+    });
+  }
+
   @override
   void didChangeDependencies() {
     _authStore = Provider.of<AuthProvider>(context);
     _pedidoStore = Provider.of<PedidoProvider>(context);
     _screenSize = MediaQuery.of(context).size;
+    _getTermos();
     if (firstRun) {
       _pedidoStore!.clearDataOnRouteChange();
       firstRun = false;
@@ -1572,13 +1817,12 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         isAlwaysShown: true,
         child: SingleChildScrollView(
           child: Container(
-            height: 3000,
+            height: 8000,
             padding: const EdgeInsets.symmetric(horizontal: 100),
             child: Column(
               children: <Widget>[
                 _header(),
                 _form(),
-                _carregarArquivos(),
                 _sendButton(),
               ],
             ),
