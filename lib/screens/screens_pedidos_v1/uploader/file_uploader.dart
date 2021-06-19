@@ -17,12 +17,21 @@ class FileUploader extends StatefulWidget {
   final List<String>? acceptedFileExt;
   final String? sendButtonText;
   final bool firstPedidoSaveToProvider;
+  final String uploaderType;
+  final List<String> uploaderTypes = const [
+    'fotografias',
+    'radiografias',
+    'modelo superior',
+    'modelo inferior',
+    'modelo compactado',
+  ];
 
   FileUploader({
     @required this.filesQt,
     @required this.acceptedFileExt,
     @required this.sendButtonText,
     this.firstPedidoSaveToProvider = false,
+    this.uploaderType = '',
   });
 
   @override
@@ -41,8 +50,20 @@ class _FileUploaderState extends State<FileUploader> {
   bool isUploading = false;
   double progress = 0;
 
+  void _checkIfWidgetIsValid() {
+    int verify = 0;
+    widget.uploaderTypes.forEach((element) {
+      if (widget.uploaderType == element) verify++;
+    });
+    if (verify == 0) throw 'Erro em uploaderType. Escolha um tipo compatível.';
+  }
+
   void _firstPedidoSaveToProvider() {
-    _pedidoStore.saveFilesForFirstPedido(_serverFiles);
+    _checkIfWidgetIsValid();
+    _pedidoStore.saveFilesForFirstPedido(
+      fileList: _serverFiles,
+      uploaderType: widget.uploaderType,
+    );
   }
 
   Future<void> _openFileExplorer() async {

@@ -40,6 +40,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   //queixa e obj
   final _queixaPaciente = TextEditingController();
   final _tratarContr = TextEditingController();
+  final _objContr = TextEditingController();
   //linha media
   final _linhaMediaSupContr = TextEditingController();
   final _linhaMediaInfContr = TextEditingController();
@@ -189,6 +190,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     _opcRecorteBotao.dispose();
     _opcBracoForca.dispose();
     _linkDocumentacao.dispose();
+    _objContr.dispose();
     super.dispose();
   }
 
@@ -222,6 +224,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: DateTimeField(
         onSaved: (DateTime? value) {
+          _dataNascContr.text = value.toString();
+        },
+        onChanged: (value) {
           _dataNascContr.text = value.toString();
         },
         validator: (value) {
@@ -315,10 +320,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         },
         //initialValue: _nomePacContr.text,
         onSaved: (value) {
-          //_nomePacContr.text = value ?? '';
+          _queixaPaciente.text = value ?? '';
         },
         onChanged: (value) {
-          //_nomePacContr.text = value;
+          _queixaPaciente.text = value;
         },
         decoration: const InputDecoration(
           hintText: 'Por favor descreva a queixa principal do paciente',
@@ -355,10 +360,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         },
         //initialValue: _nomePacContr.text,
         onSaved: (value) {
-          //_nomePacContr.text = value ?? '';
+          _objContr.text = value ?? '';
         },
         onChanged: (value) {
-          //_nomePacContr.text = value;
+          _objContr.text = value;
         },
         decoration: const InputDecoration(
           hintText:
@@ -470,6 +475,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                           : null;*/
                     },
                     //initialValue: _nomePacContr.text,
+                    onChanged: (value) {
+                      _linhaMediaSupContr.text = value;
+                    },
                     onSaved: (value) {
                       _linhaMediaSupContr.text = value ?? '';
                     },
@@ -593,10 +601,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      //_nomePacContr.text = value ?? '';
+                      _linhaMediaInfContr.text = value ?? '';
                     },
                     onChanged: (value) {
-                      //_nomePacContr.text = value;
+                      _linhaMediaInfContr.text = value;
                     },
                     controller: _linhaMediaInfContr,
                     keyboardType: TextInputType.number,
@@ -768,10 +776,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      //_nomePacContr.text = value ?? '';
+                      _overbiteContr.text = value ?? '';
                     },
                     onChanged: (value) {
-                      //_nomePacContr.text = value;
+                      _overbiteContr.text = value;
                     },
                     controller: _overbiteContr,
                     keyboardType: TextInputType.number,
@@ -820,10 +828,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      //_nomePacContr.text = value ?? '';
+                      _overbiteContr.text = value ?? '';
                     },
                     onChanged: (value) {
-                      //_nomePacContr.text = value;
+                      _overbiteContr.text = value;
                     },
                     controller: _overbiteContr,
                     keyboardType: TextInputType.number,
@@ -872,10 +880,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      //_nomePacContr.text = value ?? '';
+                      _overbiteContr.text = value ?? '';
                     },
                     onChanged: (value) {
-                      //_nomePacContr.text = value;
+                      _overbiteContr.text = value;
                     },
                     controller: _overbiteContr,
                     keyboardType: TextInputType.number,
@@ -924,10 +932,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      //_nomePacContr.text = value ?? '';
+                      _overbiteContr.text = value ?? '';
                     },
                     onChanged: (value) {
-                      //_nomePacContr.text = value;
+                      _overbiteContr.text = value;
                     },
                     controller: _overbiteContr,
                     keyboardType: TextInputType.number,
@@ -1265,10 +1273,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      //_nomePacContr.text = value ?? '';
+                      _opcRecorteElastico.text = value ?? '';
                     },
                     onChanged: (value) {
-                      //_nomePacContr.text = value;
+                      _opcRecorteElastico.text = value;
                     },
                     controller: _opcRecorteElastico,
                     keyboardType: TextInputType.number,
@@ -1369,10 +1377,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      //_nomePacContr.text = value ?? '';
+                      _opcBracoForca.text = value ?? '';
                     },
                     onChanged: (value) {
-                      //_nomePacContr.text = value;
+                      _opcBracoForca.text = value;
                     },
                     controller: _opcBracoForca,
                     keyboardType: TextInputType.number,
@@ -1445,6 +1453,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             acceptedFileExt: ['stl'],
             sendButtonText: 'CARREGAR MODELO SUPERIOR',
             firstPedidoSaveToProvider: true,
+            uploaderType: 'modelo superior',
           ),
           const SizedBox(height: 20),
           FileUploader(
@@ -1452,8 +1461,26 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             acceptedFileExt: ['stl'],
             sendButtonText: 'CARREGAR MODELO INFERIOR',
             firstPedidoSaveToProvider: true,
+            uploaderType: 'modelo inferior',
           ),
           _linkDoc(),
+        ],
+      ),
+    );
+  }
+
+  Widget _modeloCompactado() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Column(
+        children: [
+          FileUploader(
+            filesQt: 1,
+            acceptedFileExt: ['zip'],
+            sendButtonText: 'CARREGAR COMPACTADO',
+            uploaderType: 'modelo compactado',
+            firstPedidoSaveToProvider: true,
+          ),
         ],
       ),
     );
@@ -1480,6 +1507,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         acceptedFileExt: ['jpg', 'jpeg', 'png'],
         sendButtonText: 'CARREGAR FOTOGRAFIAS',
         firstPedidoSaveToProvider: true,
+        uploaderType: 'fotografias',
       ),
     );
   }
@@ -1504,6 +1532,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         filesQt: 16,
         acceptedFileExt: ['jpg', 'jpeg', 'png'],
         sendButtonText: 'CARREGAR RADIOGRAFIAS',
+        uploaderType: 'radiografias',
         firstPedidoSaveToProvider: true,
       ),
     );
@@ -1538,6 +1567,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         enabled: true,
         validator: (String? value) {},
         initialValue: _linkDocumentacao.text,
+        onChanged: (value) {
+          _linkDocumentacao.text = value;
+        },
         onSaved: (value) {
           _linkDocumentacao.text = value ?? '';
         },
@@ -1552,6 +1584,32 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           border: const OutlineInputBorder(),
           counterText: '',
           labelText: 'Link *',
+        ),
+      ),
+    );
+  }
+
+  Widget _arquivosCompactadoTexto() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      child: Text(
+        'Arquivos compactado',
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: textSize,
+        ),
+      ),
+    );
+  }
+
+  Widget _selecioneEnderecoTexto() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      child: Text(
+        'Selecion endereço de entrega',
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: textSize,
         ),
       ),
     );
@@ -1590,6 +1648,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           _carregarModelosDigitaisTexto(),
           _formatoDeModelos(),
           _manageModelType(),
+          _arquivosCompactadoTexto(),
+          _modeloCompactado(),
+          _selecioneEnderecoTexto(),
           _enderecoSelection(),
           _termos(),
         ],
@@ -1817,7 +1878,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         isAlwaysShown: true,
         child: SingleChildScrollView(
           child: Container(
-            height: 8000,
+            height: _screenSize!.width < 768 ? 5800 : 4000,
             padding: const EdgeInsets.symmetric(horizontal: 100),
             child: Column(
               children: <Widget>[
