@@ -11,6 +11,20 @@ class PedidoV1Model {
   String objetivosTratamento;
   String linhaMediaSuperior;
   String linhaMediaInferior;
+  String overjet;
+  String overbite;
+  String dentesExtVirtual;
+  String dentesNaoMov;
+  String dentesSemAttach;
+  String opcAceitoDesg;
+  String opcRecorteElas;
+  String opcRecorteAlin;
+  String opcAlivioAlin;
+  String linkModelos;
+  String resApinSup;
+  String resApinInf;
+  bool modeloGesso;
+  bool pedidoRefinamento;
   List<FileModel> fotografias;
   List<FileModel> radiografias;
   List<FileModel> modeloSuperior;
@@ -28,6 +42,20 @@ class PedidoV1Model {
     this.objetivosTratamento = '',
     this.linhaMediaSuperior = '',
     this.linhaMediaInferior = '',
+    this.overjet = '',
+    this.overbite = '',
+    this.dentesExtVirtual = '',
+    this.dentesNaoMov = '',
+    this.dentesSemAttach = '',
+    this.opcAceitoDesg = '',
+    this.opcRecorteElas = '',
+    this.opcRecorteAlin = '',
+    this.opcAlivioAlin = '',
+    this.linkModelos = '',
+    this.resApinSup = '',
+    this.resApinInf = '',
+    this.modeloGesso = false,
+    this.pedidoRefinamento = false,
     this.fotografias = const <FileModel>[],
     this.radiografias = const <FileModel>[],
     this.modeloSuperior = const <FileModel>[],
@@ -81,6 +109,20 @@ class PedidoV1Model {
       objetivosTratamento: data['objetivos_tratamento'],
       linhaMediaSuperior: data['linha_media_superior'],
       linhaMediaInferior: data['linha_media_inferior'],
+      overjet: data['overjet'],
+      overbite: data['overbite'],
+      dentesExtVirtual: data['dentes_ext_virtual'],
+      dentesNaoMov: data['dentes_nao_mov'],
+      dentesSemAttach: data['dentes_sem_attach'],
+      opcAceitoDesg: data['opc_aceito_desg'],
+      opcRecorteElas: data['opc_recorte_elas'],
+      opcRecorteAlin: data['opc_recorte_alin'],
+      opcAlivioAlin: data['opc_alivio_alin'],
+      linkModelos: data['link_modelos'],
+      resApinSup: data['res_apin_sup'],
+      resApinInf: data['res_apin_inf'],
+      modeloGesso: data['modelo_gesso'],
+      pedidoRefinamento: data['pedido_refinamento'],
       fotografias: f,
       radiografias: r,
       modeloSuperior: ms,
@@ -123,6 +165,20 @@ class PedidoV1Model {
       'objetivos_tratamento': objetivosTratamento,
       'linha_media_superior': linhaMediaSuperior,
       'linha_media_inferior': linhaMediaInferior,
+      'overjet': overjet,
+      'overbite': overbite,
+      'dentes_ext_virtual': dentesExtVirtual,
+      'dentes_nao_mov': dentesNaoMov,
+      'dentes_sem_attach': dentesSemAttach,
+      'opc_aceito_desg': opcAceitoDesg,
+      'opc_recorte_elas': opcRecorteElas,
+      'opc_recorte_alin': opcRecorteAlin,
+      'opc_alivio_alin': opcAlivioAlin,
+      'link_modelos': linkModelos,
+      'res_apin_sup': resApinSup,
+      'res_apin_inf': resApinInf,
+      'modelo_gesso': modeloGesso,
+      'pedido_refinamento': pedidoRefinamento,
       'fotografias': f,
       'radiografias': r,
       'modelo_superior': ms,

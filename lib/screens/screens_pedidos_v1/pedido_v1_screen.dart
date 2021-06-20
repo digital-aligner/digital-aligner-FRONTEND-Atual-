@@ -38,7 +38,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   final _nomePacContr = TextEditingController();
   final _dataNascContr = TextEditingController();
   //queixa e obj
-  final _queixaPaciente = TextEditingController();
+  final _queixaPrincipal = TextEditingController();
   final _tratarContr = TextEditingController();
   final _objContr = TextEditingController();
   //linha media
@@ -138,6 +138,24 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           dataNascimento: _dataNascContr.text,
         ),
         tratar: _tratarContr.text,
+        queixaPrincipal: _queixaPrincipal.text,
+        objetivosTratamento: _objContr.text,
+        linhaMediaSuperior: _linhaMediaSupContr.text,
+        linhaMediaInferior: _linhaMediaInfContr.text,
+        overjet: _overJetContr.text,
+        overbite: _overbiteContr.text,
+        resApinSup: _resApinSupContr.text,
+        resApinInf: _resApinInfContr.text,
+        dentesExtVirtual: _extracaoVirtualContr.text,
+        dentesNaoMov: _naoMovimentarContr.text,
+        dentesSemAttach: _naoColocarAttachContr.text,
+        opcAceitoDesg: _opcAceitoDip.text,
+        opcRecorteElas: _opcRecorteElastico.text,
+        opcRecorteAlin: _opcRecorteBotao.text,
+        opcAlivioAlin: _opcBracoForca.text,
+        modeloGesso: modeloEmGesso,
+        linkModelos: _linkDocumentacao.text,
+        enderecoEntrega: enderecoSelecionado,
         usuario: UsuarioV1Model(id: _authStore!.id),
       );
 
@@ -174,7 +192,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   void dispose() {
     _nomePacContr.dispose();
     _dataNascContr.dispose();
-    _queixaPaciente.dispose();
+    _queixaPrincipal.dispose();
     _tratarContr.dispose();
     _linhaMediaSupContr.dispose();
     _linhaMediaInfContr.dispose();
@@ -227,7 +245,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           _dataNascContr.text = value.toString();
         },
         onChanged: (value) {
-          _dataNascContr.text = value.toString();
+          if (value != null) {
+            _dataNascContr.text = value.toString();
+          }
         },
         validator: (value) {
           if (value == null) {
@@ -235,12 +255,11 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           }
           return null;
         },
-        controller: _dataNascContr,
         decoration: const InputDecoration(
           labelText: 'Data de Nascimento: *',
           border: const OutlineInputBorder(),
         ),
-        format: DateFormat("dd/MM/yyyy"),
+        format: DateFormat('dd/MM/yyyy'),
         onShowPicker: (context, currentValue) {
           return showDatePicker(
               initialEntryMode: DatePickerEntryMode.input,
@@ -308,7 +327,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     );
   }
 
-  Widget _queixaPrincipal() {
+  Widget _queixaPrinc() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: TextFormField(
@@ -320,10 +339,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         },
         //initialValue: _nomePacContr.text,
         onSaved: (value) {
-          _queixaPaciente.text = value ?? '';
+          _queixaPrincipal.text = value ?? '';
         },
         onChanged: (value) {
-          _queixaPaciente.text = value;
+          _queixaPrincipal.text = value;
         },
         decoration: const InputDecoration(
           hintText: 'Por favor descreva a queixa principal do paciente',
@@ -475,6 +494,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                           : null;*/
                     },
                     //initialValue: _nomePacContr.text,
+                    //remover isso bug
                     onChanged: (value) {
                       _linhaMediaSupContr.text = value;
                     },
@@ -1623,7 +1643,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           _nomePaciente(),
           _dataNascimento(),
           _tratar(),
-          _queixaPrincipal(),
+          _queixaPrinc(),
           _textoObjetivos(),
           _objetivosTratamento(),
           _linhaMediSuperior(),
