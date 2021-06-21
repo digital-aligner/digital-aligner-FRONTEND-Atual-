@@ -14,7 +14,9 @@ class PedidoProvider with ChangeNotifier {
     'modelo inferior',
     'modelo compactado',
   ];
+  //pedidos from server
   List<PedidoV1Model> _pedidosV1List = [];
+
   //for first pedido send
   List<FileModel> _fotografias = [];
   List<FileModel> _radiografias = [];
@@ -22,9 +24,10 @@ class PedidoProvider with ChangeNotifier {
   List<FileModel> _modeloInferior = [];
   List<FileModel> _modeloCompactado = [];
 
-  void clearDataOnRouteChange() {
+  void clearDataAllProviderData() {
     _pedidosV1List = [];
     _fotografias = [];
+    _radiografias = [];
     _modeloSuperior = [];
     _modeloInferior = [];
     _modeloCompactado = [];
@@ -71,7 +74,7 @@ class PedidoProvider with ChangeNotifier {
         var data = json.decode(_response.body);
         if (data.containsKey('id')) {
           //using sem method
-          clearDataOnRouteChange();
+          clearDataAllProviderData();
           return true;
         }
       } catch (e) {
@@ -84,5 +87,41 @@ class PedidoProvider with ChangeNotifier {
       print('enviarPrimeiroPedido ->' + e.toString());
       return false;
     }
+  }
+
+  Future<bool> fetchAllPedidos(String token) async {
+    clearDataAllProviderData();
+    final response = await http.get(
+      Uri.parse(
+        RotasUrl.rotaPedidosV1,
+      ),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    try {
+      List<dynamic> _pedidos = json.decode(response.body);
+      print(_pedidos.toString());
+      if (_pedidos[0].containsKey('id')) {
+        _pedidos.forEach((p) {
+          _pedidosV1List.add(PedidoV1Model.fromJson(p));
+        });
+        print('efp1' + _pedidosV1List.toString());
+        return true;
+      }
+    } catch (e) {
+      print('efp2' + e.toString());
+      return false;
+    }
+    return true;
+  }
+
+  List<PedidoV1Model> getPedidosInList() {
+    return _pedidosV1List;
+  }
+
+  PedidoV1Model getPedido({int position = 0}) {
+    return _pedidosV1List.elementAt(position);
   }
 }

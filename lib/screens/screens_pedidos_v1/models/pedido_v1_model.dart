@@ -34,6 +34,8 @@ class PedidoV1Model {
   UsuarioV1Model? usuario;
   EnderecoModel? enderecoEntrega;
   StatusPedidoV1Model? statusPedido;
+  String createdAt;
+  String updatedAt;
 
   PedidoV1Model({
     this.id = 0,
@@ -65,6 +67,8 @@ class PedidoV1Model {
     this.usuario,
     this.enderecoEntrega,
     this.statusPedido,
+    this.createdAt = '',
+    this.updatedAt = '',
   });
 
   factory PedidoV1Model.fromJson(Map<String, dynamic> data) {
@@ -105,33 +109,37 @@ class PedidoV1Model {
     return PedidoV1Model(
       id: data['id'] ?? 0,
       tratar: data['tratar'] ?? '',
-      queixaPrincipal: data['queixa_principal'],
-      objetivosTratamento: data['objetivos_tratamento'],
-      linhaMediaSuperior: data['linha_media_superior'],
-      linhaMediaInferior: data['linha_media_inferior'],
-      overjet: data['overjet'],
-      overbite: data['overbite'],
-      dentesExtVirtual: data['dentes_ext_virtual'],
-      dentesNaoMov: data['dentes_nao_mov'],
-      dentesSemAttach: data['dentes_sem_attach'],
-      opcAceitoDesg: data['opc_aceito_desg'],
-      opcRecorteElas: data['opc_recorte_elas'],
-      opcRecorteAlin: data['opc_recorte_alin'],
-      opcAlivioAlin: data['opc_alivio_alin'],
-      linkModelos: data['link_modelos'],
-      resApinSup: data['res_apin_sup'],
-      resApinInf: data['res_apin_inf'],
-      modeloGesso: data['modelo_gesso'],
-      pedidoRefinamento: data['pedido_refinamento'],
+      queixaPrincipal: data['queixa_principal'] ?? '',
+      objetivosTratamento: data['objetivos_tratamento'] ?? '',
+      linhaMediaSuperior: data['linha_media_superior'] ?? '',
+      linhaMediaInferior: data['linha_media_inferior'] ?? '',
+      overjet: data['overjet'] ?? '',
+      overbite: data['overbite'] ?? '',
+      dentesExtVirtual: data['dentes_ext_virtual'] ?? '',
+      dentesNaoMov: data['dentes_nao_mov'] ?? '',
+      dentesSemAttach: data['dentes_sem_attach'] ?? '',
+      opcAceitoDesg: data['opc_aceito_desg'] ?? '',
+      opcRecorteElas: data['opc_recorte_elas'] ?? '',
+      opcRecorteAlin: data['opc_recorte_alin'] ?? '',
+      opcAlivioAlin: data['opc_alivio_alin'] ?? '',
+      linkModelos: data['link_modelos'] ?? '',
+      resApinSup: data['res_apin_sup'] ?? '',
+      resApinInf: data['res_apin_inf'] ?? '',
+      modeloGesso: data['modelo_gesso'] ?? false,
+      pedidoRefinamento: data['pedido_refinamento'] ?? false,
       fotografias: f,
       radiografias: r,
       modeloSuperior: ms,
       modeloInferior: mi,
       modeloCompactado: mc,
-      paciente: PacienteV1Model.fromJson(data['paciente']),
-      usuario: UsuarioV1Model.fromJson(data['usuario']),
-      enderecoEntrega: EnderecoModel.fromJson(data['endereco_entrega']),
-      statusPedido: StatusPedidoV1Model.fromJson(data['status_pedido']),
+      paciente: PacienteV1Model.fromJson(data['paciente'] ?? Map()),
+      usuario: UsuarioV1Model.fromJson(data['usuario'] ?? Map()),
+      enderecoEntrega:
+          EnderecoModel.fromJson(data['endereco_entrega'] ?? Map()),
+      statusPedido:
+          StatusPedidoV1Model.fromJson(data['status_pedido'] ?? Map()),
+      createdAt: data['created_at'],
+      updatedAt: data['updated_at'],
     );
   }
 
@@ -187,7 +195,9 @@ class PedidoV1Model {
       'paciente': paciente?.toJson() ?? '',
       'usuario': usuario?.toJson() ?? '',
       'endereco_entrega': enderecoEntrega?.toJson() ?? '',
-      'status_pedido': statusPedido?.toJson() ?? ''
+      'status_pedido': statusPedido?.toJson() ?? '',
+      'created_at': createdAt,
+      'updated_at': updatedAt,
     };
   }
 }

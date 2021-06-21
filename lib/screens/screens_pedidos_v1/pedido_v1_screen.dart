@@ -9,6 +9,7 @@ import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/screens/login_screen.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/paciente_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/pedido_v1_model.dart';
+import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/status_pedidov1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/usuario_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/uploader/file_uploader.dart';
 import 'package:digital_aligner_app/widgets/endereco_v1/endereco_model_.dart';
@@ -115,6 +116,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   EnderecoModel enderecoSelecionado = EnderecoModel();
   //termos
   String termos = '';
+  //status pedido (id = 1 for new pedidos)
+  int statusPedido = 1;
 
   //ui
   double textSize = 18;
@@ -157,6 +160,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         linkModelos: _linkDocumentacao.text,
         enderecoEntrega: enderecoSelecionado,
         usuario: UsuarioV1Model(id: _authStore!.id),
+        statusPedido: StatusPedidoV1Model(id: statusPedido),
       );
 
       return p;
@@ -1877,7 +1881,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     _screenSize = MediaQuery.of(context).size;
     _getTermos();
     if (firstRun) {
-      _pedidoStore!.clearDataOnRouteChange();
+      _pedidoStore!.clearDataAllProviderData();
       firstRun = false;
     }
     super.didChangeDependencies();

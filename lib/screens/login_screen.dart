@@ -1,10 +1,10 @@
-import 'package:digital_aligner_app/screens/administrativo/gerenciar_pedido.dart';
 import 'package:digital_aligner_app/screens/criar_nova_senha.dart';
 import 'package:digital_aligner_app/screens/primeiro_cadastro.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import '../providers/login_form_provider.dart';
 import '../providers/auth_provider.dart';
+import 'administrativo/gerenciar_pedidos_v1.dart';
 import 'meus_pacientes.dart';
 import 'recuperar_senha.dart';
 
@@ -441,7 +441,7 @@ class _LoginScreenState extends State<LoginScreen> {
         } else if (authStore.role == 'Administrador' ||
             authStore.role == 'Gerente') {
           Navigator.of(context)
-              .pushReplacementNamed(GerenciarPedidos.routeName);
+              .pushReplacementNamed(GerenciarPedidosV1.routeName);
         }
       } //If logged out, autologin failed and passed query strings for rest, show reset ui
       else if (widget.queryStringsForPasswordReset.isNotEmpty) {

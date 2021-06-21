@@ -1,5 +1,6 @@
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pacientes.dart';
-import 'package:digital_aligner_app/screens/administrativo/gerenciar_pedido.dart';
+
+import 'package:digital_aligner_app/screens/administrativo/gerenciar_pedidos_v1.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_permissoes.dart';
 
 import 'package:digital_aligner_app/screens/perfil.dart';
@@ -103,9 +104,9 @@ class _MyDrawerState extends State<MyDrawer> {
                                   ModalRoute.of(context);
                               final routeName = route!.settings.name;
                               if (routeName != null &&
-                                  routeName != '/gerenciar-pedidos') {
+                                  routeName != '/gerenciar-pedidos-v1') {
                                 Navigator.of(context).pushReplacementNamed(
-                                    GerenciarPedidos.routeName);
+                                    GerenciarPedidosV1.routeName);
                               }
                             } else if (selectedValue == 'Gerenciar Pacientes') {
                               ModalRoute<Object?>? route =

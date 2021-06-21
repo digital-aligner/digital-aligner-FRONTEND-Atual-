@@ -1,6 +1,6 @@
 import 'package:digital_aligner_app/providers/check_new_data_provider.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pacientes.dart';
-import 'package:digital_aligner_app/screens/administrativo/gerenciar_pedido.dart';
+import 'package:digital_aligner_app/screens/administrativo/gerenciar_pedidos_v1.dart';
 
 import 'package:digital_aligner_app/screens/perfil.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
@@ -224,11 +224,12 @@ class _MyAppBarState extends State<MyAppBar> {
                   ModalRoute<Object?>? route = ModalRoute.of(context);
                   final routeName = route!.settings.name;
 
-                  if (routeName != null && routeName != '/gerenciar-pedidos') {
+                  if (routeName != null &&
+                      routeName != '/gerenciar-pedidos-v1') {
                     //Remove any messages (if any) on changing routes
                     ScaffoldMessenger.of(context).removeCurrentSnackBar();
                     Navigator.of(context)
-                        .pushReplacementNamed(GerenciarPedidos.routeName);
+                        .pushReplacementNamed(GerenciarPedidosV1.routeName);
                   }
                 } else if (selectedValue == 'Gerenciar Pacientes') {
                   checkDataStore!.setfetchDataBool(true);

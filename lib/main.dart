@@ -6,7 +6,6 @@ import 'package:digital_aligner_app/screens/perfil.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
 
 import './providers/pedidos_list_provider.dart';
-import 'package:digital_aligner_app/screens/administrativo/gerenciar_pedido.dart';
 
 import './screens/administrativo/gerenciar_permissoes.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +14,7 @@ import 'package:provider/provider.dart';
 
 import './screens/login_screen.dart';
 import 'screens/administrativo/gerenciar_pacientes.dart';
+import 'screens/administrativo/gerenciar_pedidos_v1.dart';
 import 'screens/meus_pacientes.dart';
 import './screens/loading_screen.dart';
 import './screens/administrativo/gerenciar_cadastro.dart';
@@ -165,7 +165,7 @@ class MyApp extends StatelessWidget {
           routes: {
             MeusPacientes.routeName: (ctx) => MeusPacientes(),
             GerenciarCadastros.routeName: (ctx) => GerenciarCadastros(),
-            GerenciarPedidos.routeName: (ctx) => GerenciarPedidos(),
+            GerenciarPedidosV1.routeName: (ctx) => GerenciarPedidosV1(),
             EditarCadastro.routeName: (ctx) => EditarCadastro(),
             GerenciarPermissoes.routeName: (ctx) => GerenciarPermissoes(),
             GerenciarPacientes.routeName: (ctx) => GerenciarPacientes(),
