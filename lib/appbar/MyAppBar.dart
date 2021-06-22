@@ -1,9 +1,11 @@
 import 'package:digital_aligner_app/providers/check_new_data_provider.dart';
-import 'package:digital_aligner_app/screens/administrativo/gerenciar_pacientes.dart';
+import 'package:digital_aligner_app/providers/pedido_provider.dart';
+import 'package:digital_aligner_app/screens/administrativo/gerenciar_pacientes_v1.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pedidos_v1.dart';
 
 import 'package:digital_aligner_app/screens/perfil.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
+import 'package:digital_aligner_app/widgets/screen%20argument/screen_argument.dart';
 
 import '../screens/administrativo/gerenciar_permissoes.dart';
 import 'package:flutter/material.dart';
@@ -237,13 +239,18 @@ class _MyAppBarState extends State<MyAppBar> {
                   final routeName = route!.settings.name;
 
                   if (routeName != null &&
-                      routeName != '/gerenciar-pacientes') {
+                      routeName != '/gerenciar-pacientes-v1') {
                     //Remove any messages (if any) on changing routes
                     ScaffoldMessenger.of(context).removeCurrentSnackBar();
                     checkDataStore!.setfetchDataBool(true);
 
-                    Navigator.of(context)
-                        .pushReplacementNamed(GerenciarPacientes.routeName);
+                    Navigator.of(context).pushReplacementNamed(
+                      GerenciarPacientesV1.routeName,
+                      arguments: ScreenArguments(
+                        title: 'Gerenciar Pacientes',
+                        message: '',
+                      ),
+                    );
                   }
                 } else if (selectedValue == 'Meus Setups') {
                   //Remove any messages (if any) on changing routes
@@ -368,7 +375,13 @@ class _MyAppBarState extends State<MyAppBar> {
         if (routeName != null && routeName != '/meus-pacientes') {
           //Remove any messages (if any) on changing routes
           ScaffoldMessenger.of(context).removeCurrentSnackBar();
-          Navigator.of(context).pushReplacementNamed(MeusPacientes.routeName);
+          Navigator.of(context).pushReplacementNamed(
+            GerenciarPacientesV1.routeName,
+            arguments: ScreenArguments(
+              title: 'Meus Pacientes',
+              message: '',
+            ),
+          );
         }
       },
       icon: const Icon(Icons.shopping_bag_rounded),
@@ -483,26 +496,13 @@ class _MyAppBarState extends State<MyAppBar> {
     return TextButton.icon(
       onPressed: () {
         authStore.logout();
-        html.window.location.reload();
-        /*
-        PedidosListProvider _pedidosListStore =
-            Provider.of<PedidosListProvider>(
-          context,
-        );
         PedidoProvider _novoPedStore = Provider.of<PedidoProvider>(
           context,
+          listen: false,
         );
-        RelatorioProvider _relatorioStore =
-            Provider.of<RelatorioProvider>(context, listen: false);
-        CadastroProvider _cadastroStore =
-            Provider.of<CadastroProvider>(context);
         //CLEAR VALUES
-        _novoPedStore.clearAll();
-        _relatorioStore.clearSelectedRelatorio();
-        _relatorioStore.clearToken();
-        _cadastroStore.clearCadastros();
-        _pedidosListStore.clearPedidosOnLeave();
-        _pedidosListStore.setToken(null); */
+        _novoPedStore.clearDataAllProviderData();
+        html.window.location.reload();
       },
       icon: const Icon(Icons.sensor_door),
       label: const Text(

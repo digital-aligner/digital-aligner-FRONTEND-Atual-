@@ -800,7 +800,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      _overbiteContr.text = value ?? '';
+                      if (value != null)
+                        _overbiteContr.text =
+                            'Intruir anterior sup (mm): ' + value;
                     },
                     onChanged: (value) {
                       _overbiteContr.text = value;
@@ -852,7 +854,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      _overbiteContr.text = value ?? '';
+                      if (value != null)
+                        _overbiteContr.text =
+                            'Intruir anterior inf (mm): ' + value;
                     },
                     onChanged: (value) {
                       _overbiteContr.text = value;
@@ -904,7 +908,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      _overbiteContr.text = value ?? '';
+                      if (value != null)
+                        _overbiteContr.text =
+                            'Extruir posterior sup (mm): ' + value;
                     },
                     onChanged: (value) {
                       _overbiteContr.text = value;
@@ -956,7 +962,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      _overbiteContr.text = value ?? '';
+                      if (value != null)
+                        _overbiteContr.text =
+                            'Extruir posterior inf (mm): ' + value;
                     },
                     onChanged: (value) {
                       _overbiteContr.text = value;
@@ -1902,7 +1910,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         isAlwaysShown: true,
         child: SingleChildScrollView(
           child: Container(
-            height: _screenSize!.width < 768 ? 5800 : 4000,
+            height: _screenSize!.width < 768 ? 5800 : 5100,
             padding: const EdgeInsets.symmetric(horizontal: 100),
             child: Column(
               children: <Widget>[

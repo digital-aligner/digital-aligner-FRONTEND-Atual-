@@ -13,9 +13,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import './screens/login_screen.dart';
-import 'screens/administrativo/gerenciar_pacientes.dart';
+
+import 'screens/administrativo/gerenciar_pacientes_v1.dart';
 import 'screens/administrativo/gerenciar_pedidos_v1.dart';
-import 'screens/meus_pacientes.dart';
 import './screens/loading_screen.dart';
 import './screens/administrativo/gerenciar_cadastro.dart';
 import './screens/editar_cadastro.dart';
@@ -26,6 +26,8 @@ import 'providers/pedido_provider.dart';
 import 'providers/cadastro_provider.dart';
 
 import 'dart:js' as js;
+
+import 'screens/visualizar_paciente_v1.dart';
 
 void main() {
   runApp(MyApp());
@@ -163,12 +165,12 @@ class MyApp extends StatelessWidget {
             },
           ),
           routes: {
-            MeusPacientes.routeName: (ctx) => MeusPacientes(),
             GerenciarCadastros.routeName: (ctx) => GerenciarCadastros(),
             GerenciarPedidosV1.routeName: (ctx) => GerenciarPedidosV1(),
             EditarCadastro.routeName: (ctx) => EditarCadastro(),
             GerenciarPermissoes.routeName: (ctx) => GerenciarPermissoes(),
-            GerenciarPacientes.routeName: (ctx) => GerenciarPacientes(),
+            GerenciarPacientesV1.routeName: (ctx) => GerenciarPacientesV1(),
+            VisualizarPacienteV1.routeName: (ctx) => VisualizarPacienteV1(),
             Perfil.routeName: (ctx) => Perfil(),
             PedidoV1Screen.routeName: (ctx) => PedidoV1Screen(),
           },
