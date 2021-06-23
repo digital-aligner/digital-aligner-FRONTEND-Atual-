@@ -72,7 +72,8 @@ class PedidoV1Model {
     this.updatedAt = '',
   });
 
-  factory PedidoV1Model.fromJson(Map<String, dynamic> data) {
+  factory PedidoV1Model.fromJson(Map<String, dynamic>? data) {
+    if (data == null || data.isEmpty) return PedidoV1Model();
     List<FileModel> f = [];
     List<FileModel> r = [];
     List<FileModel> ms = [];
@@ -87,23 +88,23 @@ class PedidoV1Model {
     //radiografias list to objects list
     if (data['radiografias'] != null) {
       data['radiografias'].forEach((radiografia) {
-        f.add(FileModel.fromJson(radiografia));
+        r.add(FileModel.fromJson(radiografia));
       });
     } //modelo superior list to objects list
     if (data['modelo_superior'] != null) {
       data['modelo_superior'].forEach((modeloSup) {
-        f.add(FileModel.fromJson(modeloSup));
+        ms.add(FileModel.fromJson(modeloSup));
       });
     } //modelo inferior list to objects list
     if (data['modelo_inferior'] != null) {
       data['modelo_inferior'].forEach((modeloInf) {
-        f.add(FileModel.fromJson(modeloInf));
+        mi.add(FileModel.fromJson(modeloInf));
       });
     }
     //modelo compactado list to objects list
     if (data['modelo_compactado'] != null) {
       data['modelo_compactado'].forEach((modeloComp) {
-        f.add(FileModel.fromJson(modeloComp));
+        mc.add(FileModel.fromJson(modeloComp));
       });
     }
 

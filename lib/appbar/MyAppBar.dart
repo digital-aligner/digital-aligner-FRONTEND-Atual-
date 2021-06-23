@@ -93,7 +93,7 @@ class _MyAppBarState extends State<MyAppBar> {
       ),
       elevation: 0,
       title: Image.asset(
-        'assets/logos/da-logo-branco.png',
+        'logos/da-logo-branco.png',
         height: 35,
       ),
       shape: const RoundedRectangleBorder(

@@ -74,16 +74,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/logos/logo.png
-    - assets/backgrounds/login_screen.jpg
-    - assets/logos/da-logo-branco.png
-    - assets/logos/cubo.jpg
-    - assets/logos/comp.jpg   
-    - assets/logos/pdf.png  
-    - assets/logos/ppt.png 
-    - assets/logos/nemo_logo.png 
-    - assets/logos/error.png
-    - assets/texts/termos.txt
+    - assets/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

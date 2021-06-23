@@ -7,11 +7,13 @@ import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/historico_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/pedido_v1_model.dart';
+import 'package:digital_aligner_app/screens/screens_pedidos_v1/uploader/model/FileModel.dart';
 import 'package:digital_aligner_app/widgets/screen%20argument/screen_argument.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:responsive_grid/responsive_grid.dart';
 
 import '../rotas_url.dart';
 
@@ -56,13 +58,11 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     );
     try {
       List<dynamic> _historicos = json.decode(response.body);
-      print('vpxn' + response.body.toString());
       if (_historicos[0].containsKey('id')) {
         _historicoList = [];
         _historicos.forEach((h) {
           _historicoList.add(HistoricoPacV1.fromJson(h));
         });
-
         return _historicoList;
       }
     } catch (e) {
@@ -84,63 +84,639 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     );
   }
 
+  Widget _pacienteDados() {
+    return Card(
+      elevation: 10,
+      child: SizedBox(
+        width: 300,
+        height: 100,
+        child: Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              TextButton(
+                onPressed: () {},
+                child: Image.asset('logos/user_avatar.png'),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: () {},
+                    child: Text('editar paciente'),
+                  ),
+                  TextButton(
+                    onPressed: () {},
+                    child: Text('Solicitar refinamento'),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _helperBuilder(PedidoV1Model? p) {
+    if (p == null)
+      return Container();
+    else
+      return _viewPedido(p);
+  }
+
   Widget _pacienteAndHistoricoLayout() {
     return Wrap(
+      alignment: WrapAlignment.center,
       children: [
         Column(
           children: [
-            SizedBox(
-              width: 500,
-              height: 100,
-              child: Container(
-                color: Colors.blue,
-              ),
-            ),
+            _pacienteDados(),
             _displayHistorico(),
           ],
         ),
-        Container(
-          width: 500,
-          height: 200,
-          color: Colors.red,
+        Card(
+          child: Container(
+            padding: EdgeInsets.all(20),
+            width: 800,
+            child: _helperBuilder(null),
+          ),
         )
       ],
     );
   }
 
   String _dateFormat(String date) {
-    var format = DateFormat.yMd('pt');
-    var dateTime = DateTime.parse(date);
-    return format.format(dateTime);
+    try {
+      var format = DateFormat.yMd('pt');
+      var dateTime = DateTime.parse(date);
+      return format.format(dateTime);
+    } catch (e) {
+      return '';
+    }
   }
 
   Widget _displayHistorico() {
     return Column(
       children: <Widget>[
-        _historicoList.isEmpty
+        isFetchHistorico
             ? Center(
                 child: CircularProgressIndicator(
                   valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
                 ),
               )
-            : ListView.separated(
-                itemBuilder: (_, i) {
-                  return GestureDetector(
-                    onTap: () {
-                      print('its ok! ' + i.toString());
+            : Card(
+                elevation: 10,
+                child: Container(
+                  width: 300,
+                  height: 300,
+                  child: ListView.separated(
+                    itemBuilder: (_, i) {
+                      return ListTile(
+                        title: Text(
+                          _dateFormat(_historicoList[i].createdAt) +
+                              ' ' +
+                              _historicoList[i].status!.status,
+                        ),
+                        onTap: () {
+                          print('ok!!');
+                        }, // Handle your onTap here.
+                      );
                     },
-                    child: _historicoList.isNotEmpty
-                        ? Text(
-                            _dateFormat(_historicoList[i].createdAt) +
-                                ' ' +
-                                _historicoList[i].status!.status,
-                          )
-                        : Text('sem resultados'),
-                  );
-                },
-                separatorBuilder: (_, i) => Divider(),
-                itemCount: _historicoList.length,
+                    separatorBuilder: (_, i) => Divider(
+                      height: 10,
+                    ),
+                    itemCount: _historicoList.length,
+                  ),
+                ),
               )
+      ],
+    );
+  }
+
+  //--------- VIEW PEDIDO WIDGET ------------
+
+  Widget _viewPedido(PedidoV1Model pedido) {
+    //function to map files and get url
+    List<Image> mapFilesToUi(List<FileModel> f) {
+      List<Image> a = [];
+
+      f.forEach((file) async {
+        a.add(
+          Image.network(
+            file.formats!.thumbnail!.thumbnail!,
+            width: 100,
+            height: 100,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              print(error);
+              return Center(
+                child: Text('Erro'),
+              );
+            },
+          ),
+        );
+      });
+
+      return a;
+    }
+
+    return ResponsiveGridRow(
+      children: [
+        //codigo pedido (headline)
+        ResponsiveGridCol(
+          lg: 12,
+          child: Container(
+            //color: Colors.black12.withOpacity(0.04),
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'DA' + pedido.id.toString(),
+                style: const TextStyle(
+                  color: Colors.black54,
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          lg: 12,
+          child: Container(
+            //color: Colors.black12.withOpacity(0.04),
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Divider(
+                color: Colors.black38,
+              ),
+            ),
+          ),
+        ),
+        //Data nasc.
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            color: Colors.black12.withOpacity(0.04),
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(' Data de Nascimento: '),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            color: Colors.black12.withOpacity(0.04),
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                _dateFormat(pedido.dataNascimento),
+              ),
+            ),
+          ),
+        ),
+        //tratar
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(' Tratar: '),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(pedido.tratar),
+            ),
+          ),
+        ),
+        //queixa principal
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            color: Colors.black12.withOpacity(0.04),
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(' Queixa principal: '),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            color: Colors.black12.withOpacity(0.04),
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(pedido.queixaPrincipal),
+            ),
+          ),
+        ),
+        //objetivos do tratamento
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(' Objetivos do tratamento: '),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(pedido.objetivosTratamento),
+            ),
+          ),
+        ),
+        //linha media superior
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            color: Colors.black12.withOpacity(0.04),
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(' Linha média superior: '),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            color: Colors.black12.withOpacity(0.04),
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(pedido.linhaMediaSuperior),
+            ),
+          ),
+        ),
+        //linha media superior
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(' Linha média inferior: '),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(pedido.linhaMediaInferior),
+            ),
+          ),
+        ),
+        //overjet
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            color: Colors.black12.withOpacity(0.04),
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(' Overjet: '),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            color: Colors.black12.withOpacity(0.04),
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(pedido.overjet),
+            ),
+          ),
+        ),
+        //overbite
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(' Overbite: '),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(pedido.overbite),
+            ),
+          ),
+        ),
+        //Resolução de apinhamento superior
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            color: Colors.black12.withOpacity(0.04),
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(' Resolução de apinhamento superior: '),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            height: 50,
+            color: Colors.black12.withOpacity(0.04),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(pedido.resApinSup),
+            ),
+          ),
+        ),
+        //Resolução de apinhamento inferior
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(' Resolução de apinhamento inferior: '),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(pedido.resApinInf),
+            ),
+          ),
+        ),
+        //Extração virtual de dentes
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            color: Colors.black12.withOpacity(0.04),
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(' Extração virtual: '),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            color: Colors.black12.withOpacity(0.04),
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(pedido.dentesExtVirtual),
+            ),
+          ),
+        ),
+        //Não movimentar os seguintes dentes
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(' Não movimentar: '),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(pedido.dentesNaoMov),
+            ),
+          ),
+        ),
+        //Não colocar attachments
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            color: Colors.black12.withOpacity(0.04),
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(' Não colocar attachments: '),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            color: Colors.black12.withOpacity(0.04),
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(pedido.dentesSemAttach),
+            ),
+          ),
+        ),
+        //Aceito desgastes interproximais (DIP)
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(' Aceito desgastes interproximais (DIP): '),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(pedido.opcAceitoDesg),
+            ),
+          ),
+        ),
+        //Recorte para elástico no alinhador
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            color: Colors.black12.withOpacity(0.04),
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(' Recorte para elástico no alinhador: '),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            color: Colors.black12.withOpacity(0.04),
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(pedido.opcRecorteElas),
+            ),
+          ),
+        ),
+        //Recorte no alinhador para botão
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(' Recorte no alinhador para botão: '),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(pedido.opcRecorteAlin),
+            ),
+          ),
+        ),
+        //Alívio no alinhador para braço de força
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            color: Colors.black12.withOpacity(0.04),
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(' Alívio no alinhador para braço de força: '),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            color: Colors.black12.withOpacity(0.04),
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(pedido.opcAlivioAlin),
+            ),
+          ),
+        ),
+        //Fotografias
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(' Fotografias: '),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            padding: EdgeInsets.all(10),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Wrap(
+                spacing: 10,
+                children: mapFilesToUi(pedido.fotografias),
+              ),
+            ),
+          ),
+        ),
+        //Radiografias
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(' Radiografias: '),
+            ),
+          ),
+        ),
+        ResponsiveGridCol(
+          xs: 6,
+          lg: 6,
+          child: Container(
+            padding: EdgeInsets.all(10),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Wrap(
+                spacing: 10,
+                children: mapFilesToUi(pedido.radiografias),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -150,11 +726,9 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     _authStore = Provider.of<AuthProvider>(context);
     _pedidoStore = Provider.of<PedidoProvider>(context);
     _screenSize = MediaQuery.of(context).size;
-    if (_authStore!.isAuth) {
-      _args = ModalRoute.of(context)!.settings.arguments as ScreenArguments;
-    }
 
     if (firstRun) {
+      _args = ModalRoute.of(context)!.settings.arguments as ScreenArguments;
       await _fetchHistoricoPac();
       setState(() {
         isFetchHistorico = false;
@@ -176,7 +750,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
         isAlwaysShown: true,
         child: SingleChildScrollView(
           child: Container(
-            height: _screenSize!.width < 768 ? 5800 : 4000,
+            height: _screenSize!.width < 768 ? 2500 : 3000,
             padding: const EdgeInsets.symmetric(horizontal: 100),
             child: Column(
               children: <Widget>[

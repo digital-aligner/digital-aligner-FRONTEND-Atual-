@@ -4,7 +4,8 @@ class StatusPedidoV1Model {
 
   StatusPedidoV1Model({this.id = 0, this.status = ''});
 
-  factory StatusPedidoV1Model.fromJson(Map<String, dynamic> data) {
+  factory StatusPedidoV1Model.fromJson(Map<String, dynamic>? data) {
+    if (data == null || data.isEmpty) return StatusPedidoV1Model();
     return StatusPedidoV1Model(
       id: data['id'] ?? 0,
       status: data['status'] ?? '',

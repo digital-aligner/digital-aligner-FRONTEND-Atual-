@@ -23,7 +23,8 @@ class EnderecoModel {
     this.usuario = 0,
   });
 
-  factory EnderecoModel.fromJson(Map<String, dynamic> data) {
+  factory EnderecoModel.fromJson(Map<String, dynamic>? data) {
+    if (data == null || data.isEmpty) return EnderecoModel();
     //just using this for relations to other entities
     return EnderecoModel(
       id: data['id'] ?? 0,

@@ -9,7 +9,8 @@ class UsuarioV1Model {
     this.sobrenome = '',
   });
 
-  factory UsuarioV1Model.fromJson(Map<String, dynamic> data) {
+  factory UsuarioV1Model.fromJson(Map<String, dynamic>? data) {
+    if (data == null || data.isEmpty) return UsuarioV1Model();
     return UsuarioV1Model(
       id: data['id'] ?? 0,
       nome: data['nome'] ?? '',

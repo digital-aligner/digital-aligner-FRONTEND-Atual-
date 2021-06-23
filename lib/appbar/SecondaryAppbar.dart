@@ -16,7 +16,7 @@ class SecondaryAppbar extends StatelessWidget implements PreferredSizeWidget {
         return AppBar(
           centerTitle: true,
           title: Image.asset(
-            'assets/logos/da-logo-branco.png',
+            'logos/da-logo-branco.png',
             height: 35,
           ),
           flexibleSpace: Container(

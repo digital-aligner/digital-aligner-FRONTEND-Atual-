@@ -11,7 +11,8 @@ class StatusHistoricoV1 {
     this.createdAt = '',
   });
 
-  factory StatusHistoricoV1.fromJson(Map<String, dynamic> data) {
+  factory StatusHistoricoV1.fromJson(Map<String, dynamic>? data) {
+    if (data == null || data.isEmpty) return StatusHistoricoV1();
     return StatusHistoricoV1(
         id: data['id'] ?? 0,
         status: data['status'] ?? '',
@@ -45,7 +46,8 @@ class HistoricoPacV1 {
     this.createdAt = '',
   });
 
-  factory HistoricoPacV1.fromJson(Map<String, dynamic> data) {
+  factory HistoricoPacV1.fromJson(Map<String, dynamic>? data) {
+    if (data == null || data.isEmpty) return HistoricoPacV1();
     return HistoricoPacV1(
       id: data['id'] ?? 0,
       informacao: data['informacao'] ?? '',
