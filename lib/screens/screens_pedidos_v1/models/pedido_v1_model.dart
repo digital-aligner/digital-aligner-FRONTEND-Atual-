@@ -1,4 +1,3 @@
-import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/paciente_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/status_pedidov1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/usuario_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/uploader/model/FileModel.dart';
@@ -6,6 +5,8 @@ import 'package:digital_aligner_app/widgets/endereco_v1/endereco_model_.dart';
 
 class PedidoV1Model {
   int id;
+  String nomePaciente;
+  String dataNascimento;
   String tratar;
   String queixaPrincipal;
   String objetivosTratamento;
@@ -30,7 +31,6 @@ class PedidoV1Model {
   List<FileModel> modeloSuperior;
   List<FileModel> modeloInferior;
   List<FileModel> modeloCompactado;
-  PacienteV1Model? paciente;
   UsuarioV1Model? usuario;
   EnderecoModel? enderecoEntrega;
   StatusPedidoV1Model? statusPedido;
@@ -39,6 +39,8 @@ class PedidoV1Model {
 
   PedidoV1Model({
     this.id = 0,
+    this.nomePaciente = '',
+    this.dataNascimento = '',
     this.tratar = '',
     this.queixaPrincipal = '',
     this.objetivosTratamento = '',
@@ -63,7 +65,6 @@ class PedidoV1Model {
     this.modeloSuperior = const <FileModel>[],
     this.modeloInferior = const <FileModel>[],
     this.modeloCompactado = const <FileModel>[],
-    this.paciente,
     this.usuario,
     this.enderecoEntrega,
     this.statusPedido,
@@ -108,6 +109,8 @@ class PedidoV1Model {
 
     return PedidoV1Model(
       id: data['id'] ?? 0,
+      nomePaciente: data['nome_paciente'] ?? '',
+      dataNascimento: data['data_nascimento'] ?? '',
       tratar: data['tratar'] ?? '',
       queixaPrincipal: data['queixa_principal'] ?? '',
       objetivosTratamento: data['objetivos_tratamento'] ?? '',
@@ -132,7 +135,6 @@ class PedidoV1Model {
       modeloSuperior: ms,
       modeloInferior: mi,
       modeloCompactado: mc,
-      paciente: PacienteV1Model.fromJson(data['paciente'] ?? Map()),
       usuario: UsuarioV1Model.fromJson(data['usuario'] ?? Map()),
       enderecoEntrega:
           EnderecoModel.fromJson(data['endereco_entrega'] ?? Map()),
@@ -168,6 +170,8 @@ class PedidoV1Model {
 
     return {
       'id': id,
+      'nome_paciente': nomePaciente,
+      'data_nascimento': dataNascimento,
       'tratar': tratar,
       'queixa_principal': queixaPrincipal,
       'objetivos_tratamento': objetivosTratamento,
@@ -192,7 +196,6 @@ class PedidoV1Model {
       'modelo_superior': ms,
       'modelo_inferior': mi,
       'modelo_compactado': mc,
-      'paciente': paciente?.toJson() ?? '',
       'usuario': usuario?.toJson() ?? '',
       'endereco_entrega': enderecoEntrega?.toJson() ?? '',
       'status_pedido': statusPedido?.toJson() ?? '',

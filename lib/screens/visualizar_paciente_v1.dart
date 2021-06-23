@@ -1,13 +1,19 @@
+import 'dart:convert';
+
 import 'package:digital_aligner_app/appbar/MyAppBar.dart';
 import 'package:digital_aligner_app/appbar/MyDrawer.dart';
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
+import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/historico_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/pedido_v1_model.dart';
 import 'package:digital_aligner_app/widgets/screen%20argument/screen_argument.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+
+import '../rotas_url.dart';
 
 class VisualizarPacienteV1 extends StatefulWidget {
   static const routeName = '/visualizar-paciente-v1';
@@ -28,121 +34,57 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
   ScreenArguments _args = ScreenArguments();
   List<bool> selectedListItem = [];
 
+  //
+  List<HistoricoPacV1> _historicoList = [];
+
+  Future<List<HistoricoPacV1>> _fetchHistoricoPac() async {
+    final response = await http.get(
+      Uri.parse(
+        RotasUrl.rotaHistoricoPacV1 +
+            '?id_pedido=' +
+            _pedidoStore!
+                .getPedido(
+                  position: _args.messageInt,
+                )
+                .id
+                .toString(),
+      ),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${_authStore!.token}',
+      },
+    );
+    try {
+      List<dynamic> _historicos = json.decode(response.body);
+      print('vpxn' + response.body.toString());
+      if (_historicos[0].containsKey('id')) {
+        _historicoList = [];
+        _historicos.forEach((h) {
+          _historicoList.add(HistoricoPacV1.fromJson(h));
+        });
+
+        return _historicoList;
+      }
+    } catch (e) {
+      print(e);
+      return [];
+    }
+    return [];
+  }
+
   Widget _header() {
     return SizedBox(
       height: 100,
       child: Center(
         child: Text(
-          _pedidoStore!
-              .getPedido(position: _args.messageInt)
-              .paciente!
-              .nomePaciente,
+          _pedidoStore!.getPedido(position: _args.messageInt).nomePaciente,
           style: Theme.of(context).textTheme.headline1,
         ),
       ),
     );
   }
 
-  Widget _optionsTextBtns(int position) {
-    return Wrap(
-      children: [
-        TextButton(
-          onPressed: () {
-            print('editar');
-          },
-          child: Text('editar'),
-        ),
-      ],
-    );
-  }
-
-  List<DataCell> _dataCells({int position = 0}) {
-    PedidoV1Model p = _pedidoStore!.getPedido(position: position);
-    var format = DateFormat.yMd('pt');
-    var dateTime = DateTime.parse(p.createdAt);
-    var dateString = format.format(dateTime);
-    return [
-      DataCell(Text(dateString)),
-      DataCell(Text(p.statusPedido?.status ?? '')),
-      DataCell(_optionsTextBtns(position)),
-    ];
-  }
-
-  List<DataRow> _dataRows() {
-    List<PedidoV1Model> p = _pedidoStore!.getPedidosInList();
-    List<DataRow> dr = [];
-
-    if (p.isEmpty) return [];
-    if (selectedListItem.length != p.length) selectedListItem = [];
-
-    for (int i = 0; i < p.length; i++) {
-      if (selectedListItem.length != p.length) selectedListItem.add(false);
-      dr.add(
-        DataRow(
-          color: i.isOdd
-              ? MaterialStateColor.resolveWith(
-                  (states) => Color.fromRGBO(128, 128, 128, 0.2))
-              : MaterialStateColor.resolveWith((states) => Colors.white),
-          onSelectChanged: (selected) async {
-            for (int j = 0; j < selectedListItem.length; j++) {
-              if (i != j) {
-                if (selectedListItem[j] == true) return;
-              }
-            }
-            setState(() {
-              selectedListItem[i] = !selectedListItem[i];
-            });
-            if (selectedListItem[i]) {
-              await Future.delayed(Duration(milliseconds: 500));
-              Navigator.of(context)
-                  .pushNamed(
-                VisualizarPacienteV1.routeName,
-                arguments: ScreenArguments(
-                  title: 'pedido index',
-                  messageInt: i,
-                ),
-              )
-                  .then((value) async {
-                await Future.delayed(Duration(milliseconds: 500));
-                setState(() {
-                  selectedListItem[i] = false;
-                  isFetchHistorico = true;
-                  firstRun = true;
-                });
-              });
-            }
-          },
-          selected: selectedListItem[i],
-          cells: _dataCells(position: i),
-        ),
-      );
-    }
-    return dr;
-  }
-
-  Widget _dataTable() {
-    return SizedBox(
-      width: 500,
-      height: 300,
-      child: RawScrollbar(
-        thumbColor: Colors.grey,
-        thickness: 18,
-        isAlwaysShown: true,
-        child: SingleChildScrollView(
-          child: DataTable(
-            columns: [
-              DataColumn(label: Text('Data')),
-              DataColumn(label: Text('Status')),
-              DataColumn(label: Text('Opções')),
-            ],
-            rows: _dataRows(),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _pacienteAndDataTableLayout() {
+  Widget _pacienteAndHistoricoLayout() {
     return Wrap(
       children: [
         Column(
@@ -154,7 +96,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                 color: Colors.blue,
               ),
             ),
-            _dataTable(),
+            _displayHistorico(),
           ],
         ),
         Container(
@@ -166,8 +108,45 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     );
   }
 
+  String _dateFormat(String date) {
+    var format = DateFormat.yMd('pt');
+    var dateTime = DateTime.parse(date);
+    return format.format(dateTime);
+  }
+
+  Widget _displayHistorico() {
+    return Column(
+      children: <Widget>[
+        _historicoList.isEmpty
+            ? Center(
+                child: CircularProgressIndicator(
+                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+                ),
+              )
+            : ListView.separated(
+                itemBuilder: (_, i) {
+                  return GestureDetector(
+                    onTap: () {
+                      print('its ok! ' + i.toString());
+                    },
+                    child: _historicoList.isNotEmpty
+                        ? Text(
+                            _dateFormat(_historicoList[i].createdAt) +
+                                ' ' +
+                                _historicoList[i].status!.status,
+                          )
+                        : Text('sem resultados'),
+                  );
+                },
+                separatorBuilder: (_, i) => Divider(),
+                itemCount: _historicoList.length,
+              )
+      ],
+    );
+  }
+
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     _authStore = Provider.of<AuthProvider>(context);
     _pedidoStore = Provider.of<PedidoProvider>(context);
     _screenSize = MediaQuery.of(context).size;
@@ -175,7 +154,13 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
       _args = ModalRoute.of(context)!.settings.arguments as ScreenArguments;
     }
 
-    if (firstRun) {}
+    if (firstRun) {
+      await _fetchHistoricoPac();
+      setState(() {
+        isFetchHistorico = false;
+        firstRun = false;
+      });
+    }
     super.didChangeDependencies();
   }
 
@@ -196,7 +181,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             child: Column(
               children: <Widget>[
                 _header(),
-                _pacienteAndDataTableLayout(),
+                _pacienteAndHistoricoLayout(),
               ],
             ),
           ),

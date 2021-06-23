@@ -7,7 +7,6 @@ import 'package:digital_aligner_app/appbar/MyDrawer.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/screens/login_screen.dart';
-import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/paciente_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/pedido_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/status_pedidov1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/usuario_v1_model.dart';
@@ -136,10 +135,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   PedidoV1Model _mapFieldsToPedidoV1() {
     try {
       PedidoV1Model p = PedidoV1Model(
-        paciente: PacienteV1Model(
-          nomePaciente: _nomePacContr.text,
-          dataNascimento: _dataNascContr.text,
-        ),
+        nomePaciente: _nomePacContr.text,
+        dataNascimento: _dataNascContr.text,
         tratar: _tratarContr.text,
         queixaPrincipal: _queixaPrincipal.text,
         objetivosTratamento: _objContr.text,

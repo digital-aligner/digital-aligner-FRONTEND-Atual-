@@ -61,7 +61,7 @@ class _GerenciarPedidosV1State extends State<GerenciarPedidosV1> {
     return [
       DataCell(Text(dateString)),
       DataCell(Text('DA${p.id}')),
-      DataCell(Text(p.paciente?.nomePaciente ?? '')),
+      DataCell(Text(p.nomePaciente)),
       DataCell(Text(p.statusPedido?.status ?? '')),
       DataCell(Text(p.usuario?.nome ?? '' + ' ' + p.usuario!.sobrenome)),
       DataCell(_optionsTextBtns(position)),
