@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import '../providers/login_form_provider.dart';
 import '../providers/auth_provider.dart';
 import 'administrativo/gerenciar_pacientes_v1.dart';
-import 'administrativo/gerenciar_pedidos_v1.dart';
 import 'recuperar_senha.dart';
 
 import 'dart:html' as html;
@@ -448,7 +447,11 @@ class _LoginScreenState extends State<LoginScreen> {
         } else if (authStore.role == 'Administrador' ||
             authStore.role == 'Gerente') {
           Navigator.of(context).pushReplacementNamed(
-            GerenciarPedidosV1.routeName,
+            GerenciarPacientesV1.routeName,
+            arguments: ScreenArguments(
+              title: 'Gerenciar Pacientes',
+              message: '',
+            ),
           );
         }
       } //If logged out, autologin failed and passed query strings for rest, show reset ui

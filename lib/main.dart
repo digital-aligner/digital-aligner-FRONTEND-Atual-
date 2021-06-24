@@ -2,6 +2,7 @@ import 'package:digital_aligner_app/page_transition_web.dart';
 import 'package:digital_aligner_app/providers/check_new_data_provider.dart';
 import 'package:digital_aligner_app/providers/pacientes_list_provider.dart';
 import 'package:digital_aligner_app/providers/relatorio_provider.dart';
+import 'package:digital_aligner_app/screens/gerenciar_relatorio_v1.dart';
 import 'package:digital_aligner_app/screens/perfil.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
 
@@ -15,7 +16,6 @@ import 'package:provider/provider.dart';
 import './screens/login_screen.dart';
 
 import 'screens/administrativo/gerenciar_pacientes_v1.dart';
-import 'screens/administrativo/gerenciar_pedidos_v1.dart';
 import './screens/loading_screen.dart';
 import './screens/administrativo/gerenciar_cadastro.dart';
 import './screens/editar_cadastro.dart';
@@ -166,13 +166,13 @@ class MyApp extends StatelessWidget {
           ),
           routes: {
             GerenciarCadastros.routeName: (ctx) => GerenciarCadastros(),
-            GerenciarPedidosV1.routeName: (ctx) => GerenciarPedidosV1(),
             EditarCadastro.routeName: (ctx) => EditarCadastro(),
             GerenciarPermissoes.routeName: (ctx) => GerenciarPermissoes(),
             GerenciarPacientesV1.routeName: (ctx) => GerenciarPacientesV1(),
             VisualizarPacienteV1.routeName: (ctx) => VisualizarPacienteV1(),
             Perfil.routeName: (ctx) => Perfil(),
             PedidoV1Screen.routeName: (ctx) => PedidoV1Screen(),
+            GerenciarRelatorioV1.routeName: (ctx) => GerenciarRelatorioV1(),
           },
         ),
       ),

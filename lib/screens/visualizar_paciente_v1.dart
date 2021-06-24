@@ -34,10 +34,18 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
 
   //route arguments
   ScreenArguments _args = ScreenArguments();
-  List<bool> selectedListItem = [];
 
   //
   List<HistoricoPacV1> _historicoList = [];
+
+  //FOR VIEWING EACH MODEL TYPE
+  PedidoV1Model _pedidoView = PedidoV1Model();
+  PedidoV1Model _pedidoRefinamentoView = PedidoV1Model();
+  // relatorio model view (faltando)
+  // view alteração
+
+  //currently selected view: 0 = none, 1=pedidoView, 2=refinamentoView, 3=relatorioView, 4 = viewAlteracao
+  int _selectedView = 0;
 
   Future<List<HistoricoPacV1>> _fetchHistoricoPac() async {
     final response = await http.get(
@@ -119,11 +127,17 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     );
   }
 
-  Widget _helperBuilder(PedidoV1Model? p) {
-    if (p == null)
-      return Container();
-    else
-      return _viewPedido(p);
+  Widget _helperBuilder() {
+    if (_selectedView == 0)
+      return Container(
+        padding: EdgeInsets.only(top: 20),
+        height: 370,
+        child: Center(child: Text('Selecione um histórico para visualizar')),
+      );
+    else if (_selectedView == 1) {
+      return _viewPedido();
+    }
+    return Container();
   }
 
   Widget _pacienteAndHistoricoLayout() {
@@ -140,7 +154,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
           child: Container(
             padding: EdgeInsets.all(20),
             width: 800,
-            child: _helperBuilder(null),
+            child: _helperBuilder(),
           ),
         )
       ],
@@ -154,6 +168,16 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
       return format.format(dateTime);
     } catch (e) {
       return '';
+    }
+  }
+
+  void _mapDataToViews(int position) {
+    //check if codigo_status (codigoStatus) is cs_ped
+    if (_historicoList[position].status!.codigoStatus == 'cs_ped') {
+      setState(() {
+        _pedidoView = _historicoList[position].pedido ?? PedidoV1Model();
+        _selectedView = 1;
+      });
     }
   }
 
@@ -180,7 +204,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                               _historicoList[i].status!.status,
                         ),
                         onTap: () {
-                          print('ok!!');
+                          _mapDataToViews(i);
                         }, // Handle your onTap here.
                       );
                     },
@@ -197,7 +221,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
 
   //--------- VIEW PEDIDO WIDGET ------------
 
-  Widget _viewPedido(PedidoV1Model pedido) {
+  Widget _viewPedido() {
     //function to map files and get url
     List<Image> mapFilesToUi(List<FileModel> f) {
       List<Image> a = [];
@@ -233,7 +257,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'DA' + pedido.id.toString(),
+                'DA' + _pedidoView.id.toString(),
                 style: const TextStyle(
                   color: Colors.black54,
                   fontSize: 26,
@@ -278,7 +302,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                _dateFormat(pedido.dataNascimento),
+                _dateFormat(_pedidoView.dataNascimento),
               ),
             ),
           ),
@@ -302,7 +326,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(pedido.tratar),
+              child: Text(_pedidoView.tratar),
             ),
           ),
         ),
@@ -327,7 +351,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(pedido.queixaPrincipal),
+              child: Text(_pedidoView.queixaPrincipal),
             ),
           ),
         ),
@@ -350,7 +374,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(pedido.objetivosTratamento),
+              child: Text(_pedidoView.objetivosTratamento),
             ),
           ),
         ),
@@ -375,7 +399,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(pedido.linhaMediaSuperior),
+              child: Text(_pedidoView.linhaMediaSuperior),
             ),
           ),
         ),
@@ -398,7 +422,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(pedido.linhaMediaInferior),
+              child: Text(_pedidoView.linhaMediaInferior),
             ),
           ),
         ),
@@ -423,7 +447,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(pedido.overjet),
+              child: Text(_pedidoView.overjet),
             ),
           ),
         ),
@@ -446,7 +470,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(pedido.overbite),
+              child: Text(_pedidoView.overbite),
             ),
           ),
         ),
@@ -471,7 +495,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             color: Colors.black12.withOpacity(0.04),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(pedido.resApinSup),
+              child: Text(_pedidoView.resApinSup),
             ),
           ),
         ),
@@ -494,7 +518,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(pedido.resApinInf),
+              child: Text(_pedidoView.resApinInf),
             ),
           ),
         ),
@@ -519,7 +543,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(pedido.dentesExtVirtual),
+              child: Text(_pedidoView.dentesExtVirtual),
             ),
           ),
         ),
@@ -542,7 +566,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(pedido.dentesNaoMov),
+              child: Text(_pedidoView.dentesNaoMov),
             ),
           ),
         ),
@@ -567,7 +591,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(pedido.dentesSemAttach),
+              child: Text(_pedidoView.dentesSemAttach),
             ),
           ),
         ),
@@ -590,7 +614,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(pedido.opcAceitoDesg),
+              child: Text(_pedidoView.opcAceitoDesg),
             ),
           ),
         ),
@@ -615,7 +639,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(pedido.opcRecorteElas),
+              child: Text(_pedidoView.opcRecorteElas),
             ),
           ),
         ),
@@ -638,7 +662,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(pedido.opcRecorteAlin),
+              child: Text(_pedidoView.opcRecorteAlin),
             ),
           ),
         ),
@@ -663,7 +687,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(pedido.opcAlivioAlin),
+              child: Text(_pedidoView.opcAlivioAlin),
             ),
           ),
         ),
@@ -687,7 +711,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
               alignment: Alignment.centerLeft,
               child: Wrap(
                 spacing: 10,
-                children: mapFilesToUi(pedido.fotografias),
+                children: mapFilesToUi(_pedidoView.fotografias),
               ),
             ),
           ),
@@ -712,7 +736,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
               alignment: Alignment.centerLeft,
               child: Wrap(
                 spacing: 10,
-                children: mapFilesToUi(pedido.radiografias),
+                children: mapFilesToUi(_pedidoView.radiografias),
               ),
             ),
           ),

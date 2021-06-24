@@ -1,13 +1,11 @@
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pacientes_v1.dart';
-import 'package:digital_aligner_app/screens/administrativo/gerenciar_pedidos_v1.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_permissoes.dart';
 
 import 'package:digital_aligner_app/screens/perfil.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
 import 'package:digital_aligner_app/widgets/screen%20argument/screen_argument.dart';
 
-import '../screens/meus_pacientes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -100,15 +98,6 @@ class _MyDrawerState extends State<MyDrawer> {
                               print(selectedValue);
                               Navigator.of(context).pushReplacementNamed(
                                   GerenciarPermissoes.routeName);
-                            } else if (selectedValue == 'Gerenciar Pedidos') {
-                              ModalRoute<Object?>? route =
-                                  ModalRoute.of(context);
-                              final routeName = route!.settings.name;
-                              if (routeName != null &&
-                                  routeName != '/gerenciar-pedidos-v1') {
-                                Navigator.of(context).pushReplacementNamed(
-                                    GerenciarPedidosV1.routeName);
-                              }
                             } else if (selectedValue == 'Gerenciar Pacientes') {
                               ModalRoute<Object?>? route =
                                   ModalRoute.of(context);
@@ -141,16 +130,6 @@ class _MyDrawerState extends State<MyDrawer> {
                             }
                           },
                           itemBuilder: (_) => [
-                            PopupMenuItem(
-                              child: const Text(
-                                'Gerenciar Pedidos',
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: 'BigNoodleTitling',
-                                ),
-                              ),
-                              value: 'Gerenciar Pedidos',
-                            ),
                             PopupMenuItem(
                               child: const Text(
                                 'Gerenciar Cadastros',

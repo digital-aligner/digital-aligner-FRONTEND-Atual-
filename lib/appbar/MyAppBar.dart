@@ -1,7 +1,6 @@
 import 'package:digital_aligner_app/providers/check_new_data_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pacientes_v1.dart';
-import 'package:digital_aligner_app/screens/administrativo/gerenciar_pedidos_v1.dart';
 
 import 'package:digital_aligner_app/screens/perfil.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
@@ -11,7 +10,6 @@ import '../screens/administrativo/gerenciar_permissoes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/meus_pacientes.dart';
 import '../screens/administrativo/gerenciar_cadastro.dart';
 
 import '../providers/auth_provider.dart';
@@ -221,18 +219,6 @@ class _MyAppBarState extends State<MyAppBar> {
                     Navigator.of(context)
                         .pushReplacementNamed(GerenciarPermissoes.routeName);
                   }
-                } else if (selectedValue == 'Gerenciar Pedidos') {
-                  checkDataStore!.setfetchDataBool(true);
-                  ModalRoute<Object?>? route = ModalRoute.of(context);
-                  final routeName = route!.settings.name;
-
-                  if (routeName != null &&
-                      routeName != '/gerenciar-pedidos-v1') {
-                    //Remove any messages (if any) on changing routes
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    Navigator.of(context)
-                        .pushReplacementNamed(GerenciarPedidosV1.routeName);
-                  }
                 } else if (selectedValue == 'Gerenciar Pacientes') {
                   checkDataStore!.setfetchDataBool(true);
                   ModalRoute<Object?>? route = ModalRoute.of(context);
@@ -263,52 +249,6 @@ class _MyAppBarState extends State<MyAppBar> {
                 } else if (selectedValue == 'Minhas Revisões') {}
               },
               itemBuilder: (_) => [
-                PopupMenuItem(
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      const Text(
-                        'Gerenciar Pedidos',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontFamily: 'BigNoodleTitling',
-                        ),
-                      ),
-                      if (novosPedidosCount > 0)
-                        Positioned(
-                          top: -15,
-                          child: SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: ClipOval(
-                              child: Material(
-                                color: Colors.blue,
-                                child: Center(
-                                    child: Text(
-                                  novosPedidosCount.toString(),
-                                  style: const TextStyle(color: Colors.white),
-                                )),
-                              ),
-                            ),
-                          ),
-                        )
-                      else if (novosPedidosCount == -1)
-                        Positioned(
-                          top: -15,
-                          child: SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              valueColor: new AlwaysStoppedAnimation<Color>(
-                                Colors.blue,
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  value: 'Gerenciar Pedidos',
-                ),
                 PopupMenuItem(
                   child: const Text(
                     'Gerenciar Cadastros',

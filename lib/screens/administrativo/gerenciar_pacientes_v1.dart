@@ -2,6 +2,7 @@ import 'package:digital_aligner_app/appbar/MyAppBar.dart';
 import 'package:digital_aligner_app/appbar/MyDrawer.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
+import 'package:digital_aligner_app/screens/gerenciar_relatorio_v1.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/pedido_v1_model.dart';
 import 'package:digital_aligner_app/widgets/screen%20argument/screen_argument.dart';
 import 'package:flutter/material.dart';
@@ -43,18 +44,30 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   }
 
   Widget _relatorioTextBtn(int position) {
-    return TextButton(onPressed: () {}, child: Text(' visualizr relatório'));
+    return TextButton(onPressed: () {}, child: Text(' visualizar relatório'));
   }
 
   Widget _optionsTextBtns(int position) {
     return Wrap(
       children: [
         TextButton(
-          onPressed: () {
-            print('editar');
-          },
+          onPressed: () {},
           child: Text('editar'),
         ),
+        if (_authStore!.role == 'Administrador' ||
+            _authStore!.role == 'Gerente')
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed(
+                GerenciarRelatorioV1.routeName,
+                arguments: ScreenArguments(
+                  title: 'Criar relatório',
+                  messageInt: position,
+                ),
+              );
+            },
+            child: Text('Criar relatório'),
+          ),
       ],
     );
   }

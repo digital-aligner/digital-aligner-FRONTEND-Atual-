@@ -49,6 +49,12 @@ class _GerenciarPedidosV1State extends State<GerenciarPedidosV1> {
           },
           child: Text('editar'),
         ),
+        TextButton(
+          onPressed: () {
+            print('editar');
+          },
+          child: Text('Criar relatório'),
+        ),
       ],
     );
   }
