@@ -5,6 +5,7 @@ import 'package:digital_aligner_app/widgets/endereco_v1/endereco_model_.dart';
 
 class PedidoV1Model {
   int id;
+  FileModel? fotoPerfil;
   String nomePaciente;
   String dataNascimento;
   String tratar;
@@ -40,6 +41,7 @@ class PedidoV1Model {
 
   PedidoV1Model({
     this.id = 0,
+    this.fotoPerfil,
     this.nomePaciente = '',
     this.dataNascimento = '',
     this.tratar = '',

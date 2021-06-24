@@ -72,7 +72,9 @@ class RotasUrl {
   static const rotaEstadosV1 = rotaBase + 'estados-v1';
   static const rotaEnderecosV1 = rotaBase + 'enderecos-v1';
   static const rotaPedidosV1 = rotaBase + 'pedidos-v1/';
+  static const rotaPacienteFotoPerfilV1 = rotaBase + 'paciente-foto-perfil';
   static const rotaRelatoriosV1 = rotaBase + 'relatorios-v1/';
+  static const rotaAprovarRelatoriosV1 = rotaBase + 'relatorios-v1-aprovar';
   static const rotaHistoricoPacV1 = rotaBase + 'historico-pac-v1/';
 
   //Note: These delete routes only used on editing screens (editar pedido, editar relatório)

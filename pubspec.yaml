@@ -37,7 +37,7 @@ dependencies:
   file_picker: ^3.0.0
   #draggable_scrollbar: ^0.0.4
   #easy_web_view: ^1.4.0
-  #easy_web_view2: ^0.0.3
+  easy_web_view2: ^0.0.3
   responsive_grid: ^2.0.0
   native_pdf_view: ^4.0.1
   url_launcher: ^6.0.4
@@ -51,6 +51,8 @@ dependencies:
   group_button: ^2.2.2
   checkbox_grouped: ^1.4.0
   #just_audio: ^0.7.5
+  syncfusion_flutter_pdfviewer: ^19.1.69-beta
+  webviewx: ^0.1.0
 
 #TEMPORARY SOLUTION. When migrating to null safety remove.
 dependency_overrides:

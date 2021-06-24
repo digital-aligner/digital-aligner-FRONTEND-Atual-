@@ -6,12 +6,15 @@ import 'package:digital_aligner_app/appbar/MyDrawer.dart';
 
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
+import 'package:digital_aligner_app/screens/administrativo/gerenciar_cadastro.dart';
+import 'package:digital_aligner_app/screens/administrativo/gerenciar_pacientes_v1.dart';
 import 'package:digital_aligner_app/screens/login_screen.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/pedido_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/status_pedidov1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/usuario_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/uploader/file_uploader.dart';
 import 'package:digital_aligner_app/widgets/endereco_v1/endereco_model_.dart';
+import 'package:digital_aligner_app/widgets/screen%20argument/screen_argument.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 
 import 'package:flutter/material.dart';
@@ -43,7 +46,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   final _objContr = TextEditingController();
   //linha media
   final _linhaMediaSupContr = TextEditingController();
+  final _linhaMediaSupMMContr = TextEditingController();
   final _linhaMediaInfContr = TextEditingController();
+  final _linhaMediaInfMMContr = TextEditingController();
   //overjet
   final _overJetContr = TextEditingController();
   //overbite
@@ -196,7 +201,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     _queixaPrincipal.dispose();
     _tratarContr.dispose();
     _linhaMediaSupContr.dispose();
+    _linhaMediaSupMMContr.dispose();
     _linhaMediaInfContr.dispose();
+    _linhaMediaInfMMContr.dispose();
     _overJetContr.dispose();
     _overbiteContr.dispose();
     _resApinSupContr.dispose();
@@ -405,7 +412,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         direction: Axis.horizontal,
         children: <Widget>[
           SizedBox(
-            width: 200,
+            width: 265,
             child: Text(
               'Linha média superior: *',
               style: TextStyle(
@@ -429,6 +436,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                       mmLinhaMediaGPOvalue = '';
                       mmLinhaMediaSupVis = false;
                       _linhaMediaSupContr.text = value ?? '';
+                      _linhaMediaSupMMContr.text = '';
                     });
                   },
                 ),
@@ -443,7 +451,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   onChanged: (String? value) {
                     setState(() {
                       mmLinhaMediaGPOvalue = '';
-                      mmLinhaMediaSupVis = false;
+                      mmLinhaMediaSupVis = true;
                       _linhaMediaSupContr.text = value ?? '';
                     });
                   },
@@ -459,12 +467,13 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   onChanged: (String? value) {
                     setState(() {
                       mmLinhaMediaGPOvalue = '';
-                      mmLinhaMediaSupVis = false;
+                      mmLinhaMediaSupVis = true;
                       _linhaMediaSupContr.text = value ?? '';
                     });
                   },
                 ),
               ),
+              /*
               SizedBox(
                 width: 200,
                 child: RadioListTile<String>(
@@ -480,29 +489,26 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     });
                   },
                 ),
-              ),
+              ),*/
               Visibility(
-                visible: mmLinhaMediaSupVis,
+                visible: true,
                 child: SizedBox(
                   width: 80,
                   child: TextFormField(
                     maxLength: 5,
-                    enabled: true,
+                    enabled: mmLinhaMediaSupVis,
                     validator: (String? value) {
-                      /*
+                      if (!mmLinhaMediaSupVis) return null;
                       return value == null || value.isEmpty
                           ? 'Campo vazio'
-                          : null;*/
+                          : null;
                     },
                     //initialValue: _nomePacContr.text,
-                    //remover isso bug
-                    onChanged: (value) {
-                      _linhaMediaSupContr.text = value;
-                    },
                     onSaved: (value) {
-                      _linhaMediaSupContr.text = value ?? '';
+                      _linhaMediaSupContr.text =
+                          _linhaMediaSupContr.text + ', ' + (value ?? '');
                     },
-                    controller: _linhaMediaSupContr,
+                    controller: _linhaMediaSupMMContr,
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[
                       FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
@@ -535,9 +541,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         direction: Axis.horizontal,
         children: <Widget>[
           SizedBox(
-            width: 200,
+            width: 265,
             child: Text(
-              'Linha média superior: *',
+              'Linha média inferior: *',
               style: TextStyle(
                 fontSize: textSize,
               ),
@@ -558,6 +564,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     setState(() {
                       mmLinhaMediaInfVis = false;
                       _linhaMediaInfContr.text = value ?? '';
+                      _linhaMediaInfMMContr.text = '';
                     });
                   },
                 ),
@@ -571,7 +578,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   groupValue: _linhaMediaInfContr.text,
                   onChanged: (String? value) {
                     setState(() {
-                      mmLinhaMediaInfVis = false;
+                      mmLinhaMediaInfVis = true;
                       _linhaMediaInfContr.text = value ?? '';
                     });
                   },
@@ -586,12 +593,13 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   groupValue: _linhaMediaInfContr.text,
                   onChanged: (String? value) {
                     setState(() {
-                      mmLinhaMediaInfVis = false;
+                      mmLinhaMediaInfVis = true;
                       _linhaMediaInfContr.text = value ?? '';
                     });
                   },
                 ),
               ),
+              /*
               SizedBox(
                 width: 200,
                 child: RadioListTile<String>(
@@ -606,28 +614,26 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     });
                   },
                 ),
-              ),
+              ),*/
               Visibility(
-                visible: mmLinhaMediaInfVis,
+                visible: true,
                 child: SizedBox(
                   width: 80,
                   child: TextFormField(
                     maxLength: 5,
-                    enabled: true,
+                    enabled: mmLinhaMediaInfVis,
                     validator: (String? value) {
-                      /*
+                      if (!mmLinhaMediaInfVis) return null;
                       return value == null || value.isEmpty
                           ? 'Campo vazio'
-                          : null;*/
+                          : null;
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      _linhaMediaInfContr.text = value ?? '';
+                      _linhaMediaInfContr.text =
+                          _linhaMediaInfContr.text + ', ' + (value ?? '');
                     },
-                    onChanged: (value) {
-                      _linhaMediaInfContr.text = value;
-                    },
-                    controller: _linhaMediaInfContr,
+                    controller: _linhaMediaInfMMContr,
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[
                       FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
@@ -655,12 +661,12 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Wrap(
-        alignment: WrapAlignment.start,
+        alignment: WrapAlignment.spaceBetween,
         crossAxisAlignment: WrapCrossAlignment.center,
         direction: Axis.horizontal,
         children: <Widget>[
           SizedBox(
-            width: 367,
+            width: 100,
             child: Text(
               'Overjet: *',
               style: TextStyle(
@@ -715,6 +721,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   },
                 ),
               ),
+              SizedBox(
+                width: 80,
+              )
             ],
           ),
           Expanded(
@@ -790,10 +799,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     maxLength: 5,
                     enabled: true,
                     validator: (String? value) {
-                      /*
+                      if (!mmOverbiteVis1) return null;
                       return value == null || value.isEmpty
                           ? 'Campo vazio'
-                          : null;*/
+                          : null;
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
@@ -801,10 +810,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                         _overbiteContr.text =
                             'Intruir anterior sup (mm): ' + value;
                     },
-                    onChanged: (value) {
-                      _overbiteContr.text = value;
-                    },
-                    controller: _overbiteContr,
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[
                       FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
@@ -844,10 +849,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     maxLength: 5,
                     enabled: true,
                     validator: (String? value) {
-                      /*
+                      if (!mmOverbiteVis2) return null;
                       return value == null || value.isEmpty
                           ? 'Campo vazio'
-                          : null;*/
+                          : null;
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
@@ -855,10 +860,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                         _overbiteContr.text =
                             'Intruir anterior inf (mm): ' + value;
                     },
-                    onChanged: (value) {
-                      _overbiteContr.text = value;
-                    },
-                    controller: _overbiteContr,
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[
                       FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
@@ -898,10 +899,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     maxLength: 5,
                     enabled: true,
                     validator: (String? value) {
-                      /*
+                      if (!mmOverbiteVis3) return null;
                       return value == null || value.isEmpty
                           ? 'Campo vazio'
-                          : null;*/
+                          : null;
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
@@ -909,10 +910,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                         _overbiteContr.text =
                             'Extruir posterior sup (mm): ' + value;
                     },
-                    onChanged: (value) {
-                      _overbiteContr.text = value;
-                    },
-                    controller: _overbiteContr,
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[
                       FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
@@ -952,10 +949,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     maxLength: 5,
                     enabled: true,
                     validator: (String? value) {
-                      /*
+                      if (!mmOverbiteVis4) return null;
                       return value == null || value.isEmpty
                           ? 'Campo vazio'
-                          : null;*/
+                          : null;
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
@@ -963,10 +960,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                         _overbiteContr.text =
                             'Extruir posterior inf (mm): ' + value;
                     },
-                    onChanged: (value) {
-                      _overbiteContr.text = value;
-                    },
-                    controller: _overbiteContr,
+
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[
                       FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
@@ -1304,9 +1298,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     onSaved: (value) {
                       _opcRecorteElastico.text = value ?? '';
                     },
-                    onChanged: (value) {
-                      _opcRecorteElastico.text = value;
-                    },
                     controller: _opcRecorteElastico,
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[
@@ -1356,9 +1347,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     onSaved: (value) {
                       //_nomePacContr.text = value ?? '';
                     },
-                    onChanged: (value) {
-                      //_nomePacContr.text = value;
-                    },
                     controller: _opcRecorteBotao,
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[
@@ -1407,9 +1395,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
                       _opcBracoForca.text = value ?? '';
-                    },
-                    onChanged: (value) {
-                      _opcBracoForca.text = value;
                     },
                     controller: _opcBracoForca,
                     keyboardType: TextInputType.number,
@@ -1741,6 +1726,12 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     return Column(
       children: [
         DropdownSearch<EnderecoModel>(
+          validator: (value) {
+            if (value == null) {
+              return 'Por favor escolha endereco';
+            }
+            return null;
+          },
           dropdownBuilder: (buildContext, string, string2) {
             if (eModel.length == 0) {
               return Text('sem endereços');
@@ -1850,15 +1841,36 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               setState(() {
                 isSending = true;
               });
-
-              PedidoV1Model p = _mapFieldsToPedidoV1();
-              bool result = await _pedidoStore!.enviarPrimeiroPedido(
-                p,
-                _authStore!.token,
-              );
-              if (result) {
-                _msgPacienteCriado();
+              if (_formKey.currentState!.validate()) {
+                _formKey.currentState!.save();
+                PedidoV1Model p = _mapFieldsToPedidoV1();
+                bool result = await _pedidoStore!.enviarPrimeiroPedido(
+                  p,
+                  _authStore!.token,
+                );
+                if (result) {
+                  _msgPacienteCriado();
+                  if (_authStore!.role == 'Credenciado') {
+                    Navigator.of(context).pushReplacementNamed(
+                      GerenciarPacientesV1.routeName,
+                      arguments: ScreenArguments(
+                        title: 'Meus Pacientes',
+                        message: '',
+                      ),
+                    );
+                  } else if (_authStore!.role == 'Administrador' ||
+                      _authStore!.role == 'Gerente') {
+                    Navigator.of(context).pushReplacementNamed(
+                      GerenciarPacientesV1.routeName,
+                      arguments: ScreenArguments(
+                        title: 'Gerenciar Pacientes',
+                        message: '',
+                      ),
+                    );
+                  }
+                }
               }
+
               setState(() {
                 isSending = false;
               });
@@ -1873,7 +1885,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   }
 
   Future<void> _getTermos() async {
-    String t = await rootBundle.loadString('assets/texts/termos.txt');
+    String t = await rootBundle.loadString('texts/termos.txt');
     setState(() {
       termos = t;
     });

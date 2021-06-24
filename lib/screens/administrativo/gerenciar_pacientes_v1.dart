@@ -58,13 +58,34 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
             _authStore!.role == 'Gerente')
           TextButton(
             onPressed: () {
-              Navigator.of(context).pushNamed(
+              Navigator.of(context)
+                  .pushNamed(
                 GerenciarRelatorioV1.routeName,
                 arguments: ScreenArguments(
                   title: 'Criar relatório',
                   messageInt: position,
                 ),
-              );
+              )
+                  .then((value) {
+                if (value != null) {
+                  if (value == true) {
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: const Duration(seconds: 2),
+                        content: Text(
+                          'Relatório criado',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
+                    setState(() {
+                      isfetchPedidos = true;
+                      firstRun = true;
+                    });
+                  }
+                }
+              });
             },
             child: Text('Criar relatório'),
           ),

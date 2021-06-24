@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Viewstl Javascript Plugin - Modelo superior</title>
+    </head>
+
+    <style>
+        body {
+            text-align: center;
+            background-color: #ECECEC;
+        }
+    
+        progress {
+            display: block;
+            margin: 0 auto 10px auto;
+            width: 60%;
+        }
+    
+        .p-total {
+            height: 3em;
+            width: 80%;
+        }
+    </style>
+    
+    <script>
+        function load_prog(load_status, load_session) {
+            var loaded = 0;
+            //var total = 0;
+
+            //go over all models that are/were loaded
+            Object.keys(load_status).forEach(function (model_id) {
+                if (load_status[model_id].load_session == load_session) //need to make sure we're on the last loading session (not counting previous loaded models)
+                {
+                    loaded += load_status[model_id].loaded;
+                    //total += load_status[model_id].total;
+
+                    //set the relevant model's progress bar
+                    document.getElementById("pb" + model_id).value = load_status[model_id].loaded / load_status[model_id].total;
+                }
+            });
+
+            //set total progress bar
+            //document.getElementById("pbtotal").value = loaded / total;
+        }    
+    </script>
+
+
+
+    <body>
+
+        Carregando Modelo Superior... <br>
+        <progress id="pb1" value="0" max="1"></progress>
+
+        <div id="stl_viewer" style="width:600px; height:400px;margin:0 auto;" onclick="stopRotation()"></div>
+
+        <script src="stl_viewer.min.js" ></script>        
+        <script>
+
+            function stopRotation(){
+                stl_viewer.models[0].animation = {};
+            }
+
+
+            // Getting url from local storage string
+            var jsonStringData = localStorage.getItem("flutter.modelos_3d_url");
+
+            //To remove the "/" used to escape double quotes
+            var jsonData = JSON.parse(jsonStringData);
+            //Used to convert the resulting json string to json object
+            var jsonObj = JSON.parse(jsonData);
+
+            //ENABLE CORS ON S3 BUCKET BEFORE REQUEST
+            var stl_viewer=new StlViewer
+
+            (
+                document.getElementById("stl_viewer"),
+                {
+                    loading_progress_callback: load_prog,
+                    zoom: 80,
+                    models:
+                    [
+                        {filename:`${jsonObj.modelo_superior}`, rotationx: -1.6, animation: { delta: { rotationz: 0.1, msec: 1000, loop: true } }}
+                    ]
+                }
+            );
+
+            
+        </script>
+
+
+
+
+        
+    </body>

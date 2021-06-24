@@ -16,6 +16,7 @@ import 'package:http/http.dart' as http;
 import 'package:responsive_grid/responsive_grid.dart';
 
 import '../rotas_url.dart';
+import 'administrativo/gerenciar_pacientes_v1.dart';
 import 'screens_pedidos_v1/uploader/file_uploader.dart';
 import 'screens_pedidos_v1/uploader/model/FileModel.dart';
 
@@ -358,7 +359,10 @@ class GerenciarRelatorioV1State extends State<GerenciarRelatorioV1> {
                     });
 
                     if (_formKey.currentState!.validate()) {
-                      await _enviarPrimeiroPedido();
+                      bool result = await _enviarPrimeiroPedido();
+                      if (result) {
+                        Navigator.pop(context, true);
+                      }
                     }
                     setState(() {
                       blockUi = false;
@@ -480,19 +484,25 @@ class GerenciarRelatorioV1State extends State<GerenciarRelatorioV1> {
       appBar: SecondaryAppbar(),
       // *BUG* Verify closing drawer automaticlly when under 1200
       drawer: _screenSize!.width < 1200 ? MyDrawer() : null,
-      body: RawScrollbar(
-        thumbColor: Colors.grey,
-        thickness: 15,
-        isAlwaysShown: true,
-        child: SingleChildScrollView(
-          child: Container(
-            height: _screenSize!.width < 1200 ? 1000 : 800,
-            padding: const EdgeInsets.symmetric(horizontal: 100),
-            child: Column(
-              children: <Widget>[
-                _header(),
-                _pacienteAndRelatorioLayout(),
-              ],
+      body: WillPopScope(
+        onWillPop: () async {
+          Navigator.pop(context, false);
+          return false;
+        },
+        child: RawScrollbar(
+          thumbColor: Colors.grey,
+          thickness: 15,
+          isAlwaysShown: true,
+          child: SingleChildScrollView(
+            child: Container(
+              height: _screenSize!.width < 1200 ? 1000 : 800,
+              padding: const EdgeInsets.symmetric(horizontal: 100),
+              child: Column(
+                children: <Widget>[
+                  _header(),
+                  _pacienteAndRelatorioLayout(),
+                ],
+              ),
             ),
           ),
         ),
