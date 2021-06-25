@@ -14,9 +14,14 @@ class AuthProvider with ChangeNotifier {
   int _userId = 0;
   String _userName = '';
   String _role = '';
+  int _roleId = 0;
 
   int get id {
     return _userId;
+  }
+
+  int get roleId {
+    return _roleId;
   }
 
   bool get isAuth {
@@ -59,6 +64,7 @@ class AuthProvider with ChangeNotifier {
     _userId = extractedUserData['userId'];
     _userName = extractedUserData['userName'];
     _role = extractedUserData['role'];
+    _roleId = extractedUserData['roleId'];
     _expiryDate = expiryDate;
     //notifyListeners();
     return true;
@@ -70,6 +76,7 @@ class AuthProvider with ChangeNotifier {
     _userName = '';
     _role = '';
     _expiryDate = null;
+    _roleId = 0;
 
     final prefs = await SharedPreferences.getInstance();
     prefs.remove('digitalAlignerData');
@@ -120,6 +127,7 @@ class AuthProvider with ChangeNotifier {
       _userId = responseData['user']['id'];
       _userName = responseData['user']['nome'];
       _role = responseData['user']['role']['name'];
+      _roleId = responseData['user']['role']['id'];
 
       //notifyListeners();
       //Save token in device (web or mobile)
@@ -129,6 +137,7 @@ class AuthProvider with ChangeNotifier {
         'userId': _userId,
         'userName': _userName,
         'role': _role,
+        'roleId': _roleId,
         'expiryDate': _expiryDate!.toIso8601String(),
       });
       prefs.setString('digitalAlignerData', userData);

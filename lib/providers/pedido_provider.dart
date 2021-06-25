@@ -112,11 +112,11 @@ class PedidoProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> fetchAllPedidos(String token) async {
+  Future<bool> fetchAllPedidos({String token = '', int roleId = 0}) async {
     clearDataAllProviderData();
     final response = await http.get(
       Uri.parse(
-        RotasUrl.rotaPedidosV1,
+        RotasUrl.rotaPedidosV1 + '?roleId=' + roleId.toString(),
       ),
       headers: {
         'Content-Type': 'application/json',

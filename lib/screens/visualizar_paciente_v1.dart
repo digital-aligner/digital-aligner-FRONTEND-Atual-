@@ -14,7 +14,7 @@ import 'package:digital_aligner_app/widgets/screen%20argument/screen_argument.da
 import 'package:easy_web_view2/easy_web_view2.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -22,7 +22,6 @@ import 'package:responsive_grid/responsive_grid.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import '../rotas_url.dart';
-import 'administrativo/gerenciar_pacientes_v1.dart';
 
 class VisualizarPacienteV1 extends StatefulWidget {
   static const routeName = '/visualizar-paciente-v1';
@@ -179,14 +178,26 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     }
   }
 */
+
+  Widget _manageHeaderText() {
+    var pedido = _pedidoStore!.getPedido(position: _args.messageInt);
+    if (pedido.pedidoRefinamento) {
+      return Text(
+        pedido.nomePaciente + ' (refinamento)',
+        style: Theme.of(context).textTheme.headline1,
+      );
+    }
+    return Text(
+      pedido.nomePaciente,
+      style: Theme.of(context).textTheme.headline1,
+    );
+  }
+
   Widget _header() {
     return SizedBox(
       height: 100,
       child: Center(
-        child: Text(
-          _pedidoStore!.getPedido(position: _args.messageInt).nomePaciente,
-          style: Theme.of(context).textTheme.headline1,
-        ),
+        child: _manageHeaderText(),
       ),
     );
   }
@@ -215,67 +226,71 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
   }
 */
   Widget _pacienteDados() {
-    return Card(
-      elevation: 10,
-      child: SizedBox(
-        width: 300,
-        height: 100,
-        child: Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              TextButton(
-                onPressed: () async {
-                  //await _openFileExplorer();
-                  //await _sendFile(_filesData[0]);
-                  //setState(() {});
-                },
-                child: /*_displayFotoPerfil()*/ Image
-                    .asset('logos/user_avatar.png'),
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton(
-                    onPressed: () {},
-                    child: Text('editar paciente'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _selectedView = 0;
-                        _selectedTilePos = -1;
-                      });
+    bool refinamento =
+        _pedidoStore!.getPedido(position: _args.messageInt).pedidoRefinamento;
+    if (!refinamento)
+      return Card(
+        elevation: 10,
+        child: SizedBox(
+          width: 300,
+          height: 100,
+          child: Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: () async {
+                    //await _openFileExplorer();
+                    //await _sendFile(_filesData[0]);
+                    //setState(() {});
+                  },
+                  child: /*_displayFotoPerfil()*/ Image
+                      .asset('logos/user_avatar.png'),
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () {},
+                      child: Text('editar paciente'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _selectedView = 0;
+                          _selectedTilePos = -1;
+                        });
 
-                      var p = _pedidoStore!.getPedido(
-                        position: _args.messageInt,
-                      );
+                        var p = _pedidoStore!.getPedido(
+                          position: _args.messageInt,
+                        );
 
-                      Navigator.of(context)
-                          .pushNamed(
-                            PedidoV1Screen.routeName,
-                            arguments: ScreenArguments(
-                              title: 'Pedido de refinamento',
-                              messageMap: {
-                                'pedidoId': p.id,
-                                'isRefinamento': true,
-                                'nomePaciente': p.nomePaciente,
-                                'dataNascimento': p.dataNascimento,
-                              },
-                            ),
-                          )
-                          .then((value) {});
-                    },
-                    child: Text('Solicitar refinamento'),
-                  ),
-                ],
-              )
-            ],
+                        Navigator.of(context)
+                            .pushNamed(
+                              PedidoV1Screen.routeName,
+                              arguments: ScreenArguments(
+                                title: 'Pedido de refinamento',
+                                messageMap: {
+                                  'pedidoId': p.id,
+                                  'isRefinamento': true,
+                                  'nomePaciente': p.nomePaciente,
+                                  'dataNascimento': p.dataNascimento,
+                                },
+                              ),
+                            )
+                            .then((value) {});
+                      },
+                      child: Text('Solicitar refinamento'),
+                    ),
+                  ],
+                )
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    return Container();
   }
 
   Widget _helperBuilder() {

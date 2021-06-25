@@ -189,7 +189,10 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     if (firstRun) {
       _pedidoStore!.clearDataAllProviderData();
       _pedidoStore!
-          .fetchAllPedidos(_authStore!.token)
+          .fetchAllPedidos(
+        token: _authStore!.token,
+        roleId: _authStore!.roleId,
+      )
           .then((bool fetchSuccessful) {
         if (fetchSuccessful)
           setState(() => isfetchPedidos = false);
