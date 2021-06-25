@@ -59,8 +59,8 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
   //currently selected view: 0 = none, 1=pedidoView, 2=refinamentoView, 3=relatorioView, 4 = viewAlteracao
   int _selectedView = 0;
 
-  List<PlatformFile> _filesData = <PlatformFile>[];
-  List<FileModel> _serverFiles = [];
+  //List<PlatformFile> _filesData = <PlatformFile>[];
+  //List<FileModel> _serverFiles = [];
 
   Future<List<HistoricoPacV1>> _fetchHistoricoPac() async {
     final response = await http.get(
@@ -95,6 +95,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     return [];
   }
 
+/*
   MultipartRequest _buildRequest(PlatformFile currentFile) {
     final uri = Uri.parse(RotasUrl.rotaUpload);
 
@@ -113,7 +114,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     ));
     return request;
   }
-
+  
   Future<void> _sendFile(PlatformFile currentFile) async {
     //build request
     MultipartRequest r = _buildRequest(currentFile);
@@ -175,7 +176,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
       throw ('Nenhum arquivo escolhido.');
     }
   }
-
+*/
   Widget _header() {
     return SizedBox(
       height: 100,
@@ -188,6 +189,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     );
   }
 
+  /*
   Widget _displayFotoPerfil() {
     if (_pedidoView.fotoPerfil == null ||
         _pedidoView.fotoPerfil!.url!.isEmpty ||
@@ -209,7 +211,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
       );
     }
   }
-
+*/
   Widget _pacienteDados() {
     return Card(
       elevation: 10,
@@ -223,11 +225,12 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             children: [
               TextButton(
                 onPressed: () async {
-                  await _openFileExplorer();
-                  await _sendFile(_filesData[0]);
-                  setState(() {});
+                  //await _openFileExplorer();
+                  //await _sendFile(_filesData[0]);
+                  //setState(() {});
                 },
-                child: _displayFotoPerfil(),
+                child: /*_displayFotoPerfil()*/ Image
+                    .asset('logos/user_avatar.png'),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
