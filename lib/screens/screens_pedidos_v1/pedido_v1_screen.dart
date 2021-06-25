@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:digital_aligner_app/appbar/MyAppBar.dart';
 import 'package:digital_aligner_app/appbar/MyDrawer.dart';
+import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
 
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
-import 'package:digital_aligner_app/screens/administrativo/gerenciar_cadastro.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pacientes_v1.dart';
 import 'package:digital_aligner_app/screens/login_screen.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/pedido_v1_model.dart';
@@ -37,6 +37,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   PedidoProvider? _pedidoStore;
   AuthProvider? _authStore;
   Size? _screenSize;
+
+  // pedido type (for post request)
+  String tipoPedido = 'pedido';
+
   //dados paciente
   final _nomePacContr = TextEditingController();
   final _dataNascContr = TextEditingController();
@@ -47,12 +51,19 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   //linha media
   final _linhaMediaSupContr = TextEditingController();
   final _linhaMediaSupMMContr = TextEditingController();
+  //supcontr + sup mm on send
+  String _linhaMediaSupComplete = '';
+
   final _linhaMediaInfContr = TextEditingController();
   final _linhaMediaInfMMContr = TextEditingController();
+  //infcontr + inf mm on send
+  String _linhaMediaInfComplete = '';
   //overjet
   final _overJetContr = TextEditingController();
   //overbite
   final _overbiteContr = TextEditingController();
+  //overbitecont + mm
+  String _overbiteComplete = '';
   //res apinh
   final List<String> resApinUiList = const [
     'DIP (Desgaste Interproximal)',
@@ -122,8 +133,15 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   String termos = '';
   //status pedido (id = 1 for new pedidos)
   int statusPedido = 1;
+  //pedido of type refinamento
+  bool _isPedidoRefinamento = false;
+  //payload
+  Map<String, dynamic> _payload = Map();
 
   //ui
+  bool _nomePacienteEnabled = true;
+  bool _dataNascimentoEnabled = true;
+
   double textSize = 18;
   bool mmLinhaMediaSupVis = false;
   bool mmLinhaMediaInfVis = false;
@@ -137,6 +155,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
 
   bool firstRun = true;
 
+  ScreenArguments _args = ScreenArguments();
+
   PedidoV1Model _mapFieldsToPedidoV1() {
     try {
       PedidoV1Model p = PedidoV1Model(
@@ -145,10 +165,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         tratar: _tratarContr.text,
         queixaPrincipal: _queixaPrincipal.text,
         objetivosTratamento: _objContr.text,
-        linhaMediaSuperior: _linhaMediaSupContr.text,
-        linhaMediaInferior: _linhaMediaInfContr.text,
+        linhaMediaSuperior: _linhaMediaSupComplete,
+        linhaMediaInferior: _linhaMediaInfComplete,
         overjet: _overJetContr.text,
-        overbite: _overbiteContr.text,
+        overbite: _overbiteComplete,
         resApinSup: _resApinSupContr.text,
         resApinInf: _resApinInfContr.text,
         dentesExtVirtual: _extracaoVirtualContr.text,
@@ -163,6 +183,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         enderecoEntrega: enderecoSelecionado,
         usuario: UsuarioV1Model(id: _authStore!.id),
         statusPedido: StatusPedidoV1Model(id: statusPedido),
+        pedidoRefinamento: _isPedidoRefinamento,
+        payload: _payload,
       );
 
       return p;
@@ -225,7 +247,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: TextFormField(
         maxLength: 60,
-        enabled: true,
+        enabled: _nomePacienteEnabled,
         validator: (String? value) {
           return value == null || value.isEmpty ? 'Campo vazio' : null;
         },
@@ -249,6 +271,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: DateTimeField(
+        enabled: _dataNascimentoEnabled,
+        initialValue: DateTime.tryParse(_dataNascContr.text),
         onSaved: (DateTime? value) {
           _dataNascContr.text = value.toString();
         },
@@ -505,8 +529,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      _linhaMediaSupContr.text =
-                          _linhaMediaSupContr.text + ', ' + (value ?? '');
+                      _linhaMediaSupComplete =
+                          _linhaMediaSupContr.text + ': ' + (value ?? '');
                     },
                     controller: _linhaMediaSupMMContr,
                     keyboardType: TextInputType.number,
@@ -630,8 +654,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     },
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
-                      _linhaMediaInfContr.text =
-                          _linhaMediaInfContr.text + ', ' + (value ?? '');
+                      _linhaMediaInfComplete =
+                          _linhaMediaInfContr.text + ': ' + (value ?? '');
                     },
                     controller: _linhaMediaInfMMContr,
                     keyboardType: TextInputType.number,
@@ -807,8 +831,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
                       if (value != null)
-                        _overbiteContr.text =
-                            'Intruir anterior sup (mm): ' + value;
+                        _overbiteComplete = 'Intruir anterior sup: ' + value;
                     },
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[
@@ -857,8 +880,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
                       if (value != null)
-                        _overbiteContr.text =
-                            'Intruir anterior inf (mm): ' + value;
+                        _overbiteComplete = 'Intruir anterior inf: ' + value;
                     },
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[
@@ -907,8 +929,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
                       if (value != null)
-                        _overbiteContr.text =
-                            'Extruir posterior sup (mm): ' + value;
+                        _overbiteComplete = 'Extruir posterior sup: ' + value;
                     },
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[
@@ -957,8 +978,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     //initialValue: _nomePacContr.text,
                     onSaved: (value) {
                       if (value != null)
-                        _overbiteContr.text =
-                            'Extruir posterior inf (mm): ' + value;
+                        _overbiteComplete = 'Extruir posterior inf: ' + value;
                     },
 
                     keyboardType: TextInputType.number,
@@ -1677,7 +1697,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       height: 100,
       child: Center(
         child: Text(
-          'Novo paciente',
+          _args.title.isEmpty ? 'Novo paciente' : _args.title,
           style: Theme.of(context).textTheme.headline1,
         ),
       ),
@@ -1786,6 +1806,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             child: AlertDialog(
               title: Text('Termos'),
               content: RawScrollbar(
+                  radius: Radius.circular(10),
                   thumbColor: Colors.grey,
                   thickness: 15,
                   isAlwaysShown: true,
@@ -1820,13 +1841,13 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     );
   }
 
-  ScaffoldFeatureController _msgPacienteCriado() {
+  ScaffoldFeatureController _msgPacienteCriado(String msg) {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         duration: const Duration(seconds: 2),
         content: Text(
-          'Paciente criado com sucesso',
+          msg,
           textAlign: TextAlign.center,
         ),
       ),
@@ -1845,11 +1866,17 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                 _formKey.currentState!.save();
                 PedidoV1Model p = _mapFieldsToPedidoV1();
                 bool result = await _pedidoStore!.enviarPrimeiroPedido(
-                  p,
-                  _authStore!.token,
+                  pedido: p,
+                  token: _authStore!.token,
+                  tipoPedido: tipoPedido,
                 );
                 if (result) {
-                  _msgPacienteCriado();
+                  if (tipoPedido == 'refinamento') {
+                    _msgPacienteCriado('Refinamento criado com sucesso!');
+                    Navigator.pop(context);
+                    return;
+                  }
+                  _msgPacienteCriado('Pedido criado com sucesso!');
                   if (_authStore!.role == 'Credenciado') {
                     Navigator.of(context).pushReplacementNamed(
                       GerenciarPacientesV1.routeName,
@@ -1898,10 +1925,44 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     _screenSize = MediaQuery.of(context).size;
     _getTermos();
     if (firstRun) {
-      _pedidoStore!.clearDataAllProviderData();
+      try {
+        _args = ModalRoute.of(context)!.settings.arguments as ScreenArguments;
+      } catch (e) {
+        print(e);
+      }
+      //if is new paciente, and not refinamento clear data
+      if (_args.messageMap != null) {
+        if (_args.messageMap!.containsKey('isRefinamento')) {
+          if (_args.messageMap!['isRefinamento'] == false) {
+            _pedidoStore!.clearDataAllProviderData();
+            tipoPedido = 'pedido';
+          } else {
+            _isPedidoRefinamento = true;
+            _dataNascimentoEnabled = false;
+            _nomePacienteEnabled = false;
+            _payload = {
+              'pedidoId': _args.messageMap!['pedidoId'] ?? '',
+            };
+            tipoPedido = 'refinamento';
+          }
+        }
+        if (_args.messageMap!.containsKey('nomePaciente')) {
+          _nomePacContr.text = _args.messageMap!['nomePaciente'];
+          _dataNascContr.text = _args.messageMap!['dataNascimento'];
+        }
+      }
       firstRun = false;
     }
     super.didChangeDependencies();
+  }
+
+  PreferredSizeWidget _buildAppbar() {
+    if (_args.messageMap != null) {
+      if (_args.messageMap!.containsKey('isRefinamento')) {
+        return SecondaryAppbar();
+      }
+    }
+    return MyAppBar();
   }
 
   @override
@@ -1910,10 +1971,11 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       return LoginScreen();
     }
     return Scaffold(
-      appBar: MyAppBar(),
+      appBar: _buildAppbar(),
       // *BUG* Verify closing drawer automaticlly when under 1200
       drawer: _screenSize!.width < 1200 ? MyDrawer() : null,
       body: RawScrollbar(
+        radius: Radius.circular(10),
         thumbColor: Colors.grey,
         thickness: 15,
         isAlwaysShown: true,

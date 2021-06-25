@@ -218,6 +218,7 @@ class _EditarCadastroState extends State<EditarCadastro> {
           width: sWidth,
           height: sHeight,
           child: RawScrollbar(
+              radius: Radius.circular(10),
               thumbColor: Colors.grey,
               thickness: 15,
               isAlwaysShown: true,

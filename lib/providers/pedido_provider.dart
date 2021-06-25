@@ -57,12 +57,35 @@ class PedidoProvider with ChangeNotifier {
     return p;
   }
 
-  Future<bool> enviarPrimeiroPedido(PedidoV1Model p, String token) async {
-    PedidoV1Model pedidoCompleto = _mapFirstPedidoFilesToObj(p);
+  Future<bool> enviarPrimeiroPedido({
+    PedidoV1Model? pedido,
+    String token = '',
+    String tipoPedido = '',
+  }) async {
+    PedidoV1Model pedidoCompleto = _mapFirstPedidoFilesToObj(pedido!);
+    String rota = '';
+
+    switch (tipoPedido) {
+      case 'pedido':
+        {
+          rota = RotasUrl.rotaPedidosV1;
+        }
+        break;
+      case 'refinamento':
+        {
+          rota = RotasUrl.rotaPedidosRefinamentoV1;
+        }
+        break;
+      default:
+        {
+          rota = '';
+        }
+        break;
+    }
 
     try {
       var _response = await http.post(
-        Uri.parse(RotasUrl.rotaPedidosV1),
+        Uri.parse(rota),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',

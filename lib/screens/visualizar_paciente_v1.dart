@@ -8,6 +8,7 @@ import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/historico_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/pedido_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/relatorio_v1_model.dart';
+import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/uploader/model/FileModel.dart';
 import 'package:digital_aligner_app/widgets/screen%20argument/screen_argument.dart';
 import 'package:easy_web_view2/easy_web_view2.dart';
@@ -21,6 +22,7 @@ import 'package:responsive_grid/responsive_grid.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import '../rotas_url.dart';
+import 'administrativo/gerenciar_pacientes_v1.dart';
 
 class VisualizarPacienteV1 extends StatefulWidget {
   static const routeName = '/visualizar-paciente-v1';
@@ -41,7 +43,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
   final ScrollController _scrollController = ScrollController();
   ValueKey key1 = ValueKey('1');
   ValueKey key2 = ValueKey('2');
-
+  bool _modeloVisivel = false;
   //route arguments
   ScreenArguments _args = ScreenArguments();
 
@@ -240,7 +242,31 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                     child: Text('editar paciente'),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {
+                        _selectedView = 0;
+                        _selectedTilePos = -1;
+                      });
+
+                      var p = _pedidoStore!.getPedido(
+                        position: _args.messageInt,
+                      );
+
+                      Navigator.of(context)
+                          .pushNamed(
+                            PedidoV1Screen.routeName,
+                            arguments: ScreenArguments(
+                              title: 'Pedido de refinamento',
+                              messageMap: {
+                                'pedidoId': p.id,
+                                'isRefinamento': true,
+                                'nomePaciente': p.nomePaciente,
+                                'dataNascimento': p.dataNascimento,
+                              },
+                            ),
+                          )
+                          .then((value) {});
+                    },
                     child: Text('Solicitar refinamento'),
                   ),
                 ],
@@ -307,6 +333,14 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
         _pedidoView = _historicoList[position].pedido ?? PedidoV1Model();
         _selectedView = 1;
       });
+    }
+    if (_historicoList[position].status!.codigoStatus == 'cs_ref') {
+      setState(() {
+        _pedidoView =
+            _historicoList[position].pedidoRefinamento ?? PedidoV1Model();
+        //will use the same model for now
+        _selectedView = 1;
+      });
     } else if (_historicoList[position].status!.codigoStatus == 'cs_rel') {
       setState(() {
         _relatorioView =
@@ -363,6 +397,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                           ),
                           onTap: () {
                             setState(() {
+                              _modeloVisivel = false;
                               _selectedTilePos = i;
                             });
                             _mapDataToViews(i);
@@ -476,512 +511,531 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
       return a;
     }
 
-    return ResponsiveGridRow(
+    return Column(
       children: [
-        //codigo pedido (headline)
-        ResponsiveGridCol(
-          lg: 12,
-          child: Container(
-            //color: Colors.black12.withOpacity(0.04),
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'DA' + _pedidoView.id.toString(),
-                style: const TextStyle(
-                  color: Colors.black54,
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
+        ResponsiveGridRow(
+          children: [
+            //codigo pedido (headline)
+            ResponsiveGridCol(
+              lg: 12,
+              child: Container(
+                //color: Colors.black12.withOpacity(0.04),
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'DA' + _pedidoView.id.toString(),
+                    style: const TextStyle(
+                      color: Colors.black54,
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-        ResponsiveGridCol(
-          lg: 12,
-          child: Container(
-            //color: Colors.black12.withOpacity(0.04),
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Divider(
-                color: Colors.black38,
+            ResponsiveGridCol(
+              lg: 12,
+              child: Container(
+                //color: Colors.black12.withOpacity(0.04),
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Divider(
+                    color: Colors.black38,
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-        //Data nasc.
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            color: Colors.black12.withOpacity(0.04),
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(' Data de Nascimento: '),
-            ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            color: Colors.black12.withOpacity(0.04),
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                _dateFormat(_pedidoView.dataNascimento),
+            //Data nasc.
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                color: Colors.black12.withOpacity(0.04),
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(' Data de Nascimento: '),
+                ),
               ),
             ),
-          ),
-        ),
-        //tratar
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(' Tratar: '),
-            ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(_pedidoView.tratar),
-            ),
-          ),
-        ),
-        //queixa principal
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            color: Colors.black12.withOpacity(0.04),
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(' Queixa principal: '),
-            ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            color: Colors.black12.withOpacity(0.04),
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(_pedidoView.queixaPrincipal),
-            ),
-          ),
-        ),
-        //objetivos do tratamento
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(' Objetivos do tratamento: '),
-            ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(_pedidoView.objetivosTratamento),
-            ),
-          ),
-        ),
-        //linha media superior
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            color: Colors.black12.withOpacity(0.04),
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(' Linha média superior: '),
-            ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            color: Colors.black12.withOpacity(0.04),
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(_pedidoView.linhaMediaSuperior),
-            ),
-          ),
-        ),
-        //linha media superior
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(' Linha média inferior: '),
-            ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(_pedidoView.linhaMediaInferior),
-            ),
-          ),
-        ),
-        //overjet
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            color: Colors.black12.withOpacity(0.04),
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(' Overjet: '),
-            ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            color: Colors.black12.withOpacity(0.04),
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(_pedidoView.overjet),
-            ),
-          ),
-        ),
-        //overbite
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(' Overbite: '),
-            ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(_pedidoView.overbite),
-            ),
-          ),
-        ),
-        //Resolução de apinhamento superior
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            color: Colors.black12.withOpacity(0.04),
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(' Resolução de apinhamento superior: '),
-            ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            height: 50,
-            color: Colors.black12.withOpacity(0.04),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(_pedidoView.resApinSup),
-            ),
-          ),
-        ),
-        //Resolução de apinhamento inferior
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(' Resolução de apinhamento inferior: '),
-            ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(_pedidoView.resApinInf),
-            ),
-          ),
-        ),
-        //Extração virtual de dentes
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            color: Colors.black12.withOpacity(0.04),
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(' Extração virtual: '),
-            ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            color: Colors.black12.withOpacity(0.04),
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(_pedidoView.dentesExtVirtual),
-            ),
-          ),
-        ),
-        //Não movimentar os seguintes dentes
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(' Não movimentar: '),
-            ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(_pedidoView.dentesNaoMov),
-            ),
-          ),
-        ),
-        //Não colocar attachments
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            color: Colors.black12.withOpacity(0.04),
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(' Não colocar attachments: '),
-            ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            color: Colors.black12.withOpacity(0.04),
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(_pedidoView.dentesSemAttach),
-            ),
-          ),
-        ),
-        //Aceito desgastes interproximais (DIP)
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(' Aceito desgastes interproximais (DIP): '),
-            ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(_pedidoView.opcAceitoDesg),
-            ),
-          ),
-        ),
-        //Recorte para elástico no alinhador
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            color: Colors.black12.withOpacity(0.04),
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(' Recorte para elástico no alinhador: '),
-            ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            color: Colors.black12.withOpacity(0.04),
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(_pedidoView.opcRecorteElas),
-            ),
-          ),
-        ),
-        //Recorte no alinhador para botão
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(' Recorte no alinhador para botão: '),
-            ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(_pedidoView.opcRecorteAlin),
-            ),
-          ),
-        ),
-        //Alívio no alinhador para braço de força
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            color: Colors.black12.withOpacity(0.04),
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(' Alívio no alinhador para braço de força: '),
-            ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            color: Colors.black12.withOpacity(0.04),
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(_pedidoView.opcAlivioAlin),
-            ),
-          ),
-        ),
-        //Fotografias
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(' Fotografias: '),
-            ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            padding: EdgeInsets.all(10),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Wrap(
-                spacing: 10,
-                children: mapFilesToUi(_pedidoView.fotografias),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                color: Colors.black12.withOpacity(0.04),
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    _dateFormat(_pedidoView.dataNascimento),
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-        //Radiografias
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(' Radiografias: '),
-            ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 6,
-          lg: 6,
-          child: Container(
-            padding: EdgeInsets.all(10),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Wrap(
-                spacing: 10,
-                children: mapFilesToUi(_pedidoView.radiografias),
+            //tratar
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(' Tratar: '),
+                ),
               ),
             ),
-          ),
-        ),
-        ResponsiveGridCol(
-          xs: 12,
-          lg: 12,
-          child: Container(
-            padding: EdgeInsets.all(10),
-            child: Align(
-              alignment: Alignment.center,
-              child: _webViewModeloSuperior(),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(_pedidoView.tratar),
+                ),
+              ),
             ),
+            //queixa principal
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                color: Colors.black12.withOpacity(0.04),
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(' Queixa principal: '),
+                ),
+              ),
+            ),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                color: Colors.black12.withOpacity(0.04),
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(_pedidoView.queixaPrincipal),
+                ),
+              ),
+            ),
+            //objetivos do tratamento
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(' Objetivos do tratamento: '),
+                ),
+              ),
+            ),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(_pedidoView.objetivosTratamento),
+                ),
+              ),
+            ),
+            //linha media superior
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                color: Colors.black12.withOpacity(0.04),
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(' Linha média superior (mm): '),
+                ),
+              ),
+            ),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                color: Colors.black12.withOpacity(0.04),
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(_pedidoView.linhaMediaSuperior),
+                ),
+              ),
+            ),
+            //linha media superior
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(' Linha média inferior (mm): '),
+                ),
+              ),
+            ),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(_pedidoView.linhaMediaInferior),
+                ),
+              ),
+            ),
+            //overjet
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                color: Colors.black12.withOpacity(0.04),
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(' Overjet: '),
+                ),
+              ),
+            ),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                color: Colors.black12.withOpacity(0.04),
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(_pedidoView.overjet),
+                ),
+              ),
+            ),
+            //overbite
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(' Overbite (mm): '),
+                ),
+              ),
+            ),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(_pedidoView.overbite),
+                ),
+              ),
+            ),
+            //Resolução de apinhamento superior
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                color: Colors.black12.withOpacity(0.04),
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(' Resolução de apinhamento superior: '),
+                ),
+              ),
+            ),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                height: 50,
+                color: Colors.black12.withOpacity(0.04),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(_pedidoView.resApinSup),
+                ),
+              ),
+            ),
+            //Resolução de apinhamento inferior
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(' Resolução de apinhamento inferior: '),
+                ),
+              ),
+            ),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(_pedidoView.resApinInf),
+                ),
+              ),
+            ),
+            //Extração virtual de dentes
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                color: Colors.black12.withOpacity(0.04),
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(' Extração virtual: '),
+                ),
+              ),
+            ),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                color: Colors.black12.withOpacity(0.04),
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(_pedidoView.dentesExtVirtual),
+                ),
+              ),
+            ),
+            //Não movimentar os seguintes dentes
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(' Não movimentar: '),
+                ),
+              ),
+            ),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(_pedidoView.dentesNaoMov),
+                ),
+              ),
+            ),
+            //Não colocar attachments
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                color: Colors.black12.withOpacity(0.04),
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(' Não colocar attachments: '),
+                ),
+              ),
+            ),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                color: Colors.black12.withOpacity(0.04),
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(_pedidoView.dentesSemAttach),
+                ),
+              ),
+            ),
+            //Aceito desgastes interproximais (DIP)
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(' Aceito desgastes interproximais (DIP): '),
+                ),
+              ),
+            ),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(_pedidoView.opcAceitoDesg),
+                ),
+              ),
+            ),
+            //Recorte para elástico no alinhador
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                color: Colors.black12.withOpacity(0.04),
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(' Recorte para elástico no alinhador: '),
+                ),
+              ),
+            ),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                color: Colors.black12.withOpacity(0.04),
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(_pedidoView.opcRecorteElas),
+                ),
+              ),
+            ),
+            //Recorte no alinhador para botão
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(' Recorte no alinhador para botão: '),
+                ),
+              ),
+            ),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(_pedidoView.opcRecorteAlin),
+                ),
+              ),
+            ),
+            //Alívio no alinhador para braço de força
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                color: Colors.black12.withOpacity(0.04),
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child:
+                      const Text(' Alívio no alinhador para braço de força: '),
+                ),
+              ),
+            ),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                color: Colors.black12.withOpacity(0.04),
+                height: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(_pedidoView.opcAlivioAlin),
+                ),
+              ),
+            ),
+            //Fotografias
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(' Fotografias: '),
+                ),
+              ),
+            ),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                padding: EdgeInsets.all(10),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
+                    spacing: 10,
+                    children: mapFilesToUi(_pedidoView.fotografias),
+                  ),
+                ),
+              ),
+            ),
+            //Radiografias
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(' Radiografias: '),
+                ),
+              ),
+            ),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: Container(
+                padding: EdgeInsets.all(10),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
+                    spacing: 10,
+                    children: mapFilesToUi(_pedidoView.radiografias),
+                  ),
+                ),
+              ),
+            ),
+            //modelos
+            /*
+            ResponsiveGridCol(
+              xs: 12,
+              lg: 12,
+              child: Container(
+                padding: EdgeInsets.all(10),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: _webViewModeloSuperior(),
+                ),
+              ),
+            ),*/
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: ElevatedButton(
+            onPressed: () {
+              setState(() {
+                _modeloVisivel = !_modeloVisivel;
+              });
+            },
+            child: const Text('Visualizar modelos'),
           ),
         ),
+        if (_modeloVisivel) _webViewModeloSuperior(),
       ],
     );
   }
@@ -1189,7 +1243,11 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     _screenSize = MediaQuery.of(context).size;
 
     if (firstRun) {
-      _args = ModalRoute.of(context)!.settings.arguments as ScreenArguments;
+      try {
+        _args = ModalRoute.of(context)!.settings.arguments as ScreenArguments;
+      } catch (e) {
+        print(e);
+      }
       await _fetchHistoricoPac();
       setState(() {
         isFetchHistorico = false;
@@ -1206,6 +1264,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
       // *BUG* Verify closing drawer automaticlly when under 1200
       drawer: _screenSize!.width < 1200 ? MyDrawer() : null,
       body: RawScrollbar(
+        radius: Radius.circular(10),
         thumbColor: Colors.grey,
         thickness: 15,
         isAlwaysShown: true,

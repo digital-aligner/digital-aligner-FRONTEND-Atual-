@@ -730,6 +730,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
           }
         },
         child: RawScrollbar(
+          radius: Radius.circular(10),
           thumbColor: Colors.grey,
           thickness: 15,
           isAlwaysShown: true,

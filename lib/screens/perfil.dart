@@ -289,6 +289,7 @@ class _PerfilState extends State<Perfil> {
       // *BUG* Verify closing drawer automaticlly when under 1200
       drawer: sWidth < 1200 ? MyDrawer() : null,
       body: RawScrollbar(
+        radius: Radius.circular(10),
         thumbColor: Colors.grey,
         thickness: 15,
         isAlwaysShown: true,

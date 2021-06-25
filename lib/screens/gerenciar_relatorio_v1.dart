@@ -490,6 +490,7 @@ class GerenciarRelatorioV1State extends State<GerenciarRelatorioV1> {
           return false;
         },
         child: RawScrollbar(
+          radius: Radius.circular(10),
           thumbColor: Colors.grey,
           thickness: 15,
           isAlwaysShown: true,

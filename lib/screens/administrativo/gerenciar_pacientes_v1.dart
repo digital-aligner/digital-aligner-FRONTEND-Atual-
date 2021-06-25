@@ -133,7 +133,6 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
               selectedListItem[i] = !selectedListItem[i];
             });
             if (selectedListItem[i]) {
-              await Future.delayed(Duration(milliseconds: 500));
               Navigator.of(context)
                   .pushNamed(
                 VisualizarPacienteV1.routeName,
@@ -143,7 +142,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                 ),
               )
                   .then((value) async {
-                await Future.delayed(Duration(milliseconds: 500));
+                //await Future.delayed(Duration(milliseconds: 500));
                 setState(() {
                   selectedListItem[i] = false;
                   isfetchPedidos = true;
@@ -164,13 +163,14 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     return SizedBox(
       width: _screenSize!.width,
       child: DataTable(
+        showCheckboxColumn: false,
         columns: [
-          DataColumn(label: Text('Data')),
-          DataColumn(label: Text('Pedido')),
-          DataColumn(label: Text('Paciente')),
-          DataColumn(label: Text('Status')),
-          DataColumn(label: Text('Responsável')),
-          DataColumn(label: Text('Opções')),
+          DataColumn(label: const Text('Data')),
+          DataColumn(label: const Text('Pedido')),
+          DataColumn(label: const Text('Paciente')),
+          DataColumn(label: const Text('Status')),
+          DataColumn(label: const Text('Responsável')),
+          DataColumn(label: const Text('Opções')),
         ],
         rows: _dataRows(),
       ),
@@ -208,6 +208,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
       // *BUG* Verify closing drawer automaticlly when under 1200
       drawer: _screenSize!.width < 1200 ? MyDrawer() : null,
       body: RawScrollbar(
+        radius: Radius.circular(10),
         thumbColor: Colors.grey,
         thickness: 15,
         isAlwaysShown: true,
