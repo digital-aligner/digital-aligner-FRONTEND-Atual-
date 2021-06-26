@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:digital_aligner_app/appbar/MyAppBar.dart';
 import 'package:digital_aligner_app/appbar/MyDrawer.dart';
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
@@ -12,7 +11,6 @@ import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/uploader/model/FileModel.dart';
 import 'package:digital_aligner_app/widgets/screen%20argument/screen_argument.dart';
 import 'package:easy_web_view2/easy_web_view2.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'package:intl/intl.dart';
@@ -1127,13 +1125,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
 
     //changing aprovação to true
     _relatorioView.aprovado = true;
-    _relatorioView.payload = {
-      'id_pedido': _pedidoStore!
-          .getPedido(
-            position: _args.messageInt,
-          )
-          .id
-    };
+    _relatorioView.payload = {'id_pedido': _relatorioView.pedido!.id};
 
     // server operation
     try {
@@ -1149,7 +1141,6 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
       try {
         var data = json.decode(_response.body);
         if (data.containsKey('id')) {
-          print(data);
           return true;
         }
       } catch (e) {
@@ -1234,8 +1225,8 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                     if (result) {
                       await _fetchHistoricoPac();
                       setState(() {});
+                      Navigator.pop(context);
                     }
-                    Navigator.pop(context);
                   }
                 },
                 child: Text('Enviar'),

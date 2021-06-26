@@ -383,14 +383,16 @@ class GerenciarRelatorioV1State extends State<GerenciarRelatorioV1> {
   Future<bool> _enviarPrimeiroPedido() async {
     //map fields to relatorio object and insert relatorio/pdf object from server
     RelatorioV1Model r = RelatorioV1Model(
-        id: 0,
-        visualizador1: _vis1,
-        visualizador2: _vis2,
-        aprovado: false,
-        relatorio: _serverFiles[0],
-        payload: {
-          'id_pedido': _getPedidoId(),
-        });
+      id: 0,
+      visualizador1: _vis1,
+      visualizador2: _vis2,
+      aprovado: false,
+      relatorio: _serverFiles[0],
+      payload: {
+        'id_pedido': _getPedidoId(),
+      },
+      pedido: _pedidoStore!.getPedido(position: _args.messageInt),
+    );
 
     try {
       var _response = await http.post(

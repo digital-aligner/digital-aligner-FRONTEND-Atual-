@@ -1,3 +1,4 @@
+import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/pedido_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/uploader/model/FileModel.dart';
 
 class RelatorioV1Model {
@@ -7,6 +8,7 @@ class RelatorioV1Model {
   bool aprovado;
   FileModel? relatorio;
   Map<String, dynamic>? payload;
+  PedidoV1Model? pedido;
 
   RelatorioV1Model({
     this.id = 0,
@@ -15,6 +17,7 @@ class RelatorioV1Model {
     this.aprovado = false,
     this.relatorio,
     this.payload,
+    this.pedido,
   });
 
   factory RelatorioV1Model.fromJson(Map<String, dynamic>? data) {
@@ -25,6 +28,7 @@ class RelatorioV1Model {
       visualizador2: data['visualizador_2'] ?? '',
       aprovado: data['aprovado'] ?? false,
       relatorio: FileModel.fromJson(data['relatorio']),
+      pedido: PedidoV1Model.fromJson(data['pedido'] ?? Map()),
     );
   }
 
@@ -36,6 +40,7 @@ class RelatorioV1Model {
       'aprovado': aprovado,
       'relatorio': relatorio,
       'payload': payload,
+      'pedido': pedido?.toJson() ?? ''
     };
   }
 }
