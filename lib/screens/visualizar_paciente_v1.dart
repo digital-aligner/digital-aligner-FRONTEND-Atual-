@@ -48,7 +48,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
 
   //FOR VIEWING EACH MODEL TYPE
   PedidoV1Model _pedidoView = PedidoV1Model();
-  PedidoV1Model _pedidoRefinamentoView = PedidoV1Model();
+  //PedidoV1Model _pedidoRefinamentoView = PedidoV1Model();
   RelatorioV1Model _relatorioView = RelatorioV1Model();
   String _alteracaoView = '';
 
@@ -362,7 +362,10 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
       });
     } else if (_historicoList[position].status!.codigoStatus == 'cs_alt') {
       setState(() {
-        _alteracaoView = _historicoList[position].informacao;
+        _alteracaoView = 'RL' +
+            _historicoList[position].relatorio!.id.toString() +
+            ': ' +
+            _historicoList[position].informacao;
         _selectedView = 4;
       });
     }
@@ -1054,24 +1057,65 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
   }
 
   // --------- RELATÓRIO ---------------
+
+  PedidoV1Model _getPedido() {
+    return _pedidoStore!.getPedido(position: _args.messageInt);
+  }
+
+  bool _relatorioAprovadoLogic() {
+    if (!_relatorioView.pedido!.pedidoRefinamento) {
+      if (!_relatorioView.aprovado) {
+        bool canUpdate = _checkListForAprovedPedido();
+        if (canUpdate) return false;
+      } else {
+        return true;
+      }
+    } else {
+      if (!_relatorioView.aprovado) return true;
+    }
+
+    return false;
+  }
+
+  Widget _viewRelatorioText() {
+    if (_relatorioView.pedido!.pedidoRefinamento) {
+      return Text(
+        'Relatório RL' +
+            _relatorioView.id.toString() +
+            ' do pedido de refinamento DA' +
+            _relatorioView.pedido!.id.toString(),
+      );
+    } else {
+      return Text(
+        'Relatório RL' +
+            _relatorioView.id.toString() +
+            ' do pedido DA' +
+            _relatorioView.pedido!.id.toString(),
+      );
+    }
+  }
+
   Widget _viewRelatorio() {
     return Column(
       children: [
+        _viewRelatorioText(),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             TextButton(
-              onPressed: () async {
-                bool result = await _aprovarRelatorio();
-                if (result) {
-                  await _fetchHistoricoPac();
-                  setState(() {});
-                }
-              },
+              onPressed: _relatorioAprovadoLogic()
+                  ? () async {
+                      bool result = await _aprovarRelatorio();
+                      if (result) {
+                        await _fetchHistoricoPac();
+                        setState(() {});
+                      }
+                    }
+                  : null,
               child: const Text('Aprovar'),
             ),
             TextButton(
-              onPressed: !_relatorioView.aprovado
+              onPressed: _relatorioAprovadoLogic()
                   ? () {
                       solicitarAltPopup();
                     }
@@ -1095,23 +1139,19 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     );
   }
 
-  bool _checkListForAproved() {
+  bool _checkListForAprovedPedido() {
     bool doesExist = false;
+    //only 1 pedido may be approved
+    int pedidoAprovadoCount = 0;
+
     _historicoList.forEach((hist) {
+      if (pedidoAprovadoCount >= 1) {
+        doesExist = true;
+        return;
+      }
       if (hist.status!.codigoStatus == 'cs_rel') {
-        if (hist.relatorio!.aprovado) {
-          ScaffoldMessenger.of(context).removeCurrentSnackBar();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              duration: const Duration(seconds: 2),
-              content: Text(
-                'O pedido já foi aprovado',
-                textAlign: TextAlign.center,
-              ),
-            ),
-          );
-          doesExist = true;
-          return;
+        if (!(hist.relatorio!.pedido!.pedidoRefinamento)) {
+          if (hist.relatorio!.aprovado) pedidoAprovadoCount++;
         }
       }
     });
@@ -1119,14 +1159,15 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
   }
 
   Future<bool> _aprovarRelatorio() async {
-    bool doesExist = _checkListForAproved();
+    if (!_relatorioView.pedido!.pedidoRefinamento) {
+      bool doesExist = _checkListForAprovedPedido();
 
-    if (doesExist) return false;
+      if (doesExist) return false;
+    }
 
+    _relatorioView.payload = {'id_ped_selecionado': _getPedido().id};
     //changing aprovação to true
     _relatorioView.aprovado = true;
-    _relatorioView.payload = {'id_pedido': _relatorioView.pedido!.id};
-
     // server operation
     try {
       var _response = await http.put(
@@ -1159,10 +1200,8 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
   Future<bool> _sendSolicitarAlteracao() async {
     HistoricoPacV1 h = HistoricoPacV1(
       informacao: _solicitarAlteracao,
-      status: StatusHistoricoV1(id: 5),
-      pedido: PedidoV1Model(
-          id: _pedidoStore!.getPedido(position: _args.messageInt).id),
-      relatorio: RelatorioV1Model(id: _relatorioView.id),
+      pedido: _getPedido(),
+      relatorio: RelatorioV1Model(id: _relatorioView.id, pedido: _getPedido()),
     );
     try {
       var _response = await http.post(
