@@ -4,6 +4,7 @@ import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/screens/gerenciar_relatorio_v1.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/pedido_v1_model.dart';
+import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
 import 'package:digital_aligner_app/widgets/screen%20argument/screen_argument.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -51,7 +52,34 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     return Wrap(
       children: [
         TextButton(
-          onPressed: () {},
+          onPressed: () async {
+            ScaffoldMessenger.of(context).removeCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                duration: const Duration(milliseconds: 200),
+                content: Text(
+                  'Aguarde...',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            );
+            await Future.delayed(Duration(milliseconds: 200));
+            Navigator.of(context)
+                .pushNamed(
+              PedidoV1Screen.routeName,
+              arguments: ScreenArguments(
+                title: 'Editar paciente',
+                messageMap: {'isEditarPaciente': true},
+                messageInt: position,
+              ),
+            )
+                .then((_) {
+              setState(() {
+                isfetchPedidos = true;
+                firstRun = true;
+              });
+            });
+          },
           child: Text('editar'),
         ),
         if (_authStore!.role == 'Administrador' ||

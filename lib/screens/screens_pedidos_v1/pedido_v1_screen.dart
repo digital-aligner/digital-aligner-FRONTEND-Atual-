@@ -143,8 +143,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   bool _dataNascimentoEnabled = true;
 
   double textSize = 18;
-  bool mmLinhaMediaSupVis = false;
-  bool mmLinhaMediaInfVis = false;
+  bool mmDirLinhaMediaSupVis = false;
+  bool mmEsqLinhaMediaSupVis = false;
+  bool mmDirLinhaMediaInfVis = false;
+  bool mmEsqLinhaMediaInfVis = false;
   bool mmOverbiteVis1 = false;
   bool mmOverbiteVis2 = false;
   bool mmOverbiteVis3 = false;
@@ -156,6 +158,11 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   bool firstRun = true;
 
   ScreenArguments _args = ScreenArguments();
+
+  // OBS: FOR UPDATE PEDIDO, FILE UPLOAD WIDGET
+  bool _firstPedidoSaveToProvider = true;
+  bool _isEditarPedido = false;
+  int _isEditarPedidoPos = -1;
 
   PedidoV1Model _mapFieldsToPedidoV1() {
     try {
@@ -458,7 +465,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   onChanged: (String? value) {
                     setState(() {
                       mmLinhaMediaGPOvalue = '';
-                      mmLinhaMediaSupVis = false;
+                      mmDirLinhaMediaSupVis = false;
+                      mmEsqLinhaMediaSupVis = false;
                       _linhaMediaSupContr.text = value ?? '';
                       _linhaMediaSupMMContr.text = '';
                     });
@@ -475,10 +483,43 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   onChanged: (String? value) {
                     setState(() {
                       mmLinhaMediaGPOvalue = '';
-                      mmLinhaMediaSupVis = true;
+                      mmDirLinhaMediaSupVis = true;
+                      mmEsqLinhaMediaSupVis = false;
                       _linhaMediaSupContr.text = value ?? '';
                     });
                   },
+                ),
+              ),
+              Visibility(
+                visible: mmDirLinhaMediaSupVis,
+                child: SizedBox(
+                  width: 80,
+                  child: TextFormField(
+                    maxLength: 5,
+                    enabled: mmDirLinhaMediaSupVis,
+                    validator: (String? value) {
+                      if (!mmDirLinhaMediaSupVis) return null;
+                      return value == null || value.isEmpty
+                          ? 'Campo vazio'
+                          : null;
+                    },
+                    //initialValue: _nomePacContr.text,
+                    onSaved: (value) {
+                      _linhaMediaSupComplete =
+                          _linhaMediaSupContr.text + ': ' + (value ?? '');
+                    },
+                    controller: _linhaMediaSupMMContr,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
+                    ],
+                    decoration: const InputDecoration(
+                      hintText: 'mm',
+                      border: const OutlineInputBorder(),
+                      counterText: '',
+                      labelText: 'mm',
+                    ),
+                  ),
                 ),
               ),
               SizedBox(
@@ -491,38 +532,22 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   onChanged: (String? value) {
                     setState(() {
                       mmLinhaMediaGPOvalue = '';
-                      mmLinhaMediaSupVis = true;
+                      mmDirLinhaMediaSupVis = false;
+                      mmEsqLinhaMediaSupVis = true;
                       _linhaMediaSupContr.text = value ?? '';
                     });
                   },
                 ),
               ),
-              /*
-              SizedBox(
-                width: 200,
-                child: RadioListTile<String>(
-                  activeColor: Colors.blue,
-                  title: const Text('Qnt? (mm)'),
-                  value: '0',
-                  groupValue: mmLinhaMediaGPOvalue,
-                  onChanged: (String? value) {
-                    setState(() {
-                      _linhaMediaSupContr.text = '';
-                      mmLinhaMediaGPOvalue = value ?? '';
-                      mmLinhaMediaSupVis = true;
-                    });
-                  },
-                ),
-              ),*/
               Visibility(
-                visible: true,
+                visible: mmEsqLinhaMediaSupVis,
                 child: SizedBox(
                   width: 80,
                   child: TextFormField(
                     maxLength: 5,
-                    enabled: mmLinhaMediaSupVis,
+                    enabled: mmEsqLinhaMediaSupVis,
                     validator: (String? value) {
-                      if (!mmLinhaMediaSupVis) return null;
+                      if (!mmEsqLinhaMediaSupVis) return null;
                       return value == null || value.isEmpty
                           ? 'Campo vazio'
                           : null;
@@ -586,7 +611,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   groupValue: _linhaMediaInfContr.text,
                   onChanged: (String? value) {
                     setState(() {
-                      mmLinhaMediaInfVis = false;
+                      mmDirLinhaMediaInfVis = false;
+                      mmEsqLinhaMediaInfVis = false;
                       _linhaMediaInfContr.text = value ?? '';
                       _linhaMediaInfMMContr.text = '';
                     });
@@ -602,10 +628,43 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   groupValue: _linhaMediaInfContr.text,
                   onChanged: (String? value) {
                     setState(() {
-                      mmLinhaMediaInfVis = true;
+                      mmDirLinhaMediaInfVis = true;
+                      mmEsqLinhaMediaInfVis = false;
                       _linhaMediaInfContr.text = value ?? '';
                     });
                   },
+                ),
+              ),
+              Visibility(
+                visible: mmDirLinhaMediaInfVis,
+                child: SizedBox(
+                  width: 80,
+                  child: TextFormField(
+                    maxLength: 5,
+                    enabled: mmDirLinhaMediaInfVis,
+                    validator: (String? value) {
+                      if (!mmDirLinhaMediaInfVis) return null;
+                      return value == null || value.isEmpty
+                          ? 'Campo vazio'
+                          : null;
+                    },
+                    //initialValue: _nomePacContr.text,
+                    onSaved: (value) {
+                      _linhaMediaInfComplete =
+                          _linhaMediaInfContr.text + ': ' + (value ?? '');
+                    },
+                    controller: _linhaMediaInfMMContr,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
+                    ],
+                    decoration: const InputDecoration(
+                      hintText: 'mm',
+                      border: const OutlineInputBorder(),
+                      counterText: '',
+                      labelText: 'mm',
+                    ),
+                  ),
                 ),
               ),
               SizedBox(
@@ -617,37 +676,22 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   groupValue: _linhaMediaInfContr.text,
                   onChanged: (String? value) {
                     setState(() {
-                      mmLinhaMediaInfVis = true;
+                      mmDirLinhaMediaInfVis = false;
+                      mmEsqLinhaMediaInfVis = true;
                       _linhaMediaInfContr.text = value ?? '';
                     });
                   },
                 ),
               ),
-              /*
-              SizedBox(
-                width: 200,
-                child: RadioListTile<String>(
-                  activeColor: Colors.blue,
-                  title: const Text('Qnt? (mm)'),
-                  value: '0',
-                  groupValue: _linhaMediaInfContr.text,
-                  onChanged: (String? value) {
-                    setState(() {
-                      _linhaMediaInfContr.text = '0';
-                      mmLinhaMediaInfVis = true;
-                    });
-                  },
-                ),
-              ),*/
               Visibility(
-                visible: true,
+                visible: mmEsqLinhaMediaInfVis,
                 child: SizedBox(
                   width: 80,
                   child: TextFormField(
                     maxLength: 5,
-                    enabled: mmLinhaMediaInfVis,
+                    enabled: mmEsqLinhaMediaInfVis,
                     validator: (String? value) {
-                      if (!mmLinhaMediaInfVis) return null;
+                      if (!mmEsqLinhaMediaInfVis) return null;
                       return value == null || value.isEmpty
                           ? 'Campo vazio'
                           : null;
@@ -1488,6 +1532,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             sendButtonText: 'CARREGAR MODELO SUPERIOR',
             firstPedidoSaveToProvider: true,
             uploaderType: 'modelo superior',
+            isEditarPedido: _isEditarPedido,
+            isEditarPedidoPos: _isEditarPedidoPos,
+            updatePedidoId:
+                _pedidoStore!.getPedido(position: _args.messageInt).id,
           ),
           const SizedBox(height: 20),
           FileUploader(
@@ -1496,6 +1544,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             sendButtonText: 'CARREGAR MODELO INFERIOR',
             firstPedidoSaveToProvider: true,
             uploaderType: 'modelo inferior',
+            isEditarPedido: _isEditarPedido,
+            isEditarPedidoPos: _isEditarPedidoPos,
+            updatePedidoId:
+                _pedidoStore!.getPedido(position: _args.messageInt).id,
           ),
           _linkDoc(),
         ],
@@ -1513,7 +1565,11 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             acceptedFileExt: ['zip'],
             sendButtonText: 'CARREGAR COMPACTADO',
             uploaderType: 'modelo compactado',
-            firstPedidoSaveToProvider: true,
+            firstPedidoSaveToProvider: _firstPedidoSaveToProvider,
+            isEditarPedido: _isEditarPedido,
+            isEditarPedidoPos: _isEditarPedidoPos,
+            updatePedidoId:
+                _pedidoStore!.getPedido(position: _args.messageInt).id,
           ),
         ],
       ),
@@ -1540,8 +1596,11 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         filesQt: 16,
         acceptedFileExt: ['jpg', 'jpeg', 'png'],
         sendButtonText: 'CARREGAR FOTOGRAFIAS',
-        firstPedidoSaveToProvider: true,
+        firstPedidoSaveToProvider: _firstPedidoSaveToProvider,
         uploaderType: 'fotografias',
+        isEditarPedido: _isEditarPedido,
+        isEditarPedidoPos: _isEditarPedidoPos,
+        updatePedidoId: _pedidoStore!.getPedido(position: _args.messageInt).id,
       ),
     );
   }
@@ -1567,7 +1626,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         acceptedFileExt: ['jpg', 'jpeg', 'png'],
         sendButtonText: 'CARREGAR RADIOGRAFIAS',
         uploaderType: 'radiografias',
-        firstPedidoSaveToProvider: true,
+        firstPedidoSaveToProvider: _firstPedidoSaveToProvider,
+        isEditarPedido: _isEditarPedido,
+        isEditarPedidoPos: _isEditarPedidoPos,
+        updatePedidoId: _pedidoStore!.getPedido(position: _args.messageInt).id,
       ),
     );
   }
@@ -1687,6 +1749,52 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           _selecioneEnderecoTexto(),
           _enderecoSelection(),
           _termos(),
+          _sendButton()
+        ],
+      ),
+    );
+  }
+
+  //for editing pedido
+  Widget _form2() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: <Widget>[
+          _nomePaciente(),
+          _dataNascimento(),
+          _tratar(),
+          _queixaPrinc(),
+          _textoObjetivos(),
+          _objetivosTratamento(),
+          _linhaMediSuperior(),
+          _linhaMediInferior(),
+          _overJet(),
+          _overBite(),
+          _textoResApin(),
+          _resApinhSup(),
+          _resApinhInf(),
+          _extraVirtDentesTexto(),
+          _extraVirtDentes(),
+          _naoMovElemTexto(),
+          _naoMovElem(),
+          _naoColocarAttachTexto(),
+          _naoColocarAttach(),
+          _opcionaisTexto(),
+          _opcionais(),
+          _selecioneEnderecoTexto(),
+          _enderecoSelection(),
+          _termos(),
+          _atualizarPedidoButton(),
+          _carregarFotografiasTexto(),
+          _carregarFotografias(),
+          _carregarRadiografiasTexto(),
+          _carregarRadiografias(),
+          _carregarModelosDigitaisTexto(),
+          _formatoDeModelos(),
+          _manageModelType(),
+          _arquivosCompactadoTexto(),
+          _modeloCompactado(),
         ],
       ),
     );
@@ -1911,6 +2019,58 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     );
   }
 
+  Widget _atualizarPedidoButton() {
+    return ElevatedButton(
+      onPressed: isSending
+          ? null
+          : () async {
+              setState(() {
+                isSending = true;
+              });
+              if (_formKey.currentState!.validate()) {
+                _formKey.currentState!.save();
+                PedidoV1Model p = _mapFieldsToPedidoV1();
+                bool result = await _pedidoStore!.enviarPrimeiroPedido(
+                  pedido: p,
+                  token: _authStore!.token,
+                  tipoPedido: tipoPedido,
+                );
+                if (result) {
+                  _msgPacienteCriado('Pedido atualizado');
+                  if (_authStore!.role == 'Credenciado') {
+                    Navigator.of(context).pushReplacementNamed(
+                      GerenciarPacientesV1.routeName,
+                      arguments: ScreenArguments(
+                        title: 'Meus Pacientes',
+                        message: '',
+                      ),
+                    );
+                  } else if (_authStore!.role == 'Administrador' ||
+                      _authStore!.role == 'Gerente') {
+                    Navigator.of(context).pushReplacementNamed(
+                      GerenciarPacientesV1.routeName,
+                      arguments: ScreenArguments(
+                        title: 'Gerenciar Pacientes',
+                        message: '',
+                      ),
+                    );
+                  }
+                }
+              }
+
+              setState(() {
+                isSending = false;
+              });
+            },
+      child: Text(
+        isSending ? 'aguarde...' : 'Atualizar',
+        style: const TextStyle(
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
   Future<void> _getTermos() async {
     String t = await rootBundle.loadString('texts/termos.txt');
     setState(() {
@@ -1950,6 +2110,17 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           _nomePacContr.text = _args.messageMap!['nomePaciente'];
           _dataNascContr.text = _args.messageMap!['dataNascimento'];
         }
+        if (_args.messageMap!.containsKey('isEditarPaciente')) {
+          if (_args.messageMap!['isEditarPaciente']) {
+            var p = _pedidoStore!.getPedido(position: _args.messageInt);
+            _nomePacContr.text = p.nomePaciente;
+            _dataNascContr.text = p.dataNascimento;
+
+            //---
+            _isEditarPedido = true;
+            _isEditarPedidoPos = _args.messageInt;
+          }
+        }
       }
       firstRun = false;
     }
@@ -1957,12 +2128,30 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   }
 
   PreferredSizeWidget _buildAppbar() {
+    bool isRef = false;
+    bool isEdit = false;
+
     if (_args.messageMap != null) {
       if (_args.messageMap!.containsKey('isRefinamento')) {
-        return SecondaryAppbar();
+        isRef = _args.messageMap!['isRefinamento'];
+      }
+      if (_args.messageMap!.containsKey('isEditarPaciente')) {
+        isEdit = _args.messageMap!['isEditarPaciente'];
+        if (isEdit) _firstPedidoSaveToProvider = false;
       }
     }
+    if (isRef || isEdit) return SecondaryAppbar();
     return MyAppBar();
+  }
+
+  bool _isEditarPedidoCheck() {
+    bool isEdit = false;
+    if (_args.messageMap != null) {
+      if (_args.messageMap!.containsKey('isEditarPaciente')) {
+        isEdit = _args.messageMap!['isEditarPaciente'];
+      }
+    }
+    return isEdit;
   }
 
   @override
@@ -1986,8 +2175,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             child: Column(
               children: <Widget>[
                 _header(),
-                _form(),
-                _sendButton(),
+                _isEditarPedidoCheck() ? _form2() : _form(),
               ],
             ),
           ),

@@ -510,7 +510,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
       f.forEach((file) async {
         a.add(
           Image.network(
-            file.formats!.thumbnail!.thumbnail!,
+            file.url ?? '',
             width: 100,
             height: 100,
             fit: BoxFit.cover,

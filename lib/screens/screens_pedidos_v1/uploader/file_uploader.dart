@@ -18,6 +18,9 @@ class FileUploader extends StatefulWidget {
   final String? sendButtonText;
   final bool firstPedidoSaveToProvider;
   final String uploaderType;
+  final bool isEditarPedido;
+  final int isEditarPedidoPos;
+  final int updatePedidoId;
   final List<String> uploaderTypes = const [
     'fotografias',
     'radiografias',
@@ -32,6 +35,9 @@ class FileUploader extends StatefulWidget {
     @required this.sendButtonText,
     this.firstPedidoSaveToProvider = false,
     this.uploaderType = '',
+    this.isEditarPedido = false,
+    this.isEditarPedidoPos = -1,
+    this.updatePedidoId = -1,
   });
 
   @override
@@ -49,6 +55,8 @@ class _FileUploaderState extends State<FileUploader> {
   bool isDeleting = false;
   bool isUploading = false;
   double progress = 0;
+
+  bool _firstRun = true;
 
   void _checkIfWidgetIsValid() {
     int verify = 0;
@@ -132,6 +140,32 @@ class _FileUploaderState extends State<FileUploader> {
     );
   }
 
+  Future<bool> _sendUpdateFiles(Map<String, dynamic> resData) async {
+    var _response = await http.put(
+      Uri.parse(RotasUrl.rotaPedidosV1UpdateFiles),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ${_authStore.token}',
+      },
+      body: json.encode({
+        'filetype': widget.uploaderType,
+        'file': resData,
+        'idPedido': widget.updatePedidoId
+      }),
+    );
+    try {
+      var data = json.decode(_response.body);
+      if (data.containsKey('id')) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
   Future<void> _sendFile(PlatformFile currentFile) async {
     //create file model and insert in list
     setState(() {
@@ -157,6 +191,13 @@ class _FileUploaderState extends State<FileUploader> {
       });
 
       if (resData[0].containsKey('id')) {
+        //if is editar pedido, run this function
+        if (widget.isEditarPedido) {
+          print(json.encode(resData[0]));
+          bool result = await _sendUpdateFiles(resData[0]);
+          if (!result) throw 'Erro ao atualizar arquivos do pedido';
+        }
+
         setState(() {
           _serverFiles.removeLast();
           _serverFiles.add(FileModel.fromJson(resData[0]));
@@ -257,6 +298,11 @@ class _FileUploaderState extends State<FileUploader> {
                     ? null
                     : () async {
                         setState(() => isDeleting = true);
+                        if (_serverFiles[pos].id == -1) {
+                          _serverFiles.remove(_serverFiles[pos]);
+                          isDeleting = false;
+                          return;
+                        }
                         bool result =
                             await _newFiledelete(_serverFiles[pos].id as int);
                         if (result)
@@ -299,7 +345,7 @@ class _FileUploaderState extends State<FileUploader> {
               if (_filesData.isNotEmpty) {
                 for (var file in _filesData) {
                   await _sendFile(file);
-                  if (widget.firstPedidoSaveToProvider as bool) {
+                  if (widget.firstPedidoSaveToProvider) {
                     _firstPedidoSaveToProvider();
                   }
                   _filesData = [];
@@ -319,10 +365,40 @@ class _FileUploaderState extends State<FileUploader> {
     );
   }
 
+  Future<void> _getFilesForPedidoEdit() async {
+    var p = _pedidoStore.getPedido(position: widget.isEditarPedidoPos);
+    //map files based on arguments passed to this widget
+    //fotografias
+    if (widget.uploaderType == widget.uploaderTypes[0]) {
+      setState(() {
+        _serverFiles = p.fotografias;
+      });
+    } else if (widget.uploaderType == widget.uploaderTypes[1]) {
+      setState(() {
+        _serverFiles = p.radiografias;
+      });
+    } else if (widget.uploaderType == widget.uploaderTypes[2]) {
+      setState(() {
+        _serverFiles = p.modeloSuperior;
+      });
+    } else if (widget.uploaderType == widget.uploaderTypes[3]) {
+      setState(() {
+        _serverFiles = p.modeloInferior;
+      });
+    } else if (widget.uploaderType == widget.uploaderTypes[4]) {
+      setState(() {
+        _serverFiles = p.modeloCompactado;
+      });
+    }
+  }
+
   @override
   void didChangeDependencies() {
     _authStore = Provider.of<AuthProvider>(context);
     _pedidoStore = Provider.of<PedidoProvider>(context);
+    if (_firstRun) {
+      if (widget.isEditarPedido) _getFilesForPedidoEdit();
+    }
     super.didChangeDependencies();
   }
 
