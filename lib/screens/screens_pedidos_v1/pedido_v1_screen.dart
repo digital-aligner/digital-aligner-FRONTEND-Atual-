@@ -62,6 +62,11 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   final _overJetContr = TextEditingController();
   //overbite
   final _overbiteContr = TextEditingController();
+  //just for init
+  String _overbiteInit1 = '';
+  String _overbiteInit2 = '';
+  String _overbiteInit3 = '';
+  String _overbiteInit4 = '';
   //overbitecont + mm
   String _overbiteComplete = '';
   //res apinh
@@ -71,8 +76,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     'Expansão (posterior)',
     'Inclinação anteriores',
   ];
-  final List<int> resApinSupUiSelectedPos = [];
-  final List<int> resApinInfUiSelectedPos = [];
+  List<int> resApinSupUiSelectedPos = [];
+  List<int> resApinInfUiSelectedPos = [];
   final _resApinSupContr = TextEditingController();
   final _resApinInfContr = TextEditingController();
   //dentes geral
@@ -111,19 +116,23 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     '38',
   ];
   //dentes -> extração virtual
-  final List<int> extracaoVirtualUiSelectedPos = [];
+  List<int> extracaoVirtualUiSelectedPos = [];
   final _extracaoVirtualContr = TextEditingController();
   //dentes -> não movimentar seguintes elementos
-  final List<int> naoMovimentarUiSelectedPos = [];
+  List<int> naoMovimentarUiSelectedPos = [];
   final _naoMovimentarContr = TextEditingController();
   //dentes -> não colocar attachments
-  final List<int> naoColocarAttachUiSelectedPos = [];
+  List<int> naoColocarAttachUiSelectedPos = [];
   final _naoColocarAttachContr = TextEditingController();
   //opcionais
   final _opcAceitoDip = TextEditingController();
+  int _opcAceitoDipSelected = -1;
   final _opcRecorteElastico = TextEditingController();
+  int _opcRecorteElasticoSelected = -1;
   final _opcRecorteBotao = TextEditingController();
+  int _opcRecorteBotaoSelected = -1;
   final _opcBracoForca = TextEditingController();
+  int _opcBracoForcaSelected = -1;
   //link para documentação
   final _linkDocumentacao = TextEditingController();
   //endereco selecionado
@@ -217,7 +226,18 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   }
 
   List<int> _mapStringToSelectedIntList(String s, List<String> uiStringList) {
-    return [];
+    List<int> mappedIntValues = [];
+
+    List<String> formatedString = s.split(', ');
+
+    for (int i = 0; i < uiStringList.length; i++) {
+      for (int j = 0; j < formatedString.length; j++) {
+        if (formatedString[j] == uiStringList[i]) {
+          mappedIntValues.add(i);
+        }
+      }
+    }
+    return mappedIntValues;
   }
 
   //manage ui states
@@ -370,6 +390,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: TextFormField(
+        initialValue: _queixaPrincipal.text,
         maxLines: 4,
         maxLength: 455,
         enabled: true,
@@ -410,6 +431,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: TextFormField(
+        initialValue: _objContr.text,
         maxLines: 6,
         maxLength: 755,
         enabled: true,
@@ -846,7 +868,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                 child: RadioListTile<String>(
                   activeColor: Colors.blue,
                   title: const Text('Intruir anterior sup'),
-                  value: '0',
+                  value: 'Intruir anterior sup',
                   groupValue: _overbiteContr.text,
                   onChanged: (String? value) {
                     setState(() {
@@ -864,6 +886,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                 child: SizedBox(
                   width: 80,
                   child: TextFormField(
+                    initialValue: _overbiteInit1,
                     maxLength: 5,
                     enabled: true,
                     validator: (String? value) {
@@ -895,7 +918,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                 child: RadioListTile<String>(
                   activeColor: Colors.blue,
                   title: const Text('Intruir anterior inf'),
-                  value: '2',
+                  value: 'Intruir anterior inf',
                   groupValue: _overbiteContr.text,
                   onChanged: (String? value) {
                     setState(() {
@@ -913,6 +936,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                 child: SizedBox(
                   width: 80,
                   child: TextFormField(
+                    initialValue: _overbiteInit2,
                     maxLength: 5,
                     enabled: true,
                     validator: (String? value) {
@@ -944,7 +968,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                 child: RadioListTile<String>(
                   activeColor: Colors.blue,
                   title: const Text('Extruir posterior sup'),
-                  value: '3',
+                  value: 'Extruir posterior sup',
                   groupValue: _overbiteContr.text,
                   onChanged: (String? value) {
                     setState(() {
@@ -962,6 +986,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                 child: SizedBox(
                   width: 80,
                   child: TextFormField(
+                    initialValue: _overbiteInit3,
                     maxLength: 5,
                     enabled: true,
                     validator: (String? value) {
@@ -993,7 +1018,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                 child: RadioListTile<String>(
                   activeColor: Colors.blue,
                   title: const Text('Extruir posterior inf'),
-                  value: '4',
+                  value: 'Extruir posterior inf',
                   groupValue: _overbiteContr.text,
                   onChanged: (String? value) {
                     setState(() {
@@ -1011,6 +1036,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                 child: SizedBox(
                   width: 80,
                   child: TextFormField(
+                    initialValue: _overbiteInit4,
                     maxLength: 5,
                     enabled: true,
                     validator: (String? value) {
@@ -1079,7 +1105,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             ),
           ),
           GroupButton(
-            selectedButtons: [],
+            selectedButtons: resApinSupUiSelectedPos,
             selectedColor: Colors.blue,
             isRadio: false,
             spacing: 10,
@@ -1126,7 +1152,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             ),
           ),
           GroupButton(
-            selectedButtons: [],
+            selectedButtons: resApinInfUiSelectedPos,
             selectedColor: Colors.blue,
             isRadio: false,
             spacing: 10,
@@ -1172,6 +1198,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: GroupButton(
+        selectedButtons: extracaoVirtualUiSelectedPos,
         buttonHeight: 35,
         buttonWidth: 35,
         selectedColor: Colors.blue,
@@ -1216,6 +1243,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: GroupButton(
+        selectedButtons: naoMovimentarUiSelectedPos,
         buttonHeight: 35,
         buttonWidth: 35,
         selectedColor: Colors.blue,
@@ -1260,6 +1288,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: GroupButton(
+        selectedButtons: naoColocarAttachUiSelectedPos,
         buttonHeight: 35,
         buttonWidth: 35,
         selectedColor: Colors.blue,
@@ -1309,6 +1338,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           SizedBox(
             width: 500,
             child: GroupButton(
+              selectedButtons: [_opcAceitoDipSelected],
               selectedColor: Colors.blue,
               isRadio: false,
               spacing: 10,
@@ -1332,19 +1362,17 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             width: 500,
             child: Wrap(
               children: [
-                IgnorePointer(
-                  child: GroupButton(
-                    selectedButtons: [0],
-                    selectedColor: Colors.blue,
-                    isRadio: false,
-                    spacing: 10,
-                    onSelected: (index, isSelected) {
-                      print(isSelected);
-                    },
-                    buttons: [
-                      'Recorte para elástico no alinhador (especificar dente)',
-                    ],
-                  ),
+                GroupButton(
+                  selectedButtons: [_opcRecorteElasticoSelected],
+                  selectedColor: Colors.blue,
+                  isRadio: false,
+                  spacing: 10,
+                  onSelected: (index, isSelected) {
+                    print(isSelected);
+                  },
+                  buttons: [
+                    'Recorte para elástico no alinhador (especificar dente)',
+                  ],
                 ),
                 SizedBox(
                   height: 40,
@@ -1383,17 +1411,15 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             width: 500,
             child: Wrap(
               children: [
-                IgnorePointer(
-                  child: GroupButton(
-                    selectedButtons: [0],
-                    selectedColor: Colors.blue,
-                    isRadio: false,
-                    spacing: 10,
-                    onSelected: (index, isSelected) {},
-                    buttons: [
-                      'Recorte no alinhador para botão (especificar dente)',
-                    ],
-                  ),
+                GroupButton(
+                  selectedButtons: [_opcRecorteBotaoSelected],
+                  selectedColor: Colors.blue,
+                  isRadio: false,
+                  spacing: 10,
+                  onSelected: (index, isSelected) {},
+                  buttons: [
+                    'Recorte no alinhador para botão (especificar dente)',
+                  ],
                 ),
                 SizedBox(
                   height: 40,
@@ -1432,17 +1458,15 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             width: 500,
             child: Wrap(
               children: [
-                IgnorePointer(
-                  child: GroupButton(
-                    selectedButtons: [0],
-                    selectedColor: Colors.blue,
-                    isRadio: false,
-                    spacing: 10,
-                    onSelected: (index, isSelected) {},
-                    buttons: [
-                      'Alívio no alinhador para braço de força (especificar dente)',
-                    ],
-                  ),
+                GroupButton(
+                  selectedButtons: [_opcBracoForcaSelected],
+                  selectedColor: Colors.blue,
+                  isRadio: false,
+                  spacing: 10,
+                  onSelected: (index, isSelected) {},
+                  buttons: [
+                    'Alívio no alinhador para braço de força (especificar dente)',
+                  ],
                 ),
                 SizedBox(
                   height: 40,
@@ -1495,28 +1519,41 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   }
 
   Widget _formatoDeModelos() {
+    bool block = true;
+    double opac = 1;
+    if (_args.messageMap!.containsKey('isEditarPaciente')) {
+      block = false;
+      opac = 0.4;
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
-      child: GroupButton(
-        selectedColor: Colors.blue,
-        selectedButton: modeloEmGesso ? 1 : 0,
-        isRadio: true,
-        spacing: 10,
-        onSelected: (index, isSelected) {
-          if (isSelected && index == 1) {
-            setState(() {
-              modeloEmGesso = true;
-            });
-          } else {
-            setState(() {
-              modeloEmGesso = false;
-            });
-          }
-        },
-        buttons: [
-          'Digital (em arquivos .stl',
-          'Gesso (gesso em pedra tipo IV)'
-        ],
+      child: AbsorbPointer(
+        absorbing: !block,
+        child: Opacity(
+          opacity: opac,
+          child: GroupButton(
+            selectedColor: Colors.blue,
+            selectedButton: modeloEmGesso ? 1 : 0,
+            isRadio: true,
+            spacing: 10,
+            onSelected: (index, isSelected) {
+              if (isSelected && index == 1) {
+                setState(() {
+                  modeloEmGesso = true;
+                });
+              } else {
+                setState(() {
+                  modeloEmGesso = false;
+                });
+              }
+            },
+            buttons: [
+              'Digital (em arquivos .stl',
+              'Gesso (gesso em pedra tipo IV)'
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -1562,7 +1599,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         children: [
           FileUploader(
             filesQt: 1,
-            acceptedFileExt: ['zip'],
+            acceptedFileExt: ['zip', 'rar'],
             sendButtonText: 'CARREGAR COMPACTADO',
             uploaderType: 'modelo compactado',
             firstPedidoSaveToProvider: _firstPedidoSaveToProvider,
@@ -1892,7 +1929,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         const SizedBox(
           height: 20,
         ),
-        eModel.length == 0
+        enderecoSelecionado.endereco.isEmpty
             ? Text('')
             : Text(
                 '*Endereço de entrega* \nEndereço: ${enderecoSelecionado.endereco}\nNúmero: ${enderecoSelecionado.numero}\nComplemento: ${enderecoSelecionado.complemento}\nBairro: ${enderecoSelecionado.bairro}\nCEP: ${enderecoSelecionado.cep}\nPaís: ${enderecoSelecionado.pais}\nUF: ${enderecoSelecionado.uf}\nCidade: ${enderecoSelecionado.cidade}',
@@ -2078,6 +2115,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     });
   }
 
+  List<String> _convertDbValuesToUi(String s) {
+    return s.split(': ');
+  }
+
   @override
   void didChangeDependencies() {
     _authStore = Provider.of<AuthProvider>(context);
@@ -2112,10 +2153,103 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         }
         if (_args.messageMap!.containsKey('isEditarPaciente')) {
           if (_args.messageMap!['isEditarPaciente']) {
-            var p = _pedidoStore!.getPedido(position: _args.messageInt);
-            _nomePacContr.text = p.nomePaciente;
-            _dataNascContr.text = p.dataNascimento;
+            try {
+              var p = _pedidoStore!.getPedido(position: _args.messageInt);
+              _nomePacContr.text = p.nomePaciente;
+              _dataNascContr.text = p.dataNascimento;
+              _tratarContr.text = p.tratar;
+              _queixaPrincipal.text = p.queixaPrincipal;
+              _objContr.text = p.objetivosTratamento;
+              _linhaMediaSupContr.text =
+                  _convertDbValuesToUi(p.linhaMediaSuperior)[0];
+              if (_linhaMediaSupContr.text == 'Mover para esquerda')
+                mmEsqLinhaMediaSupVis = true;
+              _linhaMediaSupMMContr.text =
+                  _convertDbValuesToUi(p.linhaMediaSuperior)[1];
+              if (_linhaMediaSupContr.text == 'Mover para direita')
+                mmDirLinhaMediaSupVis = true;
 
+              _linhaMediaInfContr.text =
+                  _convertDbValuesToUi(p.linhaMediaInferior)[0];
+              if (_linhaMediaInfContr.text == 'Mover para esquerda')
+                mmEsqLinhaMediaInfVis = true;
+              _linhaMediaInfMMContr.text =
+                  _convertDbValuesToUi(p.linhaMediaInferior)[1];
+              if (_linhaMediaInfContr.text == 'Mover para direita')
+                mmDirLinhaMediaInfVis = true;
+              _overJetContr.text = p.overjet;
+
+              //overbite
+              _overbiteContr.text = _convertDbValuesToUi(p.overbite)[0];
+              String overbiteValue = _convertDbValuesToUi(p.overbite)[1];
+
+              if (_overbiteContr.text == 'Intruir anterior sup') {
+                _overbiteInit1 = overbiteValue;
+                mmOverbiteVis1 = true;
+              } else if (_overbiteContr.text == 'Intruir anterior inf') {
+                _overbiteInit2 = overbiteValue;
+                mmOverbiteVis2 = true;
+              } else if (_overbiteContr.text == 'Extruir posterior sup') {
+                _overbiteInit3 = overbiteValue;
+                mmOverbiteVis3 = true;
+              } else if (_overbiteContr.text == 'Extruir posterior inf') {
+                _overbiteInit4 = overbiteValue;
+                mmOverbiteVis4 = true;
+              }
+              //res apinh superior
+              resApinSupUiSelectedPos = _mapStringToSelectedIntList(
+                p.resApinSup,
+                resApinUiList,
+              );
+              _resApinSupContr.text = p.resApinSup;
+              //res apinh inferior
+              resApinInfUiSelectedPos = _mapStringToSelectedIntList(
+                p.resApinInf,
+                resApinUiList,
+              );
+              _resApinInfContr.text = p.resApinInf;
+              // dentes - extração virtual
+              extracaoVirtualUiSelectedPos = _mapStringToSelectedIntList(
+                p.dentesExtVirtual,
+                dentesUiList,
+              );
+              _extracaoVirtualContr.text = p.dentesExtVirtual;
+              // dentes - não movimentar
+              naoMovimentarUiSelectedPos = _mapStringToSelectedIntList(
+                p.dentesNaoMov,
+                dentesUiList,
+              );
+              _naoMovimentarContr.text = p.dentesNaoMov;
+              // dentes - não colocar attach
+              naoColocarAttachUiSelectedPos = _mapStringToSelectedIntList(
+                p.dentesSemAttach,
+                dentesUiList,
+              );
+              _naoColocarAttachContr.text = p.dentesSemAttach;
+
+              //opc aceito desg
+              _opcAceitoDip.text = p.opcAceitoDesg;
+              if (_opcAceitoDip.text.isNotEmpty) _opcAceitoDipSelected = 0;
+              //opc recorte para elástico
+              _opcRecorteElastico.text = p.opcRecorteElas;
+              if (_opcRecorteElastico.text.isNotEmpty)
+                _opcRecorteElasticoSelected = 0;
+              //opc recorte no alinhador para botão
+              _opcRecorteBotao.text = p.opcRecorteAlin;
+              if (_opcRecorteBotao.text.isNotEmpty)
+                _opcRecorteBotaoSelected = 0;
+              //opc alívio no alinhador
+              _opcBracoForca.text = p.opcAlivioAlin;
+              if (_opcBracoForca.text.isNotEmpty) _opcBracoForcaSelected = 0;
+              //endereco
+              enderecoSelecionado = p.enderecoEntrega ?? EnderecoModel();
+              //modelo tipo selecionado
+              modeloEmGesso = p.modeloGesso;
+              //link documentação
+              _linkDocumentacao.text = p.linkModelos;
+            } catch (e) {
+              print('erro ao tentar converter valores para ui');
+            }
             //---
             _isEditarPedido = true;
             _isEditarPedidoPos = _args.messageInt;

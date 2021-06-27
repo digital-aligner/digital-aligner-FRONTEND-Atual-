@@ -28,6 +28,14 @@ class EnderecoModel {
     //just using this for relations to other entities
     return EnderecoModel(
       id: data['id'] ?? 0,
+      bairro: data['bairro'] ?? '',
+      cidade: data['cidade'] ?? '',
+      complemento: data['complemento'] ?? '',
+      endereco: data['endereco'] ?? '',
+      uf: data['uf'] ?? '',
+      pais: data['pais'] ?? '',
+      numero: data['numero'] ?? '',
+      cep: data['cep'] ?? '',
     );
   }
 

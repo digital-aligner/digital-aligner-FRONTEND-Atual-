@@ -74,10 +74,12 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
               ),
             )
                 .then((_) {
-              setState(() {
-                isfetchPedidos = true;
-                firstRun = true;
-              });
+              //change this logic in the future
+              _pedidoStore!.clearDataAllProviderData();
+              _pedidoStore!.fetchAllPedidos(
+                token: _authStore!.token,
+                roleId: _authStore!.roleId,
+              );
             });
           },
           child: Text('editar'),
@@ -213,7 +215,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     if (_authStore!.isAuth) {
       _args = ModalRoute.of(context)!.settings.arguments as ScreenArguments;
     }
-
+    //.then (after page pop)is not triggering this rebuild to fetch new data. Verify later
     if (firstRun) {
       _pedidoStore!.clearDataAllProviderData();
       _pedidoStore!

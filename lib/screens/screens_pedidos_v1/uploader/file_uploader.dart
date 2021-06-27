@@ -195,7 +195,10 @@ class _FileUploaderState extends State<FileUploader> {
         if (widget.isEditarPedido) {
           print(json.encode(resData[0]));
           bool result = await _sendUpdateFiles(resData[0]);
-          if (!result) throw 'Erro ao atualizar arquivos do pedido';
+          if (!result) {
+            _newFiledelete(resData[0]['id']);
+            throw 'Erro ao atualizar arquivos do pedido';
+          }
         }
 
         setState(() {
@@ -230,7 +233,13 @@ class _FileUploaderState extends State<FileUploader> {
   }
 
   Widget _fileUiImg(int pos) {
-    if (widget.acceptedFileExt?[0] == 'stl') {
+    if (_serverFiles[pos].id == -1) {
+      return const Image(
+        fit: BoxFit.cover,
+        width: 100,
+        image: const AssetImage('logos/error.jpg'),
+      );
+    } else if (widget.acceptedFileExt?[0] == 'stl') {
       return Stack(
         children: [
           const Image(
@@ -248,11 +257,25 @@ class _FileUploaderState extends State<FileUploader> {
           ),
         ],
       );
-    } else if (_serverFiles[pos].id == -1) {
-      return const Image(
-        fit: BoxFit.cover,
-        width: 100,
-        image: const AssetImage('logos/error.jpg'),
+    }
+    if (widget.acceptedFileExt?[0] == 'zip' ||
+        widget.acceptedFileExt?[1] == 'rar') {
+      return Stack(
+        children: [
+          const Image(
+            fit: BoxFit.cover,
+            width: 100,
+            image: const AssetImage('logos/comp.jpg'),
+          ),
+          Center(
+            child: Center(
+              child: CircularProgressIndicator(
+                value: progress == 1 ? progress = 0 : progress,
+                valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+              ),
+            ),
+          ),
+        ],
       );
     } else {
       return Image.network(
@@ -274,48 +297,98 @@ class _FileUploaderState extends State<FileUploader> {
     }
   }
 
+  Future<bool?> _deleteDialog() async {
+    return showDialog<bool?>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(''),
+          content: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                const Text('Deletar arquivo?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Sim'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+            TextButton(
+              child: const Text('Não'),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _fileUi(int pos) {
     return Padding(
       padding: const EdgeInsets.all(10),
       child: SizedBox(
         width: 100,
         height: 100,
-        child: Stack(
-          children: <Widget>[
-            _fileUiImg(pos),
-            if (isUploading && pos == _serverFiles.length)
-              Center(
-                child: CircularProgressIndicator(
-                  value: progress,
-                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
-                ),
-              ),
-            if (!isUploading)
-              IconButton(
-                color: Colors.blueAccent,
-                icon: const Icon(Icons.delete),
-                onPressed: isUploading || isDeleting
-                    ? null
-                    : () async {
-                        setState(() => isDeleting = true);
-                        if (_serverFiles[pos].id == -1) {
-                          _serverFiles.remove(_serverFiles[pos]);
-                          isDeleting = false;
-                          return;
-                        }
-                        bool result =
-                            await _newFiledelete(_serverFiles[pos].id as int);
-                        if (result)
-                          setState(() {
-                            _serverFiles.remove(_serverFiles[pos]);
-                            if (widget.firstPedidoSaveToProvider) {
-                              _firstPedidoSaveToProvider();
+        child: Column(
+          children: [
+            Stack(
+              children: <Widget>[
+                _fileUiImg(pos),
+                if (isUploading && pos == _serverFiles.length)
+                  Center(
+                    child: CircularProgressIndicator(
+                      value: progress,
+                      valueColor:
+                          new AlwaysStoppedAnimation<Color>(Colors.blue),
+                    ),
+                  ),
+                if (!isUploading)
+                  IconButton(
+                    color: Colors.blueAccent,
+                    icon: const Icon(Icons.delete),
+                    onPressed: isUploading || isDeleting
+                        ? null
+                        : () async {
+                            setState(() => isDeleting = true);
+
+                            if (_serverFiles[pos].id == -1) {
+                              _serverFiles.remove(_serverFiles[pos]);
+                              isDeleting = false;
+                              return;
                             }
 
-                            isDeleting = false;
-                          });
-                      },
-              ),
+                            bool? dialogChoice = await _deleteDialog();
+                            bool result = false;
+
+                            if (dialogChoice ?? false == true) {
+                              result = await _newFiledelete(
+                                  _serverFiles[pos].id as int);
+                            }
+
+                            if (result) {
+                              setState(() {
+                                _serverFiles.remove(_serverFiles[pos]);
+                                if (widget.firstPedidoSaveToProvider) {
+                                  _firstPedidoSaveToProvider();
+                                }
+                                isDeleting = false;
+                              });
+                              return;
+                            }
+                            setState(() {
+                              isDeleting = false;
+                            });
+                          },
+                  ),
+              ],
+            ),
           ],
         ),
       ),

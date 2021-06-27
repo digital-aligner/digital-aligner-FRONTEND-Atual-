@@ -130,11 +130,10 @@ class PedidoProvider with ChangeNotifier {
         _pedidos.forEach((p) {
           _pedidosV1List.add(PedidoV1Model.fromJson(p));
         });
-        print('efp1' + _pedidosV1List.toString());
+
         return true;
       }
     } catch (e) {
-      print('efp2' + e.toString());
       return false;
     }
     return true;
