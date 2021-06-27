@@ -366,7 +366,13 @@ class _MyAppBarState extends State<MyAppBar> {
           Navigator.of(context).pushReplacementNamed(NovoPaciente.routeName);
         }*/
         if (routeName != null && routeName != '/pedido-v1') {
-          Navigator.of(context).pushReplacementNamed(PedidoV1Screen.routeName);
+          Navigator.of(context).pushReplacementNamed(
+            PedidoV1Screen.routeName,
+            arguments: ScreenArguments(
+              title: 'Novo Paciente',
+              messageMap: {'isEditarPaciente': false},
+            ),
+          );
         }
       },
       icon: const Icon(Icons.add),

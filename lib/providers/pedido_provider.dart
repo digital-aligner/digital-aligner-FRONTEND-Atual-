@@ -112,6 +112,39 @@ class PedidoProvider with ChangeNotifier {
     }
   }
 
+  Future<bool> enviarAtualizarPedido({
+    PedidoV1Model? pedido,
+    String token = '',
+  }) async {
+    try {
+      var _response = await http.put(
+        Uri.parse(RotasUrl.rotaPedidosV1),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode(pedido!.toJson()),
+      );
+      try {
+        var data = json.decode(_response.body);
+        if (data.containsKey('id')) {
+          //using sem method
+          //clearDataAllProviderData();
+          return true;
+        }
+      } catch (e) {
+        print(e);
+        return false;
+      }
+
+      return false;
+    } catch (e) {
+      print('enviarPrimeiroPedido ->' + e.toString());
+      return false;
+    }
+  }
+
   Future<bool> fetchAllPedidos({String token = '', int roleId = 0}) async {
     clearDataAllProviderData();
     final response = await http.get(

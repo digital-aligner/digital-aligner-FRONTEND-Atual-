@@ -74,12 +74,30 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
               ),
             )
                 .then((_) {
+              //set state here for loading ui
               //change this logic in the future
+              ScaffoldMessenger.of(context).removeCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  duration: const Duration(seconds: 2),
+                  content: Text(
+                    'aguarde...',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              );
               _pedidoStore!.clearDataAllProviderData();
-              _pedidoStore!.fetchAllPedidos(
+              _pedidoStore!
+                  .fetchAllPedidos(
                 token: _authStore!.token,
                 roleId: _authStore!.roleId,
-              );
+              )
+                  .then((didFetch) {
+                setState(() {
+                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                });
+                //after fetch all pedidos update
+              });
             });
           },
           child: Text('editar'),

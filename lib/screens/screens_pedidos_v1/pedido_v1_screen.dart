@@ -40,7 +40,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
 
   // pedido type (for post request)
   String tipoPedido = 'pedido';
-
+  //id pedido
+  int _id = 0;
   //dados paciente
   final _nomePacContr = TextEditingController();
   final _dataNascContr = TextEditingController();
@@ -129,10 +130,13 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   int _opcAceitoDipSelected = -1;
   final _opcRecorteElastico = TextEditingController();
   int _opcRecorteElasticoSelected = -1;
+  bool _opcRecorteElasticoMm = false;
   final _opcRecorteBotao = TextEditingController();
   int _opcRecorteBotaoSelected = -1;
+  bool _opcRecorteBotaoMm = false;
   final _opcBracoForca = TextEditingController();
   int _opcBracoForcaSelected = -1;
+  bool _opcBracoForcaMm = false;
   //link para documentação
   final _linkDocumentacao = TextEditingController();
   //endereco selecionado
@@ -142,6 +146,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   String termos = '';
   //status pedido (id = 1 for new pedidos)
   int statusPedido = 1;
+  List<StatusPedidoV1Model> sModel = [];
+  StatusPedidoV1Model _selectedStatus = StatusPedidoV1Model();
   //pedido of type refinamento
   bool _isPedidoRefinamento = false;
   //payload
@@ -176,6 +182,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   PedidoV1Model _mapFieldsToPedidoV1() {
     try {
       PedidoV1Model p = PedidoV1Model(
+        id: _id,
         nomePaciente: _nomePacContr.text,
         dataNascimento: _dataNascContr.text,
         tratar: _tratarContr.text,
@@ -1368,7 +1375,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   isRadio: false,
                   spacing: 10,
                   onSelected: (index, isSelected) {
-                    print(isSelected);
+                    setState(() {
+                      _opcRecorteElasticoMm = !_opcRecorteElasticoMm;
+                      _opcRecorteElastico.text = '';
+                    });
                   },
                   buttons: [
                     'Recorte para elástico no alinhador (especificar dente)',
@@ -1379,7 +1389,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   width: 120,
                   child: TextFormField(
                     maxLength: 11,
-                    enabled: true,
+                    enabled: _opcRecorteElasticoMm,
                     validator: (String? value) {
                       /*
                   return value == null || value.isEmpty
@@ -1416,7 +1426,12 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   selectedColor: Colors.blue,
                   isRadio: false,
                   spacing: 10,
-                  onSelected: (index, isSelected) {},
+                  onSelected: (index, isSelected) {
+                    setState(() {
+                      _opcRecorteBotaoMm = !_opcRecorteBotaoMm;
+                      _opcRecorteBotao.text = '';
+                    });
+                  },
                   buttons: [
                     'Recorte no alinhador para botão (especificar dente)',
                   ],
@@ -1426,7 +1441,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   width: 120,
                   child: TextFormField(
                     maxLength: 11,
-                    enabled: true,
+                    enabled: _opcRecorteBotaoMm,
                     validator: (String? value) {
                       /*
               return value == null || value.isEmpty
@@ -1463,7 +1478,12 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   selectedColor: Colors.blue,
                   isRadio: false,
                   spacing: 10,
-                  onSelected: (index, isSelected) {},
+                  onSelected: (index, isSelected) {
+                    setState(() {
+                      _opcBracoForcaMm = !_opcBracoForcaMm;
+                      _opcBracoForca.text = '';
+                    });
+                  },
                   buttons: [
                     'Alívio no alinhador para braço de força (especificar dente)',
                   ],
@@ -1473,7 +1493,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   width: 120,
                   child: TextFormField(
                     maxLength: 11,
-                    enabled: true,
+                    enabled: _opcBracoForcaMm,
                     validator: (String? value) {
                       /*
                     return value == null || value.isEmpty
@@ -1522,8 +1542,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     bool block = true;
     double opac = 1;
     if (_args.messageMap!.containsKey('isEditarPaciente')) {
-      block = false;
-      opac = 0.4;
+      if (_args.messageMap!['isEditarPaciente']) {
+        block = false;
+        opac = 0.4;
+      }
     }
 
     return Padding(
@@ -1697,7 +1719,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: TextFormField(
         maxLength: 255,
-        enabled: true,
+        enabled: !_isEditarPedidoCheck(),
         validator: (String? value) {},
         initialValue: _linkDocumentacao.text,
         onChanged: (value) {
@@ -1823,6 +1845,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           _enderecoSelection(),
           _termos(),
           _atualizarPedidoButton(),
+          if (_authStore!.roleId != 1) _statusSelection(),
           _carregarFotografiasTexto(),
           _carregarFotografias(),
           _carregarRadiografiasTexto(),
@@ -1887,17 +1910,52 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     return [];
   }
 
+  Future<List<StatusPedidoV1Model>> _fetchStatus() async {
+    final response = await http.get(
+      Uri.parse(
+        RotasUrl.rotaStatusV1,
+      ),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${_authStore!.token}',
+      },
+    );
+    try {
+      List<dynamic> _status = json.decode(response.body);
+      if (_status[0].containsKey('status')) {
+        sModel = [];
+        _status.forEach((s) {
+          sModel.add(
+            StatusPedidoV1Model(id: s['id'], status: s['status']),
+          );
+        });
+        return sModel;
+      }
+    } catch (e) {
+      print(e);
+      return [];
+    }
+    return [];
+  }
+
   Widget _enderecoSelection() {
     return Column(
       children: [
         DropdownSearch<EnderecoModel>(
+          scrollbarProps: ScrollbarProps(isAlwaysShown: true),
           validator: (value) {
+            if (_isEditarPedidoCheck()) {
+              return null;
+            }
             if (value == null) {
               return 'Por favor escolha endereco';
             }
             return null;
           },
           dropdownBuilder: (buildContext, string, string2) {
+            if (_isEditarPedidoCheck()) {
+              return Text(enderecoSelecionado.endereco);
+            }
             if (eModel.length == 0) {
               return Text('sem endereços');
             }
@@ -1937,6 +1995,119 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   fontSize: 18,
                 ),
               ),
+      ],
+    );
+  }
+
+  Future<bool> _atualizarStatusPedido(StatusPedidoV1Model s) async {
+    var p = _pedidoStore!.getPedido(position: _args.messageInt);
+    try {
+      var _response = await http.put(
+        Uri.parse(RotasUrl.rotaPedidoV1Status),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${_authStore!.token}',
+        },
+        body: json.encode({'pedidoId': p.id, 'status_pedido': s.toJson()}),
+      );
+      try {
+        var data = json.decode(_response.body);
+        if (data.containsKey('id')) {
+          return true;
+        }
+      } catch (e) {
+        print(e);
+        return false;
+      }
+
+      return false;
+    } catch (e) {
+      print('atualizarStatusPedido ->' + e.toString());
+      return false;
+    }
+  }
+
+  Widget _statusSelection() {
+    return Column(
+      children: [
+        DropdownSearch<StatusPedidoV1Model>(
+          scrollbarProps: ScrollbarProps(isAlwaysShown: true),
+          /*
+          validator: (value) {
+            if (value == null) {
+              return 'Por favor escolha status';
+            }
+            return null;
+          },*/
+
+          dropdownBuilder: (buildContext, string, string2) {
+            if (_isEditarPedidoCheck()) {
+              return Text(_selectedStatus.status);
+            }
+            if (sModel.length == 0) {
+              return Text('Sem status');
+            }
+            return Text(_selectedStatus.status);
+          },
+          dropdownSearchDecoration: InputDecoration(
+            border: OutlineInputBorder(),
+            contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          ),
+          emptyBuilder: (buildContext, string) {
+            return Center(child: Text('Sem dados'));
+          },
+          loadingBuilder: (buildContext, string) {
+            return Center(child: Text('Carregando...'));
+          },
+          errorBuilder: (buildContext, string, dynamic) {
+            return Center(child: Text('Erro'));
+          },
+          onFind: (string) => _fetchStatus(),
+          itemAsString: (StatusPedidoV1Model s) => s.status,
+          mode: Mode.MENU,
+          label: 'Selecione status: *',
+          onChanged: (StatusPedidoV1Model? selSt) async {
+            ScaffoldMessenger.of(context).removeCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                duration: const Duration(seconds: 2),
+                content: Text(
+                  'Atualizando status do pedido...',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            );
+            bool result =
+                await _atualizarStatusPedido(selSt ?? StatusPedidoV1Model());
+            if (result) {
+              ScaffoldMessenger.of(context).removeCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  duration: const Duration(seconds: 2),
+                  content: Text(
+                    'Status do pedido atualizado!',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              );
+              setState(() {
+                _selectedStatus = selSt ?? StatusPedidoV1Model();
+              });
+            } else {
+              ScaffoldMessenger.of(context).removeCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  duration: const Duration(seconds: 2),
+                  content: Text(
+                    'Não foi possível atualizar.',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              );
+            }
+          },
+        ),
       ],
     );
   }
@@ -2067,31 +2238,14 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
                 PedidoV1Model p = _mapFieldsToPedidoV1();
-                bool result = await _pedidoStore!.enviarPrimeiroPedido(
+
+                bool result = await _pedidoStore!.enviarAtualizarPedido(
                   pedido: p,
                   token: _authStore!.token,
-                  tipoPedido: tipoPedido,
                 );
                 if (result) {
                   _msgPacienteCriado('Pedido atualizado');
-                  if (_authStore!.role == 'Credenciado') {
-                    Navigator.of(context).pushReplacementNamed(
-                      GerenciarPacientesV1.routeName,
-                      arguments: ScreenArguments(
-                        title: 'Meus Pacientes',
-                        message: '',
-                      ),
-                    );
-                  } else if (_authStore!.role == 'Administrador' ||
-                      _authStore!.role == 'Gerente') {
-                    Navigator.of(context).pushReplacementNamed(
-                      GerenciarPacientesV1.routeName,
-                      arguments: ScreenArguments(
-                        title: 'Gerenciar Pacientes',
-                        message: '',
-                      ),
-                    );
-                  }
+                  Navigator.pop(context);
                 }
               }
 
@@ -2100,7 +2254,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               });
             },
       child: Text(
-        isSending ? 'aguarde...' : 'Atualizar',
+        isSending ? 'aguarde...' : 'Atualizar pedido',
         style: const TextStyle(
           color: Colors.white,
         ),
@@ -2155,6 +2309,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           if (_args.messageMap!['isEditarPaciente']) {
             try {
               var p = _pedidoStore!.getPedido(position: _args.messageInt);
+              _id = p.id;
               _nomePacContr.text = p.nomePaciente;
               _dataNascContr.text = p.dataNascimento;
               _tratarContr.text = p.tratar;
@@ -2232,21 +2387,30 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               if (_opcAceitoDip.text.isNotEmpty) _opcAceitoDipSelected = 0;
               //opc recorte para elástico
               _opcRecorteElastico.text = p.opcRecorteElas;
-              if (_opcRecorteElastico.text.isNotEmpty)
+              if (_opcRecorteElastico.text.isNotEmpty) {
                 _opcRecorteElasticoSelected = 0;
+                _opcRecorteElasticoMm = true;
+              }
               //opc recorte no alinhador para botão
               _opcRecorteBotao.text = p.opcRecorteAlin;
-              if (_opcRecorteBotao.text.isNotEmpty)
+              if (_opcRecorteBotao.text.isNotEmpty) {
                 _opcRecorteBotaoSelected = 0;
+                _opcRecorteBotaoMm = true;
+              }
+
               //opc alívio no alinhador
               _opcBracoForca.text = p.opcAlivioAlin;
-              if (_opcBracoForca.text.isNotEmpty) _opcBracoForcaSelected = 0;
+              if (_opcBracoForca.text.isNotEmpty) {
+                _opcBracoForcaSelected = 0;
+                _opcBracoForcaMm = true;
+              }
               //endereco
               enderecoSelecionado = p.enderecoEntrega ?? EnderecoModel();
               //modelo tipo selecionado
               modeloEmGesso = p.modeloGesso;
               //link documentação
               _linkDocumentacao.text = p.linkModelos;
+              _selectedStatus = p.statusPedido ?? StatusPedidoV1Model();
             } catch (e) {
               print('erro ao tentar converter valores para ui');
             }

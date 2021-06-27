@@ -72,6 +72,8 @@ class RotasUrl {
   static const rotaEstadosV1 = rotaBase + 'estados-v1';
   static const rotaEnderecosV1 = rotaBase + 'enderecos-v1';
   static const rotaPedidosV1 = rotaBase + 'pedidos-v1/';
+  static const rotaStatusV1 = rotaBase + 'status-pedidos-v1';
+  static const rotaPedidoV1Status = rotaBase + 'pedidos-v1-status';
   static const rotaPedidosV1UpdateFiles = rotaBase + 'pedidos-v1-update-files';
   static const rotaPedidosRefinamentoV1 = rotaBase + 'pedidos-v1-refinamento';
   static const rotaPacienteFotoPerfilV1 = rotaBase + 'paciente-foto-perfil';
