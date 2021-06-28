@@ -280,26 +280,6 @@ class _MyAppBarState extends State<MyAppBar> {
                   ),
                   value: 'Gerenciar Pacientes',
                 ),
-                PopupMenuItem(
-                  child: const Text(
-                    'Meus Setups',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontFamily: 'BigNoodleTitling',
-                    ),
-                  ),
-                  value: 'Meus Setups',
-                ),
-                PopupMenuItem(
-                  child: const Text(
-                    'Minhas Revisões',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontFamily: 'BigNoodleTitling',
-                    ),
-                  ),
-                  value: 'Minhas Revisões',
-                ),
               ],
             ),
           )

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:digital_aligner_app/appbar/MyAppBar.dart';
 import 'package:digital_aligner_app/appbar/MyDrawer.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
@@ -28,6 +30,15 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   bool isfetchPedidos = true;
 
   List<bool> selectedListItem = [];
+
+  //manage pages
+  double pageHeight = 800;
+  bool buscandoMaisPedidos = false;
+  int pageQuant = 10;
+
+  Timer? searchOnStoppedTyping;
+
+  String _query = '';
 
   //route arguments
   ScreenArguments _args = ScreenArguments();
@@ -93,6 +104,8 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                 roleId: _authStore!.roleId,
               )
                   .then((didFetch) {
+                pageHeight = 800;
+                pageQuant = 10;
                 setState(() {
                   ScaffoldMessenger.of(context).removeCurrentSnackBar();
                 });
@@ -128,6 +141,8 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                       ),
                     );
                     setState(() {
+                      pageHeight = 800;
+                      pageQuant = 10;
                       isfetchPedidos = true;
                       firstRun = true;
                     });
@@ -225,6 +240,120 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     );
   }
 
+  Widget _buscarMaisPedidosBtn() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: ElevatedButton.icon(
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all<Color>(
+            Colors.blueGrey,
+          ),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25.0),
+            ),
+          ),
+        ),
+        onPressed: buscandoMaisPedidos
+            ? null
+            : () {
+                setState(() {
+                  buscandoMaisPedidos = true;
+                });
+                _pedidoStore!
+                    .fetchAddMorePedidos(
+                  token: _authStore!.token,
+                  roleId: _authStore!.roleId,
+                  pageQuant: pageQuant,
+                  queryString: _query,
+                )
+                    .then(
+                  (bool fetchSuccessful) {
+                    if (fetchSuccessful) {
+                      setState(() {
+                        buscandoMaisPedidos = false;
+                        pageQuant = pageQuant + 10;
+                        pageHeight = pageHeight + 350;
+                      });
+                    } else {
+                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: const Duration(seconds: 1),
+                          content: Text(
+                            'Sem resultados',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      );
+                      setState(() {
+                        buscandoMaisPedidos = false;
+                      });
+                    }
+                  },
+                );
+
+                //refreshPageFetchNewList();
+              },
+        label: const Text('Carregar'),
+        icon: Icon(Icons.arrow_drop_down),
+      ),
+    );
+  }
+
+  Widget _searchBox() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20.0),
+      child: TextField(
+        decoration: InputDecoration(
+          hintText: 'Pesquise seus pacientes',
+        ),
+        onChanged: (value) async {
+          pageHeight = 800;
+          buscandoMaisPedidos = true;
+          pageQuant = 10;
+          const duration = Duration(milliseconds: 500);
+          if (searchOnStoppedTyping != null) {
+            setState(() {
+              searchOnStoppedTyping!.cancel();
+            });
+          }
+          setState(
+            () {
+              searchOnStoppedTyping = new Timer(
+                duration,
+                () {
+                  setState(() {
+                    _query = value;
+                    buscandoMaisPedidos = true;
+                    _pedidoStore!
+                        .fetchAllPedidos(
+                      token: _authStore!.token,
+                      roleId: _authStore!.roleId,
+                      query: _query,
+                    )
+                        .then((bool fetchSuccessful) {
+                      if (fetchSuccessful)
+                        setState(() {
+                          isfetchPedidos = false;
+                        });
+                      else
+                        setState(() {
+                          isfetchPedidos = true;
+                        });
+                    });
+
+                    buscandoMaisPedidos = false;
+                  });
+                },
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
   @override
   void didChangeDependencies() {
     _authStore = Provider.of<AuthProvider>(context);
@@ -240,12 +369,17 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
           .fetchAllPedidos(
         token: _authStore!.token,
         roleId: _authStore!.roleId,
+        query: _query,
       )
           .then((bool fetchSuccessful) {
         if (fetchSuccessful)
-          setState(() => isfetchPedidos = false);
+          setState(() {
+            isfetchPedidos = false;
+          });
         else
-          setState(() => isfetchPedidos = true);
+          setState(() {
+            isfetchPedidos = true;
+          });
       });
       firstRun = false;
     }
@@ -265,12 +399,14 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
         isAlwaysShown: true,
         child: SingleChildScrollView(
           child: Container(
-            height: _screenSize!.width < 768 ? 5800 : 4000,
+            height: pageHeight,
             padding: const EdgeInsets.symmetric(horizontal: 100),
             child: Column(
               children: <Widget>[
                 _header(),
+                _searchBox(),
                 _dataTable(),
+                _buscarMaisPedidosBtn()
               ],
             ),
           ),

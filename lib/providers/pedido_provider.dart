@@ -145,11 +145,19 @@ class PedidoProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> fetchAllPedidos({String token = '', int roleId = 0}) async {
+  Future<bool> fetchAllPedidos({
+    String token = '',
+    int roleId = 0,
+    String query = '',
+  }) async {
     clearDataAllProviderData();
     final response = await http.get(
       Uri.parse(
-        RotasUrl.rotaPedidosV1 + '?roleId=' + roleId.toString(),
+        RotasUrl.rotaPedidosV1 +
+            '?roleId=' +
+            roleId.toString() +
+            '&queryString=' +
+            query,
       ),
       headers: {
         'Content-Type': 'application/json',
@@ -158,18 +166,54 @@ class PedidoProvider with ChangeNotifier {
     );
     try {
       List<dynamic> _pedidos = json.decode(response.body);
-      print(_pedidos.toString());
+
       if (_pedidos[0].containsKey('id')) {
         _pedidos.forEach((p) {
           _pedidosV1List.add(PedidoV1Model.fromJson(p));
         });
 
         return true;
+      } else {
+        return false;
       }
     } catch (e) {
       return false;
     }
-    return true;
+  }
+
+  Future<bool> fetchAddMorePedidos({
+    String token = '',
+    int roleId = 0,
+    int pageQuant = 0,
+    String queryString = '',
+  }) async {
+    final response = await http.get(
+      Uri.parse(
+        RotasUrl.rotaPedidosV1 +
+            '?roleId=' +
+            roleId.toString() +
+            '&pageQuant=' +
+            pageQuant.toString(),
+      ),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    try {
+      List<dynamic> _pedidos = json.decode(response.body);
+      if (_pedidos[0].containsKey('id')) {
+        _pedidos.forEach((p) {
+          _pedidosV1List.add(PedidoV1Model.fromJson(p));
+        });
+
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
   }
 
   List<PedidoV1Model> getPedidosInList() {
