@@ -302,7 +302,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 20),
                         const Text(
-                          'V1.30',
+                          'V1.32',
                           style: TextStyle(
                             color: Colors.white,
                           ),
@@ -401,7 +401,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 20),
                         const Text(
-                          'V1.30',
+                          'V1.32',
                           style: TextStyle(
                             color: Colors.white,
                           ),
@@ -496,8 +496,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     fit: BoxFit.cover,
-                    image:
-                        new AssetImage('assets/backgrounds/login_screen.jpg'),
+                    image: new AssetImage('backgrounds/login_screen.jpg'),
                   ),
                 ),
               ),

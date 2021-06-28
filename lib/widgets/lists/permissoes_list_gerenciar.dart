@@ -29,10 +29,10 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
   late AuthProvider authStore;
 
   bool _absorbPointerBool = false;
-
+  List<bool> selectedListItem = [];
   int mediaQuerySm = 576;
   int mediaQueryMd = 768;
-
+  Size? _screenSize;
   Future<dynamic> mudarPermissao(int _id, int _idPerm, String _token) async {
     String url = RotasUrl.rotaCadastro + _id.toString();
 
@@ -383,8 +383,6 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
   Future<dynamic> _dialog(
     BuildContext ctx,
     int index,
-    double height,
-    double width,
   ) async {
     return showDialog(
       barrierDismissible: true, // user must tap button!
@@ -392,11 +390,12 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
       builder: (BuildContext ctx2) {
         return StatefulBuilder(
           builder: (context, setState) {
-            if (width < mediaQueryMd || height < 500)
-              return Scrollbar(
+            if (_screenSize!.width < mediaQueryMd || _screenSize!.height < 500)
+              return RawScrollbar(
+                radius: Radius.circular(10),
+                thumbColor: Colors.grey,
                 thickness: 15,
                 isAlwaysShown: true,
-                showTrackOnHover: true,
                 child: SingleChildScrollView(
                   child: AlertDialog(
                     title: Container(
@@ -447,6 +446,7 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
                                   content: Text('Permissão alterada!'),
                                 ),
                               );
+                              widget.fetchDataHandler!(true);
                               Navigator.of(ctx).pop(true);
                             }
                           });
@@ -480,6 +480,7 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
                                   content: Text('Permissão alterada!'),
                                 ),
                               );
+                              widget.fetchDataHandler!(true);
                               Navigator.of(ctx).pop(true);
                             }
                           });
@@ -513,6 +514,7 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
                                   content: Text('Permissão alterada!'),
                                 ),
                               );
+                              widget.fetchDataHandler!(true);
                               Navigator.of(ctx).pop(true);
                             }
                           });
@@ -698,15 +700,73 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
     );
   }
 
+  Widget _dataTable() {
+    return SizedBox(
+      width: _screenSize!.width,
+      child: DataTable(
+        showCheckboxColumn: false,
+        columns: [
+          DataColumn(label: const Text('Data')),
+          DataColumn(label: const Text('Nome')),
+          DataColumn(label: const Text('Cpf')),
+          DataColumn(label: const Text('Status')),
+        ],
+        rows: _dataRows(),
+      ),
+    );
+  }
+
+  List<DataRow> _dataRows() {
+    List<DataRow> dr = [];
+
+    if (cadList.isEmpty) return [];
+    if (selectedListItem.length != cadList.length) selectedListItem = [];
+
+    for (int i = 0; i < cadList.length; i++) {
+      if (selectedListItem.length != cadList.length)
+        selectedListItem.add(false);
+      dr.add(
+        DataRow(
+          color: i.isOdd
+              ? MaterialStateColor.resolveWith(
+                  (states) => Color.fromRGBO(128, 128, 128, 0.2))
+              : MaterialStateColor.resolveWith((states) => Colors.white),
+          onSelectChanged: (selected) async {
+            bool? result = await _dialog(context, i);
+            if (result!) {
+              widget.fetchDataHandler!(true);
+            }
+          },
+          selected: selectedListItem[i],
+          cells: _dataCells(position: i),
+        ),
+      );
+    }
+    return dr;
+  }
+
+  List<DataCell> _dataCells({int position = 0}) {
+    var format = DateFormat.yMd('pt');
+    var dateTime = DateTime.parse(cadList[position]['created_at']);
+    var dateString = format.format(dateTime);
+    return [
+      DataCell(Text(dateString)),
+      DataCell(Text(cadList[position]['nome'] ??
+          '' + ' ' + cadList[position]['sobrenome'] ??
+          '')),
+      DataCell(Text(_formatCpf(cadList[position]['username']))),
+      DataCell(Text(cadList[position]['role']['name'])),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
+    _screenSize = MediaQuery.of(context).size;
     cadastroStore = Provider.of<CadastroProvider>(context);
     cadList = cadastroStore.getCadastros();
     authStore = Provider.of<AuthProvider>(context);
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
 
-    if (cadList == null) {
+    if (cadList.isEmpty) {
       return Container(
         child: Align(
           alignment: Alignment.topCenter,
@@ -724,76 +784,6 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
       );
     }
 
-    return ListView.builder(
-      addAutomaticKeepAlives: true,
-      itemCount: cadList.length,
-      itemBuilder: (ctx, index) {
-        if (cadList[index]['id'] == authStore.id) {
-          return Container(
-            height: 80,
-            child: Card(
-              shadowColor: Colors.grey,
-              margin: EdgeInsets.all(0),
-              color: Colors.lightBlue.withOpacity(0.3),
-              elevation: 0.5,
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: ListTile(
-                      onTap: () {
-                        //_dialog(ctx, index);
-                      },
-                      title: Tooltip(
-                        message: 'Você não pode alterar suas permissões',
-                        child: _listItem(index, width),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-        return Container(
-          height: 80,
-          child: Card(
-            shadowColor: Colors.grey,
-            margin: EdgeInsets.all(0),
-            color: (index % 2 == 0) ? Colors.white : Color(0xffe3e3e3),
-            elevation: 0.5,
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: ListTile(
-                    onTap: () {
-                      setState(() {
-                        _absorbPointerBool = true;
-                      });
-                      _dialog(ctx, index, height, width).then((didUpdate) {
-                        if (didUpdate == null) {
-                          setState(() {
-                            _absorbPointerBool = false;
-                          });
-                        }
-                        if (didUpdate) {
-                          Future.delayed(Duration(milliseconds: 800), () {
-                            widget.fetchDataHandler!(true);
-                            _absorbPointerBool = false;
-                            cadastroStore.clearCadastrosAndUpdate();
-                          });
-                        }
-                      });
-                    },
-                    title: Tooltip(
-                        message: 'Alterar permissões de usuários',
-                        child: _listItem(index, width)),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+    return _dataTable();
   }
 }

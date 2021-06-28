@@ -26,11 +26,9 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
   bool _sendingCadastro = false;
 
   bool _absorbPointerBool = false;
-  List<bool> selectedListItem = [];
+
   int mediaQuerySm = 576;
   int mediaQueryMd = 768;
-
-  Size? _screenSize;
 
   String _isoDateTimeToLocal(String isoDateString) {
     DateTime _dateTime = DateTime.parse(isoDateString).toLocal();
@@ -393,24 +391,25 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
     );
   }
 
-  Future<bool?> _dialog(
+  Future<dynamic> _dialog(
     BuildContext ctx,
     int index,
+    double width,
+    double height,
   ) async {
     _dialogOpen = true;
 
-    return showDialog<bool?>(
+    return showDialog(
       barrierDismissible: true, // user must tap button or not
       context: ctx,
       builder: (BuildContext ctx2) {
         return StatefulBuilder(
           builder: (context, setState) {
-            if (_screenSize!.width < mediaQueryMd || _screenSize!.height < 500)
-              return RawScrollbar(
-                radius: Radius.circular(10),
-                thumbColor: Colors.grey,
+            if (width < mediaQueryMd || height < 500)
+              return Scrollbar(
                 thickness: 15,
                 isAlwaysShown: true,
+                showTrackOnHover: true,
                 child: SingleChildScrollView(
                   child: AlertDialog(
                     title: Container(
@@ -446,8 +445,6 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                                       cadList[index]['id'], value)
                                   .then((data) {
                                 if (!data.containsKey('error')) {
-                                  widget.fetchDataHandler!(true);
-
                                   ScaffoldMessenger.of(context)
                                       .removeCurrentSnackBar();
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -481,7 +478,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                       ),
                       TextButton(
                         child: !_sendingCadastro
-                            ? const Text('Aprovar')
+                            ? const Text("Aprovar")
                             : CircularProgressIndicator(
                                 valueColor: new AlwaysStoppedAnimation<Color>(
                                   Colors.blue,
@@ -568,11 +565,9 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                 title: Container(
                   width: 850,
                   height: 350,
-                  child: RawScrollbar(
-                    radius: Radius.circular(10),
-                    thumbColor: Colors.grey,
-                    thickness: 15,
+                  child: Scrollbar(
                     isAlwaysShown: true,
+                    showTrackOnHover: true,
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
@@ -724,68 +719,10 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
     );
   }
 
-  Widget _dataTable() {
-    return SizedBox(
-      width: _screenSize!.width,
-      child: DataTable(
-        showCheckboxColumn: false,
-        columns: [
-          DataColumn(label: const Text('Data')),
-          DataColumn(label: const Text('Nome')),
-          DataColumn(label: const Text('Cpf')),
-          DataColumn(label: const Text('Status')),
-        ],
-        rows: _dataRows(),
-      ),
-    );
-  }
-
-  List<DataRow> _dataRows() {
-    List<DataRow> dr = [];
-
-    if (cadList.isEmpty) return [];
-    if (selectedListItem.length != cadList.length) selectedListItem = [];
-
-    for (int i = 0; i < cadList.length; i++) {
-      if (selectedListItem.length != cadList.length)
-        selectedListItem.add(false);
-      dr.add(
-        DataRow(
-          color: i.isOdd
-              ? MaterialStateColor.resolveWith(
-                  (states) => Color.fromRGBO(128, 128, 128, 0.2))
-              : MaterialStateColor.resolveWith((states) => Colors.white),
-          onSelectChanged: (selected) async {
-            bool? result = await _dialog(context, i);
-            if (result!) {
-              widget.fetchDataHandler!(true);
-            }
-          },
-          selected: selectedListItem[i],
-          cells: _dataCells(position: i),
-        ),
-      );
-    }
-    return dr;
-  }
-
-  List<DataCell> _dataCells({int position = 0}) {
-    var format = DateFormat.yMd('pt');
-    var dateTime = DateTime.parse(cadList[position]['created_at']);
-    var dateString = format.format(dateTime);
-    return [
-      DataCell(Text(dateString)),
-      DataCell(Text(cadList[position]['nome'] ??
-          '' + ' ' + cadList[position]['sobrenome'] ??
-          '')),
-      DataCell(Text(_formatCpf(cadList[position]['username']))),
-      DataCell(Text(cadList[position]['aprovacao_usuario']['status'])),
-    ];
-  }
-
   @override
   Widget build(BuildContext context) {
-    _screenSize = MediaQuery.of(context).size;
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     //For direct url access
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       if (Navigator.canPop(context) && !_dialogOpen) {
@@ -813,6 +750,77 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
         ),
       );
     }
-    return _dataTable();
+    return ListView.builder(
+      //addAutomaticKeepAlives: true,
+      itemCount: cadList.length,
+      itemBuilder: (ctx, index) {
+        if (cadList[index]['id'] == authStore.id) {
+          return Container(
+            height: 80,
+            child: Card(
+              shadowColor: Colors.grey,
+              margin: EdgeInsets.all(0),
+              color: Colors.lightBlue.withOpacity(0.3),
+              elevation: 0.5,
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: ListTile(
+                      onTap: () {
+                        //_dialog(ctx, index).then((_) => _dialogOpen = false);
+                      },
+                      title: Tooltip(
+                        message: 'Altere seu cadastro pelo perfil',
+                        child: _listItem(index, width),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+        return AbsorbPointer(
+          absorbing: _absorbPointerBool,
+          child: Container(
+            height: 80,
+            child: Card(
+              margin: EdgeInsets.all(0),
+              color: (index % 2 == 0) ? Colors.white : Color(0xffe3e3e3),
+              elevation: 0.5,
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: ListTile(
+                      onTap: () {
+                        _dialog(ctx, index, width, height).then((didUpdate) {
+                          if (didUpdate == null) {
+                            setState(() {
+                              _absorbPointerBool = false;
+                            });
+                          }
+                          if (didUpdate) {
+                            _dialogOpen = false;
+                            Future.delayed(Duration(milliseconds: 800), () {
+                              widget.fetchDataHandler!(true);
+                              _absorbPointerBool = false;
+                              cadastroStore.clearCadastrosAndUpdate();
+                            });
+                          }
+                        });
+                      },
+                      title: Tooltip(
+                        message: 'Visualizar e editar cadastro',
+                        child: _listItem(index, width),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }

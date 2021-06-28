@@ -205,8 +205,13 @@ class _MyAppBarState extends State<MyAppBar> {
                       routeName != '/gerenciar-cadastros') {
                     //Remove any messages (if any) on changing routes
                     ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    Navigator.of(context)
-                        .pushReplacementNamed(GerenciarCadastros.routeName);
+                    Navigator.of(context).pushReplacementNamed(
+                      GerenciarCadastros.routeName,
+                      arguments: ScreenArguments(
+                        title: 'Gerenciar Cadastros',
+                        message: '',
+                      ),
+                    );
                   }
                 } else if (selectedValue == 'Gerenciar Permissões') {
                   checkDataStore!.setfetchDataBool(true);

@@ -92,7 +92,12 @@ class _MyDrawerState extends State<MyDrawer> {
                             if (selectedValue == 'Gerenciar Cadastros') {
                               print(selectedValue);
                               Navigator.of(context).pushReplacementNamed(
-                                  GerenciarCadastros.routeName);
+                                GerenciarCadastros.routeName,
+                                arguments: ScreenArguments(
+                                  title: 'Gerenciar Cadastros',
+                                  message: '',
+                                ),
+                              );
                             } else if (selectedValue ==
                                 'Gerenciar Permissões') {
                               print(selectedValue);

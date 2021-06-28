@@ -175,8 +175,7 @@ class CadastroProvider with ChangeNotifier {
         headers: requestHeaders,
       );
       _cadastros = json.decode(response.body);
-      //Clearing query string
-      //_queryString = '';
+
       return _cadastros;
     } catch (error) {
       print(error);

@@ -602,9 +602,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               ),
             ],
           ),
-          Expanded(
-            child: Container(),
-          ),
         ],
       ),
     );
@@ -746,9 +743,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               ),
             ],
           ),
-          Expanded(
-            child: Container(),
-          ),
         ],
       ),
     );
@@ -822,9 +816,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                 width: 80,
               )
             ],
-          ),
-          Expanded(
-            child: Container(),
           ),
         ],
       ),
@@ -1073,9 +1064,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               ),
             ],
           ),
-          Expanded(
-            child: Container(),
-          ),
         ],
       ),
     );
@@ -1133,9 +1121,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             },
             buttons: resApinUiList,
           ),
-          Expanded(
-            child: Container(),
-          ),
         ],
       ),
     );
@@ -1180,9 +1165,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             },
             buttons: resApinUiList,
           ),
-          Expanded(
-            child: Container(),
-          ),
         ],
       ),
     );
@@ -1218,14 +1200,12 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               extracaoVirtualUiSelectedPos,
               dentesUiList,
             );
-            print(_extracaoVirtualContr.text);
           } else {
             extracaoVirtualUiSelectedPos.remove(index);
             _extracaoVirtualContr.text = _mapIntListToString(
               extracaoVirtualUiSelectedPos,
               dentesUiList,
             );
-            print(_extracaoVirtualContr.text);
           }
         },
         buttons: dentesUiList,
@@ -1263,14 +1243,12 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               naoMovimentarUiSelectedPos,
               dentesUiList,
             );
-            print(_naoMovimentarContr.text);
           } else {
             naoMovimentarUiSelectedPos.remove(index);
             _naoMovimentarContr.text = _mapIntListToString(
               naoMovimentarUiSelectedPos,
               dentesUiList,
             );
-            print(_naoMovimentarContr.text);
           }
         },
         buttons: dentesUiList,
@@ -1308,14 +1286,12 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               naoColocarAttachUiSelectedPos,
               dentesUiList,
             );
-            print(_naoColocarAttachContr.text);
           } else {
             naoColocarAttachUiSelectedPos.remove(index);
             _naoColocarAttachContr.text = _mapIntListToString(
               naoColocarAttachUiSelectedPos,
               dentesUiList,
             );
-            print(_naoColocarAttachContr.text);
           }
         },
         buttons: dentesUiList,
@@ -1352,11 +1328,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               onSelected: (index, isSelected) {
                 if (isSelected) {
                   _opcAceitoDip.text = 'Aceito desgastes interproximais (DIP)';
-
-                  print(_opcAceitoDip.text);
                 } else {
                   _opcAceitoDip.text = '';
-                  print(_opcAceitoDip.text);
                 }
               },
               buttons: [

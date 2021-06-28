@@ -39,7 +39,9 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
   int mediaQueryMd = 768;
 
   void fetchDataHandler(bool value) {
-    fetchData = value;
+    setState(() {
+      fetchData = value;
+    });
   }
 
   @override
@@ -243,10 +245,11 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
       appBar: MyAppBar(),
       // *BUG* Verify closing drawer automaticlly when under 1200
       drawer: sWidth < 1200 ? MyDrawer() : null,
-      body: Scrollbar(
+      body: RawScrollbar(
+        radius: Radius.circular(10),
+        thumbColor: Colors.grey,
         thickness: 15,
         isAlwaysShown: true,
-        showTrackOnHover: true,
         child: SingleChildScrollView(
           child: Container(
             height: 1430,
@@ -268,36 +271,8 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
                         style: Theme.of(context).textTheme.headline1,
                       ),
                       const SizedBox(height: 20),
-                      ElevatedButton.icon(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                            Colors.blueGrey,
-                          ),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25.0),
-                            ),
-                          ),
-                        ),
-                        onPressed: () {
-                          refreshPageFetchNewList();
-                        },
-                        label: const Text('Atualizar'),
-                        icon: Icon(Icons.refresh),
-                      ),
-
                       const SizedBox(height: 40),
                       _searchBox(sWidth),
-                      const SizedBox(
-                        height: 50,
-                        child: const Divider(
-                          thickness: 0.5,
-                        ),
-                      ),
-                      //TOP TEXT
-                      _getHeaders(sWidth),
-                      const SizedBox(height: 20),
                       if (cadastroStore!.getCadastros().isEmpty)
                         Center(
                           child: CircularProgressIndicator(
