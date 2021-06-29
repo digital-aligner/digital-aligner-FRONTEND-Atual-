@@ -24,6 +24,41 @@ class PedidoProvider with ChangeNotifier {
   List<FileModel> _modeloInferior = [];
   List<FileModel> _modeloCompactado = [];
 
+  //upload files helper (for preventing send of files if have any error)
+  //and prevent send while a file is uploading
+
+  int _qntUploading = 0;
+  int _qntErrors = 0;
+
+  clearUploadAndErrors() {
+    _qntUploading = 0;
+    _qntErrors = 0;
+  }
+
+  int getQntUploading() {
+    return _qntUploading;
+  }
+
+  decrementQntUploading() {
+    _qntUploading--;
+  }
+
+  incrementQntUploading() {
+    _qntUploading++;
+  }
+
+  int getQntErrors() {
+    return _qntErrors;
+  }
+
+  decrementQntErrors() {
+    _qntErrors--;
+  }
+
+  incrementQntErros() {
+    _qntErrors++;
+  }
+
   void clearDataAllProviderData() {
     _pedidosV1List = [];
     _fotografias = [];

@@ -167,6 +167,7 @@ class _FileUploaderState extends State<FileUploader> {
   }
 
   Future<void> _sendFile(PlatformFile currentFile) async {
+    _pedidoStore.incrementQntUploading();
     //create file model and insert in list
     setState(() {
       _serverFiles.add(FileModel.fromJson(null));
@@ -193,7 +194,6 @@ class _FileUploaderState extends State<FileUploader> {
       if (resData[0].containsKey('id')) {
         //if is editar pedido, run this function
         if (widget.isEditarPedido) {
-          print(json.encode(resData[0]));
           bool result = await _sendUpdateFiles(resData[0]);
           if (!result) {
             _newFiledelete(resData[0]['id']);
@@ -206,12 +206,15 @@ class _FileUploaderState extends State<FileUploader> {
           _serverFiles.add(FileModel.fromJson(resData[0]));
           progress = 0;
         });
+        _pedidoStore.decrementQntUploading();
       }
     } catch (e) {
       setState(() {
         _serverFiles.last.id = -1;
         progress = 0;
       });
+      _pedidoStore.incrementQntErros();
+      _pedidoStore.decrementQntUploading();
       print(e);
     }
   }
@@ -247,14 +250,15 @@ class _FileUploaderState extends State<FileUploader> {
             width: 100,
             image: const AssetImage('logos/cubo.jpg'),
           ),
-          Center(
-            child: Center(
-              child: CircularProgressIndicator(
-                value: progress == 1 ? 0 : progress,
-                valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+          if (isUploading)
+            Center(
+              child: Center(
+                child: CircularProgressIndicator(
+                  value: progress == 1 ? 0 : progress,
+                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+                ),
               ),
             ),
-          ),
         ],
       );
     }
@@ -267,14 +271,15 @@ class _FileUploaderState extends State<FileUploader> {
             width: 100,
             image: const AssetImage('logos/comp.jpg'),
           ),
-          Center(
-            child: Center(
-              child: CircularProgressIndicator(
-                value: progress == 1 ? 0 : progress,
-                valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+          if (isUploading)
+            Center(
+              child: Center(
+                child: CircularProgressIndicator(
+                  value: progress == 1 ? 0 : progress,
+                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+                ),
               ),
             ),
-          ),
         ],
       );
     } else {
@@ -360,6 +365,7 @@ class _FileUploaderState extends State<FileUploader> {
 
                             if (_serverFiles[pos].id == -1) {
                               _serverFiles.remove(_serverFiles[pos]);
+                              _pedidoStore.decrementQntErrors();
                               isDeleting = false;
                               return;
                             }
@@ -469,7 +475,7 @@ class _FileUploaderState extends State<FileUploader> {
   @override
   void didChangeDependencies() {
     _authStore = Provider.of<AuthProvider>(context);
-    _pedidoStore = Provider.of<PedidoProvider>(context);
+    _pedidoStore = Provider.of<PedidoProvider>(context, listen: false);
     if (_firstRun) {
       if (widget.isEditarPedido) _getFilesForPedidoEdit();
     }

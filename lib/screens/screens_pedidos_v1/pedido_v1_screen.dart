@@ -2146,6 +2146,37 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     );
   }
 
+  bool _canSendPedido() {
+    if (_pedidoStore!.getQntUploading() > 0) {
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 3),
+          content: Text(
+            'Arquivos sendo enviados. Por favor aguarde.',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+      return false;
+    }
+
+    if (_pedidoStore!.getQntErrors() > 0) {
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 3),
+          content: Text(
+            'Existem erros em envio de arquivos. Por favor corriga.',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+      return false;
+    }
+    return true;
+  }
+
   ScaffoldFeatureController _msgPacienteCriado(String msg) {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     return ScaffoldMessenger.of(context).showSnackBar(
@@ -2164,6 +2195,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       onPressed: isSending
           ? null
           : () async {
+              bool canSend = _canSendPedido();
+              if (!canSend) return;
+
               setState(() {
                 isSending = true;
               });
@@ -2269,6 +2303,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     _screenSize = MediaQuery.of(context).size;
     _getTermos();
     if (firstRun) {
+      _pedidoStore!.clearUploadAndErrors();
       try {
         _args = ModalRoute.of(context)!.settings.arguments as ScreenArguments;
       } catch (e) {
