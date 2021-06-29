@@ -355,7 +355,9 @@ class _MyAppBarState extends State<MyAppBar> {
             PedidoV1Screen.routeName,
             arguments: ScreenArguments(
               title: 'Novo Paciente',
-              messageMap: {'isEditarPaciente': false},
+              messageMap: {
+                'isEditarPaciente': false,
+              },
             ),
           );
         }

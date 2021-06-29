@@ -757,8 +757,8 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
               : MaterialStateColor.resolveWith((states) => Colors.white),
           onSelectChanged: (selected) async {
             bool? result = await _dialog(context, i);
-            if (result != null) {
-              if (result) widget.fetchDataHandler!(true);
+            if (result!) {
+              widget.fetchDataHandler!(true);
             }
           },
           selected: selectedListItem[i],

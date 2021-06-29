@@ -1554,6 +1554,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   }
 
   Widget _modelosDigitais() {
+    int updatePedidoId = -1;
+    if (_isEditarPedido) {
+      updatePedidoId = _pedidoStore!.getPedido(position: _args.messageInt).id;
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
@@ -1566,8 +1570,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             uploaderType: 'modelo superior',
             isEditarPedido: _isEditarPedido,
             isEditarPedidoPos: _isEditarPedidoPos,
-            updatePedidoId:
-                _pedidoStore!.getPedido(position: _args.messageInt).id,
+            updatePedidoId: updatePedidoId,
           ),
           const SizedBox(height: 20),
           FileUploader(
@@ -1578,8 +1581,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             uploaderType: 'modelo inferior',
             isEditarPedido: _isEditarPedido,
             isEditarPedidoPos: _isEditarPedidoPos,
-            updatePedidoId:
-                _pedidoStore!.getPedido(position: _args.messageInt).id,
+            updatePedidoId: updatePedidoId,
           ),
           _linkDoc(),
         ],
@@ -1588,6 +1590,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   }
 
   Widget _modeloCompactado() {
+    int updatePedidoId = -1;
+    if (_isEditarPedido) {
+      updatePedidoId = _pedidoStore!.getPedido(position: _args.messageInt).id;
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
@@ -1600,8 +1606,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             firstPedidoSaveToProvider: _firstPedidoSaveToProvider,
             isEditarPedido: _isEditarPedido,
             isEditarPedidoPos: _isEditarPedidoPos,
-            updatePedidoId:
-                _pedidoStore!.getPedido(position: _args.messageInt).id,
+            updatePedidoId: updatePedidoId,
           ),
         ],
       ),
@@ -1622,6 +1627,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   }
 
   Widget _carregarFotografias() {
+    int updatePedidoId = -1;
+    if (_isEditarPedido) {
+      updatePedidoId = _pedidoStore!.getPedido(position: _args.messageInt).id;
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: FileUploader(
@@ -1632,7 +1641,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         uploaderType: 'fotografias',
         isEditarPedido: _isEditarPedido,
         isEditarPedidoPos: _isEditarPedidoPos,
-        updatePedidoId: _pedidoStore!.getPedido(position: _args.messageInt).id,
+        updatePedidoId: updatePedidoId,
       ),
     );
   }
@@ -1651,6 +1660,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   }
 
   Widget _carregarRadiografias() {
+    int updatePedidoId = -1;
+    if (_isEditarPedido) {
+      updatePedidoId = _pedidoStore!.getPedido(position: _args.messageInt).id;
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: FileUploader(
@@ -1661,7 +1674,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         firstPedidoSaveToProvider: _firstPedidoSaveToProvider,
         isEditarPedido: _isEditarPedido,
         isEditarPedidoPos: _isEditarPedidoPos,
-        updatePedidoId: _pedidoStore!.getPedido(position: _args.messageInt).id,
+        updatePedidoId: updatePedidoId,
       ),
     );
   }
