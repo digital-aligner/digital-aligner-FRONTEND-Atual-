@@ -493,6 +493,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   groupValue: _linhaMediaSupContr.text,
                   onChanged: (String? value) {
                     setState(() {
+                      _linhaMediaSupComplete = value ?? '';
                       mmLinhaMediaGPOvalue = '';
                       mmDirLinhaMediaSupVis = false;
                       mmEsqLinhaMediaSupVis = false;
@@ -637,6 +638,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   groupValue: _linhaMediaInfContr.text,
                   onChanged: (String? value) {
                     setState(() {
+                      _linhaMediaInfComplete = value ?? '';
                       mmDirLinhaMediaInfVis = false;
                       mmEsqLinhaMediaInfVis = false;
                       _linhaMediaInfContr.text = value ?? '';
@@ -857,6 +859,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                       mmOverbiteVis3 = false;
                       mmOverbiteVis4 = false;
                       _overbiteContr.text = value ?? '';
+                      _overbiteComplete = value ?? '';
                     });
                   },
                 ),
@@ -2301,42 +2304,62 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               _tratarContr.text = p.tratar;
               _queixaPrincipal.text = p.queixaPrincipal;
               _objContr.text = p.objetivosTratamento;
-              _linhaMediaSupContr.text =
-                  _convertDbValuesToUi(p.linhaMediaSuperior)[0];
-              if (_linhaMediaSupContr.text == 'Mover para esquerda')
-                mmEsqLinhaMediaSupVis = true;
-              _linhaMediaSupMMContr.text =
-                  _convertDbValuesToUi(p.linhaMediaSuperior)[1];
-              if (_linhaMediaSupContr.text == 'Mover para direita')
-                mmDirLinhaMediaSupVis = true;
 
-              _linhaMediaInfContr.text =
-                  _convertDbValuesToUi(p.linhaMediaInferior)[0];
-              if (_linhaMediaInfContr.text == 'Mover para esquerda')
-                mmEsqLinhaMediaInfVis = true;
-              _linhaMediaInfMMContr.text =
-                  _convertDbValuesToUi(p.linhaMediaInferior)[1];
-              if (_linhaMediaInfContr.text == 'Mover para direita')
-                mmDirLinhaMediaInfVis = true;
+              List<String> lmsConv = _convertDbValuesToUi(p.linhaMediaSuperior);
+
+              if (lmsConv.length == 2) {
+                print('im in');
+                if (lmsConv[0] == 'Mover para esquerda') {
+                  mmEsqLinhaMediaSupVis = true;
+                } else if (lmsConv[0] == 'Mover para direita') {
+                  mmDirLinhaMediaSupVis = true;
+                }
+                _linhaMediaSupContr.text = lmsConv[0];
+                _linhaMediaSupMMContr.text = lmsConv[1];
+              } else {
+                _linhaMediaSupContr.text = p.linhaMediaSuperior;
+                _linhaMediaSupComplete = p.linhaMediaSuperior;
+              }
+
+              List<String> lmiConv = _convertDbValuesToUi(p.linhaMediaInferior);
+
+              if (lmiConv.length == 2) {
+                if (lmiConv[0] == 'Mover para esquerda') {
+                  mmEsqLinhaMediaInfVis = true;
+                } else if (lmiConv[0] == 'Mover para direita') {
+                  mmDirLinhaMediaInfVis = true;
+                }
+                _linhaMediaInfContr.text = lmiConv[0];
+                _linhaMediaInfMMContr.text = lmiConv[1];
+              } else {
+                _linhaMediaInfContr.text = p.linhaMediaInferior;
+                _linhaMediaInfComplete = p.linhaMediaInferior;
+              }
+
               _overJetContr.text = p.overjet;
 
               //overbite
-              _overbiteContr.text = _convertDbValuesToUi(p.overbite)[0];
-              String overbiteValue = _convertDbValuesToUi(p.overbite)[1];
-
-              if (_overbiteContr.text == 'Intruir anterior sup') {
-                _overbiteInit1 = overbiteValue;
-                mmOverbiteVis1 = true;
-              } else if (_overbiteContr.text == 'Intruir anterior inf') {
-                _overbiteInit2 = overbiteValue;
-                mmOverbiteVis2 = true;
-              } else if (_overbiteContr.text == 'Extruir posterior sup') {
-                _overbiteInit3 = overbiteValue;
-                mmOverbiteVis3 = true;
-              } else if (_overbiteContr.text == 'Extruir posterior inf') {
-                _overbiteInit4 = overbiteValue;
-                mmOverbiteVis4 = true;
+              List<String> ovrbConv = _convertDbValuesToUi(p.overbite);
+              if (ovrbConv.length == 2) {
+                _overbiteContr.text = ovrbConv[0];
+                if (_overbiteContr.text == 'Intruir anterior sup') {
+                  _overbiteInit1 = ovrbConv[1];
+                  mmOverbiteVis1 = true;
+                } else if (_overbiteContr.text == 'Intruir anterior inf') {
+                  _overbiteInit2 = ovrbConv[1];
+                  mmOverbiteVis2 = true;
+                } else if (_overbiteContr.text == 'Extruir posterior sup') {
+                  _overbiteInit3 = ovrbConv[1];
+                  mmOverbiteVis3 = true;
+                } else if (_overbiteContr.text == 'Extruir posterior inf') {
+                  _overbiteInit4 = ovrbConv[1];
+                  mmOverbiteVis4 = true;
+                }
+              } else {
+                _overbiteContr.text = p.overbite;
+                _overbiteComplete = p.overbite;
               }
+
               //res apinh superior
               resApinSupUiSelectedPos = _mapStringToSelectedIntList(
                 p.resApinSup,
