@@ -2178,7 +2178,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                 if (result) {
                   if (tipoPedido == 'refinamento') {
                     _msgPacienteCriado('Refinamento criado com sucesso!');
-                    Navigator.pop(context);
+                    Navigator.pop(context, true);
                     return;
                   }
                   _msgPacienteCriado('Pedido criado com sucesso!');
@@ -2234,7 +2234,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                 );
                 if (result) {
                   _msgPacienteCriado('Pedido atualizado');
-                  Navigator.pop(context);
+                  Navigator.pop(context, true);
                 }
               }
 

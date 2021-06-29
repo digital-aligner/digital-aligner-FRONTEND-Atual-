@@ -58,9 +58,9 @@ class PedidoProvider with ChangeNotifier {
   }
 
   Future<bool> enviarPrimeiroPedido({
-    PedidoV1Model? pedido,
-    String token = '',
-    String tipoPedido = '',
+    @required PedidoV1Model? pedido,
+    @required String? token,
+    @required String? tipoPedido,
   }) async {
     PedidoV1Model pedidoCompleto = _mapFirstPedidoFilesToObj(pedido!);
     String rota = '';
@@ -97,7 +97,10 @@ class PedidoProvider with ChangeNotifier {
         var data = json.decode(_response.body);
         if (data.containsKey('id')) {
           //using sem method
-          clearDataAllProviderData();
+          if (tipoPedido == 'pedido') {
+            clearDataAllProviderData();
+          }
+
           return true;
         }
       } catch (e) {

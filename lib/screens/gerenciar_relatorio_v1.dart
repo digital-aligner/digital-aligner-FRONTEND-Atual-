@@ -448,7 +448,7 @@ class GerenciarRelatorioV1State extends State<GerenciarRelatorioV1> {
         Card(
           child: Container(
             padding: EdgeInsets.all(20),
-            width: 800,
+            width: 600,
             child: _form(),
           ),
         )

@@ -250,7 +250,7 @@ class _FileUploaderState extends State<FileUploader> {
           Center(
             child: Center(
               child: CircularProgressIndicator(
-                value: progress == 1 ? progress = 0 : progress,
+                value: progress == 1 ? 0 : progress,
                 valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
               ),
             ),
@@ -270,7 +270,7 @@ class _FileUploaderState extends State<FileUploader> {
           Center(
             child: Center(
               child: CircularProgressIndicator(
-                value: progress == 1 ? progress = 0 : progress,
+                value: progress == 1 ? 0 : progress,
                 valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
               ),
             ),
@@ -418,6 +418,7 @@ class _FileUploaderState extends State<FileUploader> {
               if (_filesData.isNotEmpty) {
                 for (var file in _filesData) {
                   await _sendFile(file);
+
                   if (widget.firstPedidoSaveToProvider) {
                     _firstPedidoSaveToProvider();
                   }

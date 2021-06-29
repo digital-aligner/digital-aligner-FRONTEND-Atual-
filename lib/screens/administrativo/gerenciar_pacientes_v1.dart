@@ -32,7 +32,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   List<bool> selectedListItem = [];
 
   //manage pages
-  double pageHeight = 800;
+  double pageHeight = 850;
   bool buscandoMaisPedidos = false;
   int pageQuant = 10;
 

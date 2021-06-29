@@ -223,6 +223,12 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     }
   }
 */
+
+  bool _checkIfUserIsSame() {
+    if (_authStore!.id == _getPedido().usuario!.id) return true;
+    return false;
+  }
+
   Widget _pacienteDados() {
     bool refinamento =
         _pedidoStore!.getPedido(position: _args.messageInt).pedidoRefinamento;
@@ -254,31 +260,40 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                       child: Text('editar paciente'),
                     ),
                     TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _selectedView = 0;
-                          _selectedTilePos = -1;
-                        });
+                      onPressed: _checkIfUserIsSame()
+                          ? () {
+                              setState(() {
+                                _selectedView = 0;
+                                _selectedTilePos = -1;
+                              });
 
-                        var p = _pedidoStore!.getPedido(
-                          position: _args.messageInt,
-                        );
+                              var p = _pedidoStore!.getPedido(
+                                position: _args.messageInt,
+                              );
 
-                        Navigator.of(context)
-                            .pushNamed(
-                              PedidoV1Screen.routeName,
-                              arguments: ScreenArguments(
-                                title: 'Pedido de refinamento',
-                                messageMap: {
-                                  'pedidoId': p.id,
-                                  'isRefinamento': true,
-                                  'nomePaciente': p.nomePaciente,
-                                  'dataNascimento': p.dataNascimento,
-                                },
-                              ),
-                            )
-                            .then((value) {});
-                      },
+                              Navigator.of(context)
+                                  .pushNamed(
+                                PedidoV1Screen.routeName,
+                                arguments: ScreenArguments(
+                                  title: 'Pedido de refinamento',
+                                  messageMap: {
+                                    'pedidoId': p.id,
+                                    'isRefinamento': true,
+                                    'nomePaciente': p.nomePaciente,
+                                    'dataNascimento': p.dataNascimento,
+                                  },
+                                ),
+                              )
+                                  .then((value) async {
+                                if (value != null) {
+                                  if (value == true) {
+                                    await _fetchHistoricoPac();
+                                    setState(() {});
+                                  }
+                                }
+                              });
+                            }
+                          : null,
                       child: Text('Solicitar refinamento'),
                     ),
                   ],
@@ -321,7 +336,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
         Card(
           child: Container(
             padding: EdgeInsets.all(20),
-            width: 800,
+            width: 600,
             child: _helperBuilder(),
           ),
         )
@@ -1066,9 +1081,9 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     if (!_relatorioView.pedido!.pedidoRefinamento) {
       if (!_relatorioView.aprovado) {
         bool canUpdate = _checkListForAprovedPedido();
-        if (canUpdate) return false;
+        if (!canUpdate) return true;
       } else {
-        return true;
+        return false;
       }
     } else {
       if (!_relatorioView.aprovado) return true;
@@ -1103,7 +1118,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             TextButton(
-              onPressed: _relatorioAprovadoLogic()
+              onPressed: _relatorioAprovadoLogic() && _checkIfUserIsSame()
                   ? () async {
                       bool result = await _aprovarRelatorio();
                       if (result) {
@@ -1115,7 +1130,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
               child: const Text('Aprovar'),
             ),
             TextButton(
-              onPressed: _relatorioAprovadoLogic()
+              onPressed: _relatorioAprovadoLogic() && _checkIfUserIsSame()
                   ? () {
                       solicitarAltPopup();
                     }
