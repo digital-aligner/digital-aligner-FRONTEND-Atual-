@@ -2501,24 +2501,27 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     if (!_authStore!.isAuth) {
       return LoginScreen();
     }
-    return Scaffold(
-      appBar: _buildAppbar(),
-      // *BUG* Verify closing drawer automaticlly when under 1200
-      drawer: _screenSize!.width < 1200 ? MyDrawer() : null,
-      body: RawScrollbar(
-        radius: Radius.circular(10),
-        thumbColor: Colors.grey,
-        thickness: 15,
-        isAlwaysShown: true,
-        child: SingleChildScrollView(
-          child: Container(
-            height: _screenSize!.width < 768 ? 5800 : 5100,
-            padding: const EdgeInsets.symmetric(horizontal: 100),
-            child: Column(
-              children: <Widget>[
-                _header(),
-                _isEditarPedidoCheck() ? _form2() : _form(),
-              ],
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        appBar: _buildAppbar(),
+        // *BUG* Verify closing drawer automaticlly when under 1200
+        drawer: _screenSize!.width < 1200 ? MyDrawer() : null,
+        body: RawScrollbar(
+          radius: Radius.circular(10),
+          thumbColor: Colors.grey,
+          thickness: 15,
+          isAlwaysShown: true,
+          child: SingleChildScrollView(
+            child: Container(
+              height: _screenSize!.width < 768 ? 5800 : 5100,
+              padding: const EdgeInsets.symmetric(horizontal: 100),
+              child: Column(
+                children: <Widget>[
+                  _header(),
+                  _isEditarPedidoCheck() ? _form2() : _form(),
+                ],
+              ),
             ),
           ),
         ),

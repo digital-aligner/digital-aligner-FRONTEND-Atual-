@@ -40,6 +40,7 @@ class PedidoProvider with ChangeNotifier {
   }
 
   decrementQntUploading() {
+    if (_qntUploading == 0) return;
     _qntUploading--;
   }
 
@@ -52,6 +53,7 @@ class PedidoProvider with ChangeNotifier {
   }
 
   decrementQntErrors() {
+    if (_qntErrors == 0) return;
     _qntErrors--;
   }
 

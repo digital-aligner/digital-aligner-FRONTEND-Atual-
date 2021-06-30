@@ -17,6 +17,8 @@ import 'package:provider/provider.dart';
 import '../rotas_url.dart';
 
 class PrimeiroCadastro extends StatefulWidget {
+  final bool isPortugal;
+  PrimeiroCadastro({this.isPortugal = false});
   @override
   _PrimeiroCadastroState createState() => _PrimeiroCadastroState();
 }
@@ -603,6 +605,213 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
     );
   }
 
+  Widget _formPortugal() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: Container(),
+              ),
+              Expanded(
+                flex: 9,
+                child: Column(
+                  children: [
+                    //nome
+                    Container(
+                      height: 80,
+                      child: TextFormField(
+                        maxLength: 29,
+                        onSaved: (String? value) {
+                          _cadastroStore.novoCad.nome = value ?? '';
+                        },
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Por favor insira seu nome.';
+                          }
+                          return null;
+                        },
+                        decoration: const InputDecoration(
+                          labelText: 'Nome: *',
+                          counterText: '',
+                          //hintText: 'Insira seu nome',
+                          border: const OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    //sobrenome
+                    Container(
+                      height: 80,
+                      child: TextFormField(
+                        maxLength: 29,
+                        onSaved: (String? value) {
+                          _cadastroStore.novoCad.sobrenome = value ?? '';
+                        },
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Por favor insira seu sobrenome.';
+                          }
+                          return null;
+                        },
+                        decoration: const InputDecoration(
+                          labelText: 'Sobrenome: *',
+                          //hintText: 'Insira seu nome',
+                          counterText: '',
+                          border: const OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                    const Divider(thickness: 1),
+                    //email
+                    Container(
+                      width: width,
+                      height: width > 600 ? 80 : 180,
+                      child: Flex(
+                        direction:
+                            width > 600 ? Axis.horizontal : Axis.vertical,
+                        children: [
+                          //Email
+                          Expanded(
+                            child: Container(
+                              margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
+                              height: 80,
+                              child: TextFormField(
+                                maxLength: 200,
+                                onSaved: (String? value) {
+                                  _cadastroStore.novoCad.email = value ?? '';
+                                },
+                                validator: (value) {
+                                  if (value!.length == 0) {
+                                    return 'Por favor insira seu email';
+                                  }
+                                  if (value != _emailConfirm) {
+                                    return 'Emails não correspondem';
+                                  }
+                                  return null;
+                                },
+                                initialValue: null,
+                                decoration: InputDecoration(
+                                  counterText: '',
+                                  labelText: 'Email: *',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          //Confirm email
+                          Expanded(
+                            child: Container(
+                              margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
+                              height: 80,
+                              child: TextFormField(
+                                maxLength: 200,
+                                onChanged: (String value) {
+                                  _emailConfirm = value;
+                                },
+                                validator: (value) {
+                                  if (value!.length == 0) {
+                                    return 'Por favor confirme seu email';
+                                  }
+                                  return null;
+                                },
+                                initialValue: null,
+                                decoration: InputDecoration(
+                                  counterText: '',
+                                  labelText: 'Confirme seu email.',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    //password
+                    Container(
+                      width: width,
+                      height: width > 600 ? 80 : 180,
+                      child: Flex(
+                        direction:
+                            width > 600 ? Axis.horizontal : Axis.vertical,
+                        children: [
+                          //password
+                          Expanded(
+                            child: Container(
+                              height: 80,
+                              child: TextFormField(
+                                maxLength: 30,
+                                obscureText: true,
+                                onSaved: (String? value) {
+                                  _cadastroStore.novoCad.password = value ?? '';
+                                },
+                                validator: (value) {
+                                  if (value!.length == 0) {
+                                    return 'Por favor insira sua senha';
+                                  }
+                                  if (value.length < 6) {
+                                    return 'A senha deve ter no mínimo 6 caracteres';
+                                  }
+                                  if (value != _passwordConfirm) {
+                                    return 'Senhas não correspondem';
+                                  }
+                                  return null;
+                                },
+                                initialValue: null,
+                                decoration: InputDecoration(
+                                  counterText: '',
+                                  labelText: 'Senha: *',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          //password confirm
+                          Expanded(
+                            child: Container(
+                              height: 80,
+                              child: TextFormField(
+                                maxLength: 30,
+                                obscureText: true,
+                                onChanged: (String value) {
+                                  _passwordConfirm = value;
+                                },
+                                validator: (value) {
+                                  if (value!.length == 0) {
+                                    return 'Por favor confirme sua senha';
+                                  }
+                                  return null;
+                                },
+                                initialValue: null,
+                                decoration: InputDecoration(
+                                  counterText: '',
+                                  labelText: 'Confirme sua senha.',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Container(),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buttons() {
     return Flex(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -632,7 +841,9 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                       setState(() {
                         _sendingForm = true;
                       });
-                      _cadastroStore.enviarPrimeiroCadastro().then((data) {
+                      _cadastroStore
+                          .enviarPrimeiroCadastro(widget.isPortugal)
+                          .then((data) {
                         if (data['statusCode'] == 200) {
                           ScaffoldMessenger.of(context).removeCurrentSnackBar();
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -740,7 +951,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                 const SizedBox(height: 50),
                 _headline(),
                 const SizedBox(height: 50),
-                _form(),
+                if (widget.isPortugal) _formPortugal() else _form(),
                 const SizedBox(height: 50),
                 _buttons(),
                 const SizedBox(height: 50),

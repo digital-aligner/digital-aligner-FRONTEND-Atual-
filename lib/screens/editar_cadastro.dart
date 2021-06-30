@@ -416,6 +416,7 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                         sc!.cro_uf = value ?? '';
                                       },
                                       validator: (String? value) {
+                                        return null;
                                         return value == null || value.isEmpty
                                             ? 'Campo vazio'
                                             : null;

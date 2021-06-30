@@ -39,7 +39,8 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
     return _formatedDate;
   }
 
-  String _formatCpf(String cpf) {
+  String _formatCpf(String? cpf) {
+    if (cpf == null || cpf.length < 11) return '';
     String _formatedCpf = cpf.substring(0, 3) +
         '.' +
         cpf.substring(3, 6) +
@@ -439,7 +440,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                         child: SwitchListTile(
                             activeColor: Colors.blue,
                             title: const Text('Representante?'),
-                            value: cadList[index]['is_representante'],
+                            value: cadList[index]['is_representante'] ?? false,
                             onChanged: (bool value) {
                               cadastroStore
                                   .sendRepresentanteState(
@@ -599,7 +600,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                     child: SwitchListTile(
                         activeColor: Colors.blue,
                         title: const Text('Representante?'),
-                        value: cadList[index]['is_representante'],
+                        value: cadList[index]['is_representante'] ?? false,
                         onChanged: (bool value) {
                           cadastroStore
                               .sendRepresentanteState(

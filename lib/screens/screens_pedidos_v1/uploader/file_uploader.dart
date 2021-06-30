@@ -167,16 +167,16 @@ class _FileUploaderState extends State<FileUploader> {
   }
 
   Future<void> _sendFile(PlatformFile currentFile) async {
-    _pedidoStore.incrementQntUploading();
-    //create file model and insert in list
-    setState(() {
-      _serverFiles.add(FileModel.fromJson(null));
-    });
-
-    //build request
-    MultipartRequest r = _buildRequest(currentFile);
-
     try {
+      _pedidoStore.incrementQntUploading();
+      //create file model and insert in list
+      setState(() {
+        _serverFiles.add(FileModel.fromJson(null));
+      });
+
+      //build request
+      MultipartRequest r = _buildRequest(currentFile);
+
       //TIMER (for fake ui progress)
       _fakeTimer();
 

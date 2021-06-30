@@ -93,7 +93,7 @@ class CadastroProvider with ChangeNotifier {
     _selectedCad = CadastroModel.fromJson(data[0]);
   }
 
-  Future<Map> enviarPrimeiroCadastro() async {
+  Future<Map> enviarPrimeiroCadastro(bool isPortugal) async {
     /*
     //Changing iso string to local (just for input view)
     DateTime dataNasc = DateTime.parse(_controllerDataNasc.text).toLocal();
@@ -101,8 +101,15 @@ class CadastroProvider with ChangeNotifier {
         DateFormat('dd/MM/yyyy').format(dataNasc).toString();
     */
 
+    String rota = '';
+
+    if (isPortugal)
+      rota = RotasUrl.rotaCadastroExteriorV1;
+    else
+      rota = RotasUrl.rotaCadastro;
+
     var _response = await http.post(
-      Uri.parse(RotasUrl.rotaCadastro),
+      Uri.parse(rota),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(novoCad.toJson()),
     );

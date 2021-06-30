@@ -158,6 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     )
                   else
                     const SizedBox(height: 20),
+                  //novo cadastro - Brasil
                   Container(
                     margin: const EdgeInsets.symmetric(vertical: 10),
                     width: double.infinity,
@@ -175,7 +176,33 @@ class _LoginScreenState extends State<LoginScreen> {
                         });
                       },
                       child: const Text(
-                        'NOVO CADASTRO',
+                        'CADASTRO BRASIL',
+                        style: const TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _cadastroScreenOpen = true;
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PrimeiroCadastro(
+                              isPortugal: true,
+                            ),
+                          ),
+                        ).then((_) {
+                          _cadastroScreenOpen = false;
+                        });
+                      },
+                      child: const Text(
+                        'CADASTRO PORTUGAL',
                         style: const TextStyle(
                           color: Colors.white,
                         ),
