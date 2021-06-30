@@ -69,10 +69,8 @@ class _EditarCadastroState extends State<EditarCadastro> {
   String _getCpfFromSelectedValue(String value) {
     String onlyCpf = value.substring(value.indexOf('|') + 1, value.length);
     String removeCpfSpace = onlyCpf.replaceAll(' ', '');
-    String removeCpfDots = removeCpfSpace.replaceAll('.', '');
-    String removeCpfDash = removeCpfDots.replaceAll('-', '');
 
-    return removeCpfDash;
+    return removeCpfSpace;
   }
 
   void dispose() {
@@ -321,7 +319,7 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                                 }
                                                 return null;
                                               },
-                                              maxLength: 11,
+                                              maxLength: 100,
                                               controller: _controllerCPF,
                                               keyboardType:
                                                   TextInputType.number,
@@ -333,7 +331,7 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                               decoration: const InputDecoration(
                                                 //To hide cpf length num
                                                 counterText: '',
-                                                labelText: 'CPF: *',
+                                                labelText: 'CPF/id: *',
                                                 border:
                                                     const OutlineInputBorder(),
                                               ),
@@ -507,8 +505,7 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                                 ' ' +
                                                 _representante['sobrenome'] +
                                                 ' | ' +
-                                                _formatCpf(
-                                                    _representante['username']),
+                                                _representante['username'],
                                           );
                                         }
                                         return _repUi;
@@ -544,9 +541,7 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                               ' ' +
                                               sc!.representante!.sobrenome +
                                               ' | ' +
-                                              _formatCpf(
-                                                sc!.representante!.usernameCpf,
-                                              ),
+                                              sc!.representante!.usernameCpf,
                                     ),
                                   if (authStore.role != 'Credenciado')
                                     const SizedBox(height: 40),

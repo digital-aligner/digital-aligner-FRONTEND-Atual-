@@ -278,7 +278,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
 
   Widget _nomePaciente() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsets.symmetric(vertical: 20),
       child: TextFormField(
         maxLength: 60,
         enabled: _nomePacienteEnabled,
@@ -303,7 +303,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
 
   Widget _dataNascimento() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsets.symmetric(vertical: 20),
       child: DateTimeField(
         enabled: _dataNascimentoEnabled,
         initialValue: DateTime.tryParse(_dataNascContr.text),
@@ -343,15 +343,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
 
   Widget _tratar() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      child: Column(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Row(
         children: <Widget>[
-          Text(
-            'Tratar:*',
-            style: TextStyle(
-              fontSize: textSize,
-            ),
-          ),
           Flexible(
             fit: FlexFit.loose,
             child: RadioListTile<String>(
@@ -401,11 +395,11 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
 
   Widget _queixaPrinc() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsets.symmetric(vertical: 20),
       child: TextFormField(
         initialValue: _queixaPrincipal.text,
-        maxLines: 7,
-        maxLength: 755,
+        maxLines: 4,
+        maxLength: 455,
         enabled: true,
         validator: (String? value) {
           return value == null || value.isEmpty ? 'Campo vazio' : null;
@@ -442,10 +436,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
 
   Widget _objetivosTratamento() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsets.symmetric(vertical: 20),
       child: TextFormField(
         initialValue: _objContr.text,
-        maxLines: 7,
+        maxLines: 6,
         maxLength: 755,
         enabled: true,
         validator: (String? value) {
@@ -472,35 +466,45 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   Widget _linhaMediSuperior() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
-      child: Column(
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        direction: Axis.horizontal,
         children: <Widget>[
-          Text(
-            'Linha média superior: *',
-            style: TextStyle(
-              fontSize: textSize,
+          SizedBox(
+            width: 265,
+            child: Text(
+              'Linha média superior: *',
+              style: TextStyle(
+                fontSize: textSize,
+              ),
             ),
           ),
-          RadioListTile<String>(
-            activeColor: Colors.blue,
-            title: const Text('Manter'),
-            value: 'Manter',
-            groupValue: _linhaMediaSupContr.text,
-            onChanged: (String? value) {
-              setState(() {
-                _linhaMediaSupComplete = value ?? '';
-                mmLinhaMediaGPOvalue = '';
-                mmDirLinhaMediaSupVis = false;
-                mmEsqLinhaMediaSupVis = false;
-                _linhaMediaSupContr.text = value ?? '';
-                _linhaMediaSupMMContr.text = '';
-              });
-            },
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          Wrap(
+            direction: Axis.horizontal,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               SizedBox(
-                width: 250,
+                width: 200,
+                child: RadioListTile<String>(
+                  activeColor: Colors.blue,
+                  title: const Text('Manter'),
+                  value: 'Manter',
+                  groupValue: _linhaMediaSupContr.text,
+                  onChanged: (String? value) {
+                    setState(() {
+                      _linhaMediaSupComplete = value ?? '';
+                      mmLinhaMediaGPOvalue = '';
+                      mmDirLinhaMediaSupVis = false;
+                      mmEsqLinhaMediaSupVis = false;
+                      _linhaMediaSupContr.text = value ?? '';
+                      _linhaMediaSupMMContr.text = '';
+                    });
+                  },
+                ),
+              ),
+              SizedBox(
+                width: 200,
                 child: RadioListTile<String>(
                   activeColor: Colors.blue,
                   title: const Text('Mover para direita'),
@@ -548,13 +552,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   ),
                 ),
               ),
-            ],
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
               SizedBox(
-                width: 250,
+                width: 200,
                 child: RadioListTile<String>(
                   activeColor: Colors.blue,
                   title: const Text('Mover para esquerda'),
@@ -612,33 +611,44 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   Widget _linhaMediInferior() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
-      child: Column(
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        direction: Axis.horizontal,
         children: <Widget>[
-          Text(
-            'Linha média inferior: *',
-            style: TextStyle(
-              fontSize: textSize,
+          SizedBox(
+            width: 265,
+            child: Text(
+              'Linha média inferior: *',
+              style: TextStyle(
+                fontSize: textSize,
+              ),
             ),
           ),
-          RadioListTile<String>(
-            activeColor: Colors.blue,
-            title: const Text('Manter'),
-            value: 'Manter',
-            groupValue: _linhaMediaInfContr.text,
-            onChanged: (String? value) {
-              setState(() {
-                _linhaMediaInfComplete = value ?? '';
-                mmDirLinhaMediaInfVis = false;
-                mmEsqLinhaMediaInfVis = false;
-                _linhaMediaInfContr.text = value ?? '';
-                _linhaMediaInfMMContr.text = '';
-              });
-            },
-          ),
-          Row(
+          Wrap(
+            direction: Axis.horizontal,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               SizedBox(
-                width: 250,
+                width: 200,
+                child: RadioListTile<String>(
+                  activeColor: Colors.blue,
+                  title: const Text('Manter'),
+                  value: 'Manter',
+                  groupValue: _linhaMediaInfContr.text,
+                  onChanged: (String? value) {
+                    setState(() {
+                      _linhaMediaInfComplete = value ?? '';
+                      mmDirLinhaMediaInfVis = false;
+                      mmEsqLinhaMediaInfVis = false;
+                      _linhaMediaInfContr.text = value ?? '';
+                      _linhaMediaInfMMContr.text = '';
+                    });
+                  },
+                ),
+              ),
+              SizedBox(
+                width: 200,
                 child: RadioListTile<String>(
                   activeColor: Colors.blue,
                   title: const Text('Mover para direita'),
@@ -685,10 +695,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   ),
                 ),
               ),
-            ],
-          ),
-          Row(
-            children: [
               SizedBox(
                 width: 200,
                 child: RadioListTile<String>(
@@ -747,46 +753,71 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   Widget _overJet() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
-      child: Column(
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        direction: Axis.horizontal,
         children: <Widget>[
-          Text(
-            'Overjet: *',
-            style: TextStyle(
-              fontSize: textSize,
+          SizedBox(
+            width: 100,
+            child: Text(
+              'Overjet: *',
+              style: TextStyle(
+                fontSize: textSize,
+              ),
             ),
           ),
-          RadioListTile<String>(
-            activeColor: Colors.blue,
-            title: const Text('Manter'),
-            value: 'Manter',
-            groupValue: _overJetContr.text,
-            onChanged: (String? value) {
-              setState(() {
-                _overJetContr.text = value ?? '';
-              });
-            },
-          ),
-          RadioListTile<String>(
-            activeColor: Colors.blue,
-            title: const Text('Melhorar'),
-            value: 'Melhorar',
-            groupValue: _overJetContr.text,
-            onChanged: (String? value) {
-              setState(() {
-                _overJetContr.text = value ?? '';
-              });
-            },
-          ),
-          RadioListTile<String>(
-            activeColor: Colors.blue,
-            title: const Text('Corrigir'),
-            value: 'Corrigir',
-            groupValue: _overJetContr.text,
-            onChanged: (String? value) {
-              setState(() {
-                _overJetContr.text = value ?? '';
-              });
-            },
+          Wrap(
+            alignment: WrapAlignment.spaceAround,
+            direction: Axis.horizontal,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              SizedBox(
+                width: 200,
+                child: RadioListTile<String>(
+                  activeColor: Colors.blue,
+                  title: const Text('Manter'),
+                  value: 'Manter',
+                  groupValue: _overJetContr.text,
+                  onChanged: (String? value) {
+                    setState(() {
+                      _overJetContr.text = value ?? '';
+                    });
+                  },
+                ),
+              ),
+              SizedBox(
+                width: 200,
+                child: RadioListTile<String>(
+                  activeColor: Colors.blue,
+                  title: const Text('Melhorar'),
+                  value: 'Melhorar',
+                  groupValue: _overJetContr.text,
+                  onChanged: (String? value) {
+                    setState(() {
+                      _overJetContr.text = value ?? '';
+                    });
+                  },
+                ),
+              ),
+              SizedBox(
+                width: 200,
+                child: RadioListTile<String>(
+                  activeColor: Colors.blue,
+                  title: const Text('Corrigir'),
+                  value: 'Corrigir',
+                  groupValue: _overJetContr.text,
+                  onChanged: (String? value) {
+                    setState(() {
+                      _overJetContr.text = value ?? '';
+                    });
+                  },
+                ),
+              ),
+              SizedBox(
+                width: 80,
+              )
+            ],
           ),
         ],
       ),
@@ -796,32 +827,43 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   Widget _overBite() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
-      child: Column(
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        direction: Axis.horizontal,
         children: <Widget>[
-          Text(
-            'Overbite: *',
-            style: TextStyle(
-              fontSize: textSize,
+          SizedBox(
+            width: 100,
+            child: Text(
+              'Overbite: *',
+              style: TextStyle(
+                fontSize: textSize,
+              ),
             ),
           ),
-          RadioListTile<String>(
-            activeColor: Colors.blue,
-            title: const Text('Manter'),
-            value: 'Manter',
-            groupValue: _overbiteContr.text,
-            onChanged: (String? value) {
-              setState(() {
-                mmOverbiteVis1 = false;
-                mmOverbiteVis2 = false;
-                mmOverbiteVis3 = false;
-                mmOverbiteVis4 = false;
-                _overbiteContr.text = value ?? '';
-                _overbiteComplete = value ?? '';
-              });
-            },
-          ),
-          Row(
+          Wrap(
+            direction: Axis.horizontal,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
+              SizedBox(
+                width: 150,
+                child: RadioListTile<String>(
+                  activeColor: Colors.blue,
+                  title: const Text('Manter'),
+                  value: 'Manter',
+                  groupValue: _overbiteContr.text,
+                  onChanged: (String? value) {
+                    setState(() {
+                      mmOverbiteVis1 = false;
+                      mmOverbiteVis2 = false;
+                      mmOverbiteVis3 = false;
+                      mmOverbiteVis4 = false;
+                      _overbiteContr.text = value ?? '';
+                      _overbiteComplete = value ?? '';
+                    });
+                  },
+                ),
+              ),
               SizedBox(
                 width: 150,
                 child: RadioListTile<String>(
@@ -872,10 +914,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   ),
                 ),
               ),
-            ],
-          ),
-          Row(
-            children: [
               SizedBox(
                 width: 150,
                 child: RadioListTile<String>(
@@ -926,10 +964,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   ),
                 ),
               ),
-            ],
-          ),
-          Row(
-            children: [
               SizedBox(
                 width: 150,
                 child: RadioListTile<String>(
@@ -980,10 +1014,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                   ),
                 ),
               ),
-            ],
-          ),
-          Row(
-            children: [
               SizedBox(
                 width: 200,
                 child: RadioListTile<String>(
@@ -1159,32 +1189,29 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   Widget _extraVirtDentes() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      child: SizedBox(
-        width: 720,
-        child: GroupButton(
-          selectedButtons: extracaoVirtualUiSelectedPos,
-          buttonHeight: 35,
-          buttonWidth: 35,
-          selectedColor: Colors.blue,
-          isRadio: false,
-          spacing: 10,
-          onSelected: (index, isSelected) {
-            if (isSelected) {
-              extracaoVirtualUiSelectedPos.add(index);
-              _extracaoVirtualContr.text = _mapIntListToString(
-                extracaoVirtualUiSelectedPos,
-                dentesUiList,
-              );
-            } else {
-              extracaoVirtualUiSelectedPos.remove(index);
-              _extracaoVirtualContr.text = _mapIntListToString(
-                extracaoVirtualUiSelectedPos,
-                dentesUiList,
-              );
-            }
-          },
-          buttons: dentesUiList,
-        ),
+      child: GroupButton(
+        selectedButtons: extracaoVirtualUiSelectedPos,
+        buttonHeight: 35,
+        buttonWidth: 35,
+        selectedColor: Colors.blue,
+        isRadio: false,
+        spacing: 10,
+        onSelected: (index, isSelected) {
+          if (isSelected) {
+            extracaoVirtualUiSelectedPos.add(index);
+            _extracaoVirtualContr.text = _mapIntListToString(
+              extracaoVirtualUiSelectedPos,
+              dentesUiList,
+            );
+          } else {
+            extracaoVirtualUiSelectedPos.remove(index);
+            _extracaoVirtualContr.text = _mapIntListToString(
+              extracaoVirtualUiSelectedPos,
+              dentesUiList,
+            );
+          }
+        },
+        buttons: dentesUiList,
       ),
     );
   }
@@ -1205,32 +1232,29 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   Widget _naoMovElem() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      child: SizedBox(
-        width: 720,
-        child: GroupButton(
-          selectedButtons: naoMovimentarUiSelectedPos,
-          buttonHeight: 35,
-          buttonWidth: 35,
-          selectedColor: Colors.blue,
-          isRadio: false,
-          spacing: 10,
-          onSelected: (index, isSelected) {
-            if (isSelected) {
-              naoMovimentarUiSelectedPos.add(index);
-              _naoMovimentarContr.text = _mapIntListToString(
-                naoMovimentarUiSelectedPos,
-                dentesUiList,
-              );
-            } else {
-              naoMovimentarUiSelectedPos.remove(index);
-              _naoMovimentarContr.text = _mapIntListToString(
-                naoMovimentarUiSelectedPos,
-                dentesUiList,
-              );
-            }
-          },
-          buttons: dentesUiList,
-        ),
+      child: GroupButton(
+        selectedButtons: naoMovimentarUiSelectedPos,
+        buttonHeight: 35,
+        buttonWidth: 35,
+        selectedColor: Colors.blue,
+        isRadio: false,
+        spacing: 10,
+        onSelected: (index, isSelected) {
+          if (isSelected) {
+            naoMovimentarUiSelectedPos.add(index);
+            _naoMovimentarContr.text = _mapIntListToString(
+              naoMovimentarUiSelectedPos,
+              dentesUiList,
+            );
+          } else {
+            naoMovimentarUiSelectedPos.remove(index);
+            _naoMovimentarContr.text = _mapIntListToString(
+              naoMovimentarUiSelectedPos,
+              dentesUiList,
+            );
+          }
+        },
+        buttons: dentesUiList,
       ),
     );
   }
@@ -1251,32 +1275,29 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   Widget _naoColocarAttach() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      child: SizedBox(
-        width: 720,
-        child: GroupButton(
-          selectedButtons: naoColocarAttachUiSelectedPos,
-          buttonHeight: 35,
-          buttonWidth: 35,
-          selectedColor: Colors.blue,
-          isRadio: false,
-          spacing: 10,
-          onSelected: (index, isSelected) {
-            if (isSelected) {
-              naoColocarAttachUiSelectedPos.add(index);
-              _naoColocarAttachContr.text = _mapIntListToString(
-                naoColocarAttachUiSelectedPos,
-                dentesUiList,
-              );
-            } else {
-              naoColocarAttachUiSelectedPos.remove(index);
-              _naoColocarAttachContr.text = _mapIntListToString(
-                naoColocarAttachUiSelectedPos,
-                dentesUiList,
-              );
-            }
-          },
-          buttons: dentesUiList,
-        ),
+      child: GroupButton(
+        selectedButtons: naoColocarAttachUiSelectedPos,
+        buttonHeight: 35,
+        buttonWidth: 35,
+        selectedColor: Colors.blue,
+        isRadio: false,
+        spacing: 10,
+        onSelected: (index, isSelected) {
+          if (isSelected) {
+            naoColocarAttachUiSelectedPos.add(index);
+            _naoColocarAttachContr.text = _mapIntListToString(
+              naoColocarAttachUiSelectedPos,
+              dentesUiList,
+            );
+          } else {
+            naoColocarAttachUiSelectedPos.remove(index);
+            _naoColocarAttachContr.text = _mapIntListToString(
+              naoColocarAttachUiSelectedPos,
+              dentesUiList,
+            );
+          }
+        },
+        buttons: dentesUiList,
       ),
     );
   }
@@ -1729,7 +1750,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 40),
       child: Text(
-        ' Selecione endereço de entrega\n\n( gerencie endereços no seu perfil )',
+        'Selecion endereço de entrega',
         style: TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: textSize,
@@ -1743,94 +1764,16 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       key: _formKey,
       child: Column(
         children: <Widget>[
-          Wrap(
-            direction: Axis.horizontal,
-            spacing: 10,
-            children: [
-              Card(
-                elevation: 10,
-                margin: EdgeInsets.all(10),
-                child: SizedBox(
-                  width: 500,
-                  height: 200,
-                  child: Column(
-                    children: [
-                      _nomePaciente(),
-                      _dataNascimento(),
-                    ],
-                  ),
-                ),
-              ),
-              Card(
-                elevation: 10,
-                child: SizedBox(
-                  width: 500,
-                  height: 200,
-                  child: _tratar(),
-                ),
-              ),
-            ],
-          ),
-          Wrap(
-            direction: Axis.horizontal,
-            spacing: 10,
-            children: [
-              Card(
-                elevation: 10,
-                child: SizedBox(
-                  width: 500,
-                  height: 200,
-                  child: _queixaPrinc(),
-                ),
-              ),
-              Card(
-                elevation: 10,
-                child: SizedBox(
-                  width: 500,
-                  height: 200,
-                  child: _objetivosTratamento(),
-                ),
-              ),
-            ],
-          ),
-          Wrap(
-            direction: Axis.horizontal,
-            spacing: 10,
-            children: [
-              Card(
-                elevation: 10,
-                child: SizedBox(
-                  width: 500,
-                  height: 210,
-                  child: _linhaMediSuperior(),
-                ),
-              ),
-              Card(
-                elevation: 10,
-                child: SizedBox(
-                  width: 500,
-                  height: 210,
-                  child: _linhaMediInferior(),
-                ),
-              ),
-              Card(
-                elevation: 10,
-                child: SizedBox(
-                  width: 500,
-                  height: 340,
-                  child: _overBite(),
-                ),
-              ),
-              Card(
-                elevation: 10,
-                child: SizedBox(
-                  width: 500,
-                  height: 210,
-                  child: _overJet(),
-                ),
-              ),
-            ],
-          ),
+          _nomePaciente(),
+          _dataNascimento(),
+          _tratar(),
+          _queixaPrinc(),
+          _textoObjetivos(),
+          _objetivosTratamento(),
+          _linhaMediSuperior(),
+          _linhaMediInferior(),
+          _overJet(),
+          _overBite(),
           _textoResApin(),
           _resApinhSup(),
           _resApinhInf(),
@@ -1866,94 +1809,16 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       key: _formKey,
       child: Column(
         children: <Widget>[
-          Wrap(
-            direction: Axis.horizontal,
-            spacing: 10,
-            children: [
-              Card(
-                elevation: 10,
-                margin: EdgeInsets.all(10),
-                child: SizedBox(
-                  width: 500,
-                  height: 200,
-                  child: Column(
-                    children: [
-                      _nomePaciente(),
-                      _dataNascimento(),
-                    ],
-                  ),
-                ),
-              ),
-              Card(
-                elevation: 10,
-                child: SizedBox(
-                  width: 500,
-                  height: 200,
-                  child: _tratar(),
-                ),
-              ),
-            ],
-          ),
-          Wrap(
-            direction: Axis.horizontal,
-            spacing: 10,
-            children: [
-              Card(
-                elevation: 10,
-                child: SizedBox(
-                  width: 500,
-                  height: 200,
-                  child: _queixaPrinc(),
-                ),
-              ),
-              Card(
-                elevation: 10,
-                child: SizedBox(
-                  width: 500,
-                  height: 200,
-                  child: _objetivosTratamento(),
-                ),
-              ),
-            ],
-          ),
-          Wrap(
-            direction: Axis.horizontal,
-            spacing: 10,
-            children: [
-              Card(
-                elevation: 10,
-                child: SizedBox(
-                  width: 500,
-                  height: 210,
-                  child: _linhaMediSuperior(),
-                ),
-              ),
-              Card(
-                elevation: 10,
-                child: SizedBox(
-                  width: 500,
-                  height: 210,
-                  child: _linhaMediInferior(),
-                ),
-              ),
-              Card(
-                elevation: 10,
-                child: SizedBox(
-                  width: 500,
-                  height: 340,
-                  child: _overBite(),
-                ),
-              ),
-              Card(
-                elevation: 10,
-                child: SizedBox(
-                  width: 500,
-                  height: 210,
-                  child: _overJet(),
-                ),
-              ),
-            ],
-          ),
+          _nomePaciente(),
+          _dataNascimento(),
+          _tratar(),
+          _queixaPrinc(),
+          _textoObjetivos(),
+          _objetivosTratamento(),
+          _linhaMediSuperior(),
+          _linhaMediInferior(),
+          _overJet(),
+          _overBite(),
           _textoResApin(),
           _resApinhSup(),
           _resApinhInf(),

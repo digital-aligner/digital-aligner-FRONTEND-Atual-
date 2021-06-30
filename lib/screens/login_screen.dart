@@ -253,7 +253,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               new Image(
                                 image: new AssetImage('logos/logo.png'),
                                 height: 70.0,
-                                width: 70.0,
+                                width: 120.0,
                               ),
                               const SizedBox(height: 15),
                               const Text(
@@ -329,7 +329,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 20),
                         const Text(
-                          'V1.32',
+                          'V1.33',
                           style: TextStyle(
                             color: Colors.white,
                           ),
@@ -390,9 +390,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Column(
                             children: [
                               new Image(
-                                image: new AssetImage('assets/logos/logo.png'),
+                                image: new AssetImage('logos/logo.png'),
                                 height: 70.0,
-                                width: 70.0,
+                                width: 120.0,
                               ),
                               const SizedBox(height: 5),
                               const Text(
@@ -428,7 +428,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 20),
                         const Text(
-                          'V1.32',
+                          'V1.33',
                           style: TextStyle(
                             color: Colors.white,
                           ),

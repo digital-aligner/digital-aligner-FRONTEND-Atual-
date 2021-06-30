@@ -69,7 +69,9 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
     return _formatedDate;
   }
 
-  String _formatCpf(String cpf) {
+  String _formatCpf(String? cpf) {
+    if (cpf == null || cpf.length > 11) return cpf ?? '';
+    if (cpf.length < 11) return '';
     String _formatedCpf = cpf.substring(0, 3) +
         '.' +
         cpf.substring(3, 6) +
@@ -100,7 +102,7 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: const Text(
-                ' Cpf: ',
+                ' Cpf / Id: ',
                 style: const TextStyle(
                   fontSize: 16,
                   //fontWeight: FontWeight.bold,
@@ -708,7 +710,7 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
         columns: [
           DataColumn(label: const Text('Data')),
           DataColumn(label: const Text('Nome')),
-          DataColumn(label: const Text('Cpf')),
+          DataColumn(label: const Text('Cpf / Id')),
           DataColumn(label: const Text('Status')),
         ],
         rows: _dataRows(),

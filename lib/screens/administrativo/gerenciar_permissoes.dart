@@ -111,7 +111,7 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
           Expanded(
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Nome ou CPF do usuário.',
+                hintText: 'Nome ou CPF/id do usuário.',
               ),
               controller: _searchField,
               onChanged: (value) {
@@ -169,7 +169,7 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
         if (width > mediaQuerySm)
           Expanded(
             child: const Text(
-              'CPF',
+              'CPF / ID',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontWeight: FontWeight.bold,

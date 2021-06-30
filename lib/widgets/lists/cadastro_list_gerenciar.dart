@@ -40,7 +40,8 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
   }
 
   String _formatCpf(String? cpf) {
-    if (cpf == null || cpf.length < 11) return '';
+    if (cpf == null || cpf.length > 11) return cpf ?? '';
+    if (cpf.length < 11) return '';
     String _formatedCpf = cpf.substring(0, 3) +
         '.' +
         cpf.substring(3, 6) +
@@ -733,7 +734,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
         columns: [
           DataColumn(label: const Text('Data')),
           DataColumn(label: const Text('Nome')),
-          DataColumn(label: const Text('Cpf')),
+          DataColumn(label: const Text('Cpf / Id')),
           DataColumn(label: const Text('Status')),
         ],
         rows: _dataRows(),

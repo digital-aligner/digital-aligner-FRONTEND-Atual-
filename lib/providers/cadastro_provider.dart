@@ -344,6 +344,7 @@ class CadastroProvider with ChangeNotifier {
   }
 
   Future<dynamic> enviarCadastro() async {
+    print(json.encode(_selectedCad!.toJson()));
     var _response = await http.put(
         Uri.parse(RotasUrl.rotaCadastro + _selectedCad!.id.toString()),
         headers: {

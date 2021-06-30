@@ -14,6 +14,7 @@ import 'package:easy_web_view2/easy_web_view2.dart';
 import 'package:flutter/material.dart';
 
 import 'package:intl/intl.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:responsive_grid/responsive_grid.dart';
@@ -519,22 +520,27 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     _setModelosUrlToStorage();
 
     //function to map files and get url
-    List<Image> mapFilesToUi(List<FileModel> f) {
-      List<Image> a = [];
+    List<Widget> mapFilesToUi(List<FileModel> f) {
+      List<Widget> a = [];
 
       f.forEach((file) async {
         a.add(
-          Image.network(
-            file.url ?? '',
-            width: 100,
-            height: 100,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              print(error);
-              return Center(
-                child: Text('Erro'),
-              );
+          GestureDetector(
+            onTap: () {
+              imgViewPopup(file.url);
             },
+            child: Image.network(
+              file.url ?? '',
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                print(error);
+                return Center(
+                  child: Text('Erro'),
+                );
+              },
+            ),
           ),
         );
       });
@@ -1291,6 +1297,31 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
               )
             ],
           ),
+        );
+      },
+    );
+  }
+
+  Future<dynamic> imgViewPopup(String? link) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Imagem'),
+          content: Container(
+            width: 800,
+            height: 500,
+            child: PhotoView(
+              maxScale: 2,
+              imageProvider: NetworkImage(link ?? ''),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Fechar'),
+            )
+          ],
         );
       },
     );
