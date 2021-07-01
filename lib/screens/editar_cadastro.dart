@@ -193,7 +193,9 @@ class _EditarCadastroState extends State<EditarCadastro> {
     });
 
     if (!authStore.isAuth) {
-      return LoginScreen();
+      return LoginScreen(
+        showLoginMessage: true,
+      );
     }
 
     final double sWidth = MediaQuery.of(context).size.width;
@@ -404,7 +406,20 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                           (buildContext, string, dynamic) {
                                         return Center(child: Text('Erro'));
                                       },
-                                      onFind: (string) {
+                                      onFind: (string) async {
+                                        if (!authStore.isAuth) {
+                                          await Navigator.pushAndRemoveUntil<
+                                              void>(
+                                            context,
+                                            MaterialPageRoute<void>(
+                                              builder: (BuildContext context) =>
+                                                  LoginScreen(
+                                                showLoginMessage: true,
+                                              ),
+                                            ),
+                                            ModalRoute.withName('/'),
+                                          );
+                                        }
                                         return _fetchStates();
                                       },
                                       onSaved: (String? value) {
@@ -483,6 +498,19 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                         );
                                       },
                                       onFind: (_) async {
+                                        if (!authStore.isAuth) {
+                                          await Navigator.pushAndRemoveUntil<
+                                              void>(
+                                            context,
+                                            MaterialPageRoute<void>(
+                                              builder: (BuildContext context) =>
+                                                  LoginScreen(
+                                                showLoginMessage: true,
+                                              ),
+                                            ),
+                                            ModalRoute.withName('/'),
+                                          );
+                                        }
                                         await fetchRepresentantes();
                                         //Error handling
                                         if (_representantes[0]
@@ -573,6 +601,19 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                         );
                                       },
                                       onFind: (_) async {
+                                        if (!authStore.isAuth) {
+                                          await Navigator.pushAndRemoveUntil<
+                                              void>(
+                                            context,
+                                            MaterialPageRoute<void>(
+                                              builder: (BuildContext context) =>
+                                                  LoginScreen(
+                                                showLoginMessage: true,
+                                              ),
+                                            ),
+                                            ModalRoute.withName('/'),
+                                          );
+                                        }
                                         await fetchOnboarding();
 
                                         //Error handling

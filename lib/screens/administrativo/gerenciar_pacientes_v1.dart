@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../login_screen.dart';
 import '../visualizar_paciente_v1.dart';
 
 class GerenciarPacientesV1 extends StatefulWidget {
@@ -388,6 +389,12 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_authStore!.isAuth) {
+      return LoginScreen(
+        showLoginMessage: true,
+      );
+    }
+
     return Scaffold(
       appBar: MyAppBar(),
       // *BUG* Verify closing drawer automaticlly when under 1200

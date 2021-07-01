@@ -11,6 +11,7 @@ import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
 import '../../../rotas_url.dart';
+import '../../login_screen.dart';
 
 class FileUploader extends StatefulWidget {
   final int? filesQt;
@@ -414,6 +415,17 @@ class _FileUploaderState extends State<FileUploader> {
       onPressed: isUploading || isDeleting
           ? null
           : () async {
+              if (!_authStore.isAuth) {
+                await Navigator.pushAndRemoveUntil<void>(
+                  context,
+                  MaterialPageRoute<void>(
+                      builder: (BuildContext context) => LoginScreen(
+                            showLoginMessage: true,
+                          )),
+                  ModalRoute.withName('/'),
+                );
+              }
+
               await _openFileExplorer().catchError((e) {
                 _scaffoldMessage(e);
               });

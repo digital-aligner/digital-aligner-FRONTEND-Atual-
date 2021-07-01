@@ -17,6 +17,7 @@ import 'package:responsive_grid/responsive_grid.dart';
 
 import '../rotas_url.dart';
 import 'administrativo/gerenciar_pacientes_v1.dart';
+import 'login_screen.dart';
 import 'screens_pedidos_v1/uploader/file_uploader.dart';
 import 'screens_pedidos_v1/uploader/model/FileModel.dart';
 
@@ -128,6 +129,7 @@ class GerenciarRelatorioV1State extends State<GerenciarRelatorioV1> {
         maxLength: 60,
         enabled: true,
         validator: (String? value) {
+          return null;
           return value == null || value.isEmpty ? 'Campo vazio' : null;
         },
         onChanged: (value) {
@@ -428,7 +430,7 @@ class GerenciarRelatorioV1State extends State<GerenciarRelatorioV1> {
       child: Column(
         children: <Widget>[
           _visualizador1(),
-          _visualizador2(),
+          //_visualizador2(),
           _managePdf(),
           _enviarRelatorioBtn(),
         ],
@@ -482,6 +484,11 @@ class GerenciarRelatorioV1State extends State<GerenciarRelatorioV1> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_authStore!.isAuth) {
+      return LoginScreen(
+        showLoginMessage: true,
+      );
+    }
     return Scaffold(
       appBar: SecondaryAppbar(),
       // *BUG* Verify closing drawer automaticlly when under 1200

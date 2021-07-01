@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:jwt_decode/jwt_decode.dart';
 import '../rotas_url.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -25,7 +25,12 @@ class AuthProvider with ChangeNotifier {
   }
 
   bool get isAuth {
-    if (_token.isEmpty) return false;
+    if (_token.isEmpty) {
+      return false;
+    } else if (_expiryDate!.isBefore(DateTime.now())) {
+      logout();
+      return false;
+    }
     return true;
   }
 
@@ -71,7 +76,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> logout() async {
-    _token = 'null';
+    _token = '';
     _userId = 0;
     _userName = '';
     _role = '';
@@ -120,9 +125,13 @@ class AuthProvider with ChangeNotifier {
 
       //Extracting user dada
       _token = responseData['jwt'];
+
+      _expiryDate = Jwt.getExpiryDate(_token);
+
+      /*
       _expiryDate = DateTime.now().add(
         Duration(days: 1),
-      );
+      );*/
 
       _userId = responseData['user']['id'];
       _userName = responseData['user']['nome'];

@@ -20,7 +20,9 @@ import 'package:http/http.dart' as http;
 import 'package:responsive_grid/responsive_grid.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:url_launcher/link.dart';
 import '../rotas_url.dart';
+import 'login_screen.dart';
 
 class VisualizarPacienteV1 extends StatefulWidget {
   static const routeName = '/visualizar-paciente-v1';
@@ -1116,10 +1118,75 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     }
   }
 
+  String _formatLink(String s) {
+    if (s.contains('https://') || s.contains('http://')) {
+      return s;
+    }
+    return 'https://' + s;
+  }
+
+  Key link1 = Key('1');
+  Key link2 = Key('2');
+
   Widget _viewRelatorio() {
     return Column(
       children: [
         _viewRelatorioText(),
+        const SizedBox(
+          height: 10,
+        ),
+        SizedBox(
+          height: 110,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(
+                height: 5,
+              ),
+              const Text('Link download do relatório:'),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Link(
+                    target: LinkTarget.blank,
+                    uri: Uri.parse(_formatLink(_relatorioView.visualizador1)),
+                    builder: (BuildContext context, FollowLink? followLink) =>
+                        TextButton(
+                      onPressed: followLink,
+                      child: Text(_relatorioView.visualizador1),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              const Text('Link visualização 3d:'),
+              SizedBox(
+                width: 400,
+                child: Wrap(
+                  runAlignment: WrapAlignment.center,
+                  children: [
+                    Link(
+                      target: LinkTarget.blank,
+                      uri: Uri.parse(
+                          _formatLink(_relatorioView.relatorio!.url ?? '')),
+                      builder: (BuildContext context, FollowLink? followLink) =>
+                          TextButton(
+                        onPressed: followLink,
+                        child: _relatorioView.relatorio!.url!.isNotEmpty
+                            ? Text(_relatorioView.relatorio!.url ?? '')
+                            : const Text('Vazio'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -1154,6 +1221,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             _relatorioView.relatorio!.url ?? '',
             enableDoubleTapZooming: true,
             enableTextSelection: true,
+            enableDocumentLinkAnnotation: true,
           ),
         ),
       ],
@@ -1350,6 +1418,12 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_authStore!.isAuth) {
+      return LoginScreen(
+        showLoginMessage: true,
+      );
+    }
+
     return Scaffold(
       appBar: SecondaryAppbar(),
       // *BUG* Verify closing drawer automaticlly when under 1200

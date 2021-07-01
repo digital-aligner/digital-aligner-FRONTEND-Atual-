@@ -11,7 +11,6 @@ import '../../appbar/MyDrawer.dart';
 import '../login_screen.dart';
 //widgets
 import '../../widgets/lists/cadastro_list_gerenciar.dart';
-import '../meus_pacientes.dart';
 
 class GerenciarCadastros extends StatefulWidget {
   static const routeName = '/gerenciar-cadastros';
@@ -222,17 +221,10 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
   @override
   Widget build(BuildContext context) {
     if (!authStore!.isAuth) {
-      return LoginScreen();
+      return LoginScreen(
+        showLoginMessage: true,
+      );
     }
-
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      if (authStore!.role == 'Credenciado') {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          MeusPacientes.routeName,
-          (Route<dynamic> route) => false,
-        );
-      }
-    });
 
     final double sWidth = MediaQuery.of(context).size.width;
     //final double sHeight = MediaQuery.of(context).size.height;

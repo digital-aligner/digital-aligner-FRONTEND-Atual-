@@ -11,8 +11,12 @@ import 'recuperar_senha.dart';
 import 'dart:html' as html;
 
 class LoginScreen extends StatefulWidget {
+  bool showLoginMessage;
   final Map<String, String> queryStringsForPasswordReset;
-  LoginScreen({this.queryStringsForPasswordReset = const {}});
+  LoginScreen({
+    this.queryStringsForPasswordReset = const {},
+    this.showLoginMessage = false,
+  });
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -32,6 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
           .then(
         (mensagem) {
           if (mensagem.containsKey('error')) {
+            ScaffoldMessenger.of(context).removeCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               duration: const Duration(seconds: 8),
               content: Text(
@@ -78,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 vertical: 40,
                 horizontal: 10,
               ),
-              height: 500,
+              height: 1200,
               child: Column(
                 children: <Widget>[
                   Column(
@@ -329,7 +334,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 20),
                         const Text(
-                          'V1.33',
+                          'V1.36',
                           style: TextStyle(
                             color: Colors.white,
                           ),
@@ -364,7 +369,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Card(
         elevation: 10,
         child: Container(
-          height: 900,
+          height: 1300,
           width: 500,
           // column - holds the top and bottom content
           child: Column(
@@ -428,7 +433,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 20),
                         const Text(
-                          'V1.33',
+                          'V1.36',
                           style: TextStyle(
                             color: Colors.white,
                           ),
@@ -458,6 +463,14 @@ class _LoginScreenState extends State<LoginScreen> {
     AuthProvider authStore = Provider.of<AuthProvider>(context);
 
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      if (widget.showLoginMessage) {
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          duration: const Duration(seconds: 5),
+          content: const Text('Por favor realize login.'),
+        ));
+      }
+
       if (Navigator.canPop(context) && !_cadastroScreenOpen) {
         Navigator.pop(context);
       }

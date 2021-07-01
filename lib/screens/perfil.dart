@@ -66,7 +66,7 @@ class _PerfilState extends State<Perfil> {
             height: 50,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: const Text(' CPF: '),
+              child: const Text(' CPF / ID: '),
             ),
           ),
         ),
@@ -278,7 +278,9 @@ class _PerfilState extends State<Perfil> {
     }
 
     if (!authStore.isAuth) {
-      return LoginScreen();
+      return LoginScreen(
+        showLoginMessage: true,
+      );
     }
 
     final double sWidth = MediaQuery.of(context).size.width;
@@ -386,6 +388,7 @@ class _PerfilState extends State<Perfil> {
                       },
                     ),
                     const SizedBox(width: 20),
+                    /*
                     TextButton(
                       child: const Text(
                         "Alterar Senha",
@@ -396,7 +399,7 @@ class _PerfilState extends State<Perfil> {
                       onPressed: () {
                         //Navigator.of(context).pop();
                       },
-                    ),
+                    ),*/
                   ],
                 ),
                 const SizedBox(

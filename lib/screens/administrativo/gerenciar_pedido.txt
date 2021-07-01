@@ -607,6 +607,14 @@ class _GerenciarPedidosState extends State<GerenciarPedidos> {
   @override
   Widget build(BuildContext context) {
     if (!authStore!.isAuth) {
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        duration: const Duration(seconds: 5),
+        content: const Text(
+          'Por favor realize login.',
+          textAlign: TextAlign.center,
+        ),
+      ));
       return LoginScreen();
     }
 

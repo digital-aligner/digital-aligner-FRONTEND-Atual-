@@ -39,7 +39,7 @@
       }
       scriptLoaded = true;
       var scriptTag = document.createElement('script');
-      scriptTag.src = 'main.dart.js?version=1.30';
+      scriptTag.src = 'main.dart.js?version=1.31';
       scriptTag.type = 'application/javascript';
       document.body.append(scriptTag);
     }
@@ -50,7 +50,7 @@
         // Wait for registration to finish before dropping the <script> tag.
         // Otherwise, the browser will load the script multiple times,
         // potentially different versions.
-        var serviceWorkerUrl = 'flutter_service_worker.js?v=1.33' + serviceWorkerVersion;
+        var serviceWorkerUrl = 'flutter_service_worker.js?v=1.36' + serviceWorkerVersion;
         navigator.serviceWorker.register(serviceWorkerUrl)
           .then((reg) => {
             function waitForActivation(serviceWorker) {

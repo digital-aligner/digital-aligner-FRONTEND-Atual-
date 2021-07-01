@@ -823,7 +823,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           Row(
             children: [
               SizedBox(
-                width: 150,
+                width: 250,
                 child: RadioListTile<String>(
                   activeColor: Colors.blue,
                   title: const Text('Intruir anterior sup'),
@@ -877,7 +877,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           Row(
             children: [
               SizedBox(
-                width: 150,
+                width: 250,
                 child: RadioListTile<String>(
                   activeColor: Colors.blue,
                   title: const Text('Intruir anterior inf'),
@@ -931,7 +931,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           Row(
             children: [
               SizedBox(
-                width: 150,
+                width: 250,
                 child: RadioListTile<String>(
                   activeColor: Colors.blue,
                   title: const Text('Extruir posterior sup'),
@@ -985,7 +985,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           Row(
             children: [
               SizedBox(
-                width: 200,
+                width: 250,
                 child: RadioListTile<String>(
                   activeColor: Colors.blue,
                   title: const Text('Extruir posterior inf'),
@@ -2098,7 +2098,20 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           errorBuilder: (buildContext, string, dynamic) {
             return Center(child: Text('Erro'));
           },
-          onFind: (string) => _fetchUserEndereco(),
+          onFind: (string) async {
+            if (!_authStore!.isAuth) {
+              await Navigator.pushAndRemoveUntil<void>(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) => LoginScreen(
+                    showLoginMessage: true,
+                  ),
+                ),
+                ModalRoute.withName('/'),
+              );
+            }
+            return _fetchUserEndereco();
+          },
           itemAsString: (EnderecoModel e) => e.endereco,
           mode: Mode.MENU,
           label: 'Selecione endereço: *',
@@ -2187,7 +2200,20 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           errorBuilder: (buildContext, string, dynamic) {
             return Center(child: Text('Erro'));
           },
-          onFind: (string) => _fetchStatus(),
+          onFind: (string) async {
+            if (!_authStore!.isAuth) {
+              await Navigator.pushAndRemoveUntil<void>(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) => LoginScreen(
+                    showLoginMessage: true,
+                  ),
+                ),
+                ModalRoute.withName('/'),
+              );
+            }
+            return _fetchStatus();
+          },
           itemAsString: (StatusPedidoV1Model s) => s.status,
           mode: Mode.MENU,
           label: 'Selecione status: *',
@@ -2634,7 +2660,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   @override
   Widget build(BuildContext context) {
     if (!_authStore!.isAuth) {
-      return LoginScreen();
+      return LoginScreen(
+        showLoginMessage: true,
+      );
     }
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
