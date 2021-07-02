@@ -38,6 +38,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   AuthProvider? _authStore;
   Size? _screenSize;
 
+  bool _termosValue = false;
+
   // pedido type (for post request)
   String tipoPedido = 'pedido';
   //id pedido
@@ -204,7 +206,11 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         modeloGesso: modeloEmGesso,
         linkModelos: _linkDocumentacao.text,
         enderecoEntrega: enderecoSelecionado,
-        usuario: UsuarioV1Model(id: _authStore!.id),
+        usuario: UsuarioV1Model(
+          id: _authStore!.id,
+          nome: _authStore!.name,
+          sobrenome: _authStore!.lastName,
+        ),
         statusPedido: StatusPedidoV1Model(id: statusPedido),
         pedidoRefinamento: _isPedidoRefinamento,
         payload: _payload,
@@ -1831,17 +1837,53 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               ),
             ],
           ),
+          const SizedBox(
+            height: 60,
+          ),
+          const Divider(
+            height: 20,
+            thickness: 2,
+            indent: 20,
+            endIndent: 20,
+          ),
           _textoResApin(),
           _resApinhSup(),
           _resApinhInf(),
+          const SizedBox(
+            height: 60,
+          ),
+          const Divider(
+            height: 20,
+            thickness: 2,
+            indent: 20,
+            endIndent: 20,
+          ),
           _extraVirtDentesTexto(),
           _extraVirtDentes(),
           _naoMovElemTexto(),
           _naoMovElem(),
           _naoColocarAttachTexto(),
           _naoColocarAttach(),
+          const SizedBox(
+            height: 60,
+          ),
+          const Divider(
+            height: 20,
+            thickness: 2,
+            indent: 20,
+            endIndent: 20,
+          ),
           _opcionaisTexto(),
           _opcionais(),
+          const SizedBox(
+            height: 60,
+          ),
+          const Divider(
+            height: 20,
+            thickness: 2,
+            indent: 20,
+            endIndent: 20,
+          ),
           _carregarFotografiasTexto(),
           _carregarFotografias(),
           _carregarRadiografiasTexto(),
@@ -1851,8 +1893,30 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           _manageModelType(),
           _arquivosCompactadoTexto(),
           _modeloCompactado(),
+          const SizedBox(
+            height: 60,
+          ),
+          const Divider(
+            height: 20,
+            thickness: 2,
+            indent: 20,
+            endIndent: 20,
+          ),
           _selecioneEnderecoTexto(),
           _enderecoSelection(),
+          const SizedBox(
+            height: 60,
+          ),
+          const Divider(
+            height: 20,
+            thickness: 2,
+            indent: 20,
+            endIndent: 20,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          _taxaPlanejamento(),
           _termos(),
           _sendButton()
         ],
@@ -1866,6 +1930,16 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       key: _formKey,
       child: Column(
         children: <Widget>[
+          if (_authStore!.roleId != 1) _statusSelection(),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 40),
+            child: const Divider(
+              height: 20,
+              thickness: 2,
+              indent: 20,
+              endIndent: 20,
+            ),
+          ),
           Wrap(
             direction: Axis.horizontal,
             spacing: 10,
@@ -1967,9 +2041,39 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           _opcionais(),
           _selecioneEnderecoTexto(),
           _enderecoSelection(),
-          _termos(),
+          const SizedBox(
+            height: 40,
+          ),
           _atualizarPedidoButton(),
-          if (_authStore!.roleId != 1) _statusSelection(),
+          const SizedBox(
+            height: 40,
+          ),
+          const Divider(
+            height: 20,
+            thickness: 2,
+            indent: 20,
+            endIndent: 20,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Text(
+              'Gerenciar arquivos',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: textSize,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Text(
+              'Atualize seus arquivos abaixo. Obs: Ao deletar, será necessário confirmação.',
+              style: TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: textSize,
+              ),
+            ),
+          ),
           _carregarFotografiasTexto(),
           _carregarFotografias(),
           _carregarRadiografiasTexto(),
@@ -2262,7 +2366,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     );
   }
 
-//Taxa de Planejamento: Estou ciente que caso o planejamento não seja aprovado em até 60 dias, será cobrado o valor de R$ 350,00
   Widget _termos() {
     Future<dynamic> getAlert() {
       return showDialog(
@@ -2296,6 +2399,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         isRadio: false,
         spacing: 10,
         onSelected: (index, isSelected) {
+          _termosValue = !_termosValue;
           if (isSelected) {
             getAlert();
           }
@@ -2304,6 +2408,20 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           'Li e estou de acordo com os termos',
         ],
       ),
+    );
+  }
+
+  Widget _taxaPlanejamento() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(
+          Icons.check_circle,
+          color: Colors.blue,
+        ),
+        const Text(
+            ' Taxa de Planejamento: Estou ciente que caso o planejamento não seja aprovado em até 60 dias, será cobrado o valor de R\$ 350,00'),
+      ],
     );
   }
 
@@ -2356,6 +2474,20 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       onPressed: isSending
           ? null
           : () async {
+              if (!_termosValue) {
+                ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    duration: const Duration(seconds: 5),
+                    content: Text(
+                      'Por favor aceite os termos.',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                );
+                return;
+              }
+
               bool canSend = _canSendPedido();
               if (!canSend) return;
 
@@ -2396,6 +2528,17 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     );
                   }
                 }
+              } else {
+                ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    duration: const Duration(seconds: 5),
+                    content: Text(
+                      'Por favor verifique seus dados.',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                );
               }
 
               setState(() {
@@ -2657,6 +2800,12 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     return isEdit;
   }
 
+  double _calculateScreenHeight() {
+    if (_screenSize!.width > 1300) return 5000;
+    if (_screenSize!.width > 900) return 6000;
+    return 7000;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_authStore!.isAuth) {
@@ -2677,7 +2826,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           isAlwaysShown: true,
           child: SingleChildScrollView(
             child: Container(
-              height: _screenSize!.width < 768 ? 5800 : 5100,
+              height: _calculateScreenHeight(),
               padding: const EdgeInsets.symmetric(horizontal: 100),
               child: Column(
                 children: <Widget>[

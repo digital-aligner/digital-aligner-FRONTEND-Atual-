@@ -86,32 +86,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
               ),
             )
                 .then((_) {
-              //set state here for loading ui
-              //change this logic in the future
-              ScaffoldMessenger.of(context).removeCurrentSnackBar();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  duration: const Duration(seconds: 2),
-                  content: Text(
-                    'aguarde...',
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              );
-              _pedidoStore!.clearDataAllProviderData();
-              _pedidoStore!
-                  .fetchAllPedidos(
-                token: _authStore!.token,
-                roleId: _authStore!.roleId,
-              )
-                  .then((didFetch) {
-                pageHeight = 800;
-                pageQuant = 10;
-                setState(() {
-                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                });
-                //after fetch all pedidos update
-              });
+              fetchMostRecente();
             });
           },
           child: Text('editar'),
@@ -128,8 +103,20 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                   messageInt: position,
                 ),
               )
-                  .then((value) {
+                  .then((value) async {
                 if (value != null) {
+                  fetchMostRecente();
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      duration: const Duration(seconds: 2),
+                      content: Text(
+                        'Relatório criado',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                  // -------------------
                   if (value == true) {
                     ScaffoldMessenger.of(context).removeCurrentSnackBar();
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -141,12 +128,6 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                         ),
                       ),
                     );
-                    setState(() {
-                      pageHeight = 800;
-                      pageQuant = 10;
-                      isfetchPedidos = true;
-                      firstRun = true;
-                    });
                   }
                 }
               });
@@ -206,12 +187,15 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                 ),
               )
                   .then((value) async {
-                //await Future.delayed(Duration(milliseconds: 500));
+                selectedListItem[i] = false;
+
+                fetchMostRecente();
+                /*
                 setState(() {
                   selectedListItem[i] = false;
                   isfetchPedidos = true;
                   firstRun = true;
-                });
+                });*/
               });
             }
           },
@@ -244,60 +228,65 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   Widget _buscarMaisPedidosBtn() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
-      child: ElevatedButton.icon(
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(
-            Colors.blueGrey,
-          ),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25.0),
+      child: Column(
+        children: [
+          if (buscandoMaisPedidos) _loadingSpinder(),
+          ElevatedButton.icon(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(
+                Colors.blueGrey,
+              ),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25.0),
+                ),
+              ),
             ),
-          ),
-        ),
-        onPressed: buscandoMaisPedidos
-            ? null
-            : () {
-                setState(() {
-                  buscandoMaisPedidos = true;
-                });
-                _pedidoStore!
-                    .fetchAddMorePedidos(
-                  token: _authStore!.token,
-                  roleId: _authStore!.roleId,
-                  pageQuant: pageQuant,
-                  queryString: _query,
-                )
-                    .then(
-                  (bool fetchSuccessful) {
-                    if (fetchSuccessful) {
-                      setState(() {
-                        buscandoMaisPedidos = false;
-                        pageQuant = pageQuant + 10;
-                        pageHeight = pageHeight + 350;
-                      });
-                    } else {
-                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          duration: const Duration(seconds: 1),
-                          content: Text(
-                            'Sem resultados',
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      );
-                      setState(() {
-                        buscandoMaisPedidos = false;
-                      });
-                    }
-                  },
-                );
+            onPressed: buscandoMaisPedidos
+                ? null
+                : () {
+                    setState(() {
+                      buscandoMaisPedidos = true;
+                    });
+                    _pedidoStore!
+                        .fetchAddMorePedidos(
+                      token: _authStore!.token,
+                      roleId: _authStore!.roleId,
+                      pageQuant: pageQuant,
+                      queryString: _query,
+                    )
+                        .then(
+                      (bool fetchSuccessful) {
+                        if (fetchSuccessful) {
+                          setState(() {
+                            buscandoMaisPedidos = false;
+                            pageQuant = pageQuant + 10;
+                            pageHeight = pageHeight + 350;
+                          });
+                        } else {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 1),
+                              content: Text(
+                                'Sem resultados',
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          );
+                          setState(() {
+                            buscandoMaisPedidos = false;
+                          });
+                        }
+                      },
+                    );
 
-                //refreshPageFetchNewList();
-              },
-        label: const Text('Carregar'),
-        icon: Icon(Icons.arrow_drop_down),
+                    //refreshPageFetchNewList();
+                  },
+            label: const Text('Carregar'),
+            icon: Icon(Icons.arrow_drop_down),
+          ),
+        ],
       ),
     );
   }
@@ -310,7 +299,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
           hintText: 'Pesquise seus pacientes',
         ),
         onChanged: (value) async {
-          pageHeight = 800;
+          pageHeight = 850;
           buscandoMaisPedidos = true;
           pageQuant = 10;
           const duration = Duration(milliseconds: 500);
@@ -356,7 +345,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     _authStore = Provider.of<AuthProvider>(context);
     _pedidoStore = Provider.of<PedidoProvider>(context);
     _screenSize = MediaQuery.of(context).size;
@@ -365,26 +354,39 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     }
     //.then (after page pop)is not triggering this rebuild to fetch new data. Verify later
     if (firstRun) {
-      _pedidoStore!.clearDataAllProviderData();
-      _pedidoStore!
-          .fetchAllPedidos(
-        token: _authStore!.token,
-        roleId: _authStore!.roleId,
-        query: _query,
-      )
-          .then((bool fetchSuccessful) {
-        if (fetchSuccessful)
-          setState(() {
-            isfetchPedidos = false;
-          });
-        else
-          setState(() {
-            isfetchPedidos = true;
-          });
-      });
-      firstRun = false;
+      fetchMostRecente();
     }
     super.didChangeDependencies();
+  }
+
+  Widget _loadingSpinder() {
+    return Center(
+      child: Center(
+        child: CircularProgressIndicator(
+          valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+        ),
+      ),
+    );
+  }
+
+  Future<void> fetchMostRecente() async {
+    setState(() {
+      isfetchPedidos = true;
+      //firstRun = true;
+      pageHeight = 850;
+      pageQuant = 10;
+    });
+    _pedidoStore!.clearDataAllProviderData();
+    await _pedidoStore!.fetchAllPedidos(
+      token: _authStore!.token,
+      roleId: _authStore!.roleId,
+      query: _query,
+    );
+
+    setState(() {
+      isfetchPedidos = false;
+      firstRun = false;
+    });
   }
 
   @override
@@ -412,7 +414,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
               children: <Widget>[
                 _header(),
                 _searchBox(),
-                _dataTable(),
+                if (isfetchPedidos) _loadingSpinder() else _dataTable(),
                 _buscarMaisPedidosBtn()
               ],
             ),

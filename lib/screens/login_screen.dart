@@ -507,16 +507,6 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     });
 
-    if (authStore.isAuth) {
-      return Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
-          ),
-        ),
-      );
-    }
-
     double height = MediaQuery.of(context).size.width;
     double width = MediaQuery.of(context).size.width;
 

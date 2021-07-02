@@ -422,7 +422,9 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                         children: [
                           Container(
                             child: Text(
-                              '${cadList[index]['nome'] ?? '' + ' ' + cadList[index]['sobrenome'] ?? ''}',
+                              (cadList[index]['nome'] ?? '') +
+                                  ' ' +
+                                  (cadList[index]['sobrenome'] ?? ''),
                               style: TextStyle(
                                 fontSize: 35,
                                 color: Colors.black54,
@@ -580,7 +582,9 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                         children: [
                           Container(
                             child: Text(
-                              '${cadList[index]['nome'] ?? '' + ' ' + cadList[index]['sobrenome'] ?? ''}',
+                              (cadList[index]['nome'] ?? '') +
+                                  ' ' +
+                                  (cadList[index]['sobrenome'] ?? ''),
                               style: TextStyle(
                                 fontSize: 35,
                                 color: Colors.black54,
@@ -777,9 +781,11 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
     var dateString = format.format(dateTime);
     return [
       DataCell(Text(dateString)),
-      DataCell(Text(cadList[position]['nome'] ??
-          '' + ' ' + cadList[position]['sobrenome'] ??
-          '')),
+      DataCell(
+        Text((cadList[position]['nome'] ?? '') +
+            ' ' +
+            (cadList[position]['sobrenome'] ?? '')),
+      ),
       DataCell(Text(_formatCpf(cadList[position]['username']))),
       DataCell(Text(cadList[position]['aprovacao_usuario']['status'])),
     ];

@@ -207,6 +207,12 @@ class _MyDrawerState extends State<MyDrawer> {
                 onTap: () {
                   Navigator.of(context).pushReplacementNamed(
                     PedidoV1Screen.routeName,
+                    arguments: ScreenArguments(
+                      title: 'Novo Paciente',
+                      messageMap: {
+                        'isEditarPaciente': false,
+                      },
+                    ),
                   );
                 },
               ),

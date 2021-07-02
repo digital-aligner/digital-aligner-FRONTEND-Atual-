@@ -13,6 +13,7 @@ class AuthProvider with ChangeNotifier {
   //Dados usuário
   int _userId = 0;
   String _userName = '';
+  String _userLastName = '';
   String _role = '';
   int _roleId = 0;
 
@@ -38,6 +39,10 @@ class AuthProvider with ChangeNotifier {
     return _userName;
   }
 
+  String get lastName {
+    return _userLastName;
+  }
+
   String get role {
     return _role;
   }
@@ -52,33 +57,40 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<bool> tryAutoLogin() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('digitalAlignerData')) {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (!prefs.containsKey('digitalAlignerData')) {
+        return false;
+      }
+      final extractedUserData =
+          json.decode(prefs.getString('digitalAlignerData') ?? '')
+              as Map<String, dynamic>;
+      final DateTime? expiryDate =
+          DateTime.parse(extractedUserData['expiryDate']);
+
+      if (expiryDate!.isBefore(DateTime.now())) {
+        return false;
+      }
+
+      _token = extractedUserData['token'];
+      _userId = extractedUserData['userId'];
+      _userName = extractedUserData['userName'];
+      _userLastName = extractedUserData['userLastName'];
+      _role = extractedUserData['role'];
+      _roleId = extractedUserData['roleId'];
+      _expiryDate = expiryDate;
+      //notifyListeners();
+      return true;
+    } catch (e) {
       return false;
     }
-    final extractedUserData =
-        json.decode(prefs.getString('digitalAlignerData') ?? '')
-            as Map<String, dynamic>;
-    final expiryDate = DateTime.parse(extractedUserData['expiryDate']);
-
-    if (expiryDate.isBefore(DateTime.now())) {
-      return false;
-    }
-
-    _token = extractedUserData['token'];
-    _userId = extractedUserData['userId'];
-    _userName = extractedUserData['userName'];
-    _role = extractedUserData['role'];
-    _roleId = extractedUserData['roleId'];
-    _expiryDate = expiryDate;
-    //notifyListeners();
-    return true;
   }
 
   Future<void> logout() async {
     _token = '';
     _userId = 0;
     _userName = '';
+    _userLastName = '';
     _role = '';
     _expiryDate = null;
     _roleId = 0;
@@ -135,6 +147,7 @@ class AuthProvider with ChangeNotifier {
 
       _userId = responseData['user']['id'];
       _userName = responseData['user']['nome'];
+      _userLastName = responseData['user']['sobrenome'];
       _role = responseData['user']['role']['name'];
       _roleId = responseData['user']['role']['id'];
 
@@ -145,6 +158,7 @@ class AuthProvider with ChangeNotifier {
         'token': _token,
         'userId': _userId,
         'userName': _userName,
+        'userLastName': _userLastName,
         'role': _role,
         'roleId': _roleId,
         'expiryDate': _expiryDate!.toIso8601String(),
