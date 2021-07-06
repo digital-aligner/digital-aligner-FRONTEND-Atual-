@@ -23,6 +23,7 @@ import 'package:group_button/group_button.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/link.dart';
 import '../../rotas_url.dart';
 
 class PedidoV1Screen extends StatefulWidget {
@@ -1579,8 +1580,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
 
   Widget _modeloCompactado() {
     int updatePedidoId = -1;
+    PedidoV1Model pedido = PedidoV1Model();
     if (_isEditarPedido) {
-      updatePedidoId = _pedidoStore!.getPedido(position: _args.messageInt).id;
+      pedido = _pedidoStore!.getPedido(position: _args.messageInt);
+      updatePedidoId = pedido.id;
     }
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -1596,6 +1599,16 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             isEditarPedidoPos: _isEditarPedidoPos,
             updatePedidoId: updatePedidoId,
           ),
+          if (pedido.modeloCompactado.isNotEmpty)
+            Link(
+              target: LinkTarget.defaultTarget,
+              uri: Uri.parse(pedido.modeloCompactado[0].url ?? ''),
+              builder: (BuildContext context, FollowLink? followLink) =>
+                  TextButton(
+                onPressed: followLink,
+                child: const Text('Baixar'),
+              ),
+            ),
         ],
       ),
     );
@@ -1691,29 +1704,52 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   Widget _linkDoc() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
-      child: TextFormField(
-        maxLength: 255,
-        enabled: !_isEditarPedidoCheck(),
-        validator: (String? value) {},
-        initialValue: _linkDocumentacao.text,
-        onChanged: (value) {
-          _linkDocumentacao.text = value;
-        },
-        onSaved: (value) {
-          _linkDocumentacao.text = value ?? '';
-        },
-        decoration: const InputDecoration(
-          helperStyle: TextStyle(
-            fontSize: 16,
+      child: Column(
+        children: [
+          TextFormField(
+            maxLength: 255,
+            enabled: !_isEditarPedidoCheck(),
+            validator: (String? value) {},
+            initialValue: _linkDocumentacao.text,
+            onChanged: (value) {
+              _linkDocumentacao.text = value;
+            },
+            onSaved: (value) {
+              _linkDocumentacao.text = value ?? '';
+            },
+            decoration: const InputDecoration(
+              helperStyle: TextStyle(
+                fontSize: 16,
+              ),
+              helperText:
+                  'Caso tenha problema em carregar os arquivos, compartilhe no We Transfer , One Drive, Google Drive, copie e cole o link aqui',
+              hintText:
+                  'Caso tenha problema em carregar os arquivos, compartilhe no We Transfer , One Drive, Google Drive, copie e cole o link aqui',
+              border: const OutlineInputBorder(),
+              counterText: '',
+              labelText: 'Link *',
+            ),
           ),
-          helperText:
-              'Caso tenha problema em carregar os arquivos, compartilhe no We Transfer , One Drive, Google Drive, copie e cole o link aqui',
-          hintText:
-              'Caso tenha problema em carregar os arquivos, compartilhe no We Transfer , One Drive, Google Drive, copie e cole o link aqui',
-          border: const OutlineInputBorder(),
-          counterText: '',
-          labelText: 'Link *',
-        ),
+          if (_isEditarPedido)
+            TextButton(
+              onPressed: () {
+                Clipboard.setData(
+                  ClipboardData(text: _linkDocumentacao.text),
+                );
+                ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    duration: const Duration(seconds: 3),
+                    content: Text(
+                      'Link copiado',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                );
+              },
+              child: const Text('Copiar link'),
+            ),
+        ],
       ),
     );
   }

@@ -202,7 +202,9 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
     cadastroStore!.setToken(authStore!.token);
 
     if (fetchData) {
-      cadastroStore!.fetchCadastros(_startPage).then((List<dynamic> cadastros) {
+      cadastroStore!
+          .fetchCadastros(_startPage, _cadastrosExterior)
+          .then((List<dynamic> cadastros) {
         if (cadastros.length <= 0) {
           _blockForwardBtn = true;
         } else if (cadastros[0].containsKey('error')) {
@@ -216,6 +218,28 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
         });
       });
     }
+  }
+
+  bool _cadastrosExterior = false;
+
+  Widget _searchSwitchPedidoRef() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text('Cadastros Brasil'),
+        Switch(
+          activeColor: Colors.blue,
+          value: _cadastrosExterior,
+          onChanged: (value) {
+            setState(() {
+              _cadastrosExterior = value;
+            });
+            refreshPageFetchNewList();
+          },
+        ),
+        const Text('Cadastros Exterior'),
+      ],
+    );
   }
 
   @override
@@ -281,7 +305,7 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
 */
                       const SizedBox(height: 40),
                       _searchBox(sWidth),
-
+                      _searchSwitchPedidoRef(),
                       //TOP TEXT
                       //_getHeaders(sWidth),
                       //const SizedBox(height: 20),

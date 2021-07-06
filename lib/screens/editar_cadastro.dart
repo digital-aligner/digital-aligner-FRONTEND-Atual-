@@ -134,9 +134,10 @@ class _EditarCadastroState extends State<EditarCadastro> {
 
   Future<List<dynamic>> fetchOnboarding() async {
     //Fetch onboarding if last fetch was with error
-    if (_onboardings.isNotEmpty & !_onboardings[0].containsKey('error')) {
+    if (_onboardings.isNotEmpty && !_onboardings[0].containsKey('error')) {
       return _onboardings;
     }
+
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
       'Accept': 'application/json',
@@ -148,10 +149,12 @@ class _EditarCadastroState extends State<EditarCadastro> {
         Uri.parse(RotasUrl.rotaOnboardings),
         headers: requestHeaders,
       );
+
       _onboardings = json.decode(response.body);
     } catch (error) {
       print(error.toString());
     }
+
     return _onboardings;
   }
 
@@ -182,6 +185,235 @@ class _EditarCadastroState extends State<EditarCadastro> {
         _controllerTEL.text = sc!.telefone;
         _controllerCEL.text = sc!.celular;
       }
+    }
+
+    Widget _onboardingAndRepresentante() {
+      return Column(
+        children: [
+          if (authStore.role != 'Credenciado' && sc!.id != authStore.id)
+            DropdownSearch<String>(
+              label: 'Representante:',
+              errorBuilder: (context, searchEntry, exception) {
+                return Center(child: const Text('Algum erro ocorreu.'));
+              },
+              emptyBuilder: (context, searchEntry) {
+                return Center(child: const Text('Nada'));
+              },
+              loadingBuilder: (context, searchEntry) {
+                return Center(
+                  child: CircularProgressIndicator(
+                    valueColor: new AlwaysStoppedAnimation<Color>(
+                      Colors.blue,
+                    ),
+                  ),
+                );
+              },
+              onFind: (_) async {
+                if (!authStore.isAuth) {
+                  await Navigator.pushAndRemoveUntil<void>(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (BuildContext context) => LoginScreen(
+                        showLoginMessage: true,
+                      ),
+                    ),
+                    ModalRoute.withName('/'),
+                  );
+                }
+                await fetchRepresentantes();
+                //Error handling
+                if (_representantes[0].containsKey('error')) {
+                  if (_representantes[0]['statusCode'] != 404) {
+                    //Will go to errorBuilder
+                    throw Error();
+                  } else {
+                    //Will go to emptyBuilder
+                    return [];
+                  }
+                }
+                List<String> _repUi = [];
+                for (var _representante in _representantes) {
+                  _repUi.add(
+                    _representante['nome'] +
+                        ' ' +
+                        _representante['sobrenome'] +
+                        ' | ' +
+                        _representante['username'],
+                  );
+                }
+                return _repUi;
+              },
+              dropdownSearchDecoration: InputDecoration(
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+              ),
+              maxHeight: 350,
+              mode: Mode.MENU,
+              showSearchBox: true,
+              showSelectedItem: true,
+              onChanged: (value) {
+                String _selectedCpf = _getCpfFromSelectedValue(value ?? '');
+                //Match with list of representantes cpf
+                for (var _representante in _representantes) {
+                  if (_representante['username'] == _selectedCpf) {
+                    sc!.representante = RepresentanteModel.fromJson(
+                      _representante,
+                    );
+                  }
+                }
+              },
+              selectedItem: sc!.representante!.id == -1
+                  ? 'selecione um representante'
+                  : sc!.representante!.nome +
+                      ' ' +
+                      sc!.representante!.sobrenome +
+                      ' | ' +
+                      sc!.representante!.usernameCpf,
+            ),
+          if (authStore.role != 'Credenciado') const SizedBox(height: 40),
+          //onboarding
+          if (authStore.role != 'Credenciado' && sc!.id != authStore.id)
+            DropdownSearch<String>(
+              label: 'Onboarding:',
+              errorBuilder: (context, searchEntry, exception) {
+                return Center(
+                  child: const Text('Algum erro ocorreu.'),
+                );
+              },
+              emptyBuilder: (context, searchEntry) {
+                return Center(child: const Text('Nada'));
+              },
+              loadingBuilder: (context, searchEntry) {
+                return Center(
+                  child: CircularProgressIndicator(
+                    valueColor: new AlwaysStoppedAnimation<Color>(
+                      Colors.blue,
+                    ),
+                  ),
+                );
+              },
+              onFind: (_) async {
+                if (!authStore.isAuth) {
+                  await Navigator.pushAndRemoveUntil<void>(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (BuildContext context) => LoginScreen(
+                        showLoginMessage: true,
+                      ),
+                    ),
+                    ModalRoute.withName('/'),
+                  );
+                }
+
+                await fetchOnboarding();
+
+                //Error handling
+                if (_onboardings[0].containsKey('error')) {
+                  if (_onboardings[0]['statusCode'] != 404) {
+                    //Will go to errorBuilder
+                    throw Error();
+                  } else {
+                    //Will go to emptyBuilder
+                    return [];
+                  }
+                }
+                List<String> _onboardingUi = [];
+                for (var _onboarding in _onboardings) {
+                  _onboardingUi.add(
+                    _onboarding['onboarding'],
+                  );
+                }
+                return _onboardingUi;
+              },
+              dropdownSearchDecoration: InputDecoration(
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+              ),
+              maxHeight: 350,
+              mode: Mode.MENU,
+              showSearchBox: true,
+              showSelectedItem: true,
+              onChanged: (value) {
+                //Match with list of representantes cpf
+                for (var _onboarding in _onboardings) {
+                  if (_onboarding['onboarding'] == value) {
+                    sc!.onboarding = OnboardingModel.fromJson(
+                      _onboarding,
+                    );
+                  }
+                }
+              },
+              selectedItem: sc!.onboarding!.id == -1
+                  ? 'Selecionar qual onboarding participou'
+                  : sc!.onboarding!.onboarding,
+            ),
+        ],
+      );
+    }
+
+    Widget _statusCadastro() {
+      return Column(
+        children: [
+          //Aprovação de Usuário
+          if (_firstFetch &&
+              authStore.role != 'Credenciado' &&
+              sc!.id != authStore.id)
+            Container(
+              height: 80,
+              child: FutureBuilder(
+                future: cadastroStore.getAprovacaoTable(),
+                builder: (ctx, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return DropdownSearch<String>(
+                      onSaved: (String? value) {
+                        cadastroStore.handleAprovRelation(value ?? '');
+                      },
+                      dropdownSearchDecoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                      ),
+                      mode: Mode.MENU,
+                      showSearchBox: false,
+                      showSelectedItem: true,
+                      items: snapshot.data as List<String>,
+                      label: 'Aprovação do Usuário: *',
+                      onChanged: print,
+                      selectedItem: sc!.aprovacao_usuario!.status,
+                    );
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        valueColor:
+                            new AlwaysStoppedAnimation<Color>(Colors.blue),
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
+          if (!_firstFetch &&
+              authStore.role != 'Credenciado' &&
+              sc!.id != authStore.id)
+            Container(
+              height: 80,
+              child: DropdownSearch<String>(
+                  onSaved: (String? value) {
+                    cadastroStore.handleAprovRelation(value ?? '');
+                  },
+                  dropdownSearchDecoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                  ),
+                  mode: Mode.MENU,
+                  showSearchBox: false,
+                  showSelectedItem: true,
+                  items: cadastroStore.getAprovTableList(),
+                  label: 'Aprovação do Usuário: *',
+                  onChanged: print,
+                  selectedItem: sc!.aprovacao_usuario!.status),
+            ),
+        ],
+      );
     }
 
     //Direct acess to url, pop page to remove duplicate.
@@ -251,6 +483,20 @@ class _EditarCadastroState extends State<EditarCadastro> {
                               key: _formKey,
                               child: Column(
                                 children: <Widget>[
+                                  _statusCadastro(),
+                                  const SizedBox(height: 10),
+                                  _onboardingAndRepresentante(),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 40,
+                                    ),
+                                    child: const Divider(
+                                      height: 20,
+                                      thickness: 2,
+                                      indent: 20,
+                                      endIndent: 20,
+                                    ),
+                                  ),
                                   //nome
                                   Container(
                                     height: 80,
@@ -446,7 +692,6 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                       selectedItem: sc!.cro_uf,
                                     ),
                                   ),
-
                                   const SizedBox(height: 10),
                                   //cro número
                                   Container(
@@ -470,201 +715,6 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(height: 10),
-                                  //representante
-                                  if (authStore.role != 'Credenciado' &&
-                                      sc!.id != authStore.id)
-                                    DropdownSearch<String>(
-                                      label: 'Representante:',
-                                      errorBuilder:
-                                          (context, searchEntry, exception) {
-                                        return Center(
-                                            child: const Text(
-                                                'Algum erro ocorreu.'));
-                                      },
-                                      emptyBuilder: (context, searchEntry) {
-                                        return Center(
-                                            child: const Text('Nada'));
-                                      },
-                                      loadingBuilder: (context, searchEntry) {
-                                        return Center(
-                                          child: CircularProgressIndicator(
-                                            valueColor:
-                                                new AlwaysStoppedAnimation<
-                                                    Color>(
-                                              Colors.blue,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      onFind: (_) async {
-                                        if (!authStore.isAuth) {
-                                          await Navigator.pushAndRemoveUntil<
-                                              void>(
-                                            context,
-                                            MaterialPageRoute<void>(
-                                              builder: (BuildContext context) =>
-                                                  LoginScreen(
-                                                showLoginMessage: true,
-                                              ),
-                                            ),
-                                            ModalRoute.withName('/'),
-                                          );
-                                        }
-                                        await fetchRepresentantes();
-                                        //Error handling
-                                        if (_representantes[0]
-                                            .containsKey('error')) {
-                                          if (_representantes[0]
-                                                  ['statusCode'] !=
-                                              404) {
-                                            //Will go to errorBuilder
-                                            throw Error();
-                                          } else {
-                                            //Will go to emptyBuilder
-                                            return [];
-                                          }
-                                        }
-                                        List<String> _repUi = [];
-                                        for (var _representante
-                                            in _representantes) {
-                                          _repUi.add(
-                                            _representante['nome'] +
-                                                ' ' +
-                                                _representante['sobrenome'] +
-                                                ' | ' +
-                                                _representante['username'],
-                                          );
-                                        }
-                                        return _repUi;
-                                      },
-                                      dropdownSearchDecoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        contentPadding:
-                                            EdgeInsets.fromLTRB(10, 10, 10, 10),
-                                      ),
-                                      maxHeight: 350,
-                                      mode: Mode.MENU,
-                                      showSearchBox: true,
-                                      showSelectedItem: true,
-                                      onChanged: (value) {
-                                        String _selectedCpf =
-                                            _getCpfFromSelectedValue(
-                                                value ?? '');
-                                        //Match with list of representantes cpf
-                                        for (var _representante
-                                            in _representantes) {
-                                          if (_representante['username'] ==
-                                              _selectedCpf) {
-                                            sc!.representante =
-                                                RepresentanteModel.fromJson(
-                                              _representante,
-                                            );
-                                          }
-                                        }
-                                      },
-                                      selectedItem: sc!.representante!.id == -1
-                                          ? 'selecione um representante'
-                                          : sc!.representante!.nome +
-                                              ' ' +
-                                              sc!.representante!.sobrenome +
-                                              ' | ' +
-                                              sc!.representante!.usernameCpf,
-                                    ),
-                                  if (authStore.role != 'Credenciado')
-                                    const SizedBox(height: 40),
-                                  //onboarding
-                                  if (authStore.role != 'Credenciado' &&
-                                      sc!.id != authStore.id)
-                                    DropdownSearch<String>(
-                                      label: 'Onboarding:',
-                                      errorBuilder:
-                                          (context, searchEntry, exception) {
-                                        return Center(
-                                          child:
-                                              const Text('Algum erro ocorreu.'),
-                                        );
-                                      },
-                                      emptyBuilder: (context, searchEntry) {
-                                        return Center(
-                                            child: const Text('Nada'));
-                                      },
-                                      loadingBuilder: (context, searchEntry) {
-                                        return Center(
-                                          child: CircularProgressIndicator(
-                                            valueColor:
-                                                new AlwaysStoppedAnimation<
-                                                    Color>(
-                                              Colors.blue,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      onFind: (_) async {
-                                        if (!authStore.isAuth) {
-                                          await Navigator.pushAndRemoveUntil<
-                                              void>(
-                                            context,
-                                            MaterialPageRoute<void>(
-                                              builder: (BuildContext context) =>
-                                                  LoginScreen(
-                                                showLoginMessage: true,
-                                              ),
-                                            ),
-                                            ModalRoute.withName('/'),
-                                          );
-                                        }
-                                        await fetchOnboarding();
-
-                                        //Error handling
-                                        if (_onboardings[0]
-                                            .containsKey('error')) {
-                                          if (_onboardings[0]['statusCode'] !=
-                                              404) {
-                                            //Will go to errorBuilder
-                                            throw Error();
-                                          } else {
-                                            //Will go to emptyBuilder
-                                            return [];
-                                          }
-                                        }
-                                        List<String> _onboardingUi = [];
-                                        for (var _onboarding in _onboardings) {
-                                          _onboardingUi.add(
-                                            _onboarding['onboarding'],
-                                          );
-                                        }
-                                        return _onboardingUi;
-                                      },
-                                      dropdownSearchDecoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        contentPadding:
-                                            EdgeInsets.fromLTRB(10, 10, 10, 10),
-                                      ),
-                                      maxHeight: 350,
-                                      mode: Mode.MENU,
-                                      showSearchBox: true,
-                                      showSelectedItem: true,
-                                      //items: _enderecoUiList,
-                                      //label: 'UF: *',
-                                      //hint: 'UF: *',
-                                      onChanged: (value) {
-                                        //Match with list of representantes cpf
-                                        for (var _onboarding in _onboardings) {
-                                          if (_onboarding['onboarding'] ==
-                                              value) {
-                                            sc!.onboarding =
-                                                OnboardingModel.fromJson(
-                                              _onboarding,
-                                            );
-                                          }
-                                        }
-                                      },
-                                      selectedItem: sc!.onboarding!.id == -1
-                                          ? 'Selecionar qual onboarding participou'
-                                          : sc!.onboarding!.onboarding,
-                                    ),
-
                                   const Divider(
                                     height: 75,
                                     thickness: 1,
@@ -762,80 +812,6 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                     enderecoType: 'gerenciar endereco',
                                     userId: sc!.id,
                                   ),
-                                  const SizedBox(height: 40),
-                                  //Aprovação de Usuário
-                                  if (_firstFetch &&
-                                      authStore.role != 'Credenciado' &&
-                                      sc!.id != authStore.id)
-                                    Container(
-                                      height: 80,
-                                      child: FutureBuilder(
-                                        future:
-                                            cadastroStore.getAprovacaoTable(),
-                                        builder: (ctx, snapshot) {
-                                          if (snapshot.connectionState ==
-                                              ConnectionState.done) {
-                                            return DropdownSearch<String>(
-                                              onSaved: (String? value) {
-                                                cadastroStore
-                                                    .handleAprovRelation(
-                                                        value ?? '');
-                                              },
-                                              dropdownSearchDecoration:
-                                                  InputDecoration(
-                                                border: OutlineInputBorder(),
-                                                contentPadding:
-                                                    EdgeInsets.fromLTRB(
-                                                        10, 10, 10, 10),
-                                              ),
-                                              mode: Mode.MENU,
-                                              showSearchBox: false,
-                                              showSelectedItem: true,
-                                              items:
-                                                  snapshot.data as List<String>,
-                                              label: 'Aprovação do Usuário: *',
-                                              onChanged: print,
-                                              selectedItem:
-                                                  sc!.aprovacao_usuario!.status,
-                                            );
-                                          } else {
-                                            return Center(
-                                              child: CircularProgressIndicator(
-                                                valueColor:
-                                                    new AlwaysStoppedAnimation<
-                                                        Color>(Colors.blue),
-                                              ),
-                                            );
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  if (!_firstFetch &&
-                                      authStore.role != 'Credenciado' &&
-                                      sc!.id != authStore.id)
-                                    Container(
-                                      height: 80,
-                                      child: DropdownSearch<String>(
-                                          onSaved: (String? value) {
-                                            cadastroStore.handleAprovRelation(
-                                                value ?? '');
-                                          },
-                                          dropdownSearchDecoration:
-                                              InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            contentPadding: EdgeInsets.fromLTRB(
-                                                10, 10, 10, 10),
-                                          ),
-                                          mode: Mode.MENU,
-                                          showSearchBox: false,
-                                          showSelectedItem: true,
-                                          items:
-                                              cadastroStore.getAprovTableList(),
-                                          label: 'Aprovação do Usuário: *',
-                                          onChanged: print,
-                                          selectedItem:
-                                              sc!.aprovacao_usuario!.status),
-                                    ),
                                   const SizedBox(height: 40),
                                 ],
                               ),

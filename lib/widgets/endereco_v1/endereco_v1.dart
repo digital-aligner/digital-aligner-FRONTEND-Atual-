@@ -299,7 +299,6 @@ class _EnderecoState extends State<Endereco> {
         _novoEndBtn(),
         const SizedBox(
           height: 10,
-          width: 10,
         ),
         if (_novoEndereco) _enviarNovoEndBtn(),
       ],

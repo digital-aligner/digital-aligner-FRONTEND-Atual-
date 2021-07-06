@@ -189,6 +189,7 @@ class PedidoProvider with ChangeNotifier {
     String token = '',
     int roleId = 0,
     String query = '',
+    String queryStrings = '',
   }) async {
     clearDataAllProviderData();
     final response = await http.get(
@@ -197,7 +198,8 @@ class PedidoProvider with ChangeNotifier {
             '?roleId=' +
             roleId.toString() +
             '&queryString=' +
-            query,
+            query +
+            queryStrings,
       ),
       headers: {
         'Content-Type': 'application/json',
@@ -225,7 +227,8 @@ class PedidoProvider with ChangeNotifier {
     String token = '',
     int roleId = 0,
     int pageQuant = 0,
-    String queryString = '',
+    String query = '',
+    String queryStrings = '',
   }) async {
     final response = await http.get(
       Uri.parse(
@@ -233,7 +236,9 @@ class PedidoProvider with ChangeNotifier {
             '?roleId=' +
             roleId.toString() +
             '&pageQuant=' +
-            pageQuant.toString(),
+            pageQuant.toString() +
+            query +
+            queryStrings,
       ),
       headers: {
         'Content-Type': 'application/json',

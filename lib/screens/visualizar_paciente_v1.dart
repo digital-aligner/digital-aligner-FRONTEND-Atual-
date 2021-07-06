@@ -23,6 +23,7 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:url_launcher/link.dart';
 import '../rotas_url.dart';
 import 'login_screen.dart';
+import 'package:characters/characters.dart';
 
 class VisualizarPacienteV1 extends StatefulWidget {
   static const routeName = '/visualizar-paciente-v1';
@@ -38,6 +39,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
   Size? _screenSize;
   bool firstRun = true;
   bool isFetchHistorico = true;
+  bool isAprovando = false;
   String _solicitarAlteracao = '';
   int _selectedTilePos = -1;
   final ScrollController _scrollController = ScrollController();
@@ -517,6 +519,45 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     );
   }
 
+  Widget _maplongTextToUi(String? text) {
+    if (text == null) return Text('');
+
+    if (text.length > 80) {
+      return Text(text.characters.take(80).toString() + '... (visualizar)');
+    }
+    return Text('');
+  }
+
+  Future<void> _viewTextPopup(
+    String text,
+    String title,
+  ) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return Form(
+          key: _relatorioFormKey,
+          child: AlertDialog(
+            title: Text(title),
+            content: Container(
+              width: 800,
+              height: 500,
+              child: Text(text),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Fechar'),
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget _viewPedido() {
     //set 3d models url to local storage for webview to access
     _setModelosUrlToStorage();
@@ -657,7 +698,18 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                 height: 50,
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(_pedidoView.queixaPrincipal),
+                  child: GestureDetector(
+                    onTap: () {
+                      _viewTextPopup(
+                        _pedidoView.queixaPrincipal,
+                        'Queixa principal',
+                      );
+                    },
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: _maplongTextToUi(_pedidoView.queixaPrincipal),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -680,7 +732,18 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                 height: 50,
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(_pedidoView.objetivosTratamento),
+                  child: GestureDetector(
+                    onTap: () {
+                      _viewTextPopup(
+                        _pedidoView.objetivosTratamento,
+                        'Objetivos do tratamento',
+                      );
+                    },
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: _maplongTextToUi(_pedidoView.objetivosTratamento),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -1144,7 +1207,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
               const SizedBox(
                 height: 5,
               ),
-              const Text('Link download do relatório:'),
+              const Text('Link visualização 3d:'),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1163,14 +1226,14 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
               const SizedBox(
                 height: 5,
               ),
-              const Text('Link visualização 3d:'),
+              const Text('Link download do relatório:'),
               SizedBox(
                 width: 400,
                 child: Wrap(
                   runAlignment: WrapAlignment.center,
                   children: [
                     Link(
-                      target: LinkTarget.blank,
+                      target: LinkTarget.defaultTarget,
                       uri: Uri.parse(
                           _formatLink(_relatorioView.relatorio!.url ?? '')),
                       builder: (BuildContext context, FollowLink? followLink) =>
@@ -1191,12 +1254,19 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             TextButton(
-              onPressed: _relatorioAprovadoLogic() && _checkIfUserIsSame()
+              onPressed: _relatorioAprovadoLogic() &&
+                      _checkIfUserIsSame() &&
+                      !isAprovando
                   ? () async {
+                      setState(() {
+                        isAprovando = true;
+                      });
                       bool result = await _aprovarRelatorio();
                       if (result) {
                         await _fetchHistoricoPac();
-                        setState(() {});
+                        setState(() {
+                          isAprovando = false;
+                        });
                       }
                     }
                   : null,

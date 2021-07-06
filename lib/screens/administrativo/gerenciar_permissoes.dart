@@ -45,7 +45,7 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
   @override
   void dispose() {
     _searchField.dispose();
-    cadastroStore!.clearCadastros();
+    //cadastroStore!.clearCadastros();
     super.dispose();
   }
 
@@ -203,6 +203,7 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
     cadastroStore!.setToken(authStore!.token);
 
     if (fetchData) {
+      cadastroStore!.clearCadastros();
       cadastroStore!
           .fetchCadastrosPerm(_startPage)
           .then((List<dynamic> cadastros) {

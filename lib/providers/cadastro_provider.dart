@@ -85,7 +85,6 @@ class CadastroProvider with ChangeNotifier {
   }
 
   void setSelectedCad(int index) {
-    print(_cadastros[index]);
     _selectedCad = CadastroModel.fromJson(_cadastros[index]);
   }
 
@@ -145,7 +144,10 @@ class CadastroProvider with ChangeNotifier {
     return _cadastros;
   }
 
-  Future<List<dynamic>> fetchCadastros(int startPage) async {
+  Future<List<dynamic>> fetchCadastros(
+    int startPage,
+    bool cadastrosExterior,
+  ) async {
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
       'Accept': 'application/json',
@@ -177,7 +179,9 @@ class CadastroProvider with ChangeNotifier {
               '?queryString=' +
               _queryString +
               '&startPage=' +
-              startPage.toString(),
+              startPage.toString() +
+              '&cadastrosExterior=' +
+              cadastrosExterior.toString(),
         ),
         headers: requestHeaders,
       );

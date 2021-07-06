@@ -36,7 +36,7 @@ class PedidoV1Model {
   EnderecoModel? enderecoEntrega;
   StatusPedidoV1Model? statusPedido;
   String createdAt;
-  String updatedAt;
+  String? updatedAt;
   Map<String, dynamic>? payload;
   int idPedOriginal;
 
