@@ -12,6 +12,7 @@ import 'package:digital_aligner_app/screens/login_screen.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/pedido_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/status_pedidov1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/usuario_v1_model.dart';
+import 'package:digital_aligner_app/screens/screens_pedidos_v1/termos_txt.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/uploader/file_uploader.dart';
 import 'package:digital_aligner_app/widgets/endereco_v1/endereco_model_.dart';
 import 'package:digital_aligner_app/widgets/screen%20argument/screen_argument.dart';
@@ -2625,11 +2626,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     );
   }
 
-  Future<void> _getTermos() async {
-    String t = await rootBundle.loadString('texts/termos.txt');
-    setState(() {
-      termos = t;
-    });
+  void _getTermos() {
+    //String t = await rootBundle.loadString('texts/termos.txt');
+
+    termos = TermosTxt.termosTxt;
   }
 
   List<String> _convertDbValuesToUi(String s) {
@@ -2641,8 +2641,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     _authStore = Provider.of<AuthProvider>(context);
     _pedidoStore = Provider.of<PedidoProvider>(context);
     _screenSize = MediaQuery.of(context).size;
-    _getTermos();
+
     if (firstRun) {
+      _getTermos();
       _pedidoStore!.clearUploadAndErrors();
       try {
         _args = ModalRoute.of(context)!.settings.arguments as ScreenArguments;
