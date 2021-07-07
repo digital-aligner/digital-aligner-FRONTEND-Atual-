@@ -164,7 +164,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
       DataCell(Text('DA${p.id}')),
       DataCell(Text(p.nomePaciente)),
       DataCell(Text(p.statusPedido?.status ?? '')),
-      DataCell(Text(p.usuario?.nome ?? '' + ' ' + p.usuario!.sobrenome)),
+      DataCell(Text(p.usuario!.nome + ' ' + p.usuario!.sobrenome)),
       DataCell(_optionsTextBtns(position)),
     ];
   }

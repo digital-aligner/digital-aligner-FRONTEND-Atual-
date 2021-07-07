@@ -573,7 +573,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
               imgViewPopup(file.url);
             },
             child: Image.network(
-              file.url ?? '',
+              file.formats!.thumbnail!.thumbnail ?? '',
               width: 100,
               height: 100,
               fit: BoxFit.cover,
@@ -1450,6 +1450,9 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             width: 800,
             height: 500,
             child: PhotoView(
+              loadingBuilder: (context, event) {
+                return Center(child: Text('Carregando...'));
+              },
               maxScale: 2,
               imageProvider: NetworkImage(link ?? ''),
             ),
