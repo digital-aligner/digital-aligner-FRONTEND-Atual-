@@ -66,6 +66,9 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
   //List<PlatformFile> _filesData = <PlatformFile>[];
   //List<FileModel> _serverFiles = [];
 
+  Key link1 = Key('1');
+  Key link2 = Key('2');
+
   Future<List<HistoricoPacV1>> _fetchHistoricoPac() async {
     final response = await http.get(
       Uri.parse(
@@ -1188,12 +1191,154 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     return 'https://' + s;
   }
 
-  Key link1 = Key('1');
-  Key link2 = Key('2');
+  Future<dynamic> imgViewPopup(String? link) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Imagem'),
+          content: Container(
+            width: 800,
+            height: 500,
+            child: PhotoView(
+              loadingBuilder: (context, event) {
+                return Center(child: Text('Carregando...'));
+              },
+              maxScale: 2,
+              imageProvider: NetworkImage(link ?? ''),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Fechar'),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  Future<bool> _deletarRelatorio() async {
+    try {
+      var _response = await http.delete(
+        Uri.parse(RotasUrl.rotaRelatoriosV1 + _relatorioView.id.toString()),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${_authStore!.token}',
+        },
+      );
+
+      try {
+        var data = json.decode(_response.body);
+        if (data.containsKey('id')) {
+          return true;
+        }
+      } catch (e) {
+        print(e);
+        return false;
+      }
+
+      return false;
+    } catch (e) {
+      print('deletarRelatório ->' + e.toString());
+      return false;
+    }
+  }
+
+  Future<dynamic> deleteRelatorioPopup() {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Center(child: const Text('Deletar relatório')),
+          content: Container(
+            width: 500,
+            height: 200,
+            child: const Center(child: const Text('Deletar esse relatório?')),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  duration: const Duration(seconds: 5),
+                  content: const Text(
+                    'Deletando relatório...',
+                    textAlign: TextAlign.center,
+                  ),
+                ));
+                bool result = await _deletarRelatorio();
+                if (result) {
+                  Navigator.pop(context, true);
+                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    duration: const Duration(seconds: 3),
+                    content: const Text(
+                      'Ok',
+                      textAlign: TextAlign.center,
+                    ),
+                  ));
+                } else {
+                  Navigator.pop(context, false);
+                }
+              },
+              child: const Text('Confirmar'),
+            ),
+            const SizedBox(
+              width: 50,
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _deletarRelatorioIcon() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        IconButton(
+          onPressed: () async {
+            bool result = await deleteRelatorioPopup();
+            if (result) {
+              setState(() {
+                _selectedView = 0;
+                isFetchHistorico = true;
+              });
+              await _fetchHistoricoPac();
+              setState(() {
+                isFetchHistorico = false;
+              });
+            } else {
+              ScaffoldMessenger.of(context).removeCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                duration: const Duration(seconds: 3),
+                content: const Text(
+                  'Não foi possível deletar esse relatório',
+                  textAlign: TextAlign.center,
+                ),
+              ));
+            }
+          },
+          icon: const Icon(
+            Icons.delete,
+            color: Colors.blue,
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _viewRelatorio() {
     return Column(
       children: [
+        _deletarRelatorioIcon(),
         _viewRelatorioText(),
         const SizedBox(
           height: 10,
@@ -1435,34 +1580,6 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
               )
             ],
           ),
-        );
-      },
-    );
-  }
-
-  Future<dynamic> imgViewPopup(String? link) {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Imagem'),
-          content: Container(
-            width: 800,
-            height: 500,
-            child: PhotoView(
-              loadingBuilder: (context, event) {
-                return Center(child: Text('Carregando...'));
-              },
-              maxScale: 2,
-              imageProvider: NetworkImage(link ?? ''),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Fechar'),
-            )
-          ],
         );
       },
     );
