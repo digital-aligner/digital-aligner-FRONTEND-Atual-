@@ -9,6 +9,7 @@ import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/pedido_v1_
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/relatorio_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/uploader/model/FileModel.dart';
+import 'package:digital_aligner_app/screens/visualizar_relatorio_v1.dart';
 import 'package:digital_aligner_app/widgets/screen%20argument/screen_argument.dart';
 import 'package:easy_web_view2/easy_web_view2.dart';
 import 'package:flutter/material.dart';
@@ -1335,111 +1336,137 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     );
   }
 
+  Widget _newScreenRelatorioIcon() {
+    return IconButton(
+      onPressed: () async {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                VisualizarRelatorioV1(url: _relatorioView.relatorio?.url ?? ''),
+          ),
+        );
+      },
+      icon: const Icon(
+        Icons.fit_screen,
+        color: Colors.blue,
+      ),
+    );
+  }
+
   Widget _viewRelatorio() {
-    return Column(
+    return Stack(
       children: [
-        if (_authStore!.role == 'Administrador' ||
-            _authStore!.role == 'Gerente')
-          _deletarRelatorioIcon(),
-        _viewRelatorioText(),
-        const SizedBox(
-          height: 10,
-        ),
-        SizedBox(
-          height: 110,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(
-                height: 5,
-              ),
-              const Text('Link visualização 3d:'),
-              Row(
+        _newScreenRelatorioIcon(),
+        Column(
+          children: [
+            if (_authStore!.role == 'Administrador' ||
+                _authStore!.role == 'Gerente')
+              _deletarRelatorioIcon(),
+            _viewRelatorioText(),
+            const SizedBox(
+              height: 10,
+            ),
+            SizedBox(
+              height: 110,
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Link(
-                    target: LinkTarget.blank,
-                    uri: Uri.parse(_formatLink(_relatorioView.visualizador1)),
-                    builder: (BuildContext context, FollowLink? followLink) =>
-                        TextButton(
-                      onPressed: followLink,
-                      child: Text(_relatorioView.visualizador1),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  const Text('Link visualização 3d:'),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Link(
+                        target: LinkTarget.blank,
+                        uri: Uri.parse(
+                            _formatLink(_relatorioView.visualizador1)),
+                        builder:
+                            (BuildContext context, FollowLink? followLink) =>
+                                TextButton(
+                          onPressed: followLink,
+                          child: Text(_relatorioView.visualizador1),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  const Text('Link download do relatório:'),
+                  SizedBox(
+                    width: 400,
+                    child: Wrap(
+                      runAlignment: WrapAlignment.center,
+                      children: [
+                        Link(
+                          target: LinkTarget.defaultTarget,
+                          uri: Uri.parse(
+                              _formatLink(_relatorioView.relatorio!.url ?? '')),
+                          builder:
+                              (BuildContext context, FollowLink? followLink) =>
+                                  TextButton(
+                            onPressed: followLink,
+                            child: _relatorioView.relatorio!.url!.isNotEmpty
+                                ? Text(_relatorioView.relatorio!.url ?? '')
+                                : const Text('Vazio'),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-              const SizedBox(
-                height: 5,
-              ),
-              const Text('Link download do relatório:'),
-              SizedBox(
-                width: 400,
-                child: Wrap(
-                  runAlignment: WrapAlignment.center,
-                  children: [
-                    Link(
-                      target: LinkTarget.defaultTarget,
-                      uri: Uri.parse(
-                          _formatLink(_relatorioView.relatorio!.url ?? '')),
-                      builder: (BuildContext context, FollowLink? followLink) =>
-                          TextButton(
-                        onPressed: followLink,
-                        child: _relatorioView.relatorio!.url!.isNotEmpty
-                            ? Text(_relatorioView.relatorio!.url ?? '')
-                            : const Text('Vazio'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            TextButton(
-              onPressed: _relatorioAprovadoLogic() &&
-                      _checkIfUserIsSame() &&
-                      !isAprovando
-                  ? () async {
-                      setState(() {
-                        isAprovando = true;
-                      });
-                      bool result = await _aprovarRelatorio();
-                      if (result) {
-                        await _fetchHistoricoPac();
-                        setState(() {
-                          isAprovando = false;
-                        });
-                      }
-                    }
-                  : null,
-              child: const Text('Aprovar'),
             ),
-            TextButton(
-              onPressed: _relatorioAprovadoLogic() && _checkIfUserIsSame()
-                  ? () {
-                      solicitarAltPopup();
-                    }
-                  : null,
-              child: const Text('Solicitar alteração'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextButton(
+                  onPressed: _relatorioAprovadoLogic() &&
+                          _checkIfUserIsSame() &&
+                          !isAprovando
+                      ? () async {
+                          setState(() {
+                            isAprovando = true;
+                          });
+                          bool result = await _aprovarRelatorio();
+                          if (result) {
+                            await _fetchHistoricoPac();
+                            setState(() {
+                              isAprovando = false;
+                            });
+                          }
+                        }
+                      : null,
+                  child: const Text('Aprovar'),
+                ),
+                TextButton(
+                  onPressed: _relatorioAprovadoLogic() && _checkIfUserIsSame()
+                      ? () {
+                          solicitarAltPopup();
+                        }
+                      : null,
+                  child: const Text('Solicitar alteração'),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Container(
+              height: 500,
+              child: SfPdfViewer.network(
+                _relatorioView.relatorio!.url ?? '',
+                enableDoubleTapZooming: true,
+                enableTextSelection: true,
+                enableDocumentLinkAnnotation: true,
+              ),
             ),
           ],
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Container(
-          height: 500,
-          child: SfPdfViewer.network(
-            _relatorioView.relatorio!.url ?? '',
-            enableDoubleTapZooming: true,
-            enableTextSelection: true,
-            enableDocumentLinkAnnotation: true,
-          ),
         ),
       ],
     );

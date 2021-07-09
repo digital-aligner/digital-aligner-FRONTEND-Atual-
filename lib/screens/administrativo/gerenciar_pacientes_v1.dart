@@ -94,7 +94,12 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
               fetchMostRecente();
             });
           },
-          child: const Text('editar'),
+          child: const Text(
+            'editar',
+            style: const TextStyle(
+              fontSize: 12,
+            ),
+          ),
         ),
         if (_authStore!.role == 'Administrador' ||
             _authStore!.role == 'Gerente')
@@ -137,7 +142,12 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                 }
               });
             },
-            child: Text('Criar relatório'),
+            child: Text(
+              'Criar relatório',
+              style: const TextStyle(
+                fontSize: 12,
+              ),
+            ),
           ),
         if (_authStore!.role == 'Administrador' ||
             _authStore!.role == 'Gerente')
@@ -148,7 +158,12 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                 fetchMostRecente();
               }
             },
-            child: const Text('mais'),
+            child: const Text(
+              'mais',
+              style: const TextStyle(
+                fontSize: 12,
+              ),
+            ),
           ),
       ],
     );
@@ -552,7 +567,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
         child: SingleChildScrollView(
           child: Container(
             height: pageHeight,
-            padding: const EdgeInsets.symmetric(horizontal: 100),
+            padding: const EdgeInsets.symmetric(horizontal: 50),
             child: Column(
               children: <Widget>[
                 _header(),
