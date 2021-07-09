@@ -1338,7 +1338,9 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
   Widget _viewRelatorio() {
     return Column(
       children: [
-        _deletarRelatorioIcon(),
+        if (_authStore!.role == 'Administrador' ||
+            _authStore!.role == 'Gerente')
+          _deletarRelatorioIcon(),
         _viewRelatorioText(),
         const SizedBox(
           height: 10,

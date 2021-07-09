@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:digital_aligner_app/appbar/MyAppBar.dart';
 import 'package:digital_aligner_app/appbar/MyDrawer.dart';
@@ -11,7 +12,8 @@ import 'package:digital_aligner_app/widgets/screen%20argument/screen_argument.da
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
+import 'package:http/http.dart' as http;
+import '../../rotas_url.dart';
 import '../login_screen.dart';
 import '../visualizar_paciente_v1.dart';
 
@@ -92,7 +94,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
               fetchMostRecente();
             });
           },
-          child: Text('editar'),
+          child: const Text('editar'),
         ),
         if (_authStore!.role == 'Administrador' ||
             _authStore!.role == 'Gerente')
@@ -137,7 +139,82 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
             },
             child: Text('Criar relatório'),
           ),
+        if (_authStore!.role == 'Administrador' ||
+            _authStore!.role == 'Gerente')
+          TextButton(
+            onPressed: () async {
+              bool result = await maisOpcoesPopup(position: position);
+              if (result) {
+                fetchMostRecente();
+              }
+            },
+            child: const Text('mais'),
+          ),
       ],
+    );
+  }
+
+  Future<bool> _deletarPedido(int position) async {
+    //get current pedido from position
+    var p = _pedidoStore!.getPedido(position: position);
+    try {
+      var _response = await http.delete(
+        Uri.parse(RotasUrl.rotaPedidosV1 + p.id.toString()),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${_authStore!.token}',
+        },
+      );
+
+      try {
+        var data = json.decode(_response.body);
+        if (data.containsKey('id')) {
+          return true;
+        }
+      } catch (e) {
+        print(e);
+        return false;
+      }
+
+      return false;
+    } catch (e) {
+      print('deletarPedido ->' + e.toString());
+      return false;
+    }
+  }
+
+  Future<dynamic> maisOpcoesPopup({int position = 0}) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Center(child: const Text('Mais opções')),
+          content: Container(
+            width: 500,
+            height: 200,
+            child: Center(
+              child: TextButton(
+                onPressed: () async {
+                  bool result = await _deletarPedido(position);
+                  if (result) {
+                    Navigator.pop(context, true);
+                  } else {
+                    Navigator.pop(context, false);
+                  }
+                },
+                child: const Text('Deletar pedido'),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('fechar'),
+            )
+          ],
+        );
+      },
     );
   }
 
