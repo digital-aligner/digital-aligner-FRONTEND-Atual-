@@ -49,6 +49,9 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   bool _ref = false;
   bool _pedidosAtualizados = false;
 
+  bool _pedidosAlteracoes = false;
+  bool _pedidosExecucao = false;
+
   Widget _header() {
     return SizedBox(
       height: 100,
@@ -434,7 +437,14 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                       token: _authStore!.token,
                       roleId: _authStore!.roleId,
                       query: _query,
-                      queryStrings: '&ref=' + _ref.toString(),
+                      queryStrings: '&ref=' +
+                          _ref.toString() +
+                          '&sortAtualizados=' +
+                          _pedidosAtualizados.toString() +
+                          '&sortAlteracoes=' +
+                          _pedidosAlteracoes.toString() +
+                          '&sortExecucao=' +
+                          _pedidosExecucao.toString(),
                     )
                         .then((bool fetchSuccessful) {
                       if (fetchSuccessful)
@@ -498,7 +508,11 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
       queryStrings: '&ref=' +
           _ref.toString() +
           '&sortAtualizados=' +
-          _pedidosAtualizados.toString(),
+          _pedidosAtualizados.toString() +
+          '&sortAlteracoes=' +
+          _pedidosAlteracoes.toString() +
+          '&sortExecucao=' +
+          _pedidosExecucao.toString(),
     );
 
     setState(() {
@@ -508,43 +522,146 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   }
 
   Widget _searchSwitchPedidoRef() {
+    final fontSize = 12.0;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text('Pacientes'),
+        Text(
+          'Pacientes',
+          style: TextStyle(
+            fontSize: fontSize,
+          ),
+        ),
         Switch(
           activeColor: Colors.blue,
           value: _ref,
-          onChanged: (value) {
-            setState(() {
-              _ref = value;
-            });
-            fetchMostRecente();
+          onChanged: (_) {
+            _searchSwithPedidoRefFunction(_);
+            Navigator.pop(context);
           },
         ),
-        const Text('Refinamentos de pacientes'),
+        Text(
+          'Refinamentos',
+          style: TextStyle(
+            fontSize: fontSize,
+          ),
+        ),
       ],
     );
   }
 
+  void _searchSwithPedidoRefFunction(_) {
+    setState(() {
+      _pedidosAlteracoes = false;
+      _pedidosExecucao = false;
+      _ref = !_ref;
+    });
+    fetchMostRecente();
+  }
+
   Widget _searchSwitchDate() {
+    final fontSize = 12.0;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text('Data criado'),
+        Text(
+          'Data criado',
+          style: TextStyle(
+            fontSize: fontSize,
+          ),
+        ),
         Switch(
           activeColor: Colors.blue,
           value: _pedidosAtualizados,
-          onChanged: (value) {
-            setState(() {
-              _pedidosAtualizados = value;
-            });
-            fetchMostRecente();
+          onChanged: (_) {
+            _searchSwitchDateFunction(_);
+            Navigator.pop(context);
           },
         ),
-        const Text('Data atualizado'),
+        Text(
+          'Data atualizado',
+          style: TextStyle(
+            fontSize: fontSize,
+          ),
+        ),
       ],
     );
+  }
+
+  void _searchSwitchDateFunction(_) {
+    setState(() {
+      _pedidosAlteracoes = false;
+      _pedidosExecucao = false;
+      _pedidosAtualizados = !_pedidosAtualizados;
+    });
+    fetchMostRecente();
+  }
+
+  Widget _alteracoesDePedidos() {
+    final fontSize = 12.0;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'Alteracoes de Pedido',
+          style: TextStyle(
+            fontSize: fontSize,
+          ),
+        ),
+        Switch(
+          activeColor: Colors.blue,
+          value: _pedidosAlteracoes,
+          onChanged: (_) {
+            _alteracoesDePedidosFunction(_);
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+  }
+
+  void _alteracoesDePedidosFunction(_) {
+    setState(() {
+      _pedidosAlteracoes = !_pedidosAlteracoes;
+      _ref = false;
+      _pedidosAtualizados = false;
+      _pedidosExecucao = false;
+    });
+    fetchMostRecente();
+  }
+
+  Widget _pedidosEmExecucao() {
+    final fontSize = 12.0;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'Pedidos em Execução',
+          style: TextStyle(
+            fontSize: fontSize,
+          ),
+        ),
+        Switch(
+          activeColor: Colors.blue,
+          value: _pedidosExecucao,
+          onChanged: (_) {
+            _pedidosEmExecucaoFunction(_);
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+  }
+
+  void _pedidosEmExecucaoFunction(_) {
+    setState(() {
+      _pedidosExecucao = !_pedidosExecucao;
+
+      _ref = false;
+      _pedidosAtualizados = false;
+      _pedidosAlteracoes = false;
+    });
+    fetchMostRecente();
   }
 
   @override
@@ -552,6 +669,43 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     if (!_authStore!.isAuth) {
       return LoginScreen(
         showLoginMessage: true,
+      );
+    }
+
+    Widget _popupMenuButton() {
+      return PopupMenuButton(
+        onSelected: (value) {
+          if (value == 'paciente') {
+            _searchSwithPedidoRefFunction(null);
+          } else if (value == 'data criado') {
+            _searchSwitchDateFunction(null);
+          } else if (value == 'alteracoes') {
+            _alteracoesDePedidosFunction(null);
+          } else if (value == 'pedidos em execucao') {
+            _pedidosEmExecucaoFunction(null);
+          }
+        },
+        itemBuilder: (context) {
+          return <PopupMenuEntry<dynamic>>[
+            PopupMenuItem<dynamic>(
+              value: 'paciente',
+              child: _searchSwitchPedidoRef(),
+            ),
+            PopupMenuItem<dynamic>(
+              value: 'data criado',
+              child: _searchSwitchDate(),
+            ),
+            PopupMenuDivider(),
+            PopupMenuItem<dynamic>(
+              value: 'alteracoes',
+              child: _alteracoesDePedidos(),
+            ),
+            PopupMenuItem<dynamic>(
+              value: 'pedidos em execucao',
+              child: _pedidosEmExecucao(),
+            ),
+          ];
+        },
       );
     }
 
@@ -571,23 +725,13 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
             child: Column(
               children: <Widget>[
                 _header(),
-                _searchBox(),
-                if (isfetchPedidos)
-                  _loadingSpinder()
-                else
-                  Column(
-                    children: [
-                      if (_authStore!.roleId != 1)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            _searchSwitchPedidoRef(),
-                            _searchSwitchDate(),
-                          ],
-                        ),
-                      _dataTable(),
-                    ],
-                  ),
+                Row(
+                  children: [
+                    Expanded(child: _searchBox()),
+                    if (_authStore!.roleId != 1) _popupMenuButton(),
+                  ],
+                ),
+                if (isfetchPedidos) _loadingSpinder() else _dataTable(),
                 _buscarMaisPedidosBtn()
               ],
             ),
