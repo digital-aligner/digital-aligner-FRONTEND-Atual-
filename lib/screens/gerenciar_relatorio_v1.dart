@@ -491,8 +491,7 @@ class GerenciarRelatorioV1State extends State<GerenciarRelatorioV1> {
     }
     return Scaffold(
       appBar: SecondaryAppbar(),
-      // *BUG* Verify closing drawer automaticlly when under 1200
-      drawer: _screenSize!.width < 1200 ? MyDrawer() : null,
+      drawer: null,
       body: WillPopScope(
         onWillPop: () async {
           Navigator.pop(context, false);

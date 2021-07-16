@@ -2855,7 +2855,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       child: Scaffold(
         appBar: _buildAppbar(),
         // *BUG* Verify closing drawer automaticlly when under 1200
-        drawer: _screenSize!.width < 1200 ? MyDrawer() : null,
+        drawer: _screenSize!.width < 1200 && !_isEditarPedidoCheck()
+            ? MyDrawer()
+            : null,
         body: RawScrollbar(
           radius: Radius.circular(10),
           thumbColor: Colors.grey,

@@ -539,23 +539,29 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
                 title: Container(
                   width: 600,
                   height: 400,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Container(
-                          child: Text(
-                            (cadList[index]['nome'] ?? '') +
-                                ' ' +
-                                (cadList[index]['sobrenome'] ?? ''),
-                            style: TextStyle(
-                              fontSize: 35,
-                              color: Colors.black54,
+                  child: RawScrollbar(
+                    radius: Radius.circular(10),
+                    thumbColor: Colors.grey,
+                    thickness: 15,
+                    isAlwaysShown: true,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Container(
+                            child: Text(
+                              (cadList[index]['nome'] ?? '') +
+                                  ' ' +
+                                  (cadList[index]['sobrenome'] ?? ''),
+                              style: TextStyle(
+                                fontSize: 35,
+                                color: Colors.black54,
+                              ),
                             ),
                           ),
-                        ),
-                        const Divider(thickness: 1),
-                        _ui(index),
-                      ],
+                          const Divider(thickness: 1),
+                          _ui(index),
+                        ],
+                      ),
                     ),
                   ),
                 ),

@@ -185,6 +185,7 @@ class CadastroProvider with ChangeNotifier {
         ),
         headers: requestHeaders,
       );
+
       _cadastros = json.decode(response.body);
 
       return _cadastros;
@@ -194,7 +195,10 @@ class CadastroProvider with ChangeNotifier {
     }
   }
 
-  Future<List<dynamic>> fetchCadastrosPerm(int startPage) async {
+  Future<List<dynamic>> fetchCadastrosPerm(
+    int startPage,
+    bool cadastrosExterior,
+  ) async {
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
       'Accept': 'application/json',
@@ -220,13 +224,15 @@ class CadastroProvider with ChangeNotifier {
               '?queryString=' +
               _queryString +
               '&startPage=' +
-              startPage.toString(),
+              startPage.toString() +
+              '&cadastrosExterior=' +
+              cadastrosExterior.toString(),
         ),
         headers: requestHeaders,
       );
+      print(response.body);
       _cadastros = json.decode(response.body);
-      //Clearing query string
-      //_queryString = '';
+
       return _cadastros;
     } catch (error) {
       print(error);

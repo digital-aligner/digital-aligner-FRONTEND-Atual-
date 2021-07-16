@@ -9,6 +9,7 @@ import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/pedido_v1_
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/relatorio_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/uploader/model/FileModel.dart';
+import 'package:digital_aligner_app/screens/visualizar_modelos_v1.dart';
 import 'package:digital_aligner_app/screens/visualizar_relatorio_v1.dart';
 import 'package:digital_aligner_app/widgets/screen%20argument/screen_argument.dart';
 import 'package:easy_web_view2/easy_web_view2.dart';
@@ -1134,9 +1135,21 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: ElevatedButton(
             onPressed: () {
-              setState(() {
-                _modeloVisivel = !_modeloVisivel;
-              });
+              if (_screenSize!.width <= 1115) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VisualizarModelosV1(
+                      key1: key1,
+                      key2: key2,
+                    ),
+                  ),
+                );
+              } else {
+                setState(() {
+                  _modeloVisivel = !_modeloVisivel;
+                });
+              }
             },
             child: const Text('Visualizar modelos'),
           ),
@@ -1412,7 +1425,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                                   TextButton(
                             onPressed: followLink,
                             child: _relatorioView.relatorio!.url!.isNotEmpty
-                                ? Text(_relatorioView.relatorio!.url ?? '')
+                                ? Center(child: const Text('Baixar relatório'))
                                 : const Text('Vazio'),
                           ),
                         ),
@@ -1645,8 +1658,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
 
     return Scaffold(
       appBar: SecondaryAppbar(),
-      // *BUG* Verify closing drawer automaticlly when under 1200
-      drawer: _screenSize!.width < 1200 ? MyDrawer() : null,
+      drawer: null,
       body: RawScrollbar(
         radius: Radius.circular(10),
         thumbColor: Colors.grey,

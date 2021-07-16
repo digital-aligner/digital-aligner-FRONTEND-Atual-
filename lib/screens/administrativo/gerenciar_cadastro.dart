@@ -35,6 +35,8 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
   int mediaQuerySm = 576;
   int mediaQueryMd = 768;
 
+  bool _cadastrosExterior = false;
+
   void fetchDataHandler(bool value) {
     setState(() {
       fetchData = value;
@@ -133,57 +135,6 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
     );
   }
 
-  Widget _getHeaders(double width) {
-    return Row(
-      children: [
-        const SizedBox(width: 20),
-        if (width > mediaQuerySm)
-          Expanded(
-            child: const Text(
-              'Data',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
-              ),
-            ),
-          ),
-        Expanded(
-          child: const Text(
-            'Nome',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black54,
-            ),
-          ),
-        ),
-        if (width > mediaQuerySm)
-          Expanded(
-            child: const Text(
-              'CPF',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
-              ),
-            ),
-          ),
-        Expanded(
-          child: Text(
-            'Status',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black54,
-            ),
-          ),
-        ),
-        const SizedBox(width: 20),
-      ],
-    );
-  }
-
   void _searchBoxQuery(String value) {
     cadastroStore!.setQuery(value);
     cadastroStore!.clearCadastrosAndUpdate();
@@ -219,8 +170,6 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
       });
     }
   }
-
-  bool _cadastrosExterior = false;
 
   Widget _searchSwitchPedidoRef() {
     return Row(
@@ -264,7 +213,7 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
         isAlwaysShown: true,
         child: SingleChildScrollView(
           child: Container(
-            height: 1430,
+            height: 1100,
             padding: const EdgeInsets.symmetric(
               horizontal: 50,
             ),
@@ -306,9 +255,6 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
                       const SizedBox(height: 40),
                       _searchBox(sWidth),
                       _searchSwitchPedidoRef(),
-                      //TOP TEXT
-                      //_getHeaders(sWidth),
-                      //const SizedBox(height: 20),
                       if (cadastroStore!.getCadastros().isEmpty)
                         Center(
                           child: CircularProgressIndicator(
@@ -331,7 +277,6 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
                             fetchDataHandler: fetchDataHandler,
                           ),
                         ),
-
                       Flex(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,

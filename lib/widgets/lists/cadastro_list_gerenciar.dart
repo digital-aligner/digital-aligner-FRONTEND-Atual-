@@ -736,9 +736,11 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
       child: DataTable(
         showCheckboxColumn: false,
         columns: [
-          DataColumn(label: const Text('Data')),
+          if (_screenSize!.width > mediaQuerySm)
+            DataColumn(label: const Text('Data')),
           DataColumn(label: const Text('Nome')),
-          DataColumn(label: const Text('Cpf / Id')),
+          if (_screenSize!.width > mediaQueryMd)
+            DataColumn(label: const Text('Cpf / Id')),
           DataColumn(label: const Text('Status')),
         ],
         rows: _dataRows(),
@@ -780,13 +782,14 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
     var dateTime = DateTime.parse(cadList[position]['created_at']);
     var dateString = format.format(dateTime);
     return [
-      DataCell(Text(dateString)),
+      if (_screenSize!.width > mediaQuerySm) DataCell(Text(dateString)),
       DataCell(
         Text((cadList[position]['nome'] ?? '') +
             ' ' +
             (cadList[position]['sobrenome'] ?? '')),
       ),
-      DataCell(Text(_formatCpf(cadList[position]['username']))),
+      if (_screenSize!.width > mediaQueryMd)
+        DataCell(Text(_formatCpf(cadList[position]['username']))),
       DataCell(Text(cadList[position]['aprovacao_usuario']['status'])),
     ];
   }
@@ -804,6 +807,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
     cadastroStore = Provider.of<CadastroProvider>(context);
     cadList = cadastroStore.getCadastros();
     authStore = Provider.of<AuthProvider>(context);
+
     if (cadList.isEmpty) {
       return Container(
         child: Align(

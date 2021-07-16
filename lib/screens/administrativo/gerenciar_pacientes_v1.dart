@@ -52,6 +52,11 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   bool _pedidosAlteracoes = false;
   bool _pedidosExecucao = false;
 
+  //media queries
+  int _mqLg = 960;
+  int _mqMd = 678;
+  int _mqSm = 486;
+
   Widget _header() {
     return SizedBox(
       height: 100,
@@ -71,100 +76,102 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   Widget _optionsTextBtns(int position) {
     return Wrap(
       children: [
-        TextButton(
-          onPressed: () async {
-            ScaffoldMessenger.of(context).removeCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                duration: const Duration(milliseconds: 200),
-                content: Text(
-                  'Aguarde...',
-                  textAlign: TextAlign.center,
+        SizedBox(
+          height: 14,
+          width: 60,
+          child: TextButton(
+            onPressed: () async {
+              ScaffoldMessenger.of(context).removeCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  duration: const Duration(milliseconds: 200),
+                  content: Text(
+                    'Aguarde...',
+                    textAlign: TextAlign.center,
+                  ),
                 ),
+              );
+              await Future.delayed(Duration(milliseconds: 200));
+              Navigator.of(context)
+                  .pushNamed(
+                PedidoV1Screen.routeName,
+                arguments: ScreenArguments(
+                  title: 'Editar paciente',
+                  messageMap: {'isEditarPaciente': true},
+                  messageInt: position,
+                ),
+              )
+                  .then((_) {
+                fetchMostRecente();
+              });
+            },
+            child: const Text(
+              'editar',
+              style: const TextStyle(
+                fontSize: 12,
               ),
-            );
-            await Future.delayed(Duration(milliseconds: 200));
-            Navigator.of(context)
-                .pushNamed(
-              PedidoV1Screen.routeName,
-              arguments: ScreenArguments(
-                title: 'Editar paciente',
-                messageMap: {'isEditarPaciente': true},
-                messageInt: position,
-              ),
-            )
-                .then((_) {
-              fetchMostRecente();
-            });
-          },
-          child: const Text(
-            'editar',
-            style: const TextStyle(
-              fontSize: 12,
             ),
           ),
         ),
         if (_authStore!.role == 'Administrador' ||
             _authStore!.role == 'Gerente')
-          TextButton(
-            onPressed: () {
-              Navigator.of(context)
-                  .pushNamed(
-                GerenciarRelatorioV1.routeName,
-                arguments: ScreenArguments(
-                  title: 'Criar relatório',
-                  messageInt: position,
-                ),
-              )
-                  .then((value) async {
-                if (value != null) {
-                  fetchMostRecente();
+          SizedBox(
+            height: 14,
+            width: 100,
+            child: TextButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .pushNamed(
+                  GerenciarRelatorioV1.routeName,
+                  arguments: ScreenArguments(
+                    title: 'Criar relatório',
+                    messageInt: position,
+                  ),
+                )
+                    .then((value) async {
+                  if (value != null) {
+                    fetchMostRecente();
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(seconds: 2),
-                      content: Text(
-                        'Relatório criado',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  );
-                  // -------------------
-                  if (value == true) {
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 2),
-                        content: Text(
-                          'Relatório criado',
-                          textAlign: TextAlign.center,
+                    // -------------------
+                    if (value == true) {
+                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: const Duration(seconds: 2),
+                          content: Text(
+                            'Relatório criado',
+                            textAlign: TextAlign.center,
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    }
                   }
-                }
-              });
-            },
-            child: Text(
-              'Criar relatório',
-              style: const TextStyle(
-                fontSize: 12,
+                });
+              },
+              child: Text(
+                'Criar relatório',
+                style: const TextStyle(
+                  fontSize: 12,
+                ),
               ),
             ),
           ),
         if (_authStore!.role == 'Administrador' ||
             _authStore!.role == 'Gerente')
-          TextButton(
-            onPressed: () async {
-              bool result = await maisOpcoesPopup(position: position);
-              if (result) {
-                fetchMostRecente();
-              }
-            },
-            child: const Text(
-              'mais',
-              style: const TextStyle(
-                fontSize: 12,
+          SizedBox(
+            height: 14,
+            child: TextButton(
+              onPressed: () async {
+                bool result = await maisOpcoesPopup(position: position);
+                if (result) {
+                  fetchMostRecente();
+                }
+              },
+              child: const Text(
+                'mais',
+                style: const TextStyle(
+                  fontSize: 12,
+                ),
               ),
             ),
           ),
@@ -255,11 +262,13 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
           color: Colors.blue,
         ),
       ),*/
-      DataCell(Text(dateString)),
+      if (_screenSize!.width > _mqMd) DataCell(Text(dateString)),
       DataCell(Text('DA${p.id}')),
-      DataCell(Text(p.nomePaciente)),
-      DataCell(Text(p.statusPedido?.status ?? '')),
-      DataCell(Text(p.usuario!.nome + ' ' + p.usuario!.sobrenome)),
+      if (_screenSize!.width > _mqLg) DataCell(Text(p.nomePaciente)),
+      if (_screenSize!.width > _mqSm)
+        DataCell(Text(p.statusPedido?.status ?? '')),
+      if (_screenSize!.width > _mqLg)
+        DataCell(Text(p.usuario!.nome + ' ' + p.usuario!.sobrenome)),
       DataCell(_optionsTextBtns(position)),
     ];
   }
@@ -325,14 +334,17 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
         showCheckboxColumn: false,
         columns: [
           //DataColumn(label: const Text('Tipo')),
-          if (!_pedidosAtualizados)
+          if (!_pedidosAtualizados && _screenSize!.width > _mqMd)
             DataColumn(label: const Text('Data'))
-          else
+          else if (_screenSize!.width > _mqMd)
             DataColumn(label: const Text('Atualizado')),
           DataColumn(label: const Text('Pedido')),
-          DataColumn(label: const Text('Paciente')),
-          DataColumn(label: const Text('Status')),
-          DataColumn(label: const Text('Responsável')),
+          if (_screenSize!.width > _mqLg)
+            DataColumn(label: const Text('Paciente')),
+          if (_screenSize!.width > _mqSm)
+            DataColumn(label: const Text('Status')),
+          if (_screenSize!.width > _mqLg)
+            DataColumn(label: const Text('Responsável')),
           DataColumn(label: const Text('Opções')),
         ],
         rows: _dataRows(),

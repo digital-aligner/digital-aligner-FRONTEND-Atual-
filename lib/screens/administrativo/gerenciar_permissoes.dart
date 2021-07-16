@@ -36,6 +36,8 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
   int mediaQuerySm = 576;
   int mediaQueryMd = 768;
 
+  bool _cadastrosExterior = false;
+
   void fetchDataHandler(bool value) {
     setState(() {
       fetchData = value;
@@ -60,6 +62,26 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
     //fetchData before set state (fixes not updating bug)
     fetchData = true;
     cadastroStore!.clearCadastrosAndUpdate();
+  }
+
+  Widget _searchSwitchPedidoRef() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text('Cadastros Brasil'),
+        Switch(
+          activeColor: Colors.blue,
+          value: _cadastrosExterior,
+          onChanged: (value) {
+            setState(() {
+              _cadastrosExterior = value;
+            });
+            refreshPageFetchNewList();
+          },
+        ),
+        const Text('Cadastros Exterior'),
+      ],
+    );
   }
 
   Widget _searchBox(double width) {
@@ -139,57 +161,6 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
     cadastroStore!.clearCadastrosAndUpdate();
   }
 
-  Widget _getHeaders(double width) {
-    return Row(
-      children: [
-        const SizedBox(width: 20),
-        if (width > mediaQuerySm)
-          Expanded(
-            child: const Text(
-              'Data',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
-              ),
-            ),
-          ),
-        Expanded(
-          child: const Text(
-            'Nome',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black54,
-            ),
-          ),
-        ),
-        if (width > mediaQuerySm)
-          Expanded(
-            child: const Text(
-              'CPF / ID',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
-              ),
-            ),
-          ),
-        Expanded(
-          child: Text(
-            'Status',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black54,
-            ),
-          ),
-        ),
-        const SizedBox(width: 20),
-      ],
-    );
-  }
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -203,9 +174,8 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
     cadastroStore!.setToken(authStore!.token);
 
     if (fetchData) {
-      cadastroStore!.clearCadastros();
       cadastroStore!
-          .fetchCadastrosPerm(_startPage)
+          .fetchCadastrosPerm(_startPage, _cadastrosExterior)
           .then((List<dynamic> cadastros) {
         if (cadastros.length <= 0) {
           _blockForwardBtn = true;
@@ -244,7 +214,7 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
         isAlwaysShown: true,
         child: SingleChildScrollView(
           child: Container(
-            height: 1430,
+            height: 1100,
             padding: const EdgeInsets.symmetric(
               horizontal: 50,
             ),
@@ -262,9 +232,9 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
                         'Gerenciar Permissoes',
                         style: Theme.of(context).textTheme.headline1,
                       ),
-                      const SizedBox(height: 20),
                       const SizedBox(height: 40),
                       _searchBox(sWidth),
+                      _searchSwitchPedidoRef(),
                       if (cadastroStore!.getCadastros().isEmpty)
                         Center(
                           child: CircularProgressIndicator(
