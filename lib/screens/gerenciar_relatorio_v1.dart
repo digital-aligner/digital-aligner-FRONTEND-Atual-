@@ -36,6 +36,8 @@ class GerenciarRelatorioV1State extends State<GerenciarRelatorioV1> {
   bool firstRun = true;
   bool isFetchHistorico = true;
 
+  int _mediaQueryMd = 768;
+
   //route arguments
   ScreenArguments _args = ScreenArguments();
 
@@ -71,7 +73,7 @@ class GerenciarRelatorioV1State extends State<GerenciarRelatorioV1> {
     return Card(
       elevation: 10,
       child: SizedBox(
-        width: 300,
+        width: _screenSize!.width <= _mediaQueryMd ? double.infinity : 300,
         height: 300,
         child: Container(
           child: Column(
@@ -450,7 +452,7 @@ class GerenciarRelatorioV1State extends State<GerenciarRelatorioV1> {
         Card(
           child: Container(
             padding: EdgeInsets.all(20),
-            width: 600,
+            width: _screenSize!.width <= _mediaQueryMd ? double.infinity : 600,
             child: _form(),
           ),
         )
@@ -505,7 +507,9 @@ class GerenciarRelatorioV1State extends State<GerenciarRelatorioV1> {
           child: SingleChildScrollView(
             child: Container(
               height: _screenSize!.width < 1200 ? 1000 : 800,
-              padding: const EdgeInsets.symmetric(horizontal: 100),
+              padding: _screenSize!.width <= _mediaQueryMd
+                  ? const EdgeInsets.symmetric(horizontal: 0)
+                  : const EdgeInsets.symmetric(horizontal: 100),
               child: Column(
                 children: <Widget>[
                   _header(),

@@ -73,109 +73,291 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     return TextButton(onPressed: () {}, child: Text(' visualizar relatório'));
   }
 
-  Widget _optionsTextBtns(int position) {
+  Widget _optionsTextBtns2(int position) {
     return Wrap(
+      runSpacing: -13,
       children: [
-        SizedBox(
-          height: 14,
-          width: 60,
-          child: TextButton(
-            onPressed: () async {
-              ScaffoldMessenger.of(context).removeCurrentSnackBar();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  duration: const Duration(milliseconds: 200),
-                  content: Text(
-                    'Aguarde...',
-                    textAlign: TextAlign.center,
-                  ),
+        TextButton(
+          onPressed: () async {
+            ScaffoldMessenger.of(context).removeCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                duration: const Duration(milliseconds: 200),
+                content: Text(
+                  'Aguarde...',
+                  textAlign: TextAlign.center,
                 ),
-              );
-              await Future.delayed(Duration(milliseconds: 200));
-              Navigator.of(context)
-                  .pushNamed(
-                PedidoV1Screen.routeName,
-                arguments: ScreenArguments(
-                  title: 'Editar paciente',
-                  messageMap: {'isEditarPaciente': true},
-                  messageInt: position,
-                ),
-              )
-                  .then((_) {
-                fetchMostRecente();
-              });
-            },
-            child: const Text(
-              'editar',
-              style: const TextStyle(
-                fontSize: 12,
               ),
+            );
+            await Future.delayed(Duration(milliseconds: 200));
+            Navigator.of(context)
+                .pushNamed(
+              PedidoV1Screen.routeName,
+              arguments: ScreenArguments(
+                title: 'Editar paciente',
+                messageMap: {'isEditarPaciente': true},
+                messageInt: position,
+              ),
+            )
+                .then((_) {
+              fetchMostRecente();
+            });
+          },
+          child: const Text(
+            'editar',
+            style: const TextStyle(
+              fontSize: 12,
             ),
           ),
         ),
         if (_authStore!.role == 'Administrador' ||
             _authStore!.role == 'Gerente')
-          SizedBox(
-            height: 14,
-            width: 100,
-            child: TextButton(
-              onPressed: () {
-                Navigator.of(context)
-                    .pushNamed(
-                  GerenciarRelatorioV1.routeName,
-                  arguments: ScreenArguments(
-                    title: 'Criar relatório',
-                    messageInt: position,
-                  ),
-                )
-                    .then((value) async {
-                  if (value != null) {
-                    fetchMostRecente();
-
-                    // -------------------
-                    if (value == true) {
-                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          duration: const Duration(seconds: 2),
-                          content: Text(
-                            'Relatório criado',
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      );
-                    }
-                  }
-                });
-              },
-              child: Text(
-                'Criar relatório',
-                style: const TextStyle(
-                  fontSize: 12,
+          TextButton(
+            onPressed: () {
+              Navigator.of(context)
+                  .pushNamed(
+                GerenciarRelatorioV1.routeName,
+                arguments: ScreenArguments(
+                  title: 'Criar relatório',
+                  messageInt: position,
                 ),
+              )
+                  .then((value) async {
+                if (value != null) {
+                  fetchMostRecente();
+
+                  // -------------------
+                  if (value == true) {
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: const Duration(seconds: 2),
+                        content: Text(
+                          'Relatório criado',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
+                  }
+                }
+              });
+            },
+            child: const Text(
+              'Criar relatório',
+              style: const TextStyle(
+                fontSize: 12,
               ),
             ),
           ),
         if (_authStore!.role == 'Administrador' ||
             _authStore!.role == 'Gerente')
-          SizedBox(
-            height: 14,
-            child: TextButton(
-              onPressed: () async {
-                bool result = await maisOpcoesPopup(position: position);
-                if (result) {
-                  fetchMostRecente();
-                }
-              },
-              child: const Text(
-                'mais',
-                style: const TextStyle(
-                  fontSize: 12,
-                ),
+          TextButton(
+            onPressed: () async {
+              bool result = await maisOpcoesPopup(position: position);
+              if (result) {
+                fetchMostRecente();
+              }
+            },
+            child: const Text(
+              'mais',
+              style: const TextStyle(
+                fontSize: 12,
               ),
             ),
           ),
       ],
+    );
+  }
+
+  Widget _optionsTextBtns(int position) {
+    return Column(
+      children: [
+        TextButton(
+          onPressed: () async {
+            ScaffoldMessenger.of(context).removeCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                duration: const Duration(milliseconds: 200),
+                content: Text(
+                  'Aguarde...',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            );
+            await Future.delayed(Duration(milliseconds: 200));
+            Navigator.of(context)
+                .pushNamed(
+              PedidoV1Screen.routeName,
+              arguments: ScreenArguments(
+                title: 'Editar paciente',
+                messageMap: {'isEditarPaciente': true},
+                messageInt: position,
+              ),
+            )
+                .then((_) {
+              fetchMostRecente();
+            });
+          },
+          child: const Text(
+            'editar',
+            style: const TextStyle(
+              fontSize: 12,
+            ),
+          ),
+        ),
+        if (_authStore!.role == 'Administrador' ||
+            _authStore!.role == 'Gerente')
+          TextButton(
+            onPressed: () {
+              Navigator.of(context)
+                  .pushNamed(
+                GerenciarRelatorioV1.routeName,
+                arguments: ScreenArguments(
+                  title: 'Criar relatório',
+                  messageInt: position,
+                ),
+              )
+                  .then((value) async {
+                if (value != null) {
+                  fetchMostRecente();
+
+                  // -------------------
+                  if (value == true) {
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: const Duration(seconds: 2),
+                        content: Text(
+                          'Relatório criado',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
+                  }
+                }
+              });
+            },
+            child: const Text(
+              'Criar relatório',
+              style: const TextStyle(
+                fontSize: 12,
+              ),
+            ),
+          ),
+        if (_authStore!.role == 'Administrador' ||
+            _authStore!.role == 'Gerente')
+          TextButton(
+            onPressed: () async {
+              bool result = await maisOpcoesPopup(position: position);
+              if (result) {
+                fetchMostRecente();
+              }
+            },
+            child: const Text(
+              'mais',
+              style: const TextStyle(
+                fontSize: 12,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Future<void> _opcEditar(int position) async {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(milliseconds: 200),
+        content: Text(
+          'Aguarde...',
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+    await Future.delayed(Duration(milliseconds: 200));
+    Navigator.of(context)
+        .pushNamed(
+      PedidoV1Screen.routeName,
+      arguments: ScreenArguments(
+        title: 'Editar paciente',
+        messageMap: {'isEditarPaciente': true},
+        messageInt: position,
+      ),
+    )
+        .then((_) {
+      fetchMostRecente();
+    });
+  }
+
+  void _opcCriarRel(int position) {
+    Navigator.of(context)
+        .pushNamed(
+      GerenciarRelatorioV1.routeName,
+      arguments: ScreenArguments(
+        title: 'Criar relatório',
+        messageInt: position,
+      ),
+    )
+        .then((value) async {
+      if (value != null) {
+        fetchMostRecente();
+
+        // -------------------
+        if (value == true) {
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              duration: const Duration(seconds: 2),
+              content: Text(
+                'Relatório criado',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        }
+      }
+    });
+  }
+
+  Future<void> _opcMais(int position) async {
+    bool result = await maisOpcoesPopup(position: position);
+    if (result) {
+      fetchMostRecente();
+    }
+  }
+
+  Widget _popupMenuButton(int position) {
+    return PopupMenuButton(
+      onSelected: (value) async {
+        if (value == 'Editar') {
+          await _opcEditar(position);
+        } else if (value == 'Criar relatório') {
+          _opcCriarRel(position);
+        } else if (value == 'Mais') {
+          await _opcMais(position);
+        }
+      },
+      itemBuilder: (context) {
+        return <PopupMenuEntry<String>>[
+          PopupMenuItem<String>(
+            value: 'Editar',
+            child: const Text('Editar'),
+          ),
+          if (_authStore!.role == 'Administrador' ||
+              _authStore!.role == 'Gerente')
+            PopupMenuItem<String>(
+              value: 'Criar relatório',
+              child: const Text('Criar relatório'),
+            ),
+          if (_authStore!.role == 'Administrador' ||
+              _authStore!.role == 'Gerente')
+            PopupMenuItem<String>(
+              value: 'Mais',
+              child: const Text('Mais'),
+            ),
+        ];
+      },
     );
   }
 
@@ -269,7 +451,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
         DataCell(Text(p.statusPedido?.status ?? '')),
       if (_screenSize!.width > _mqLg)
         DataCell(Text(p.usuario!.nome + ' ' + p.usuario!.sobrenome)),
-      DataCell(_optionsTextBtns(position)),
+      DataCell(_popupMenuButton(position)),
     ];
   }
 

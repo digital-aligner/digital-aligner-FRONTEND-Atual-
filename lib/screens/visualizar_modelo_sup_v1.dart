@@ -2,15 +2,13 @@ import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
 import 'package:easy_web_view2/easy_web_view2.dart';
 import 'package:flutter/material.dart';
 
-class VisualizarModelosV1 extends StatelessWidget {
-  const VisualizarModelosV1({
+class VisualizarModeloSupV1 extends StatelessWidget {
+  const VisualizarModeloSupV1({
     Key? key,
     @required this.key1,
-    @required this.key2,
   }) : super(key: key);
 
   final key1;
-  final key2;
 
   Widget _webViewModeloSuperior() {
     return Column(
@@ -19,16 +17,6 @@ class VisualizarModelosV1 extends StatelessWidget {
         EasyWebView(
           key: key1,
           src: 'stl_viewer/modelo_sup_viewer.html',
-          isHtml: false, // Use Html syntax
-          isMarkdown: false, // Use markdown syntax
-          convertToWidgets: false, // Try to convert to flutter widgets
-          onLoaded: () => null,
-          width: 800,
-          height: 500,
-        ),
-        EasyWebView(
-          key: key2,
-          src: 'stl_viewer/modelo_inf_viewer.html',
           isHtml: false, // Use Html syntax
           isMarkdown: false, // Use markdown syntax
           convertToWidgets: false, // Try to convert to flutter widgets
@@ -52,9 +40,11 @@ class VisualizarModelosV1 extends StatelessWidget {
         isAlwaysShown: true,
         child: SingleChildScrollView(
           child: Container(
-            height: 1000,
+            height: 600,
             width: MediaQuery.of(context).size.width,
-            padding: const EdgeInsets.symmetric(horizontal: 50),
+            padding: MediaQuery.of(context).size.width < 758
+                ? EdgeInsets.symmetric(horizontal: 16)
+                : EdgeInsets.symmetric(horizontal: 50),
             child: _webViewModeloSuperior(),
           ),
         ),

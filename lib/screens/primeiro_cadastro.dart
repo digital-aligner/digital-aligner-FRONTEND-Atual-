@@ -480,6 +480,9 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                   if (value!.length == 0) {
                                     return 'Por favor insira seu email';
                                   }
+                                  if (value.contains(' ')) {
+                                    return 'Existem espaços em seu email';
+                                  }
                                   if (value != _emailConfirm) {
                                     return 'Emails não correspondem';
                                   }
@@ -545,6 +548,9 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 validator: (value) {
                                   if (value!.length == 0) {
                                     return 'Por favor insira sua senha';
+                                  }
+                                  if (value.contains(' ')) {
+                                    return 'Existem espaços em sua senha';
                                   }
                                   if (value.length < 6) {
                                     return 'A senha deve ter no mínimo 6 caracteres';
@@ -687,6 +693,9 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                   if (value!.length == 0) {
                                     return 'Por favor insira seu email';
                                   }
+                                  if (value.contains(' ')) {
+                                    return 'Existem espaços em seu email';
+                                  }
                                   if (value != _emailConfirm) {
                                     return 'Emails não correspondem';
                                   }
@@ -752,6 +761,9 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 validator: (value) {
                                   if (value!.length == 0) {
                                     return 'Por favor insira sua senha';
+                                  }
+                                  if (value.contains(' ')) {
+                                    return 'Existem espaços em sua senha';
                                   }
                                   if (value.length < 6) {
                                     return 'A senha deve ter no mínimo 6 caracteres';

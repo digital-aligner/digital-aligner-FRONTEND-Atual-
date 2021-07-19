@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:digital_aligner_app/appbar/MyDrawer.dart';
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
@@ -9,7 +8,8 @@ import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/pedido_v1_
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/relatorio_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/uploader/model/FileModel.dart';
-import 'package:digital_aligner_app/screens/visualizar_modelos_v1.dart';
+import 'package:digital_aligner_app/screens/visualizar_modelo_inf_v1.dart';
+import 'package:digital_aligner_app/screens/visualizar_modelo_sup_v1.dart';
 import 'package:digital_aligner_app/screens/visualizar_relatorio_v1.dart';
 import 'package:digital_aligner_app/widgets/screen%20argument/screen_argument.dart';
 import 'package:easy_web_view2/easy_web_view2.dart';
@@ -48,6 +48,9 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
   ValueKey key1 = ValueKey('1');
   ValueKey key2 = ValueKey('2');
   bool _modeloVisivel = false;
+
+  int _mediaQueryMd = 768;
+
   //route arguments
   ScreenArguments _args = ScreenArguments();
 
@@ -246,7 +249,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
       return Card(
         elevation: 10,
         child: SizedBox(
-          width: 300,
+          width: _screenSize!.width <= _mediaQueryMd ? double.infinity : 300,
           height: 100,
           child: Container(
             child: Row(
@@ -346,7 +349,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
         Card(
           child: Container(
             padding: EdgeInsets.all(20),
-            width: 600,
+            width: _screenSize!.width <= _mediaQueryMd ? double.infinity : 600,
             child: _helperBuilder(),
           ),
         )
@@ -417,7 +420,9 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             : Card(
                 elevation: 10,
                 child: Container(
-                  width: 300,
+                  width: _screenSize!.width <= _mediaQueryMd
+                      ? double.infinity
+                      : 300,
                   height: 300,
                   child: RawScrollbar(
                     radius: Radius.circular(10),
@@ -1131,29 +1136,55 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             ),*/
           ],
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          child: ElevatedButton(
-            onPressed: () {
-              if (_screenSize!.width <= 1115) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => VisualizarModelosV1(
-                      key1: key1,
-                      key2: key2,
-                    ),
-                  ),
-                );
-              } else {
+        if (_screenSize!.width > 1115)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: ElevatedButton(
+              onPressed: () {
                 setState(() {
                   _modeloVisivel = !_modeloVisivel;
                 });
-              }
-            },
-            child: const Text('Visualizar modelos'),
+              },
+              child: const Text('Visualizar modelos'),
+            ),
+          )
+        else
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Column(
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => VisualizarModeloSupV1(
+                          key1: key1,
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('Modelo Superior'),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => VisualizarModeloInfV1(
+                          key1: key2,
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('Modelo Inferior'),
+                ),
+              ],
+            ),
           ),
-        ),
         if (_modeloVisivel) _webViewModeloSuperior(),
       ],
     );
@@ -1667,7 +1698,9 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
         child: SingleChildScrollView(
           child: Container(
             height: _screenSize!.width < 768 ? 3000 : 2800,
-            padding: const EdgeInsets.symmetric(horizontal: 100),
+            padding: _screenSize!.width <= _mediaQueryMd
+                ? const EdgeInsets.symmetric(horizontal: 0)
+                : const EdgeInsets.symmetric(horizontal: 100),
             child: Column(
               children: <Widget>[
                 _header(),

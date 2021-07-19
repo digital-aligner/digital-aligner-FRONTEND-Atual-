@@ -183,6 +183,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   bool _isEditarPedido = false;
   int _isEditarPedidoPos = -1;
 
+  int _mediaQueryMd = 768;
+
   PedidoV1Model _mapFieldsToPedidoV1() {
     try {
       PedidoV1Model p = PedidoV1Model(
@@ -1168,11 +1170,12 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: SizedBox(
-        width: 720,
+        //width: 720,
+        width: 1060,
         child: GroupButton(
           selectedButtons: extracaoVirtualUiSelectedPos,
-          buttonHeight: 35,
-          buttonWidth: 35,
+          //buttonHeight: 35,
+          //buttonWidth: 35,
           selectedColor: Colors.blue,
           isRadio: false,
           spacing: 10,
@@ -1214,11 +1217,12 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: SizedBox(
-        width: 720,
+        //width: 720,
+        width: 1060,
         child: GroupButton(
           selectedButtons: naoMovimentarUiSelectedPos,
-          buttonHeight: 35,
-          buttonWidth: 35,
+          //buttonHeight: 35,
+          // buttonWidth: 35,
           selectedColor: Colors.blue,
           isRadio: false,
           spacing: 10,
@@ -1260,11 +1264,12 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: SizedBox(
-        width: 720,
+        //width: 720,
+        width: 1060,
         child: GroupButton(
           selectedButtons: naoColocarAttachUiSelectedPos,
-          buttonHeight: 35,
-          buttonWidth: 35,
+          //buttonHeight: 35,
+          // buttonWidth: 35,
           selectedColor: Colors.blue,
           isRadio: false,
           spacing: 10,
@@ -2866,7 +2871,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           child: SingleChildScrollView(
             child: Container(
               height: _calculateScreenHeight(),
-              padding: const EdgeInsets.symmetric(horizontal: 100),
+              padding: _screenSize!.width <= _mediaQueryMd
+                  ? const EdgeInsets.symmetric(horizontal: 8)
+                  : const EdgeInsets.symmetric(horizontal: 100),
               child: Column(
                 children: <Widget>[
                   _header(),
