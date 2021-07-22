@@ -39,6 +39,9 @@ class PedidoV1Model {
   String? updatedAt;
   Map<String, dynamic>? payload;
   int idPedOriginal;
+  //para alteracao de pedido
+  String? alteracaoTexto;
+  String? alteracaoData;
 
   PedidoV1Model({
     this.id = 0,
@@ -76,6 +79,8 @@ class PedidoV1Model {
     this.updatedAt = '',
     this.payload,
     this.idPedOriginal = 0,
+    this.alteracaoTexto,
+    this.alteracaoData,
   });
 
   factory PedidoV1Model.fromJson(Map<String, dynamic>? data) {
@@ -150,6 +155,8 @@ class PedidoV1Model {
       createdAt: data['created_at'],
       updatedAt: data['updated_at'],
       idPedOriginal: data['id_ped_original'] ?? 0,
+      alteracaoTexto: data['alteracao_texto'] ?? '',
+      alteracaoData: data['alteracao_data'] ?? '',
     );
   }
 

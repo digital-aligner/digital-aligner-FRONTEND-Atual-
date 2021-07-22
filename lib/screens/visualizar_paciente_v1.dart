@@ -1578,7 +1578,10 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     HistoricoPacV1 h = HistoricoPacV1(
       informacao: _solicitarAlteracao,
       pedido: _getPedido(),
-      relatorio: RelatorioV1Model(id: _relatorioView.id, pedido: _getPedido()),
+      relatorio: RelatorioV1Model(
+        id: _relatorioView.id,
+        pedido: _relatorioView.pedido,
+      ),
     );
     try {
       var _response = await http.post(
@@ -1630,7 +1633,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                   return value == null || value.isEmpty ? 'Campo vazio' : null;
                 },
                 maxLines: 30,
-                maxLength: 300,
+                maxLength: 2000,
               ),
             ),
             actions: [

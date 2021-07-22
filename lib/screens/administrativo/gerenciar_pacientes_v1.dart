@@ -52,6 +52,8 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   bool _pedidosAlteracoes = false;
   bool _pedidosExecucao = false;
 
+  bool _showAlteracao = false;
+  String _showAlteracaoText = '';
   //media queries
   int _mqLg = 960;
   int _mqMd = 678;
@@ -327,12 +329,25 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     }
   }
 
+  bool _isEnabledEdit(int position) {
+    try {
+      if (_pedidoStore!.getPedido(position: position).statusPedido!.id == 6)
+        return false;
+
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+
   Widget _popupMenuButton(int position) {
     return PopupMenuButton(
       onSelected: (value) async {
         if (value == 'Editar') {
+          _clearAlteracaoUi();
           await _opcEditar(position);
         } else if (value == 'Criar relatório') {
+          _clearAlteracaoUi();
           _opcCriarRel(position);
         } else if (value == 'Mais') {
           await _opcMais(position);
@@ -341,6 +356,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
       itemBuilder: (context) {
         return <PopupMenuEntry<String>>[
           PopupMenuItem<String>(
+            enabled: _isEnabledEdit(position),
             value: 'Editar',
             child: const Text('Editar'),
           ),
@@ -361,7 +377,17 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     );
   }
 
+  void _clearAlteracaoUi() {
+    if (_pedidosAlteracoes && _showAlteracao) {
+      setState(() {
+        _showAlteracaoText = '';
+        _showAlteracao = false;
+      });
+    }
+  }
+
   Future<bool> _deletarPedido(int position) async {
+    _clearAlteracaoUi();
     //get current pedido from position
     var p = _pedidoStore!.getPedido(position: position);
     try {
@@ -429,7 +455,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     PedidoV1Model p = _pedidoStore!.getPedido(position: position);
     var format = DateFormat.yMd('pt');
     var dateTime;
-    if (!_pedidosAtualizados)
+    if (!_pedidosAtualizados && !_pedidosExecucao)
       dateTime = DateTime.parse(p.createdAt);
     else
       dateTime = DateTime.parse(p.updatedAt ?? '');
@@ -453,6 +479,54 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
         DataCell(Text(p.usuario!.nome + ' ' + p.usuario!.sobrenome)),
       DataCell(_popupMenuButton(position)),
     ];
+  }
+
+  List<DataCell> _dataCellsStatusAlteracao({int position = 0}) {
+    PedidoV1Model p = _pedidoStore!.getPedido(position: position);
+    var format = DateFormat.yMd('pt');
+    DateTime dateTime;
+    String dateString = '';
+    if (_pedidosAlteracoes &&
+        p.alteracaoData != null &&
+        p.alteracaoData!.isNotEmpty) {
+      dateTime = DateTime.parse(p.alteracaoData ?? '');
+      dateString = format.format(dateTime);
+    }
+
+    return [
+      /*
+      DataCell(
+        const Icon(
+          Icons.circle,
+          color: Colors.blue,
+        ),
+      ),*/
+      if (_screenSize!.width > _mqMd) DataCell(Text(dateString)),
+      DataCell(Text('DA${p.id}')),
+      if (_screenSize!.width > _mqLg) DataCell(Text(p.nomePaciente)),
+      if (_screenSize!.width > _mqLg)
+        DataCell(Text(p.usuario!.nome + ' ' + p.usuario!.sobrenome)),
+      if (_screenSize!.width > _mqSm)
+        DataCell(
+          IconButton(
+            icon: const Icon(Icons.visibility),
+            onPressed: () {
+              setState(() {
+                _showAlteracaoText = p.alteracaoTexto ?? '';
+                _showAlteracao = true;
+              });
+            },
+          ),
+        ),
+      DataCell(_popupMenuButton(position)),
+    ];
+  }
+
+  List<DataCell> _mapRowToCell({int position = 0}) {
+    if (_pedidosAlteracoes)
+      return _dataCellsStatusAlteracao(position: position);
+    else
+      return _dataCells(position: position);
   }
 
   List<DataRow> _dataRows() {
@@ -490,7 +564,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
               )
                   .then((value) async {
                 selectedListItem[i] = false;
-
+                _clearAlteracaoUi();
                 fetchMostRecente();
                 /*
                 setState(() {
@@ -502,7 +576,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
             }
           },
           selected: selectedListItem[i],
-          cells: _dataCells(position: i),
+          cells: _mapRowToCell(position: i),
         ),
       );
     }
@@ -532,6 +606,38 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
         rows: _dataRows(),
       ),
     );
+  }
+
+  Widget _dataTableAlteracao() {
+    return SizedBox(
+      width: _screenSize!.width,
+      child: DataTable(
+        showCheckboxColumn: false,
+        columns: [
+          //DataColumn(label: const Text('Tipo')),
+          if (_screenSize!.width > _mqMd)
+            DataColumn(label: const Text('Data'))
+          else if (_screenSize!.width > _mqMd)
+            DataColumn(label: const Text('Atualizado')),
+          DataColumn(label: const Text('Pedido')),
+          if (_screenSize!.width > _mqLg)
+            DataColumn(label: const Text('Paciente')),
+          if (_screenSize!.width > _mqLg)
+            DataColumn(label: const Text('Responsável')),
+          if (_screenSize!.width > _mqSm)
+            DataColumn(label: const Text('alteração')),
+          DataColumn(label: const Text('Opções')),
+        ],
+        rows: _dataRows(),
+      ),
+    );
+  }
+
+  Widget _mapDataTableToUi() {
+    if (_pedidosAlteracoes)
+      return _dataTableAlteracao();
+    else
+      return _dataTable();
   }
 
   Widget _buscarMaisPedidosBtn() {
@@ -614,6 +720,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
           pageQuant = 10;
           const duration = Duration(milliseconds: 500);
           if (searchOnStoppedTyping != null) {
+            _clearAlteracaoUi();
             setState(() {
               searchOnStoppedTyping!.cancel();
             });
@@ -868,6 +975,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
 
     Widget _popupMenuButton() {
       return PopupMenuButton(
+        enabled: !isfetchPedidos,
         onSelected: (value) {
           if (value == 'paciente') {
             _searchSwithPedidoRefFunction(null);
@@ -913,22 +1021,50 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
         thickness: 15,
         isAlwaysShown: true,
         child: SingleChildScrollView(
-          child: Container(
-            height: pageHeight,
-            padding: const EdgeInsets.symmetric(horizontal: 50),
-            child: Column(
-              children: <Widget>[
-                _header(),
-                Row(
-                  children: [
-                    Expanded(child: _searchBox()),
-                    if (_authStore!.roleId != 1) _popupMenuButton(),
+          child: Stack(
+            children: [
+              Container(
+                height: pageHeight,
+                padding: const EdgeInsets.symmetric(horizontal: 50),
+                child: Column(
+                  children: <Widget>[
+                    _header(),
+                    Row(
+                      children: [
+                        Expanded(child: _searchBox()),
+                        if (_authStore!.roleId != 1) _popupMenuButton(),
+                      ],
+                    ),
+                    if (isfetchPedidos)
+                      _loadingSpinder()
+                    else
+                      _mapDataTableToUi(),
+                    _buscarMaisPedidosBtn()
                   ],
                 ),
-                if (isfetchPedidos) _loadingSpinder() else _dataTable(),
-                _buscarMaisPedidosBtn()
-              ],
-            ),
+              ),
+              if (_showAlteracao && _pedidosAlteracoes)
+                Card(
+                  elevation: 10,
+                  child: Container(
+                    padding: const EdgeInsets.all(16.0),
+                    width: 400,
+                    child: Column(
+                      children: <Widget>[
+                        IconButton(
+                          icon: Icon(Icons.close),
+                          onPressed: () {
+                            setState(() {
+                              _showAlteracao = !_showAlteracao;
+                            });
+                          },
+                        ),
+                        Text(_showAlteracaoText),
+                      ],
+                    ),
+                  ),
+                )
+            ],
           ),
         ),
       ),
