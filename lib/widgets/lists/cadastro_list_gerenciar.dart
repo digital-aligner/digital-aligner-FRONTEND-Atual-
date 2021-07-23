@@ -604,7 +604,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                     height: 50,
                     child: SwitchListTile(
                         activeColor: Colors.blue,
-                        title: const Text('Representante?'),
+                        title: const Text('Representante'),
                         value: cadList[index]['is_representante'] ?? false,
                         onChanged: (bool value) {
                           cadastroStore

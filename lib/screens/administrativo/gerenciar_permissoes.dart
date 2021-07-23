@@ -218,21 +218,15 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
             padding: const EdgeInsets.symmetric(
               horizontal: 50,
             ),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [Colors.white, Color(0xFFdbdbdb)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter),
-            ),
             child: authStore!.role != 'Credenciado'
                 ? Column(
                     children: [
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 35),
                       Text(
                         'Gerenciar Permissoes',
                         style: Theme.of(context).textTheme.headline1,
                       ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 20),
                       _searchBox(sWidth),
                       _searchSwitchPedidoRef(),
                       if (cadastroStore!.getCadastros().isEmpty)
@@ -282,8 +276,14 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
                                     }
                                     cadastroStore!.clearCadastrosAndUpdate();
                                   },
-                            icon: const Icon(Icons.arrow_back),
-                            label: const Text('Anterior'),
+                            icon: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.white,
+                            ),
+                            label: const Text(
+                              'Anterior',
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
                           if (sWidth > mediaQuerySm)
                             const SizedBox(width: 200)
@@ -301,8 +301,12 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
                                     });
                                     cadastroStore!.clearCadastrosAndUpdate();
                                   },
-                            icon: const Icon(Icons.arrow_forward),
-                            label: const Text('Próximo'),
+                            icon: const Icon(Icons.arrow_forward,
+                                color: Colors.white),
+                            label: const Text(
+                              'Próximo',
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
                         ],
                       ),

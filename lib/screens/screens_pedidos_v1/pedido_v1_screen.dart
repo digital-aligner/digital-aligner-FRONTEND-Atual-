@@ -4,6 +4,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:digital_aligner_app/appbar/MyAppBar.dart';
 import 'package:digital_aligner_app/appbar/MyDrawer.dart';
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
+import 'package:digital_aligner_app/default_colors.dart';
 
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
@@ -365,7 +366,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           Flexible(
             fit: FlexFit.loose,
             child: RadioListTile<String>(
-              activeColor: Colors.blue,
+              activeColor: DefaultColors.digitalAlignBlue,
               title: const Text('Ambos os arcos'),
               value: 'Ambos os arcos',
               groupValue: _tratarContr.text,
@@ -379,7 +380,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           Flexible(
             fit: FlexFit.loose,
             child: RadioListTile<String>(
-              activeColor: Colors.blue,
+              activeColor: DefaultColors.digitalAlignBlue,
               title: const Text('Apenas o superior'),
               value: 'Apenas o superior',
               groupValue: _tratarContr.text,
@@ -393,7 +394,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           Flexible(
             fit: FlexFit.loose,
             child: RadioListTile<String>(
-              activeColor: Colors.blue,
+              activeColor: DefaultColors.digitalAlignBlue,
               title: const Text('Apenas o inferior'),
               value: 'Apenas o inferior',
               groupValue: _tratarContr.text,
@@ -491,7 +492,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             ),
           ),
           RadioListTile<String>(
-            activeColor: Colors.blue,
+            activeColor: DefaultColors.digitalAlignBlue,
             title: const Text('Manter'),
             value: 'Manter',
             groupValue: _linhaMediaSupContr.text,
@@ -512,7 +513,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               SizedBox(
                 width: 250,
                 child: RadioListTile<String>(
-                  activeColor: Colors.blue,
+                  activeColor: DefaultColors.digitalAlignBlue,
                   title: const Text('Mover para direita'),
                   value: 'Mover para direita',
                   groupValue: _linhaMediaSupContr.text,
@@ -566,7 +567,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               SizedBox(
                 width: 250,
                 child: RadioListTile<String>(
-                  activeColor: Colors.blue,
+                  activeColor: DefaultColors.digitalAlignBlue,
                   title: const Text('Mover para esquerda'),
                   value: 'Mover para esquerda',
                   groupValue: _linhaMediaSupContr.text,
@@ -631,7 +632,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             ),
           ),
           RadioListTile<String>(
-            activeColor: Colors.blue,
+            activeColor: DefaultColors.digitalAlignBlue,
             title: const Text('Manter'),
             value: 'Manter',
             groupValue: _linhaMediaInfContr.text,
@@ -650,7 +651,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               SizedBox(
                 width: 250,
                 child: RadioListTile<String>(
-                  activeColor: Colors.blue,
+                  activeColor: DefaultColors.digitalAlignBlue,
                   title: const Text('Mover para direita'),
                   value: 'Mover para direita',
                   groupValue: _linhaMediaInfContr.text,
@@ -702,7 +703,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               SizedBox(
                 width: 200,
                 child: RadioListTile<String>(
-                  activeColor: Colors.blue,
+                  activeColor: DefaultColors.digitalAlignBlue,
                   title: const Text('Mover para esquerda'),
                   value: 'Mover para esquerda',
                   groupValue: _linhaMediaInfContr.text,
@@ -766,7 +767,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             ),
           ),
           RadioListTile<String>(
-            activeColor: Colors.blue,
+            activeColor: DefaultColors.digitalAlignBlue,
             title: const Text('Manter'),
             value: 'Manter',
             groupValue: _overJetContr.text,
@@ -777,7 +778,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             },
           ),
           RadioListTile<String>(
-            activeColor: Colors.blue,
+            activeColor: DefaultColors.digitalAlignBlue,
             title: const Text('Melhorar'),
             value: 'Melhorar',
             groupValue: _overJetContr.text,
@@ -788,7 +789,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             },
           ),
           RadioListTile<String>(
-            activeColor: Colors.blue,
+            activeColor: DefaultColors.digitalAlignBlue,
             title: const Text('Corrigir'),
             value: 'Corrigir',
             groupValue: _overJetContr.text,
@@ -815,7 +816,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             ),
           ),
           RadioListTile<String>(
-            activeColor: Colors.blue,
+            activeColor: DefaultColors.digitalAlignBlue,
             title: const Text('Manter'),
             value: 'Manter',
             groupValue: _overbiteContr.text,
@@ -835,7 +836,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               SizedBox(
                 width: 250,
                 child: RadioListTile<String>(
-                  activeColor: Colors.blue,
+                  activeColor: DefaultColors.digitalAlignBlue,
                   title: const Text('Intruir anterior sup'),
                   value: 'Intruir anterior sup',
                   groupValue: _overbiteContr.text,
@@ -889,7 +890,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               SizedBox(
                 width: 250,
                 child: RadioListTile<String>(
-                  activeColor: Colors.blue,
+                  activeColor: DefaultColors.digitalAlignBlue,
                   title: const Text('Intruir anterior inf'),
                   value: 'Intruir anterior inf',
                   groupValue: _overbiteContr.text,
@@ -943,7 +944,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               SizedBox(
                 width: 250,
                 child: RadioListTile<String>(
-                  activeColor: Colors.blue,
+                  activeColor: DefaultColors.digitalAlignBlue,
                   title: const Text('Extruir posterior sup'),
                   value: 'Extruir posterior sup',
                   groupValue: _overbiteContr.text,
@@ -997,7 +998,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               SizedBox(
                 width: 250,
                 child: RadioListTile<String>(
-                  activeColor: Colors.blue,
+                  activeColor: DefaultColors.digitalAlignBlue,
                   title: const Text('Extruir posterior inf'),
                   value: 'Extruir posterior inf',
                   groupValue: _overbiteContr.text,
@@ -1084,7 +1085,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           ),
           GroupButton(
             selectedButtons: resApinSupUiSelectedPos,
-            selectedColor: Colors.blue,
+            selectedColor: DefaultColors.digitalAlignBlue,
             isRadio: false,
             spacing: 10,
             onSelected: (index, isSelected) {
@@ -1128,7 +1129,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           ),
           GroupButton(
             selectedButtons: resApinInfUiSelectedPos,
-            selectedColor: Colors.blue,
+            selectedColor: DefaultColors.digitalAlignBlue,
             isRadio: false,
             spacing: 10,
             onSelected: (index, isSelected) {
@@ -1176,7 +1177,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           selectedButtons: extracaoVirtualUiSelectedPos,
           //buttonHeight: 35,
           //buttonWidth: 35,
-          selectedColor: Colors.blue,
+          selectedColor: DefaultColors.digitalAlignBlue,
           isRadio: false,
           spacing: 10,
           onSelected: (index, isSelected) {
@@ -1223,7 +1224,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           selectedButtons: naoMovimentarUiSelectedPos,
           //buttonHeight: 35,
           // buttonWidth: 35,
-          selectedColor: Colors.blue,
+          selectedColor: DefaultColors.digitalAlignBlue,
           isRadio: false,
           spacing: 10,
           onSelected: (index, isSelected) {
@@ -1270,7 +1271,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           selectedButtons: naoColocarAttachUiSelectedPos,
           //buttonHeight: 35,
           // buttonWidth: 35,
-          selectedColor: Colors.blue,
+          selectedColor: DefaultColors.digitalAlignBlue,
           isRadio: false,
           spacing: 10,
           onSelected: (index, isSelected) {
@@ -1317,7 +1318,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             width: 500,
             child: GroupButton(
               selectedButtons: [_opcAceitoDipSelected],
-              selectedColor: Colors.blue,
+              selectedColor: DefaultColors.digitalAlignBlue,
               isRadio: false,
               spacing: 10,
               onSelected: (index, isSelected) {
@@ -1339,7 +1340,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               children: [
                 GroupButton(
                   selectedButtons: [_opcRecorteElasticoSelected],
-                  selectedColor: Colors.blue,
+                  selectedColor: DefaultColors.digitalAlignBlue,
                   isRadio: false,
                   spacing: 10,
                   onSelected: (index, isSelected) {
@@ -1391,7 +1392,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               children: [
                 GroupButton(
                   selectedButtons: [_opcRecorteBotaoSelected],
-                  selectedColor: Colors.blue,
+                  selectedColor: DefaultColors.digitalAlignBlue,
                   isRadio: false,
                   spacing: 10,
                   onSelected: (index, isSelected) {
@@ -1438,12 +1439,12 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           ),
           const SizedBox(height: 20),
           SizedBox(
-            width: 500,
+            width: 510,
             child: Wrap(
               children: [
                 GroupButton(
                   selectedButtons: [_opcBracoForcaSelected],
-                  selectedColor: Colors.blue,
+                  selectedColor: DefaultColors.digitalAlignBlue,
                   isRadio: false,
                   spacing: 10,
                   onSelected: (index, isSelected) {
@@ -1523,7 +1524,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         child: Opacity(
           opacity: opac,
           child: GroupButton(
-            selectedColor: Colors.blue,
+            selectedColor: DefaultColors.digitalAlignBlue,
             selectedButton: modeloEmGesso ? 1 : 0,
             isRadio: true,
             spacing: 10,
@@ -2437,7 +2438,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: GroupButton(
-        selectedColor: Colors.blue,
+        selectedColor: DefaultColors.digitalAlignBlue,
         isRadio: false,
         spacing: 10,
         onSelected: (index, isSelected) {
@@ -2459,7 +2460,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       children: [
         const Icon(
           Icons.check_circle,
-          color: Colors.blue,
+          color: DefaultColors.digitalAlignBlue,
         ),
         const Text(
             ' Taxa de Planejamento: Estou ciente que caso o planejamento não seja aprovado em até 60 dias, será cobrado o valor de R\$ 350,00'),

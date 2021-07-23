@@ -29,16 +29,15 @@ class _MyDrawerState extends State<MyDrawer> {
         child: Column(
           children: [
             AppBar(
-              backgroundColor: Colors.lightBlue[700],
               title: Padding(
                 padding: const EdgeInsets.fromLTRB(54, 0, 0, 0),
-                child: Text(
-                  'Digital Aligner',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontFamily: 'BigNoodleTitling',
-                    color: Colors.white,
-                  ),
+                child: Column(
+                  children: [
+                    Image.asset(
+                      'logos/da-logo-branco.png',
+                      height: 35,
+                    ),
+                  ],
                 ),
               ),
               automaticallyImplyLeading: false,
@@ -49,8 +48,7 @@ class _MyDrawerState extends State<MyDrawer> {
               title: Text(
                 'Olá, ${authStore.name}',
                 style: const TextStyle(
-                  fontSize: 20,
-                  fontFamily: 'BigNoodleTitling',
+                  fontFamily: 'Houschka',
                 ),
               ),
               onTap: () {
@@ -81,8 +79,7 @@ class _MyDrawerState extends State<MyDrawer> {
                               const Text(
                                 'Administrativo',
                                 style: TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: 'BigNoodleTitling',
+                                  fontFamily: 'Houschka',
                                 ),
                               ),
                             ],
@@ -139,8 +136,7 @@ class _MyDrawerState extends State<MyDrawer> {
                               child: const Text(
                                 'Gerenciar Cadastros',
                                 style: const TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: 'BigNoodleTitling',
+                                  fontFamily: 'Houschka',
                                 ),
                               ),
                               value: 'Gerenciar Cadastros',
@@ -150,8 +146,7 @@ class _MyDrawerState extends State<MyDrawer> {
                                 child: const Text(
                                   'Gerenciar Permissões',
                                   style: const TextStyle(
-                                    fontSize: 20,
-                                    fontFamily: 'BigNoodleTitling',
+                                    fontFamily: 'Houschka',
                                   ),
                                 ),
                                 value: 'Gerenciar Permissões',
@@ -160,8 +155,7 @@ class _MyDrawerState extends State<MyDrawer> {
                               child: const Text(
                                 'Gerenciar Pacientes',
                                 style: const TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: 'BigNoodleTitling',
+                                  fontFamily: 'Houschka',
                                 ),
                               ),
                               value: 'Gerenciar Pacientes',
@@ -179,8 +173,7 @@ class _MyDrawerState extends State<MyDrawer> {
                 title: const Text(
                   'Meus Pacientes',
                   style: TextStyle(
-                    fontSize: 20,
-                    fontFamily: 'BigNoodleTitling',
+                    fontFamily: 'Houschka',
                   ),
                 ),
                 onTap: () {
@@ -200,8 +193,7 @@ class _MyDrawerState extends State<MyDrawer> {
                 title: const Text(
                   'Novo Paciente',
                   style: TextStyle(
-                    fontSize: 20,
-                    fontFamily: 'BigNoodleTitling',
+                    fontFamily: 'Houschka',
                   ),
                 ),
                 onTap: () {
@@ -222,8 +214,7 @@ class _MyDrawerState extends State<MyDrawer> {
               title: const Text(
                 'Mídia',
                 style: TextStyle(
-                  fontSize: 20,
-                  fontFamily: 'BigNoodleTitling',
+                  fontFamily: 'Houschka',
                 ),
               ),
               onTap: () {},
@@ -234,8 +225,7 @@ class _MyDrawerState extends State<MyDrawer> {
               title: const Text(
                 'Sair',
                 style: TextStyle(
-                  fontSize: 20,
-                  fontFamily: 'BigNoodleTitling',
+                  fontFamily: 'Houschka',
                 ),
               ),
               onTap: () {
@@ -255,8 +245,7 @@ class _MyDrawerState extends State<MyDrawer> {
               title: const Text(
                 'Whatsapp',
                 style: TextStyle(
-                  fontSize: 20,
-                  fontFamily: 'BigNoodleTitling',
+                  fontFamily: 'Houschka',
                 ),
               ),
               onTap: () {},
@@ -267,8 +256,7 @@ class _MyDrawerState extends State<MyDrawer> {
               title: const Text(
                 'Atendimento',
                 style: TextStyle(
-                  fontSize: 20,
-                  fontFamily: 'BigNoodleTitling',
+                  fontFamily: 'Houschka',
                 ),
               ),
               onTap: () {},
@@ -279,8 +267,7 @@ class _MyDrawerState extends State<MyDrawer> {
               title: const Text(
                 'Email',
                 style: TextStyle(
-                  fontSize: 20,
-                  fontFamily: 'BigNoodleTitling',
+                  fontFamily: 'Houschka',
                 ),
               ),
               onTap: () {},

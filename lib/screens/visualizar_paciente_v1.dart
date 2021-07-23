@@ -405,7 +405,11 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
         return Icon(Icons.check_circle);
       }
     }
-    return Icon(Icons.donut_large_rounded);
+    return Image.asset(
+      'logos/marca_cinza.png',
+      height: 25,
+    );
+    //return Icon(Icons.donut_large_rounded);
   }
 
   Widget _displayHistorico() {

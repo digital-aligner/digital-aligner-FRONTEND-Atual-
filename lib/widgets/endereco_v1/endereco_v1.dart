@@ -120,7 +120,7 @@ class _EnderecoState extends State<Endereco> {
           });
         },
         child: const Text(
-          'NOVO ENDERECO',
+          'Novo endereço',
           style: const TextStyle(
             color: Colors.white,
           ),
@@ -162,13 +162,13 @@ class _EnderecoState extends State<Endereco> {
               },
         child: sendingEndereco
             ? const Text(
-                'AGUARDE...',
+                'Aguarde...',
                 style: const TextStyle(
                   color: Colors.white,
                 ),
               )
             : const Text(
-                'ENVIAR ENDEREÇO',
+                'Enviar endereço',
                 style: const TextStyle(
                   color: Colors.white,
                 ),
@@ -391,7 +391,7 @@ class _EnderecoState extends State<Endereco> {
       onFind: (string) => _fetchUserEndereco(),
       itemAsString: (EnderecoModel e) => e.endereco,
       mode: Mode.MENU,
-      label: 'Selecione endereço: *',
+      label: 'Selecione endereço',
       onChanged: (EnderecoModel? selectedEnd) {
         _endSelecionadoController.text = selectedEnd!.endereco;
         setState(() {
@@ -429,8 +429,8 @@ class _EnderecoState extends State<Endereco> {
         },
         decoration: const InputDecoration(
           counterText: '',
-          hintText: 'Endereço: *',
-          labelText: 'Endereço: *',
+          hintText: 'Endereço',
+          labelText: 'Endereço',
           border: const OutlineInputBorder(),
         ),
       ),
@@ -466,8 +466,8 @@ class _EnderecoState extends State<Endereco> {
                 ],
                 decoration: InputDecoration(
                   counterText: '',
-                  labelText: 'Número: *',
-                  hintText: 'Número: *',
+                  labelText: 'Número',
+                  hintText: 'Número',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -492,8 +492,8 @@ class _EnderecoState extends State<Endereco> {
                 },
                 decoration: InputDecoration(
                   counterText: '',
-                  labelText: 'Complemento: *',
-                  hintText: 'Complemento: *',
+                  labelText: 'Complemento',
+                  hintText: 'Complemento',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -522,8 +522,8 @@ class _EnderecoState extends State<Endereco> {
         },
         decoration: InputDecoration(
           counterText: '',
-          labelText: 'Bairro: *',
-          hintText: 'Bairro: *',
+          labelText: 'Bairro',
+          hintText: 'Bairro',
           border: OutlineInputBorder(),
         ),
       ),
@@ -553,8 +553,8 @@ class _EnderecoState extends State<Endereco> {
         decoration: InputDecoration(
           //To hide cep length num
           counterText: '',
-          labelText: 'CEP: *',
-          hintText: 'CEP: *',
+          labelText: 'CEP',
+          hintText: 'CEP',
           border: OutlineInputBorder(),
         ),
       ),
@@ -597,8 +597,8 @@ class _EnderecoState extends State<Endereco> {
         mode: Mode.MENU,
         showSearchBox: true,
         showSelectedItem: true,
-        label: 'País: *',
-        hint: 'País: *',
+        label: 'País',
+        hint: 'País',
         onChanged: (value) {
           //clear to force user select new uf and city
           _ufController.text = '';
@@ -620,7 +620,6 @@ class _EnderecoState extends State<Endereco> {
           //Uf
           Expanded(
             child: Container(
-              height: 80,
               child: DropdownSearch<String>(
                 dropdownBuilder: (buildContext, string, string2) {
                   return Text(_ufController.text);
@@ -654,7 +653,7 @@ class _EnderecoState extends State<Endereco> {
                 mode: Mode.MENU,
                 showSearchBox: true,
                 showSelectedItem: true,
-                label: 'UF: *',
+                label: 'UF',
                 onChanged: (String? value) async {
                   //clear to force user select new uf and city
                   _cidadeController.text = '';
@@ -668,7 +667,6 @@ class _EnderecoState extends State<Endereco> {
           //cidade
           Expanded(
             child: Container(
-              height: 80,
               child: DropdownSearch<String>(
                 dropdownBuilder: (buildContext, string, string2) {
                   return Text(_cidadeController.text);
@@ -702,7 +700,7 @@ class _EnderecoState extends State<Endereco> {
                 mode: Mode.MENU,
                 showSearchBox: true,
                 showSelectedItem: true,
-                label: 'Cidade: *',
+                label: 'Cidade',
                 onChanged: (value) {
                   _cidadeController.text = value ?? '';
                 },

@@ -78,18 +78,9 @@ class _MyAppBarState extends State<MyAppBar> {
     final sWidth = MediaQuery.of(context).size.width;
 
     return AppBar(
+      iconTheme: IconThemeData(color: Colors.white),
       centerTitle: sWidth > 1200 ? false : true,
-      flexibleSpace: Container(
-        color: Color(0xff2240b5),
-        /*
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xff2240b5), Theme.of(context).primaryColor],
-            stops: [0.5, 1.0],
-          ),
-        ),*/
-      ),
-      elevation: 0,
+      elevation: 5,
       title: Image.asset(
         'logos/da-logo-branco.png',
         height: 35,
@@ -145,8 +136,7 @@ class _MyAppBarState extends State<MyAppBar> {
       label: Text(
         'Olá, $name',
         style: TextStyle(
-          fontSize: 20,
-          fontFamily: 'BigNoodleTitling',
+          fontFamily: 'Houschka',
         ),
       ),
       style: ButtonStyle(
@@ -158,13 +148,6 @@ class _MyAppBarState extends State<MyAppBar> {
         foregroundColor: MaterialStateProperty.resolveWith<Color>(
           (Set<MaterialState> states) {
             return Colors.white;
-          },
-        ),
-        backgroundColor: MaterialStateProperty.resolveWith<Color>(
-          (Set<MaterialState> states) {
-            if (states.contains(MaterialState.pressed))
-              return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return Color(0xff2240b5); // Use the component's default.
           },
         ),
       ),
@@ -188,8 +171,7 @@ class _MyAppBarState extends State<MyAppBar> {
                   const Text(
                     'Administrativo',
                     style: TextStyle(
-                      fontSize: 20,
-                      fontFamily: 'BigNoodleTitling',
+                      fontFamily: 'Houschka',
                       color: Colors.white,
                     ),
                   ),
@@ -257,9 +239,8 @@ class _MyAppBarState extends State<MyAppBar> {
                 PopupMenuItem(
                   child: const Text(
                     'Gerenciar Cadastros',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontFamily: 'BigNoodleTitling',
+                    style: TextStyle(
+                      fontFamily: 'Houschka',
                     ),
                   ),
                   value: 'Gerenciar Cadastros',
@@ -268,9 +249,8 @@ class _MyAppBarState extends State<MyAppBar> {
                   PopupMenuItem(
                     child: const Text(
                       'Gerenciar Permissões',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontFamily: 'BigNoodleTitling',
+                      style: TextStyle(
+                        fontFamily: 'Houschka',
                       ),
                     ),
                     value: 'Gerenciar Permissões',
@@ -278,9 +258,8 @@ class _MyAppBarState extends State<MyAppBar> {
                 PopupMenuItem(
                   child: const Text(
                     'Gerenciar Pacientes',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontFamily: 'BigNoodleTitling',
+                    style: TextStyle(
+                      fontFamily: 'Houschka',
                     ),
                   ),
                   value: 'Gerenciar Pacientes',
@@ -313,27 +292,8 @@ class _MyAppBarState extends State<MyAppBar> {
       label: const Text(
         'Meus Pacientes',
         style: TextStyle(
-          fontSize: 20,
-          fontFamily: 'BigNoodleTitling',
-        ),
-      ),
-      style: ButtonStyle(
-        overlayColor: MaterialStateProperty.resolveWith<Color>(
-          (Set<MaterialState> states) {
-            return Colors.white.withOpacity(0.05);
-          },
-        ),
-        foregroundColor: MaterialStateProperty.resolveWith<Color>(
-          (Set<MaterialState> states) {
-            return Colors.white;
-          },
-        ),
-        backgroundColor: MaterialStateProperty.resolveWith<Color>(
-          (Set<MaterialState> states) {
-            if (states.contains(MaterialState.pressed))
-              return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return Color(0xff2240b5); // Use the component's default.
-          },
+          fontFamily: 'Houschka',
+          color: Colors.white,
         ),
       ),
     );
@@ -366,8 +326,8 @@ class _MyAppBarState extends State<MyAppBar> {
       label: const Text(
         'Novo Paciente',
         style: TextStyle(
-          fontSize: 20,
-          fontFamily: 'BigNoodleTitling',
+          fontFamily: 'Houschka',
+          color: Colors.white,
         ),
       ),
       style: ButtonStyle(
@@ -379,13 +339,6 @@ class _MyAppBarState extends State<MyAppBar> {
         foregroundColor: MaterialStateProperty.resolveWith<Color>(
           (Set<MaterialState> states) {
             return Colors.white;
-          },
-        ),
-        backgroundColor: MaterialStateProperty.resolveWith<Color>(
-          (Set<MaterialState> states) {
-            if (states.contains(MaterialState.pressed))
-              return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return Color(0xff2240b5); // Use the component's default.
           },
         ),
       ),
@@ -399,8 +352,8 @@ class _MyAppBarState extends State<MyAppBar> {
       label: const Text(
         'Mídia',
         style: TextStyle(
-          fontSize: 20,
-          fontFamily: 'BigNoodleTitling',
+          fontFamily: 'Houschka',
+          color: Colors.white,
         ),
       ),
       style: ButtonStyle(
@@ -412,13 +365,6 @@ class _MyAppBarState extends State<MyAppBar> {
         foregroundColor: MaterialStateProperty.resolveWith<Color>(
           (Set<MaterialState> states) {
             return Colors.white;
-          },
-        ),
-        backgroundColor: MaterialStateProperty.resolveWith<Color>(
-          (Set<MaterialState> states) {
-            if (states.contains(MaterialState.pressed))
-              return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return Color(0xff2240b5); // Use the component's default.
           },
         ),
       ),
@@ -441,8 +387,8 @@ class _MyAppBarState extends State<MyAppBar> {
       label: const Text(
         'Sair',
         style: TextStyle(
-          fontSize: 20,
-          fontFamily: 'BigNoodleTitling',
+          fontFamily: 'Houschka',
+          color: Colors.white,
         ),
       ),
       style: ButtonStyle(
@@ -454,13 +400,6 @@ class _MyAppBarState extends State<MyAppBar> {
         foregroundColor: MaterialStateProperty.resolveWith<Color>(
           (Set<MaterialState> states) {
             return Colors.white;
-          },
-        ),
-        backgroundColor: MaterialStateProperty.resolveWith<Color>(
-          (Set<MaterialState> states) {
-            if (states.contains(MaterialState.pressed))
-              return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return Color(0xff2240b5); // Use the component's default.
           },
         ),
       ),
@@ -483,13 +422,6 @@ class _MyAppBarState extends State<MyAppBar> {
             return Colors.white;
           },
         ),
-        backgroundColor: MaterialStateProperty.resolveWith<Color>(
-          (Set<MaterialState> states) {
-            if (states.contains(MaterialState.pressed))
-              return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return Color(0xff2240b5); // Use the component's default.
-          },
-        ),
       ),
     );
   }
@@ -510,13 +442,6 @@ class _MyAppBarState extends State<MyAppBar> {
             return Colors.white;
           },
         ),
-        backgroundColor: MaterialStateProperty.resolveWith<Color>(
-          (Set<MaterialState> states) {
-            if (states.contains(MaterialState.pressed))
-              return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return Color(0xff2240b5); // Use the component's default.
-          },
-        ),
       ),
     );
   }
@@ -535,13 +460,6 @@ class _MyAppBarState extends State<MyAppBar> {
         foregroundColor: MaterialStateProperty.resolveWith<Color>(
           (Set<MaterialState> states) {
             return Colors.white;
-          },
-        ),
-        backgroundColor: MaterialStateProperty.resolveWith<Color>(
-          (Set<MaterialState> states) {
-            if (states.contains(MaterialState.pressed))
-              return Theme.of(context).colorScheme.primary.withOpacity(0.5);
-            return Color(0xff2240b5); // Use the component's default.
           },
         ),
       ),

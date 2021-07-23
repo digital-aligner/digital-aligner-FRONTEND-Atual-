@@ -12,22 +12,14 @@ class SecondaryAppbar extends StatelessWidget implements PreferredSizeWidget {
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        print(constraints.maxWidth);
         return AppBar(
+          leading: BackButton(color: Colors.white),
+          //backgroundColor: Color.fromRGBO(83, 86, 90, 1),
+          backgroundColor: Color.fromRGBO(89, 203, 232, 1),
           centerTitle: true,
-          title: Image.asset(
-            'logos/da-logo-branco.png',
-            height: 35,
-          ),
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xff2240b5), Theme.of(context).primaryColor],
-                stops: [0.5, 1.0],
-              ),
-            ),
-          ),
-          elevation: 0,
+          title: Image.asset('logos/da-logo-branco.png', height: 35),
+          //title: Image.asset('logos/logo_branco_azul.png', height: 35),
+          elevation: 5,
         );
       },
     );

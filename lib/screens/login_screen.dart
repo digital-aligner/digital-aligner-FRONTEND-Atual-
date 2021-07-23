@@ -150,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         _submit(_loginStore, context);
                       },
                       child: const Text(
-                        'ENTRAR',
+                        'Entrar',
                         style: const TextStyle(
                           color: Colors.white,
                         ),
@@ -181,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         });
                       },
                       child: const Text(
-                        'CADASTRO BRASIL',
+                        'Cadastro Brasil',
                         style: const TextStyle(
                           color: Colors.white,
                         ),
@@ -207,7 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         });
                       },
                       child: const Text(
-                        'CADASTRO PORTUGAL',
+                        'Cadastro Portugal',
                         style: const TextStyle(
                           color: Colors.white,
                         ),
@@ -227,7 +227,11 @@ class _LoginScreenState extends State<LoginScreen> {
     // Outer card with shadow
     return Center(
       child: Card(
-        elevation: 0,
+        color: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        elevation: 20,
         child: Container(
           height: 500,
           width: 768,
@@ -238,10 +242,13 @@ class _LoginScreenState extends State<LoginScreen> {
               Expanded(
                 flex: 3,
                 child: Card(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
                   elevation: 0,
                   margin: EdgeInsets.all(0),
                   child: Container(
-                    color: Color.fromRGBO(83, 86, 90, 1),
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -250,28 +257,26 @@ class _LoginScreenState extends State<LoginScreen> {
                           flex: 2,
                           child: Column(
                             children: [
-                              new Image(
+                              Image(
                                 image: new AssetImage(
-                                  'logos/logo_branco_azul.png',
+                                  'logos/marca_padrao.png',
                                 ),
-                                height: 70.0,
-                                width: 120.0,
+                                width: 150,
                               ),
-                              const SizedBox(height: 15),
+                              const SizedBox(height: 40),
                               const Text(
                                 'Bem-Vindo',
                                 style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 50,
-                                  fontFamily: 'BigNoodleTitling',
+                                  color: Color.fromRGBO(83, 86, 90, 1),
+                                  fontSize: 30,
+                                  fontFamily: 'Houschka',
                                 ),
                               ),
                               const SizedBox(height: 15),
                               const Text(
                                 'Aqui você acessa a plataforma dos alinhadores estéticos revolucionários da Digital Aligner. Se precisar de ajuda, clique numa das opções abaixo.',
                                 style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Quicksand Light',
+                                  color: Color.fromRGBO(83, 86, 90, 1),
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -284,7 +289,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: const Text(
                             'PRECISA DE AJUDA?',
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: Color.fromRGBO(83, 86, 90, 1),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -302,7 +307,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       'https://api.whatsapp.com/send?phone=5581992777557&text=Ol%C3%A1,%20preciso%20de%20ajuda%20com%20o%20site%20do%20Digital%20Aligner...',
                                       'new tab');*/
                               },
-                              color: Colors.white,
+                              color: Color.fromRGBO(83, 86, 90, 1),
                               icon: const Icon(Icons.send_to_mobile),
                             ),
                             IconButton(
@@ -312,7 +317,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       'contato@digitalaligner.com.br',
                                       'new tab');*/
                               },
-                              color: Colors.white,
+                              color: Color.fromRGBO(83, 86, 90, 1),
                               icon: const Icon(Icons.mail),
                             ),
                             IconButton(
@@ -321,7 +326,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 /*html.window
                                       .open('tel:+5581992777557', 'new tab');*/
                               },
-                              color: Colors.white,
+                              color: Color.fromRGBO(83, 86, 90, 1),
                               icon: const Icon(Icons.phone),
                             ),
                             Expanded(
@@ -331,15 +336,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 20),
                         const Text(
-                          'V1.53',
+                          'V1.54',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Color.fromRGBO(83, 86, 90, 1),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
+              ),
+              VerticalDivider(
+                indent: 100,
+                endIndent: 100,
+                color: Color.fromRGBO(200, 200, 200, 0.5),
               ),
               //Right content
               Expanded(
@@ -364,7 +374,10 @@ class _LoginScreenState extends State<LoginScreen> {
     // Outer card with shadow
     return Center(
       child: Card(
-        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        elevation: 20,
         child: Container(
           height: 1300,
           width: 500,
@@ -375,15 +388,14 @@ class _LoginScreenState extends State<LoginScreen> {
               Expanded(
                 flex: 2,
                 child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
                   elevation: 0,
                   margin: EdgeInsets.all(0),
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [cor, Color(0xff2240b5)],
-                      ),
-                    ),
+                    color: Colors.white,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -393,30 +405,28 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: [
                               new Image(
                                 image: new AssetImage(
-                                  'logos/logo_branco_azul.png',
+                                  'logos/marca_padrao.png',
                                 ),
-                                height: 70.0,
-                                width: 120.0,
+                                width: 150,
                               ),
-                              const SizedBox(height: 5),
+                              const SizedBox(height: 100),
                               const Text(
                                 'Bem-Vindo',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: Color.fromRGBO(83, 86, 90, 1),
                                   fontSize: 50,
-                                  fontFamily: 'BigNoodleTitling',
+                                  fontFamily: 'Houschka',
                                 ),
                               ),
-                              const SizedBox(height: 5),
+                              const SizedBox(height: 15),
                               const Text(
                                 'Aqui você acessa a plataforma dos alinhadores estéticos revolucionários da Digital Aligner. Se precisar de ajuda, clique numa das opções abaixo.',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Quicksand Light',
+                                style: TextStyle(
+                                  color: Color.fromRGBO(83, 86, 90, 1),
                                 ),
                                 textAlign: TextAlign.center,
                               ),
-                              const SizedBox(height: 5),
+                              const SizedBox(height: 15),
                             ],
                           ),
                         ),
@@ -424,23 +434,68 @@ class _LoginScreenState extends State<LoginScreen> {
                           flex: 1,
                           child: const Text(
                             'PRECISA DE AJUDA?',
-                            style: TextStyle(
-                              color: Colors.white,
+                            style: const TextStyle(
+                              color: Color.fromRGBO(83, 86, 90, 1),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(),
+                            ),
+                            IconButton(
+                              tooltip: 'Whatsapp',
+                              onPressed: () {
+                                /*
+                                  html.window.open(
+                                      'https://api.whatsapp.com/send?phone=5581992777557&text=Ol%C3%A1,%20preciso%20de%20ajuda%20com%20o%20site%20do%20Digital%20Aligner...',
+                                      'new tab');*/
+                              },
+                              color: Color.fromRGBO(83, 86, 90, 1),
+                              icon: const Icon(Icons.send_to_mobile),
+                            ),
+                            IconButton(
+                              tooltip: 'Email',
+                              onPressed: () {
+                                /*html.window.open(
+                                      'contato@digitalaligner.com.br',
+                                      'new tab');*/
+                              },
+                              color: Color.fromRGBO(83, 86, 90, 1),
+                              icon: const Icon(Icons.mail),
+                            ),
+                            IconButton(
+                              tooltip: 'Atendimento',
+                              onPressed: () {
+                                /*html.window
+                                      .open('tel:+5581992777557', 'new tab');*/
+                              },
+                              color: Color.fromRGBO(83, 86, 90, 1),
+                              icon: const Icon(Icons.phone),
+                            ),
+                            Expanded(
+                              child: Container(),
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 20),
                         const Text(
-                          'V1.53',
+                          'V1.54',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Color.fromRGBO(83, 86, 90, 1),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
+              ),
+              Divider(
+                indent: 100,
+                endIndent: 100,
+                color: Color.fromRGBO(200, 200, 200, 0.5),
               ),
               //bottom content
               Expanded(

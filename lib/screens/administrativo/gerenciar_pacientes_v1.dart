@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:digital_aligner_app/appbar/MyAppBar.dart';
 import 'package:digital_aligner_app/appbar/MyDrawer.dart';
+import 'package:digital_aligner_app/default_colors.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/screens/gerenciar_relatorio_v1.dart';
@@ -649,7 +650,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
           ElevatedButton.icon(
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(
-                Colors.blueGrey,
+                DefaultColors.digitalAlignBlue,
               ),
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
@@ -699,8 +700,14 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
 
                     //refreshPageFetchNewList();
                   },
-            label: const Text('Carregar'),
-            icon: Icon(Icons.arrow_drop_down),
+            label: const Text(
+              'Carregar',
+              style: TextStyle(color: Colors.white),
+            ),
+            icon: Icon(
+              Icons.arrow_drop_down,
+              color: Colors.white,
+            ),
           ),
         ],
       ),

@@ -467,15 +467,12 @@ class _EditarCadastroState extends State<EditarCadastro> {
                           const SizedBox(height: 60),
                           Center(
                             child: Text(
-                              'CADASTRO',
-                              style: const TextStyle(
-                                color: Colors.indigo,
-                                fontSize: 50,
-                                fontFamily: 'BigNoodleTitling',
-                              ),
+                              'Cadastro',
+                              style: Theme.of(context).textTheme.headline1,
                             ),
                           ),
-                          const SizedBox(height: 60),
+                          if (sc!.id != authStore.id)
+                            const SizedBox(height: 60),
                           Container(
                             width: sWidth,
                             //height: 2040,
@@ -486,17 +483,18 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                   _statusCadastro(),
                                   const SizedBox(height: 10),
                                   _onboardingAndRepresentante(),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 40,
+                                  if (sc!.id != authStore.id)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 40,
+                                      ),
+                                      child: const Divider(
+                                        height: 20,
+                                        thickness: 2,
+                                        indent: 20,
+                                        endIndent: 20,
+                                      ),
                                     ),
-                                    child: const Divider(
-                                      height: 20,
-                                      thickness: 2,
-                                      indent: 20,
-                                      endIndent: 20,
-                                    ),
-                                  ),
                                   //nome
                                   Container(
                                     height: 80,
@@ -802,7 +800,7 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                     thickness: 1,
                                   ),
                                   const Text(
-                                    'GERENCIAR ENDEREÇOS',
+                                    'Gerenciar endereços',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -825,7 +823,8 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                 child: ElevatedButton(
                                   child: !_sendingCadastro
                                       ? const Text(
-                                          'ATUALIZAR',
+                                          'Atualizar',
+                                          style: TextStyle(color: Colors.white),
                                         )
                                       : CircularProgressIndicator(
                                           valueColor:

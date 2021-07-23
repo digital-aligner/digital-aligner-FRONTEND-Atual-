@@ -1,3 +1,4 @@
+import 'package:digital_aligner_app/default_colors.dart';
 import 'package:digital_aligner_app/page_transition_web.dart';
 import 'package:digital_aligner_app/providers/check_new_data_provider.dart';
 import 'package:digital_aligner_app/providers/pacientes_list_provider.dart';
@@ -89,13 +90,13 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             pageTransitionsTheme: PageTransitionWeb(),
             //Primary font for everything
-            fontFamily: 'Questrial',
+            fontFamily: 'Inter-VariableFont',
             splashColor: Colors.transparent,
             elevatedButtonTheme: ElevatedButtonThemeData(
               //font for all elevated buttons
               style: TextButton.styleFrom(
                 textStyle: const TextStyle(
-                  fontFamily: 'Questrial',
+                  fontFamily: 'Inter-VariableFont',
                 ),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
@@ -125,7 +126,7 @@ class MyApp extends StatelessWidget {
                 //borderRadius: BorderRadius.circular(30),
                 borderSide: BorderSide(
                   width: 1.5,
-                  color: Colors.lightBlue,
+                  color: DefaultColors.digitalAlignBlue,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
@@ -140,15 +141,15 @@ class MyApp extends StatelessWidget {
               ),
             ),
 
-            primarySwatch: Colors.blue,
+            primarySwatch: DefaultColors.digitalAlignBlue,
             accentColor: Colors.white,
             //Custom textheme for use anywhere in app
             textTheme: const TextTheme(
               //Para titulos nas telas
               headline1: const TextStyle(
-                color: Color.fromRGBO(12, 47, 118, 1),
-                fontSize: 40,
-                fontFamily: 'BigNoodleTitling',
+                color: Color.fromRGBO(83, 86, 90, 1),
+                fontSize: 30,
+                fontFamily: 'Houschka',
               ),
             ),
           ),

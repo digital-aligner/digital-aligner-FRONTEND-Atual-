@@ -97,7 +97,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                           return null;
                         },
                         decoration: const InputDecoration(
-                          labelText: 'Nome: *',
+                          labelText: 'Nome',
                           counterText: '',
                           //hintText: 'Insira seu nome',
                           border: const OutlineInputBorder(),
@@ -120,7 +120,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                           return null;
                         },
                         decoration: const InputDecoration(
-                          labelText: 'Sobrenome: *',
+                          labelText: 'Sobrenome',
                           //hintText: 'Insira seu nome',
                           counterText: '',
                           border: const OutlineInputBorder(),
@@ -190,7 +190,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 decoration: const InputDecoration(
                                   //To hide cpf length num
                                   counterText: '',
-                                  labelText: 'CPF: *',
+                                  labelText: 'CPF',
                                   border: const OutlineInputBorder(),
                                 ),
                               ),
@@ -213,7 +213,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 },
                                 controller: _controllerDataNasc,
                                 decoration: const InputDecoration(
-                                  labelText: 'Data de Nascimento: *',
+                                  labelText: 'Data de Nascimento',
                                   border: const OutlineInputBorder(),
                                 ),
                                 format: format,
@@ -240,7 +240,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                     //cro uf/cro número
                     Container(
                       width: width,
-                      height: width > 600 ? 80 : 180,
+                      height: width > 600 ? 50 : 180,
                       child: Flex(
                         direction:
                             width > 600 ? Axis.horizontal : Axis.vertical,
@@ -283,7 +283,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 showSearchBox: true,
                                 showSelectedItem: true,
                                 items: [],
-                                label: 'CRO (UF): *',
+                                label: 'CRO (UF)',
                                 onChanged: (value) {
                                   _selectedCroUf = value ?? '';
                                 },
@@ -315,7 +315,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 initialValue: null,
                                 decoration: InputDecoration(
                                   counterText: '',
-                                  labelText: 'CRO (Número): *',
+                                  labelText: 'CRO (Número)',
                                   border: OutlineInputBorder(),
                                 ),
                               ),
@@ -324,13 +324,6 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                         ],
                       ),
                     ),
-                    const Divider(thickness: 1),
-                    const SizedBox(height: 20),
-                    Endereco(
-                      enderecoType: 'criar endereco',
-                      formKey: _formKey,
-                    ),
-                    const SizedBox(width: 20),
                     //cellphone/telephone
                     Container(
                       width: width,
@@ -389,7 +382,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 decoration: InputDecoration(
                                   //To hide cep length num
                                   counterText: '',
-                                  labelText: 'Telefone Fixo (Comercial): *',
+                                  labelText: 'Telefone Fixo (Comercial)',
                                   //hintText: 'Insira seu nome',
                                   border: OutlineInputBorder(),
                                 ),
@@ -447,7 +440,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 decoration: InputDecoration(
                                   //To hide cep length num
                                   counterText: '',
-                                  labelText: 'Celular (Whatsapp): *',
+                                  labelText: 'Celular (Whatsapp)',
                                   //hintText: 'Insira seu nome',
                                   border: OutlineInputBorder(),
                                 ),
@@ -457,6 +450,14 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                         ],
                       ),
                     ),
+                    const SizedBox(height: 20),
+                    const Divider(thickness: 1),
+                    const SizedBox(height: 20),
+                    Endereco(
+                      enderecoType: 'criar endereco',
+                      formKey: _formKey,
+                    ),
+                    const SizedBox(width: 20),
                     const Divider(thickness: 1),
                     //email
                     Container(
@@ -491,7 +492,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 initialValue: null,
                                 decoration: InputDecoration(
                                   counterText: '',
-                                  labelText: 'Email: *',
+                                  labelText: 'Email',
                                   border: OutlineInputBorder(),
                                 ),
                               ),
@@ -517,7 +518,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 initialValue: null,
                                 decoration: InputDecoration(
                                   counterText: '',
-                                  labelText: 'Confirme seu email.',
+                                  labelText: 'Confirme seu email',
                                   border: OutlineInputBorder(),
                                 ),
                               ),
@@ -526,7 +527,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 30),
                     //password
                     Container(
                       width: width,
@@ -563,7 +564,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 initialValue: null,
                                 decoration: InputDecoration(
                                   counterText: '',
-                                  labelText: 'Senha: *',
+                                  labelText: 'Senha',
                                   border: OutlineInputBorder(),
                                 ),
                               ),
@@ -589,7 +590,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 initialValue: null,
                                 decoration: InputDecoration(
                                   counterText: '',
-                                  labelText: 'Confirme sua senha.',
+                                  labelText: 'Confirme sua senha',
                                   border: OutlineInputBorder(),
                                 ),
                               ),
@@ -640,7 +641,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                           return null;
                         },
                         decoration: const InputDecoration(
-                          labelText: 'Nome: *',
+                          labelText: 'Nome',
                           counterText: '',
                           //hintText: 'Insira seu nome',
                           border: const OutlineInputBorder(),
@@ -663,7 +664,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                           return null;
                         },
                         decoration: const InputDecoration(
-                          labelText: 'Sobrenome: *',
+                          labelText: 'Sobrenome',
                           //hintText: 'Insira seu nome',
                           counterText: '',
                           border: const OutlineInputBorder(),
@@ -704,7 +705,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 initialValue: null,
                                 decoration: InputDecoration(
                                   counterText: '',
-                                  labelText: 'Email: *',
+                                  labelText: 'Email',
                                   border: OutlineInputBorder(),
                                 ),
                               ),
@@ -730,7 +731,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 initialValue: null,
                                 decoration: InputDecoration(
                                   counterText: '',
-                                  labelText: 'Confirme seu email.',
+                                  labelText: 'Confirme seu email',
                                   border: OutlineInputBorder(),
                                 ),
                               ),
@@ -739,7 +740,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 30),
                     //password
                     Container(
                       width: width,
@@ -776,7 +777,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 initialValue: null,
                                 decoration: InputDecoration(
                                   counterText: '',
-                                  labelText: 'Senha: *',
+                                  labelText: 'Senha',
                                   border: OutlineInputBorder(),
                                 ),
                               ),
@@ -802,7 +803,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 initialValue: null,
                                 decoration: InputDecoration(
                                   counterText: '',
-                                  labelText: 'Confirme sua senha.',
+                                  labelText: 'Confirme sua senha',
                                   border: OutlineInputBorder(),
                                 ),
                               ),
@@ -835,13 +836,13 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
           child: ElevatedButton(
             child: !_sendingForm
                 ? const Text(
-                    'ENVIAR INFORMAÇÕES',
+                    'Enviar informações',
                     style: const TextStyle(
                       color: Colors.white,
                     ),
                   )
                 : const Text(
-                    'AGUARDE...',
+                    'Aguarde...',
                     style: const TextStyle(
                       color: Colors.white,
                     ),
@@ -897,7 +898,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
           width: 300,
           child: ElevatedButton(
             child: const Text(
-              'CANCELAR',
+              'Cancelar',
               style: const TextStyle(
                 color: Colors.white,
               ),
@@ -913,13 +914,9 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
 
   Widget _headline() {
     return Center(
-      child: const Text(
-        'CADASTRO',
-        style: const TextStyle(
-          color: Colors.indigo,
-          fontSize: 50,
-          fontFamily: 'BigNoodleTitling',
-        ),
+      child: Text(
+        'Cadastro',
+        style: Theme.of(context).textTheme.headline1,
       ),
     );
   }

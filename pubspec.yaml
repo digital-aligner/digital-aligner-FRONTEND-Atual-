@@ -96,9 +96,18 @@ flutter:
       fonts:
         - asset: assets/fonts/big_noodle_titling.ttf   
 
+    - family: Inter-VariableFont
+      fonts:
+        - asset: assets/fonts/Inter-VariableFont.ttf  
+
+    - family: Houschka
+      fonts:
+        - asset: assets/fonts/Houschka-Rounded-DemiBold.ttf          
+
     - family: Quicksand Light  
       fonts:
         - asset: assets/fonts/Quicksand-Light.ttf
+
     - family: Questrial
       fonts:
         - asset: assets/fonts/Questrial-Regular.ttf
