@@ -192,28 +192,28 @@ class PedidoProvider with ChangeNotifier {
     String queryStrings = '',
   }) async {
     clearDataAllProviderData();
-    final response = await http.get(
-      Uri.parse(
-        RotasUrl.rotaPedidosV1 +
-            '?roleId=' +
-            roleId.toString() +
-            '&queryString=' +
-            query +
-            queryStrings,
-      ),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
     try {
-      List<dynamic> _pedidos = json.decode(response.body);
+      final response = await http.get(
+        Uri.parse(
+          RotasUrl.rotaPedidosV1 +
+              '?roleId=' +
+              roleId.toString() +
+              '&queryString=' +
+              query +
+              queryStrings,
+        ),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
 
+      List<dynamic> _pedidos = json.decode(response.body);
+      print('x32');
       if (_pedidos[0].containsKey('id')) {
         _pedidos.forEach((p) {
           _pedidosV1List.add(PedidoV1Model.fromJson(p));
         });
-
         return true;
       } else {
         return false;

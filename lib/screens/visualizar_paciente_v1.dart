@@ -14,6 +14,7 @@ import 'package:digital_aligner_app/screens/visualizar_relatorio_v1.dart';
 import 'package:digital_aligner_app/widgets/screen%20argument/screen_argument.dart';
 import 'package:easy_web_view2/easy_web_view2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:intl/intl.dart';
 import 'package:photo_view/photo_view.dart';
@@ -607,6 +608,30 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
 
     return Column(
       children: [
+        if (_pedidoView.linkModelos.length > 0)
+          Column(
+            children: [
+              const Text('Link da documentação'),
+              TextButton(
+                onPressed: () {
+                  Clipboard.setData(
+                    ClipboardData(text: _pedidoView.linkModelos),
+                  );
+                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      duration: const Duration(seconds: 3),
+                      content: Text(
+                        'Link copiado',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Copiar link'),
+              ),
+            ],
+          ),
         ResponsiveGridRow(
           children: [
             //codigo pedido (headline)

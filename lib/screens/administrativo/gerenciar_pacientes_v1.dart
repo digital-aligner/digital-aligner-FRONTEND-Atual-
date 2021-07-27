@@ -786,7 +786,15 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     }
     //.then (after page pop)is not triggering this rebuild to fetch new data. Verify later
     if (firstRun) {
-      fetchMostRecente();
+      firstRun = false;
+      //TEMPORARY FIX: Waits for loading of widget and fetches (Fixes multple calls to server)
+      await Future.delayed(Duration(seconds: 1));
+      //fetch 1 time data
+      try {
+        await fetchMostRecente();
+      } catch (e) {
+        print(e);
+      }
     }
     super.didChangeDependencies();
   }
@@ -804,14 +812,13 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   Future<void> fetchMostRecente() async {
     setState(() {
       isfetchPedidos = true;
-      //firstRun = true;
       pageHeight = 900;
       pageQuant = 10;
     });
-    _pedidoStore!.clearDataAllProviderData();
+    //_pedidoStore!.clearDataAllProviderData();
     await _pedidoStore!.fetchAllPedidos(
-      token: _authStore!.token,
-      roleId: _authStore!.roleId,
+      token: _authStore?.token ?? '',
+      roleId: _authStore?.roleId ?? 0,
       query: _query,
       queryStrings: '&ref=' +
           _ref.toString() +
@@ -825,7 +832,6 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
 
     setState(() {
       isfetchPedidos = false;
-      firstRun = false;
     });
   }
 
