@@ -454,23 +454,26 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
 
   List<DataCell> _dataCells({int position = 0}) {
     PedidoV1Model p = _pedidoStore!.getPedido(position: position);
-    var format = DateFormat.yMd('pt');
+    //var format = DateFormat.yMd('pt');
+    var format = DateFormat('dd/MM/yyyy HH:mm');
     var dateTime;
     if (!_pedidosAtualizados && !_pedidosExecucao)
-      dateTime = DateTime.parse(p.createdAt);
+      dateTime = DateTime.parse(p.createdAt).toLocal();
     else
-      dateTime = DateTime.parse(p.updatedAt ?? '');
+      dateTime = DateTime.parse(p.updatedAt ?? '').toLocal();
 
     var dateString = format.format(dateTime);
 
     return [
-      /*
-      DataCell(
-        const Icon(
-          Icons.circle,
-          color: Colors.blue,
-        ),
-      ),*/
+      if (p.novaAtualizacao != null && p.novaAtualizacao == true)
+        DataCell(
+          const Icon(
+            Icons.circle,
+            color: Colors.green,
+          ),
+        )
+      else
+        DataCell(SizedBox()),
       if (_screenSize!.width > _mqMd) DataCell(Text(dateString)),
       DataCell(Text('DA${p.id}')),
       if (_screenSize!.width > _mqLg) DataCell(Text(p.nomePaciente)),
@@ -484,24 +487,27 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
 
   List<DataCell> _dataCellsStatusAlteracao({int position = 0}) {
     PedidoV1Model p = _pedidoStore!.getPedido(position: position);
-    var format = DateFormat.yMd('pt');
+
+    var format = DateFormat('dd/MM/yyyy HH:mm');
     DateTime dateTime;
     String dateString = '';
     if (_pedidosAlteracoes &&
         p.alteracaoData != null &&
         p.alteracaoData!.isNotEmpty) {
-      dateTime = DateTime.parse(p.alteracaoData ?? '');
+      dateTime = DateTime.parse(p.alteracaoData ?? '').toLocal();
       dateString = format.format(dateTime);
     }
 
     return [
-      /*
-      DataCell(
-        const Icon(
-          Icons.circle,
-          color: Colors.blue,
-        ),
-      ),*/
+      if (p.novaAtualizacao != null && p.novaAtualizacao == true)
+        DataCell(
+          const Icon(
+            Icons.circle,
+            color: Colors.green,
+          ),
+        )
+      else
+        DataCell(SizedBox()),
       if (_screenSize!.width > _mqMd) DataCell(Text(dateString)),
       DataCell(Text('DA${p.id}')),
       if (_screenSize!.width > _mqLg) DataCell(Text(p.nomePaciente)),
@@ -590,7 +596,20 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
       child: DataTable(
         showCheckboxColumn: false,
         columns: [
-          //DataColumn(label: const Text('Tipo')),
+          DataColumn(
+            label: Tooltip(
+              message: 'Refinamento solicitado',
+              child: Row(
+                children: [
+                  const Text('Ref'),
+                  const Icon(
+                    Icons.circle,
+                    color: Colors.green,
+                  ),
+                ],
+              ),
+            ),
+          ),
           if (!_pedidosAtualizados && _screenSize!.width > _mqMd)
             DataColumn(label: const Text('Data'))
           else if (_screenSize!.width > _mqMd)
@@ -615,7 +634,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
       child: DataTable(
         showCheckboxColumn: false,
         columns: [
-          //DataColumn(label: const Text('Tipo')),
+          DataColumn(label: const Text('')),
           if (_screenSize!.width > _mqMd)
             DataColumn(label: const Text('Data'))
           else if (_screenSize!.width > _mqMd)
@@ -787,6 +806,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     //.then (after page pop)is not triggering this rebuild to fetch new data. Verify later
     if (firstRun) {
       firstRun = false;
+
       //TEMPORARY FIX: Waits for loading of widget and fetches (Fixes multple calls to server)
       await Future.delayed(Duration(seconds: 1));
       //fetch 1 time data

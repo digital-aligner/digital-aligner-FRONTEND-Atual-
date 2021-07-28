@@ -4,6 +4,7 @@ import 'package:digital_aligner_app/providers/check_new_data_provider.dart';
 import 'package:digital_aligner_app/providers/pacientes_list_provider.dart';
 import 'package:digital_aligner_app/providers/relatorio_provider.dart';
 import 'package:digital_aligner_app/screens/gerenciar_relatorio_v1.dart';
+import 'package:digital_aligner_app/screens/midia_screen/midia.dart';
 import 'package:digital_aligner_app/screens/perfil.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
 
@@ -172,6 +173,7 @@ class MyApp extends StatelessWidget {
             GerenciarPacientesV1.routeName: (ctx) => GerenciarPacientesV1(),
             VisualizarPacienteV1.routeName: (ctx) => VisualizarPacienteV1(),
             Perfil.routeName: (ctx) => Perfil(),
+            Midia.routeName: (ctx) => Midia(),
             PedidoV1Screen.routeName: (ctx) => PedidoV1Screen(),
             GerenciarRelatorioV1.routeName: (ctx) => GerenciarRelatorioV1(),
           },

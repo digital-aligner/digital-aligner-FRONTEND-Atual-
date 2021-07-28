@@ -238,6 +238,14 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
   }
 */
 
+  bool _checkIfRefinamentoIsActive() {
+    var pedido = _pedidoStore!.getPedido(position: _args.messageInt);
+    if (pedido.novaAtualizacao != null && pedido.novaAtualizacao == true) {
+      return false;
+    }
+    return true;
+  }
+
   bool _checkIfUserIsSame() {
     if (_authStore!.id == _getPedido().usuario!.id) return true;
     return false;
@@ -274,40 +282,41 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                       child: Text('editar paciente'),
                     ),
                     TextButton(
-                      onPressed: _checkIfUserIsSame()
-                          ? () {
-                              setState(() {
-                                _selectedView = 0;
-                                _selectedTilePos = -1;
-                              });
+                      onPressed:
+                          _checkIfUserIsSame() && _checkIfRefinamentoIsActive()
+                              ? () {
+                                  setState(() {
+                                    _selectedView = 0;
+                                    _selectedTilePos = -1;
+                                  });
 
-                              var p = _pedidoStore!.getPedido(
-                                position: _args.messageInt,
-                              );
+                                  var p = _pedidoStore!.getPedido(
+                                    position: _args.messageInt,
+                                  );
 
-                              Navigator.of(context)
-                                  .pushNamed(
-                                PedidoV1Screen.routeName,
-                                arguments: ScreenArguments(
-                                  title: 'Pedido de refinamento',
-                                  messageMap: {
-                                    'pedidoId': p.id,
-                                    'isRefinamento': true,
-                                    'nomePaciente': p.nomePaciente,
-                                    'dataNascimento': p.dataNascimento,
-                                  },
-                                ),
-                              )
-                                  .then((value) async {
-                                if (value != null) {
-                                  if (value == true) {
-                                    await _fetchHistoricoPac();
-                                    setState(() {});
-                                  }
+                                  Navigator.of(context)
+                                      .pushNamed(
+                                    PedidoV1Screen.routeName,
+                                    arguments: ScreenArguments(
+                                      title: 'Pedido de refinamento',
+                                      messageMap: {
+                                        'pedidoId': p.id,
+                                        'isRefinamento': true,
+                                        'nomePaciente': p.nomePaciente,
+                                        'dataNascimento': p.dataNascimento,
+                                      },
+                                    ),
+                                  )
+                                      .then((value) async {
+                                    if (value != null) {
+                                      if (value == true) {
+                                        await _fetchHistoricoPac();
+                                        setState(() {});
+                                      }
+                                    }
+                                  });
                                 }
-                              });
-                            }
-                          : null,
+                              : null,
                       child: Text('Solicitar refinamento'),
                     ),
                   ],
@@ -540,7 +549,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     if (text.length > 80) {
       return Text(text.characters.take(80).toString() + '... (visualizar)');
     }
-    return Text('');
+    return Text(text);
   }
 
   Future<void> _viewTextPopup(

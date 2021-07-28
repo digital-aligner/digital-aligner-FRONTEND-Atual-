@@ -28,7 +28,6 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
   List<dynamic> cadList = [];
   late AuthProvider authStore;
 
-  bool _absorbPointerBool = false;
   List<bool> selectedListItem = [];
   int mediaQuerySm = 576;
   int mediaQueryMd = 768;
@@ -60,13 +59,6 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
       return false;
     }
     return data;
-  }
-
-  String _isoDateTimeToLocal(String isoDateString) {
-    DateTime _dateTime = DateTime.parse(isoDateString).toLocal();
-    String _formatedDate = DateFormat('dd/MM/yyyy - kk:mm').format(_dateTime);
-
-    return _formatedDate;
   }
 
   String _formatCpf(String? cpf) {
@@ -673,45 +665,6 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
     );
   }
 
-  Widget _listItem(int index, double width) {
-    return Container(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              if (width > mediaQuerySm)
-                Expanded(
-                  child: Text(
-                    _isoDateTimeToLocal(cadList[index]['created_at']),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              Expanded(
-                child: Text(
-                  '${cadList[index]['nome'] + " " + cadList[index]['sobrenome']}',
-                  textAlign: TextAlign.start,
-                ),
-              ),
-              if (width > mediaQuerySm)
-                Expanded(
-                  child: Text(
-                    _formatCpf(cadList[index]['username']),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              Expanded(
-                child: Text(
-                  '${cadList[index]['role']['name']}',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _dataTable() {
     return SizedBox(
       width: _screenSize!.width,
@@ -760,8 +713,8 @@ class _PermissoesListGerenciarState extends State<PermissoesListGerenciar> {
   }
 
   List<DataCell> _dataCells({int position = 0}) {
-    var format = DateFormat.yMd('pt');
-    var dateTime = DateTime.parse(cadList[position]['created_at']);
+    var format = DateFormat('dd/MM/yyyy HH:mm');
+    var dateTime = DateTime.parse(cadList[position]['created_at']).toLocal();
     var dateString = format.format(dateTime);
     return [
       if (_screenSize!.width > mediaQuerySm) DataCell(Text(dateString)),

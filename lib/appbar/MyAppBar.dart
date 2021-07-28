@@ -1,6 +1,7 @@
 import 'package:digital_aligner_app/providers/check_new_data_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pacientes_v1.dart';
+import 'package:digital_aligner_app/screens/midia_screen/midia.dart';
 
 import 'package:digital_aligner_app/screens/perfil.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
@@ -347,7 +348,15 @@ class _MyAppBarState extends State<MyAppBar> {
 
   Widget _midia(context) {
     return TextButton.icon(
-      onPressed: () {},
+      onPressed: () {
+        ModalRoute<Object?>? route = ModalRoute.of(context);
+        final routeName = route!.settings.name;
+        if (routeName != null && routeName != '/midia') {
+          //Remove any messages (if any) on changing routes
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+          Navigator.of(context).pushReplacementNamed(Midia.routeName);
+        }
+      },
       icon: const Icon(Icons.play_circle_fill),
       label: const Text(
         'Mídia',

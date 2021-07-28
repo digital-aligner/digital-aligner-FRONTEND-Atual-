@@ -42,6 +42,7 @@ class PedidoV1Model {
   //para alteracao de pedido
   String? alteracaoTexto;
   String? alteracaoData;
+  bool? novaAtualizacao;
 
   PedidoV1Model({
     this.id = 0,
@@ -81,6 +82,7 @@ class PedidoV1Model {
     this.idPedOriginal = 0,
     this.alteracaoTexto,
     this.alteracaoData,
+    this.novaAtualizacao,
   });
 
   factory PedidoV1Model.fromJson(Map<String, dynamic>? data) {
@@ -157,6 +159,7 @@ class PedidoV1Model {
       idPedOriginal: data['id_ped_original'] ?? 0,
       alteracaoTexto: data['alteracao_texto'] ?? '',
       alteracaoData: data['alteracao_data'] ?? '',
+      novaAtualizacao: data['nova_atualizacao'] ?? false,
     );
   }
 

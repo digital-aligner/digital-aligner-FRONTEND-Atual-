@@ -24,20 +24,11 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
   late AuthProvider authStore;
   bool _dialogOpen = false;
   bool _sendingCadastro = false;
-
-  bool _absorbPointerBool = false;
   List<bool> selectedListItem = [];
   int mediaQuerySm = 576;
   int mediaQueryMd = 768;
 
   Size? _screenSize;
-
-  String _isoDateTimeToLocal(String isoDateString) {
-    DateTime _dateTime = DateTime.parse(isoDateString).toLocal();
-    String _formatedDate = DateFormat('dd/MM/yyyy - kk:mm').format(_dateTime);
-
-    return _formatedDate;
-  }
 
   String _formatCpf(String? cpf) {
     if (cpf == null || cpf.length > 11) return cpf ?? '';
@@ -50,49 +41,6 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
         '-' +
         cpf.substring(9, 11);
     return _formatedCpf;
-  }
-
-  Widget _listItem(int index, double width) {
-    return Container(
-      padding: const EdgeInsets.only(top: 25),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              if (width > mediaQuerySm)
-                Expanded(
-                  child: Text(
-                    _isoDateTimeToLocal(
-                      cadList[index]['created_at'],
-                    ),
-                    textAlign: TextAlign.center,
-                    //overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              Expanded(
-                child: Text(
-                  '${cadList[index]['nome'] + " " + cadList[index]['sobrenome']}',
-                  textAlign: TextAlign.start,
-                ),
-              ),
-              if (width > mediaQuerySm)
-                Expanded(
-                  child: Text(
-                    _formatCpf(cadList[index]['username']),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              Expanded(
-                child: Text(
-                  '${cadList[index]['aprovacao_usuario']['status']}',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
   }
 
   String _isoBirthDateToLocal(String isoDateString) {
@@ -548,7 +496,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                                     Future.delayed(Duration(milliseconds: 800),
                                         () {
                                       widget.fetchDataHandler!(true);
-                                      _absorbPointerBool = false;
+
                                       cadastroStore.clearCadastrosAndUpdate();
                                     });
                                   }
@@ -707,7 +655,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                                 _dialogOpen = false;
                                 Future.delayed(Duration(milliseconds: 800), () {
                                   widget.fetchDataHandler!(true);
-                                  _absorbPointerBool = false;
+
                                   cadastroStore.clearCadastrosAndUpdate();
                                 });
                               }
@@ -778,8 +726,8 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
   }
 
   List<DataCell> _dataCells({int position = 0}) {
-    var format = DateFormat.yMd('pt');
-    var dateTime = DateTime.parse(cadList[position]['created_at']);
+    var format = DateFormat('dd/MM/yyyy HH:mm');
+    var dateTime = DateTime.parse(cadList[position]['created_at']).toLocal();
     var dateString = format.format(dateTime);
     return [
       if (_screenSize!.width > mediaQuerySm) DataCell(Text(dateString)),
