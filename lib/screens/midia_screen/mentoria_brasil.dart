@@ -9,13 +9,44 @@ import 'package:digital_aligner_app/screens/midia_screen/youtube_videos.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class Midia extends StatefulWidget {
-  static const routeName = '/midia';
+class MentoriaBrasil extends StatefulWidget {
+  static const routeName = '/mentoria-brasil';
   @override
-  _MidiaState createState() => _MidiaState();
+  _MentoriaBrasilState createState() => _MentoriaBrasilState();
 }
 
-class _MidiaState extends State<Midia> {
+class _MentoriaBrasilState extends State<MentoriaBrasil> {
+  bool _blockVideos = false;
+
+  Widget _buildVideos() {
+    return Column(
+      children: [
+        const SizedBox(
+          height: 50,
+        ),
+        YoutubeVideos(
+          videosId: 'FqKKvi5TKwo',
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeaders() {
+    return Column(
+      children: [
+        const SizedBox(
+          height: 50,
+        ),
+        Center(
+          child: Text(
+            'Mentoria Brasil',
+            style: Theme.of(context).textTheme.headline1,
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     CadastroProvider cadastroStore = Provider.of<CadastroProvider>(context);
@@ -34,6 +65,11 @@ class _MidiaState extends State<Midia> {
       appBar: MyAppBar(),
       // *BUG* Verify closing drawer automaticlly when under 1200
       drawer: sWidth < 1200 ? MyDrawer() : null,
+      onDrawerChanged: (value) {
+        setState(() {
+          _blockVideos = value;
+        });
+      },
       body: RawScrollbar(
         radius: Radius.circular(10),
         thumbColor: Colors.grey,
@@ -42,22 +78,12 @@ class _MidiaState extends State<Midia> {
         child: SingleChildScrollView(
           child: Container(
             height: 1000,
-            padding: const EdgeInsets.symmetric(horizontal: 100),
+            padding: sWidth > 768
+                ? const EdgeInsets.symmetric(horizontal: 100)
+                : const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: <Widget>[
-                const SizedBox(
-                  height: 50,
-                ),
-                Center(
-                  child: Text(
-                    'Mídia',
-                    style: Theme.of(context).textTheme.headline1,
-                  ),
-                ),
-                const SizedBox(
-                  height: 50,
-                ),
-                YoutubeVideos(),
+                _buildHeaders(),
               ],
             ),
           ),

@@ -107,7 +107,7 @@ class GerenciarRelatorioV1State extends State<GerenciarRelatorioV1> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: TextFormField(
-        maxLength: 60,
+        maxLength: 2048,
         enabled: true,
         validator: (String? value) {
           return value == null || value.isEmpty ? 'Campo vazio' : null;

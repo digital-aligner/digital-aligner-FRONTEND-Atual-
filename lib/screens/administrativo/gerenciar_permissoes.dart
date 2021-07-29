@@ -47,7 +47,7 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
   @override
   void dispose() {
     _searchField.dispose();
-    //cadastroStore!.clearCadastros();
+    cadastroStore!.clearCadastros();
     super.dispose();
   }
 

@@ -1,7 +1,7 @@
-import 'package:digital_aligner_app/providers/check_new_data_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pacientes_v1.dart';
-import 'package:digital_aligner_app/screens/midia_screen/midia.dart';
+import 'package:digital_aligner_app/screens/midia_screen/mentoria_brasil.dart';
+import 'package:digital_aligner_app/screens/midia_screen/mentoria_portugal.dart';
 
 import 'package:digital_aligner_app/screens/perfil.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
@@ -26,51 +26,15 @@ class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _MyAppBarState extends State<MyAppBar> {
-  CheckNewDataProvider? checkDataStore;
   AuthProvider? authStore;
   int novosPedidosCount = -1;
   bool timerBlock = false;
 
   var duration;
 
-  Future<void> checkForNewPedidosTimer() async {
-    timerBlock = true;
-    while (true) {
-      await Future.delayed(Duration(seconds: 60));
-      await checkDataStore!.checkNovosPedidoCount();
-      if (novosPedidosCount > 0 &&
-          novosPedidosCount < checkDataStore!.novosPedidosCount) {
-        novosPedidosCount = checkDataStore!.novosPedidosCount;
-        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            duration: const Duration(seconds: 10),
-            content: const Text(
-              'Novo(s) pedido(s) recebido! Atualize a página ou acesse Gerenciar Pedidos.',
-              textAlign: TextAlign.center,
-            ),
-          ),
-        );
-      }
-    }
-  }
-
   @override
   void didChangeDependencies() async {
     authStore = Provider.of<AuthProvider>(context);
-    checkDataStore = Provider.of<CheckNewDataProvider>(context);
-    if (authStore!.role == 'Administrador' || authStore!.role == 'Gerente') {
-      novosPedidosCount = checkDataStore!.novosPedidosCount;
-      if (checkDataStore!.getFetchDataBool()) {
-        checkDataStore!.setfetchDataBool(false);
-        checkDataStore!.setToken(authStore!.token);
-        await checkDataStore!.fetchNovoPedidoCount();
-        novosPedidosCount = checkDataStore!.novosPedidosCount;
-      }
-      if (timerBlock == false) {
-        checkForNewPedidosTimer();
-      }
-    }
     super.didChangeDependencies();
   }
 
@@ -102,7 +66,9 @@ class _MyAppBarState extends State<MyAppBar> {
               if (authStore!.role == 'Credenciado') const SizedBox(width: 30),
               if (authStore!.role == 'Credenciado') _navNovoPaciente(context),
               const SizedBox(width: 30),
-              _midia(context),
+              _mentoriaBrasil(context),
+              const SizedBox(width: 30),
+              _mentoriaPortugal(context),
               const SizedBox(width: 30),
               _sair(context, authStore!),
               const Padding(
@@ -181,7 +147,6 @@ class _MyAppBarState extends State<MyAppBar> {
               tooltip: 'Mostrar mais!',
               onSelected: (selectedValue) {
                 if (selectedValue == 'Gerenciar Cadastros') {
-                  checkDataStore!.setfetchDataBool(true);
                   ModalRoute<Object?>? route = ModalRoute.of(context);
                   final routeName = route!.settings.name;
                   if (routeName != null &&
@@ -197,7 +162,6 @@ class _MyAppBarState extends State<MyAppBar> {
                     );
                   }
                 } else if (selectedValue == 'Gerenciar Permissões') {
-                  checkDataStore!.setfetchDataBool(true);
                   ModalRoute<Object?>? route = ModalRoute.of(context);
                   final routeName = route!.settings.name;
                   if (routeName != null &&
@@ -208,7 +172,6 @@ class _MyAppBarState extends State<MyAppBar> {
                         .pushReplacementNamed(GerenciarPermissoes.routeName);
                   }
                 } else if (selectedValue == 'Gerenciar Pacientes') {
-                  checkDataStore!.setfetchDataBool(true);
                   ModalRoute<Object?>? route = ModalRoute.of(context);
                   final routeName = route!.settings.name;
 
@@ -216,7 +179,6 @@ class _MyAppBarState extends State<MyAppBar> {
                       routeName != '/gerenciar-pacientes-v1') {
                     //Remove any messages (if any) on changing routes
                     ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    checkDataStore!.setfetchDataBool(true);
 
                     Navigator.of(context).pushReplacementNamed(
                       GerenciarPacientesV1.routeName,
@@ -229,7 +191,6 @@ class _MyAppBarState extends State<MyAppBar> {
                 } else if (selectedValue == 'Meus Setups') {
                   //Remove any messages (if any) on changing routes
                   ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  checkDataStore!.setfetchDataBool(true);
                   ModalRoute<Object?>? route = ModalRoute.of(context);
                   final routeName = route!.settings.name;
 
@@ -346,20 +307,55 @@ class _MyAppBarState extends State<MyAppBar> {
     );
   }
 
-  Widget _midia(context) {
+  Widget _mentoriaBrasil(context) {
     return TextButton.icon(
       onPressed: () {
         ModalRoute<Object?>? route = ModalRoute.of(context);
         final routeName = route!.settings.name;
-        if (routeName != null && routeName != '/midia') {
+        if (routeName != null && routeName != '/mentoria-brasil') {
           //Remove any messages (if any) on changing routes
           ScaffoldMessenger.of(context).removeCurrentSnackBar();
-          Navigator.of(context).pushReplacementNamed(Midia.routeName);
+          Navigator.of(context).pushReplacementNamed(MentoriaBrasil.routeName);
         }
       },
       icon: const Icon(Icons.play_circle_fill),
       label: const Text(
-        'Mídia',
+        'Mentoria Brasil',
+        style: TextStyle(
+          fontFamily: 'Houschka',
+          color: Colors.white,
+        ),
+      ),
+      style: ButtonStyle(
+        overlayColor: MaterialStateProperty.resolveWith<Color>(
+          (Set<MaterialState> states) {
+            return Colors.white.withOpacity(0.05);
+          },
+        ),
+        foregroundColor: MaterialStateProperty.resolveWith<Color>(
+          (Set<MaterialState> states) {
+            return Colors.white;
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _mentoriaPortugal(context) {
+    return TextButton.icon(
+      onPressed: () {
+        ModalRoute<Object?>? route = ModalRoute.of(context);
+        final routeName = route!.settings.name;
+        if (routeName != null && routeName != '/mentoria-portugal') {
+          //Remove any messages (if any) on changing routes
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+          Navigator.of(context)
+              .pushReplacementNamed(MentoriaPortugal.routeName);
+        }
+      },
+      icon: const Icon(Icons.play_circle_fill),
+      label: const Text(
+        'Mentoria Portugal',
         style: TextStyle(
           fontFamily: 'Houschka',
           color: Colors.white,

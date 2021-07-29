@@ -1,6 +1,8 @@
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pacientes_v1.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_permissoes.dart';
+import 'package:digital_aligner_app/screens/midia_screen/mentoria_brasil.dart';
+import 'package:digital_aligner_app/screens/midia_screen/mentoria_portugal.dart';
 
 import 'package:digital_aligner_app/screens/perfil.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
@@ -212,12 +214,31 @@ class _MyDrawerState extends State<MyDrawer> {
             ListTile(
               leading: const Icon(Icons.play_circle_fill),
               title: const Text(
-                'Mídia',
+                'Mentoria Brasil',
                 style: TextStyle(
                   fontFamily: 'Houschka',
                 ),
               ),
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).pushReplacementNamed(
+                  MentoriaBrasil.routeName,
+                );
+              },
+            ),
+            Divider(),
+            ListTile(
+              leading: const Icon(Icons.play_circle_fill),
+              title: const Text(
+                'Mentoria Portugal',
+                style: TextStyle(
+                  fontFamily: 'Houschka',
+                ),
+              ),
+              onTap: () {
+                Navigator.of(context).pushReplacementNamed(
+                  MentoriaPortugal.routeName,
+                );
+              },
             ),
             Divider(),
             ListTile(
