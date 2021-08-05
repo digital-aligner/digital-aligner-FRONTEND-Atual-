@@ -5,6 +5,7 @@ import 'package:digital_aligner_app/widgets/endereco_v1/endereco_model_.dart';
 
 class PedidoV1Model {
   int id;
+  String codigoPedido;
   FileModel? fotoPerfil;
   String nomePaciente;
   String dataNascimento;
@@ -46,6 +47,7 @@ class PedidoV1Model {
 
   PedidoV1Model({
     this.id = 0,
+    this.codigoPedido = '',
     this.fotoPerfil,
     this.nomePaciente = '',
     this.dataNascimento = '',
@@ -123,6 +125,7 @@ class PedidoV1Model {
 
     return PedidoV1Model(
       id: data['id'] ?? 0,
+      codigoPedido: data['codigo_pedido'] ?? '',
       nomePaciente: data['nome_paciente'] ?? '',
       dataNascimento: data['data_nascimento'] ?? '',
       tratar: data['tratar'] ?? '',
@@ -188,6 +191,7 @@ class PedidoV1Model {
 
     return {
       'id': id,
+      'codigo_pedido': codigoPedido,
       'nome_paciente': nomePaciente,
       'data_nascimento': dataNascimento,
       'tratar': tratar,

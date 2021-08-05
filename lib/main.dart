@@ -50,6 +50,11 @@ Map<String, String> _queryStrings() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    //setting intercom settings
+    //js.context.callMethod('setIntercomSettings');
+    //load chatbox
+    //js.context.callMethod('loadChatBox');
+
     Map<String, String> _qStrings = _queryStrings();
     return MultiProvider(
       providers: [

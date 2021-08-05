@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
+import 'package:digital_aligner_app/default_colors.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/historico_v1_model.dart';
@@ -194,14 +195,44 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
   Widget _manageHeaderText() {
     var pedido = _pedidoStore!.getPedido(position: _args.messageInt);
     if (pedido.pedidoRefinamento) {
+      GestureDetector(
+        onTap: () {
+          Clipboard.setData(
+            ClipboardData(
+              text: pedido.nomePaciente + ' (refinamento)',
+            ),
+          );
+          _copySnackbar();
+        },
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: Text(
+            pedido.nomePaciente + ' (refinamento)',
+            style: Theme.of(context).textTheme.headline1,
+          ),
+        ),
+      );
       return Text(
         pedido.nomePaciente + ' (refinamento)',
         style: Theme.of(context).textTheme.headline1,
       );
     }
-    return Text(
-      pedido.nomePaciente,
-      style: Theme.of(context).textTheme.headline1,
+    return GestureDetector(
+      onTap: () {
+        Clipboard.setData(
+          ClipboardData(
+            text: pedido.nomePaciente,
+          ),
+        );
+        _copySnackbar();
+      },
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Text(
+          pedido.nomePaciente,
+          style: Theme.of(context).textTheme.headline1,
+        ),
+      ),
     );
   }
 
@@ -460,6 +491,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                               _modeloVisivel = false;
                               _selectedTilePos = i;
                             });
+
                             _mapDataToViews(i);
                           }, // Handle your onTap here.
                         );
@@ -566,7 +598,20 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             content: Container(
               width: 800,
               height: 500,
-              child: Text(text),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: text,
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Text(text),
+                ),
+              ),
             ),
             actions: [
               TextButton(
@@ -579,6 +624,19 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
           ),
         );
       },
+    );
+  }
+
+  void _copySnackbar() {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 2),
+        content: const Text(
+          'Copiado',
+          textAlign: TextAlign.center,
+        ),
+      ),
     );
   }
 
@@ -651,12 +709,25 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                 height: 50,
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(
-                    'DA' + _pedidoView.id.toString(),
-                    style: const TextStyle(
-                      color: Colors.black54,
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
+                  child: GestureDetector(
+                    onTap: () {
+                      Clipboard.setData(
+                        ClipboardData(
+                          text: 'DA' + _pedidoView.id.toString(),
+                        ),
+                      );
+                      _copySnackbar();
+                    },
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Text(
+                        'DA' + _pedidoView.id.toString(),
+                        style: const TextStyle(
+                          color: Colors.black54,
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -679,25 +750,51 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                color: Colors.black12.withOpacity(0.04),
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: const Text(' Data de Nascimento: '),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: 'Data de Nascimento:',
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    color: Colors.black12.withOpacity(0.04),
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: const Text(' Data de Nascimento: '),
+                    ),
+                  ),
                 ),
               ),
             ),
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                color: Colors.black12.withOpacity(0.04),
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    _dateFormat(_pedidoView.dataNascimento),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: _dateFormat(_pedidoView.dataNascimento),
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    color: Colors.black12.withOpacity(0.04),
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        _dateFormat(_pedidoView.dataNascimento),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -706,22 +803,48 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: const Text(' Tratar: '),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: 'Tratar:',
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: const Text(' Tratar: '),
+                    ),
+                  ),
                 ),
               ),
             ),
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(_pedidoView.tratar),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: _pedidoView.tratar,
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(_pedidoView.tratar),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -729,33 +852,59 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                color: Colors.black12.withOpacity(0.04),
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: const Text(' Queixa principal: '),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: 'Queixa principal:',
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    color: Colors.black12.withOpacity(0.04),
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: const Text(' Queixa principal: '),
+                    ),
+                  ),
                 ),
               ),
             ),
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                color: Colors.black12.withOpacity(0.04),
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: GestureDetector(
-                    onTap: () {
-                      _viewTextPopup(
-                        _pedidoView.queixaPrincipal,
-                        'Queixa principal',
-                      );
-                    },
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: _maplongTextToUi(_pedidoView.queixaPrincipal),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: _pedidoView.queixaPrincipal,
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    color: Colors.black12.withOpacity(0.04),
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: GestureDetector(
+                        onTap: () {
+                          _viewTextPopup(
+                            _pedidoView.queixaPrincipal,
+                            'Queixa principal',
+                          );
+                        },
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: _maplongTextToUi(_pedidoView.queixaPrincipal),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -765,11 +914,24 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: const Text(' Objetivos do tratamento: '),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: 'Objetivos do tratamento:',
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: const Text(' Objetivos do tratamento: '),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -799,36 +961,25 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                color: Colors.black12.withOpacity(0.04),
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: const Text(' Linha média superior (mm): '),
-                ),
-              ),
-            ),
-            ResponsiveGridCol(
-              xs: 6,
-              lg: 6,
-              child: Container(
-                color: Colors.black12.withOpacity(0.04),
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(_pedidoView.linhaMediaSuperior),
-                ),
-              ),
-            ),
-            //linha media superior
-            ResponsiveGridCol(
-              xs: 6,
-              lg: 6,
-              child: Container(
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: const Text(' Linha média inferior (mm): '),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: 'Linha média superior (mm):',
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    color: Colors.black12.withOpacity(0.04),
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: const Text(' Linha média superior (mm): '),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -839,7 +990,76 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                 height: 50,
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(_pedidoView.linhaMediaInferior),
+                  child: GestureDetector(
+                    onTap: () {
+                      Clipboard.setData(
+                        ClipboardData(
+                          text: _pedidoView.linhaMediaSuperior,
+                        ),
+                      );
+                      _copySnackbar();
+                    },
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Container(
+                        color: Colors.black12.withOpacity(0.04),
+                        height: 50,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(_pedidoView.linhaMediaSuperior),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            //linha media inferior
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: 'Linha média inferior (mm):',
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: const Text(' Linha média inferior (mm): '),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            ResponsiveGridCol(
+              xs: 6,
+              lg: 6,
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: _pedidoView.linhaMediaInferior,
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(_pedidoView.linhaMediaInferior),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -847,24 +1067,50 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                color: Colors.black12.withOpacity(0.04),
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: const Text(' Overjet: '),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: 'Overjet:',
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    color: Colors.black12.withOpacity(0.04),
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: const Text(' Overjet: '),
+                    ),
+                  ),
                 ),
               ),
             ),
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                color: Colors.black12.withOpacity(0.04),
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(_pedidoView.overjet),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: _pedidoView.overjet,
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    color: Colors.black12.withOpacity(0.04),
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(_pedidoView.overjet),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -872,22 +1118,48 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: const Text(' Overbite (mm): '),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: 'Overbite (mm):',
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: const Text(' Overbite (mm): '),
+                    ),
+                  ),
                 ),
               ),
             ),
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(_pedidoView.overbite),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: _pedidoView.overbite,
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(_pedidoView.overbite),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -895,24 +1167,50 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                color: Colors.black12.withOpacity(0.04),
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: const Text(' Resolução de apinhamento superior: '),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: 'Resolução de apinhamento superior:',
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    color: Colors.black12.withOpacity(0.04),
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: const Text(' Resolução de apinhamento superior: '),
+                    ),
+                  ),
                 ),
               ),
             ),
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                height: 50,
-                color: Colors.black12.withOpacity(0.04),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(_pedidoView.resApinSup),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: _pedidoView.resApinSup,
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    height: 50,
+                    color: Colors.black12.withOpacity(0.04),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(_pedidoView.resApinSup),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -920,22 +1218,48 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: const Text(' Resolução de apinhamento inferior: '),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: 'Resolução de apinhamento inferior:',
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: const Text(' Resolução de apinhamento inferior: '),
+                    ),
+                  ),
                 ),
               ),
             ),
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(_pedidoView.resApinInf),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: _pedidoView.resApinInf,
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(_pedidoView.resApinInf),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -943,24 +1267,50 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                color: Colors.black12.withOpacity(0.04),
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: const Text(' Extração virtual: '),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: 'Extração virtual:',
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    color: Colors.black12.withOpacity(0.04),
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: const Text(' Extração virtual: '),
+                    ),
+                  ),
                 ),
               ),
             ),
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                color: Colors.black12.withOpacity(0.04),
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(_pedidoView.dentesExtVirtual),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: _pedidoView.dentesExtVirtual,
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    color: Colors.black12.withOpacity(0.04),
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(_pedidoView.dentesExtVirtual),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -968,22 +1318,48 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: const Text(' Não movimentar: '),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: 'Não movimentar:',
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: const Text(' Não movimentar: '),
+                    ),
+                  ),
                 ),
               ),
             ),
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(_pedidoView.dentesNaoMov),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: _pedidoView.dentesNaoMov,
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(_pedidoView.dentesNaoMov),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -991,24 +1367,50 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                color: Colors.black12.withOpacity(0.04),
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: const Text(' Não colocar attachments: '),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: 'Não colocar attachments:',
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    color: Colors.black12.withOpacity(0.04),
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: const Text(' Não colocar attachments: '),
+                    ),
+                  ),
                 ),
               ),
             ),
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                color: Colors.black12.withOpacity(0.04),
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(_pedidoView.dentesSemAttach),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: _pedidoView.dentesSemAttach,
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    color: Colors.black12.withOpacity(0.04),
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(_pedidoView.dentesSemAttach),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -1016,22 +1418,50 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: const Text(' Aceito desgastes interproximais (DIP): '),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: 'Aceito desgastes interproximais (DIP):',
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: const Text(
+                        ' Aceito desgastes interproximais (DIP): ',
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(_pedidoView.opcAceitoDesg),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: _pedidoView.opcAceitoDesg,
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(_pedidoView.opcAceitoDesg),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -1039,24 +1469,51 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                color: Colors.black12.withOpacity(0.04),
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: const Text(' Recorte para elástico no alinhador: '),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: 'Recorte para elástico no alinhador:',
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    color: Colors.black12.withOpacity(0.04),
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child:
+                          const Text(' Recorte para elástico no alinhador: '),
+                    ),
+                  ),
                 ),
               ),
             ),
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                color: Colors.black12.withOpacity(0.04),
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(_pedidoView.opcRecorteElas),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: _pedidoView.opcRecorteElas,
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    color: Colors.black12.withOpacity(0.04),
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(_pedidoView.opcRecorteElas),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -1064,22 +1521,48 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: const Text(' Recorte no alinhador para botão: '),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: 'Recorte no alinhador para botão:',
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: const Text(' Recorte no alinhador para botão: '),
+                    ),
+                  ),
                 ),
               ),
             ),
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(_pedidoView.opcRecorteAlin),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: _pedidoView.opcRecorteAlin,
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(_pedidoView.opcRecorteAlin),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -1087,25 +1570,51 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                color: Colors.black12.withOpacity(0.04),
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child:
-                      const Text(' Alívio no alinhador para braço de força: '),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: 'Alívio no alinhador para braço de força:',
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    color: Colors.black12.withOpacity(0.04),
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: const Text(
+                          ' Alívio no alinhador para braço de força: '),
+                    ),
+                  ),
                 ),
               ),
             ),
             ResponsiveGridCol(
               xs: 6,
               lg: 6,
-              child: Container(
-                color: Colors.black12.withOpacity(0.04),
-                height: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(_pedidoView.opcAlivioAlin),
+              child: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: _pedidoView.opcAlivioAlin,
+                    ),
+                  );
+                  _copySnackbar();
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    color: Colors.black12.withOpacity(0.04),
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(_pedidoView.opcAlivioAlin),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -1159,21 +1668,24 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                 ),
               ),
             ),
-            //modelos
-            /*
-            ResponsiveGridCol(
-              xs: 12,
-              lg: 12,
-              child: Container(
-                padding: EdgeInsets.all(10),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: _webViewModeloSuperior(),
-                ),
-              ),
-            ),*/
           ],
         ),
+        if (_pedidoView.modeloSuperior.length > 0)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: _baixarModelosLinks(
+              link: _pedidoView.modeloSuperior[0].url ?? '',
+              typeName: 'Baixar Superior',
+            ),
+          ),
+        if (_pedidoView.modeloInferior.length > 0)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: _baixarModelosLinks(
+              link: _pedidoView.modeloInferior[0].url ?? '',
+              typeName: 'Baixar inferior',
+            ),
+          ),
         if (_screenSize!.width > 1115)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20),
@@ -1292,6 +1804,18 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             ),
           ),
           actions: [
+            Link(
+              target: LinkTarget.defaultTarget,
+              uri: Uri.parse(link ?? ''),
+              builder: (BuildContext context, FollowLink? followLink) =>
+                  TextButton(
+                onPressed: followLink,
+                child: Center(
+                  child: const Text('Baixar'),
+                ),
+              ),
+            ),
+            const SizedBox(width: 20),
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text('Fechar'),
@@ -1471,7 +1995,27 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                             (BuildContext context, FollowLink? followLink) =>
                                 TextButton(
                           onPressed: followLink,
-                          child: Text(_relatorioView.visualizador1),
+                          child: const Text('Link'),
+                        ),
+                      ),
+                      const Text('|    '),
+                      GestureDetector(
+                        onTap: () {
+                          Clipboard.setData(
+                            ClipboardData(
+                              text: _formatLink(_relatorioView.visualizador1),
+                            ),
+                          );
+                          _copySnackbar();
+                        },
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: const Text(
+                            'Copiar link',
+                            style: const TextStyle(
+                              color: DefaultColors.digitalAlignBlue,
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -1611,6 +2155,19 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     }
   }
 
+  Widget _baixarModelosLinks({String link = '', required String typeName}) {
+    return Link(
+      target: LinkTarget.defaultTarget,
+      uri: Uri.parse(link),
+      builder: (BuildContext context, FollowLink? followLink) => TextButton(
+        onPressed: followLink,
+        child: Center(
+          child: Text(typeName),
+        ),
+      ),
+    );
+  }
+
 // ---------- ALTERAÇÃO ---------------
   Future<bool> _sendSolicitarAlteracao() async {
     HistoricoPacV1 h = HistoricoPacV1(
@@ -1738,7 +2295,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
         isAlwaysShown: true,
         child: SingleChildScrollView(
           child: Container(
-            height: _screenSize!.width < 768 ? 3000 : 2800,
+            height: _screenSize!.width < 768 ? 3050 : 2850,
             padding: _screenSize!.width <= _mediaQueryMd
                 ? const EdgeInsets.symmetric(horizontal: 0)
                 : const EdgeInsets.symmetric(horizontal: 100),

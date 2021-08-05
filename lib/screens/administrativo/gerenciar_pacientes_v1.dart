@@ -475,7 +475,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
       else
         DataCell(SizedBox()),
       if (_screenSize!.width > _mqMd) DataCell(Text(dateString)),
-      DataCell(Text('DA${p.id}')),
+      DataCell(Text(p.codigoPedido)),
       if (_screenSize!.width > _mqLg) DataCell(Text(p.nomePaciente)),
       if (_screenSize!.width > _mqSm)
         DataCell(Text(p.statusPedido?.status ?? '')),

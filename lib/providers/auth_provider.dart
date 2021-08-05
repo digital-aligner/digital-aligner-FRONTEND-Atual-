@@ -14,6 +14,7 @@ class AuthProvider with ChangeNotifier {
   int _userId = 0;
   String _userName = '';
   String _userLastName = '';
+  String _email = '';
   String _role = '';
   int _roleId = 0;
 
@@ -25,14 +26,8 @@ class AuthProvider with ChangeNotifier {
     return _roleId;
   }
 
-  bool get isAuth {
-    if (_token.isEmpty) {
-      return false;
-    } else if (_expiryDate!.isBefore(DateTime.now())) {
-      logout();
-      return false;
-    }
-    return true;
+  String get email {
+    return _email;
   }
 
   String get name {
@@ -56,6 +51,16 @@ class AuthProvider with ChangeNotifier {
     return '';
   }
 
+  bool get isAuth {
+    if (_token.isEmpty) {
+      return false;
+    } else if (_expiryDate!.isBefore(DateTime.now())) {
+      logout();
+      return false;
+    }
+    return true;
+  }
+
   Future<bool> tryAutoLogin() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -75,6 +80,7 @@ class AuthProvider with ChangeNotifier {
       _token = extractedUserData['token'];
       _userId = extractedUserData['userId'];
       _userName = extractedUserData['userName'];
+      _email = extractedUserData['email'];
       _userLastName = extractedUserData['userLastName'];
       _role = extractedUserData['role'];
       _roleId = extractedUserData['roleId'];
@@ -92,6 +98,7 @@ class AuthProvider with ChangeNotifier {
     _userName = '';
     _userLastName = '';
     _role = '';
+    _email = '';
     _expiryDate = null;
     _roleId = 0;
 
@@ -148,10 +155,10 @@ class AuthProvider with ChangeNotifier {
       _userId = responseData['user']['id'];
       _userName = responseData['user']['nome'];
       _userLastName = responseData['user']['sobrenome'];
+      _email = responseData['user']['email'];
       _role = responseData['user']['role']['name'];
       _roleId = responseData['user']['role']['id'];
 
-      //notifyListeners();
       //Save token in device (web or mobile)
       final prefs = await SharedPreferences.getInstance();
       final userData = json.encode({
@@ -159,6 +166,7 @@ class AuthProvider with ChangeNotifier {
         'userId': _userId,
         'userName': _userName,
         'userLastName': _userLastName,
+        'email': _email,
         'role': _role,
         'roleId': _roleId,
         'expiryDate': _expiryDate!.toIso8601String(),

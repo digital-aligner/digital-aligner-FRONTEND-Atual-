@@ -3,12 +3,14 @@ class UsuarioV1Model {
   String username;
   String nome;
   String sobrenome;
+  String email;
 
   UsuarioV1Model({
     this.id = 0,
     this.username = '',
     this.nome = '',
     this.sobrenome = '',
+    this.email = '',
   });
 
   factory UsuarioV1Model.fromJson(Map<String, dynamic>? data) {
@@ -18,6 +20,7 @@ class UsuarioV1Model {
       username: data['username'],
       nome: data['nome'] ?? '',
       sobrenome: data['sobrenome'] ?? '',
+      email: data['email'] ?? '',
     );
   }
 
@@ -27,6 +30,7 @@ class UsuarioV1Model {
       'username': username,
       'nome': nome,
       'sobrenome': sobrenome,
+      'email': email,
     };
   }
 }

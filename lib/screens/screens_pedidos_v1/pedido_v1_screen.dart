@@ -215,6 +215,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           id: _authStore!.id,
           nome: _authStore!.name,
           sobrenome: _authStore!.lastName,
+          email: _authStore!.email,
         ),
         statusPedido: StatusPedidoV1Model(id: statusPedido),
         pedidoRefinamento: _isPedidoRefinamento,
