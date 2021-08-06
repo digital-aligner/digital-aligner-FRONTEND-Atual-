@@ -713,7 +713,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                     onTap: () {
                       Clipboard.setData(
                         ClipboardData(
-                          text: 'DA' + _pedidoView.id.toString(),
+                          text: _pedidoView.codigoPedido,
                         ),
                       );
                       _copySnackbar();
@@ -721,7 +721,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                     child: MouseRegion(
                       cursor: SystemMouseCursors.click,
                       child: Text(
-                        'DA' + _pedidoView.id.toString(),
+                        _pedidoView.codigoPedido,
                         style: const TextStyle(
                           color: Colors.black54,
                           fontSize: 26,
@@ -1766,15 +1766,15 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
       return Text(
         'Relatório RL' +
             _relatorioView.id.toString() +
-            ' do pedido de refinamento DA' +
-            _relatorioView.pedido!.id.toString(),
+            ' do pedido de refinamento ' +
+            _relatorioView.pedido!.codigoPedido,
       );
     } else {
       return Text(
         'Relatório RL' +
             _relatorioView.id.toString() +
-            ' do pedido DA' +
-            _relatorioView.pedido!.id.toString(),
+            ' do pedido ' +
+            _relatorioView.pedido!.codigoPedido,
       );
     }
   }
