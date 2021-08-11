@@ -1,9 +1,10 @@
-function setIntercomSettings(){
+function setIntercomSettings(data){
     window.intercomSettings = {
-        app_id: "bnc5qtsi"
+        app_id: "bnc5qtsi",
+        name: data['userName'] + ' ' +data['userLastName'],
+        email: data['email']
     };
 }
-
 function loadChatBox(){
     var w=window;
     var ic=w.Intercom;
@@ -41,4 +42,18 @@ function loadChatBox(){
         }
     }
 }
+
+//get user info from token
+try {
+    const dataString = localStorage.getItem('flutter.digitalAlignerData');
+    //double parse (because of dart encode to localstorage)
+    const data = JSON.parse(JSON.parse(dataString));
+    
+    setIntercomSettings(data);
+    loadChatBox();
+}catch(e){
+    console.log(e);
+}
+
+
 

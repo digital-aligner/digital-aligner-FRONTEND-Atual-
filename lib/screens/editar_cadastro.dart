@@ -495,6 +495,29 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                         endIndent: 20,
                                       ),
                                     ),
+                                  //email
+                                  Container(
+                                    height: 80,
+                                    child: TextFormField(
+                                      maxLength: 320,
+                                      initialValue: sc!.email,
+                                      onSaved: (String? value) {
+                                        sc!.email = value ?? '';
+                                      },
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'Por favor insira seu email.';
+                                        }
+                                        return null;
+                                      },
+                                      decoration: const InputDecoration(
+                                        labelText: 'Email: *',
+                                        counterText: '',
+                                        border: const OutlineInputBorder(),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
                                   //nome
                                   Container(
                                     height: 80,

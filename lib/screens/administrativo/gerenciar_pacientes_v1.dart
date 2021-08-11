@@ -552,6 +552,22 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                   (states) => Color.fromRGBO(128, 128, 128, 0.2))
               : MaterialStateColor.resolveWith((states) => Colors.white),
           onSelectChanged: (selected) async {
+            //check if pedido was created by admin user
+            bool pedidoCreatedWhenCred = _checkForPermissionChange(p, i);
+            if (pedidoCreatedWhenCred) {
+              ScaffoldMessenger.of(context).removeCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  duration: const Duration(seconds: 5),
+                  content: Text(
+                    'Pedido criado na conta de credenciado. Por favor altere sua permissão',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              );
+              return;
+            }
+
             for (int j = 0; j < selectedListItem.length; j++) {
               if (i != j) {
                 if (selectedListItem[j] == true) return;
@@ -573,12 +589,6 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                 selectedListItem[i] = false;
                 _clearAlteracaoUi();
                 fetchMostRecente();
-                /*
-                setState(() {
-                  selectedListItem[i] = false;
-                  isfetchPedidos = true;
-                  firstRun = true;
-                });*/
               });
             }
           },
@@ -588,6 +598,13 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
       );
     }
     return dr;
+  }
+
+  bool _checkForPermissionChange(List<PedidoV1Model> pedido, int i) {
+    // administrator can't place pedido
+    if (pedido[i].usuario?.id == _authStore?.id && _authStore?.roleId == 4 ||
+        _authStore?.roleId == 3) return true;
+    return false;
   }
 
   Widget _dataTable() {

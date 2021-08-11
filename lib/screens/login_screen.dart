@@ -37,13 +37,15 @@ class _LoginScreenState extends State<LoginScreen> {
         (mensagem) {
           if (mensagem.containsKey('error')) {
             ScaffoldMessenger.of(context).removeCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              duration: const Duration(seconds: 8),
-              content: Text(
-                mensagem['message'].toString(),
-                textAlign: TextAlign.center,
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                duration: const Duration(seconds: 8),
+                content: Text(
+                  mensagem['message'].toString(),
+                  textAlign: TextAlign.center,
+                ),
               ),
-            ));
+            );
             _loginStore.setSenha('');
             setState(() => _isLoading = false);
           } else {
@@ -336,7 +338,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 20),
                         const Text(
-                          'V1.65',
+                          'V1.66',
                           style: TextStyle(
                             color: Color.fromRGBO(83, 86, 90, 1),
                           ),
@@ -481,7 +483,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 20),
                         const Text(
-                          'V1.65',
+                          'V1.66',
                           style: TextStyle(
                             color: Color.fromRGBO(83, 86, 90, 1),
                           ),

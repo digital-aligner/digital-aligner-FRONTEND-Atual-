@@ -1,5 +1,5 @@
 class RotasUrl {
-  //static const rotaHeroku = 'https://aqueous-wave-03435.herokuapp.com/';
+  //static const rotaHeroku = 'https://digital-aligner-strapi.herokuapp.com/';
   //static const rotaBase = 'http://localhost:1337/';
   //STL VIEWER ROUTES
   static const rotaModSupWebView =
@@ -7,7 +7,7 @@ class RotasUrl {
   static const rotaModInfWebView =
       'https://app.digitalaligner.com.br/stl_viewer/modelo_inf_viewer.html';
 
-  static const rotaBase = 'http://localhost:1337/';
+  static const rotaBase = 'https://digital-aligner-strapi.herokuapp.com/';
   static const rotaGetPaisesAndState = rotaBase + 'paises';
   static const rotaGetCities = rotaBase + 'cidades/';
   static const rotaLogin = rotaBase + 'auth/local/';

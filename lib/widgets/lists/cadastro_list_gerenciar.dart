@@ -591,49 +591,50 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
                           Icons.supervisor_account,
                         )),
                   ),
-                  TextButton(
-                    child: !_sendingCadastro
-                        ? const Text("Aprovar")
-                        : CircularProgressIndicator(
-                            valueColor: new AlwaysStoppedAnimation<Color>(
-                              Colors.blue,
+                  if (cadList[index]['id'] != authStore.id)
+                    TextButton(
+                      child: !_sendingCadastro
+                          ? const Text("Aprovar")
+                          : CircularProgressIndicator(
+                              valueColor: new AlwaysStoppedAnimation<Color>(
+                                Colors.blue,
+                              ),
                             ),
-                          ),
-                    onPressed: !_sendingCadastro
-                        ? () {
-                            setState(() {
-                              _sendingCadastro = true;
-                            });
-                            cadastroStore
-                                .aprovarCadastro(cadList[index]['id'])
-                                .then((data) {
-                              if (!data.containsKey('error')) {
-                                ScaffoldMessenger.of(context)
-                                    .removeCurrentSnackBar();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    duration: const Duration(seconds: 8),
-                                    content: Text('Cadastro aprovado!'),
-                                  ),
-                                );
-                                Navigator.pop(context, true);
-                              } else {
-                                ScaffoldMessenger.of(context)
-                                    .removeCurrentSnackBar();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    duration: const Duration(seconds: 8),
-                                    content: Text('Algo deu errado'),
-                                  ),
-                                );
-                              }
+                      onPressed: !_sendingCadastro
+                          ? () {
                               setState(() {
-                                _sendingCadastro = false;
+                                _sendingCadastro = true;
                               });
-                            });
-                          }
-                        : null,
-                  ),
+                              cadastroStore
+                                  .aprovarCadastro(cadList[index]['id'])
+                                  .then((data) {
+                                if (!data.containsKey('error')) {
+                                  ScaffoldMessenger.of(context)
+                                      .removeCurrentSnackBar();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      duration: const Duration(seconds: 8),
+                                      content: Text('Cadastro aprovado!'),
+                                    ),
+                                  );
+                                  Navigator.pop(context, true);
+                                } else {
+                                  ScaffoldMessenger.of(context)
+                                      .removeCurrentSnackBar();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      duration: const Duration(seconds: 8),
+                                      content: Text('Algo deu errado'),
+                                    ),
+                                  );
+                                }
+                                setState(() {
+                                  _sendingCadastro = false;
+                                });
+                              });
+                            }
+                          : null,
+                    ),
                   TextButton(
                     child: !_sendingCadastro
                         ? Text("Editar")
