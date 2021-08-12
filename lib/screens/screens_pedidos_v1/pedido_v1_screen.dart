@@ -2687,11 +2687,11 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               _tratarContr.text = p.tratar;
               _queixaPrincipal.text = p.queixaPrincipal;
               _objContr.text = p.objetivosTratamento;
+              _isPedidoRefinamento = p.pedidoRefinamento;
 
               List<String> lmsConv = _convertDbValuesToUi(p.linhaMediaSuperior);
 
               if (lmsConv.length == 2) {
-                print('im in');
                 if (lmsConv[0] == 'Mover para esquerda') {
                   mmEsqLinhaMediaSupVis = true;
                 } else if (lmsConv[0] == 'Mover para direita') {

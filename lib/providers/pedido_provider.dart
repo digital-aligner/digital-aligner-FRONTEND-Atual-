@@ -16,6 +16,9 @@ class PedidoProvider with ChangeNotifier {
   ];
   //pedidos from server
   List<PedidoV1Model> _pedidosV1List = [];
+  //selected refinamento
+  List<PedidoV1Model> _pedidoRef = [];
+  bool _refinamentoSelected = false;
 
   //for first pedido send
   List<FileModel> _fotografias = [];
@@ -68,6 +71,17 @@ class PedidoProvider with ChangeNotifier {
     _modeloSuperior = [];
     _modeloInferior = [];
     _modeloCompactado = [];
+  }
+
+  void setRefinamento(PedidoV1Model pedido) {
+    _pedidoRef = [];
+    _pedidoRef.add(pedido);
+    _refinamentoSelected = true;
+  }
+
+  void removeRefinamento() {
+    _pedidoRef = [];
+    _refinamentoSelected = false;
   }
 
   void saveFilesForFirstPedido({
@@ -209,7 +223,7 @@ class PedidoProvider with ChangeNotifier {
       );
 
       List<dynamic> _pedidos = json.decode(response.body);
-      print('x32');
+
       if (_pedidos[0].containsKey('id')) {
         _pedidos.forEach((p) {
           _pedidosV1List.add(PedidoV1Model.fromJson(p));
@@ -266,6 +280,7 @@ class PedidoProvider with ChangeNotifier {
   }
 
   PedidoV1Model getPedido({int position = 0}) {
+    if (_refinamentoSelected) return _pedidoRef[0];
     return _pedidosV1List.elementAt(position);
   }
 }

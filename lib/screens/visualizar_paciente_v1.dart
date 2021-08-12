@@ -194,7 +194,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
 
   Widget _manageHeaderText() {
     var pedido = _pedidoStore!.getPedido(position: _args.messageInt);
-    if (pedido.pedidoRefinamento) {
+    if (/*pedido.pedidoRefinamento*/ false) {
       GestureDetector(
         onTap: () {
           Clipboard.setData(
@@ -283,9 +283,9 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
   }
 
   Widget _pacienteDados() {
-    bool refinamento =
-        _pedidoStore!.getPedido(position: _args.messageInt).pedidoRefinamento;
-    if (!refinamento)
+    //bool refinamento =
+    //    _pedidoStore!.getPedido(position: _args.messageInt).pedidoRefinamento;
+    if (/*!refinamento*/ true)
       return Card(
         elevation: 10,
         child: SizedBox(
@@ -313,41 +313,40 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                       child: Text('editar paciente'),
                     ),
                     TextButton(
-                      onPressed:
-                          _checkIfUserIsSame() && _checkIfRefinamentoIsActive()
-                              ? () {
-                                  setState(() {
-                                    _selectedView = 0;
-                                    _selectedTilePos = -1;
-                                  });
+                      onPressed: _checkIfUserIsSame()
+                          ? () {
+                              setState(() {
+                                _selectedView = 0;
+                                _selectedTilePos = -1;
+                              });
 
-                                  var p = _pedidoStore!.getPedido(
-                                    position: _args.messageInt,
-                                  );
+                              var p = _pedidoStore!.getPedido(
+                                position: _args.messageInt,
+                              );
 
-                                  Navigator.of(context)
-                                      .pushNamed(
-                                    PedidoV1Screen.routeName,
-                                    arguments: ScreenArguments(
-                                      title: 'Pedido de refinamento',
-                                      messageMap: {
-                                        'pedidoId': p.id,
-                                        'isRefinamento': true,
-                                        'nomePaciente': p.nomePaciente,
-                                        'dataNascimento': p.dataNascimento,
-                                      },
-                                    ),
-                                  )
-                                      .then((value) async {
-                                    if (value != null) {
-                                      if (value == true) {
-                                        await _fetchHistoricoPac();
-                                        setState(() {});
-                                      }
-                                    }
-                                  });
+                              Navigator.of(context)
+                                  .pushNamed(
+                                PedidoV1Screen.routeName,
+                                arguments: ScreenArguments(
+                                  title: 'Pedido de refinamento',
+                                  messageMap: {
+                                    'pedidoId': p.id,
+                                    'isRefinamento': true,
+                                    'nomePaciente': p.nomePaciente,
+                                    'dataNascimento': p.dataNascimento,
+                                  },
+                                ),
+                              )
+                                  .then((value) async {
+                                if (value != null) {
+                                  if (value == true) {
+                                    await _fetchHistoricoPac();
+                                    setState(() {});
+                                  }
                                 }
-                              : null,
+                              });
+                            }
+                          : null,
                       child: Text('Solicitar refinamento'),
                     ),
                   ],
@@ -698,6 +697,13 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                 child: const Text('Copiar link'),
               ),
             ],
+          ),
+        if (_pedidoView.pedidoRefinamento)
+          TextButton(
+            onPressed: () async {
+              await _editarRefinamento();
+            },
+            child: const Text('Editar Refinamento'),
           ),
         ResponsiveGridRow(
           children: [
@@ -2254,6 +2260,46 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
         );
       },
     );
+  }
+
+  Future<void> _editarRefinamento() async {
+    //set refinamento to provider
+    _pedidoStore?.setRefinamento(_pedidoView);
+
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(milliseconds: 200),
+        content: Text(
+          'Aguarde...',
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+    await Future.delayed(Duration(milliseconds: 200));
+    try {
+      Navigator.of(context)
+          .pushNamed(
+        PedidoV1Screen.routeName,
+        arguments: ScreenArguments(
+          title: _pedidoView.codigoPedido + ' (Refinamento)',
+          messageMap: {'isEditarPaciente': true},
+          messageInt: 0,
+        ),
+      )
+          .then((_) async {
+        if (true) {
+          _pedidoStore?.removeRefinamento();
+          await _fetchHistoricoPac();
+          setState(() {
+            _selectedView = 0;
+            _selectedTilePos = -1;
+          });
+        }
+      });
+    } catch (e) {
+      _pedidoStore?.removeRefinamento();
+    }
   }
 
   @override
