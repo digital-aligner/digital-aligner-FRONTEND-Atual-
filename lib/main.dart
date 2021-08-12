@@ -155,6 +155,11 @@ class MyApp extends StatelessWidget {
                 fontSize: 30,
                 fontFamily: 'Houschka',
               ),
+              headline2: const TextStyle(
+                color: Color.fromRGBO(83, 86, 90, 1),
+                fontSize: 20,
+                fontFamily: 'Houschka',
+              ),
             ),
           ),
           home: FutureBuilder(

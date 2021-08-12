@@ -57,6 +57,7 @@ dependencies:
   jwt_decode: ^0.3.1
   characters: ^1.1.0
   youtube_player_iframe: ^2.1.0
+  cpf_cnpj_validator: ^2.0.0
   
 #TEMPORARY SOLUTION. When migrating to null safety remove.
 dependency_overrides:

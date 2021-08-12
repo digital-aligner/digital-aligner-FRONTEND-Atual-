@@ -762,12 +762,31 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     );
   }
 
+  String _mapSearchValueToLable() {
+    if (!_ref &&
+        !_pedidosAtualizados &&
+        !_pedidosAlteracoes &&
+        !_pedidosExecucao)
+      return 'Filtro da pesquisa: PACIENTES: DATA CRIADO';
+    else if (!_ref && _pedidosAtualizados)
+      return 'Filtro da pesquisa: PACIENTES: DATA ATUALIZADO';
+    else if (_ref && !_pedidosAtualizados)
+      return 'Filtro da pesquisa: PACIENTES QUE SOLICITARAM REFINAMENTOS: DATA CRIADO';
+    if (_ref && _pedidosAtualizados)
+      return 'Filtro da pesquisa: PACIENTES QUE SOLICITARAM REFINAMENTOS: DATA ATUALIZADO';
+    else if (_pedidosAlteracoes)
+      return 'Filtro da pesquisa: PACIENTES COM ALTERAÇÕES SOLICITADAS PARA PEDIDO';
+    else
+      return 'Filtro da pesquisa: PACIENTES COM PEDIDO EM EXECUÇÃO';
+  }
+
   Widget _searchBox() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20.0),
       child: TextField(
         decoration: InputDecoration(
-          hintText: 'Pesquise seus pacientes',
+          labelStyle: Theme.of(context).textTheme.headline2,
+          labelText: _mapSearchValueToLable(),
         ),
         onChanged: (value) async {
           pageHeight = 900;

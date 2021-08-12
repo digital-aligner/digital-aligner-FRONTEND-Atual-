@@ -6,7 +6,7 @@ import 'package:digital_aligner_app/functions/system_functions.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/providers/cadastro_provider.dart';
 import 'package:digital_aligner_app/widgets/endereco_v1/endereco_v1.dart';
-
+import 'package:cpf_cnpj_validator/cpf_validator.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -149,14 +149,10 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 validator: (value) {
                                   if (value!.length < 11) {
                                     return 'Por favor insira seu cpf';
+                                  } else if (!CPFValidator.isValid(value)) {
+                                    return 'CPF invalido! Por favor verifique.';
                                   }
-                                  /*
-                                  // Validar CPF
-                                  if (CPF.isValid(value)) {
-                                    return null;
-                                  } else {
-                                    return 'Este CPF é inválido. Por favor verifique';
-                                  }*/
+                                  return null;
                                 },
                                 onChanged: (value) async {
                                   const duration = Duration(milliseconds: 500);
@@ -187,7 +183,12 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                       RegExp(r'[0-9]')),
                                 ],
                                 initialValue: null,
-                                decoration: const InputDecoration(
+                                decoration: InputDecoration(
+                                  errorText: !CPFValidator.isValid(
+                                              _controllerCPF.text) &&
+                                          _controllerCPF.text.isNotEmpty
+                                      ? 'CPF invalido! Por favor verifique.'
+                                      : null,
                                   //To hide cpf length num
                                   counterText: '',
                                   labelText: 'CPF',
