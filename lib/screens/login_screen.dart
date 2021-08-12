@@ -338,7 +338,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 20),
                         const Text(
-                          'V1.66',
+                          'V1.69',
                           style: TextStyle(
                             color: Color.fromRGBO(83, 86, 90, 1),
                           ),
@@ -483,7 +483,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 20),
                         const Text(
-                          'V1.66',
+                          'V1.69',
                           style: TextStyle(
                             color: Color.fromRGBO(83, 86, 90, 1),
                           ),

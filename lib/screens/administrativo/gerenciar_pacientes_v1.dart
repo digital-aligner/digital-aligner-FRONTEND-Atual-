@@ -364,6 +364,18 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
           if (_authStore!.role == 'Administrador' ||
               _authStore!.role == 'Gerente')
             PopupMenuItem<String>(
+              enabled: _pedidoStore
+                              ?.getPedido(position: position)
+                              .statusPedido
+                              ?.id ==
+                          6 ||
+                      _pedidoStore
+                              ?.getPedido(position: position)
+                              .statusPedido
+                              ?.id ==
+                          7
+                  ? false
+                  : true,
               value: 'Criar relatório',
               child: const Text('Criar relatório'),
             ),
