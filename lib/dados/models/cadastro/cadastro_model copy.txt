@@ -19,7 +19,7 @@ class CadastroModel {
   String celular;
   AprovacaoUsuarioModel? aprovacao_usuario;
   RepresentanteModel? representante;
-  int onboardingNum;
+  OnboardingModel? onboarding;
 
   CadastroModel({
     this.id = 0,
@@ -36,7 +36,7 @@ class CadastroModel {
     this.celular = '',
     this.aprovacao_usuario,
     this.representante,
-    this.onboardingNum = 0,
+    this.onboarding,
   });
 
   factory CadastroModel.fromJson(Map<String, dynamic> data) {
@@ -74,14 +74,20 @@ class CadastroModel {
               'aprovacao_usuario': {'id': -1, 'status': ''},
             },
       ),
-      onboardingNum: data['onboarding_num'] ?? 0,
+      onboarding: OnboardingModel.fromJson(
+        data['onboarding'] ??
+            {
+              'id': -1,
+              'onboarding': '',
+            },
+      ),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      //'username': usernameCpf,
+      'username': usernameCpf,
       'email': email,
       'blocked': blocked,
       'role': role!.toJson(),
@@ -94,7 +100,7 @@ class CadastroModel {
       'celular': celular,
       'aprovacao_usuario': aprovacao_usuario!.toJson(),
       'representante': representante!.toJson(),
-      'onboarding_num': onboardingNum,
+      'onboarding': onboarding!.toJson(),
     };
   }
 }

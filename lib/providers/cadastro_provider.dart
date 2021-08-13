@@ -365,7 +365,7 @@ class CadastroProvider with ChangeNotifier {
         body: json.encode(_selectedCad!.toJson()));
 
     Map _data = json.decode(_response.body);
-
+    print(_data);
     return _data;
   }
 

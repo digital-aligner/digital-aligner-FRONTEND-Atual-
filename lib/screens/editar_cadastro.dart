@@ -28,6 +28,7 @@ import '../appbar/SecondaryAppbar.dart';
 import '../widgets/endereco_v1/endereco_v1.dart';
 
 import 'package:http/http.dart' as http;
+import 'dart:html' as html;
 
 class EditarCadastro extends StatefulWidget {
   static const routeName = '/editar-cadastro';
@@ -48,9 +49,12 @@ class _EditarCadastroState extends State<EditarCadastro> {
   final _controllerCPF = TextEditingController();
   final _controllerNUM = TextEditingController();
   final _controllerCEP = TextEditingController();
+  final _controllerOnboarding = TextEditingController();
 
   final _controllerTEL = TextEditingController();
   final _controllerCEL = TextEditingController();
+
+  String _originalEmail = '';
 
   //Formating date to iso standard. Manditory to store date in db.
   DateFormat format = DateFormat("dd/MM/yyyy");
@@ -78,7 +82,7 @@ class _EditarCadastroState extends State<EditarCadastro> {
     _controllerCPF.dispose();
     _controllerNUM.dispose();
     _controllerCEP.dispose();
-
+    _controllerOnboarding.dispose();
     _controllerTEL.dispose();
     _controllerCEL.dispose();
     super.dispose();
@@ -90,9 +94,6 @@ class _EditarCadastroState extends State<EditarCadastro> {
 
   //Representantes data list
   List<dynamic> _representantes = [];
-
-  //onboarding data list
-  List<dynamic> _onboardings = [];
 
   Future<List<String>> _fetchStates() async {
     final response = await http.get(
@@ -131,13 +132,9 @@ class _EditarCadastroState extends State<EditarCadastro> {
     }
     return _representantes;
   }
-
+/*
   Future<List<dynamic>> fetchOnboarding() async {
-    //Fetch onboarding if last fetch was with error
-    if (_onboardings.isNotEmpty && !_onboardings[0].containsKey('error')) {
-      return _onboardings;
-    }
-
+    
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
       'Accept': 'application/json',
@@ -154,9 +151,9 @@ class _EditarCadastroState extends State<EditarCadastro> {
     } catch (error) {
       print(error.toString());
     }
-
+    
     return _onboardings;
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -174,11 +171,15 @@ class _EditarCadastroState extends State<EditarCadastro> {
         //Selected cadastro
         sc = cadastroStore.selectedCad();
 
+        if (sc?.email != null) {
+          _originalEmail = sc!.email;
+        }
+
         DateTime d = DateTime.parse(sc!.data_nasc);
 
         //Inserting data onto fields
         _controllerDataNasc.text = DateFormat('dd/MM/yyyy').format(d);
-
+        _controllerOnboarding.text = sc!.onboardingNum.toString();
         _controllerCRO.text = sc!.cro_num;
         _controllerCPF.text = sc!.usernameCpf;
 
@@ -273,79 +274,59 @@ class _EditarCadastroState extends State<EditarCadastro> {
           if (authStore.role != 'Credenciado') const SizedBox(height: 40),
           //onboarding
           if (authStore.role != 'Credenciado' && sc!.id != authStore.id)
-            DropdownSearch<String>(
-              label: 'Onboarding:',
-              errorBuilder: (context, searchEntry, exception) {
-                return Center(
-                  child: const Text('Algum erro ocorreu.'),
-                );
-              },
-              emptyBuilder: (context, searchEntry) {
-                return Center(child: const Text('Nada'));
-              },
-              loadingBuilder: (context, searchEntry) {
-                return Center(
-                  child: CircularProgressIndicator(
-                    valueColor: new AlwaysStoppedAnimation<Color>(
-                      Colors.blue,
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    if (int.parse(_controllerOnboarding.text) > 0) {
+                      setState(() {
+                        _controllerOnboarding.text =
+                            (int.parse(_controllerOnboarding.text) - 1)
+                                .toString();
+                      });
+                    }
+                  },
+                  icon: const Icon(Icons.minimize),
+                ),
+                Expanded(
+                  child: TextFormField(
+                    onSaved: (String? value) {
+                      if (value != null) {
+                        sc!.onboardingNum = int.parse(value);
+                      }
+                    },
+                    enabled: true,
+                    validator: (String? value) {
+                      if (value != null) {
+                        if (value.isEmpty) {
+                          return 'Por favor escolha um onboarding';
+                        }
+                      }
+                    },
+                    controller: _controllerOnboarding,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                    ],
+                    decoration: const InputDecoration(
+                      //To hide cpf length num
+                      counterText: '',
+                      labelText: 'Onboarding #: *',
+                      border: const OutlineInputBorder(),
                     ),
                   ),
-                );
-              },
-              onFind: (_) async {
-                if (!authStore.isAuth) {
-                  await Navigator.pushAndRemoveUntil<void>(
-                    context,
-                    MaterialPageRoute<void>(
-                      builder: (BuildContext context) => LoginScreen(
-                        showLoginMessage: true,
-                      ),
-                    ),
-                    ModalRoute.withName('/'),
-                  );
-                }
-
-                await fetchOnboarding();
-
-                //Error handling
-                if (_onboardings[0].containsKey('error')) {
-                  if (_onboardings[0]['statusCode'] != 404) {
-                    //Will go to errorBuilder
-                    throw Error();
-                  } else {
-                    //Will go to emptyBuilder
-                    return [];
-                  }
-                }
-                List<String> _onboardingUi = [];
-                for (var _onboarding in _onboardings) {
-                  _onboardingUi.add(
-                    _onboarding['onboarding'],
-                  );
-                }
-                return _onboardingUi;
-              },
-              dropdownSearchDecoration: InputDecoration(
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-              ),
-              maxHeight: 350,
-              mode: Mode.MENU,
-              showSearchBox: true,
-              showSelectedItem: true,
-              onChanged: (value) {
-                //Match with list of representantes cpf
-                for (var _onboarding in _onboardings) {
-                  if (_onboarding['onboarding'] == value) {
-                    sc!.onboarding = OnboardingModel.fromJson(
-                      _onboarding,
-                    );
-                  }
-                }
-              },
-              selectedItem: sc!.onboarding!.id == -1
-                  ? 'Selecionar qual onboarding participou'
-                  : sc!.onboarding!.onboarding,
+                ),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _controllerOnboarding.text =
+                          (int.parse(_controllerOnboarding.text) + 1)
+                              .toString();
+                    });
+                  },
+                  icon: const Icon(Icons.add),
+                ),
+              ],
             ),
         ],
       );
@@ -497,6 +478,17 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                     ),
                                   //email
                                   Container(
+                                    padding: const EdgeInsets.only(bottom: 5),
+                                    width: double.infinity,
+                                    child: const Text(
+                                      'Obs: ao atualizar email será necessário realizar login novamente',
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
                                     height: 80,
                                     child: TextFormField(
                                       maxLength: 320,
@@ -510,6 +502,11 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                         }
                                         return null;
                                       },
+                                      inputFormatters: <TextInputFormatter>[
+                                        FilteringTextInputFormatter.allow(
+                                            RegExp(
+                                                r'[a-z0-9!@#$&()\\-`.+,/\"-]')),
+                                      ],
                                       decoration: const InputDecoration(
                                         labelText: 'Email: *',
                                         counterText: '',
@@ -878,6 +875,15 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                                     ),
                                                   );
                                                 } else {
+                                                  //usuario alterou email
+                                                  if (sc?.email !=
+                                                      _originalEmail) {
+                                                    authStore.logout();
+
+                                                    html.window.location
+                                                        .reload();
+                                                    return;
+                                                  }
                                                   Navigator.pop(context, true);
                                                   ScaffoldMessenger.of(context)
                                                       .removeCurrentSnackBar();
