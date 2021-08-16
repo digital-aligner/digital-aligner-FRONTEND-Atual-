@@ -337,13 +337,13 @@ class _EnderecoState extends State<Endereco> {
               },
         child: sendingEndereco
             ? const Text(
-                'AGUARDE...',
+                'Aguarde...',
                 style: const TextStyle(
                   color: Colors.white,
                 ),
               )
             : const Text(
-                'ATUALIZAR',
+                'Atualizar atual',
                 style: const TextStyle(
                   color: Colors.white,
                 ),
@@ -360,12 +360,12 @@ class _EnderecoState extends State<Endereco> {
     return Wrap(
       runAlignment: WrapAlignment.spaceAround,
       children: [
-        _manageNovoEndBtns(),
+        if (_endId > 0) _manageAtualizarEndBtns(),
         const SizedBox(
           height: 10,
           width: 10,
         ),
-        if (_endId > 0) _manageAtualizarEndBtns(),
+        _manageNovoEndBtns(),
       ],
     );
   }

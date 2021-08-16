@@ -69,6 +69,7 @@ class RotasUrl {
   //ROTAS VERSÃO V1
   static const rotaCadastroExteriorV1 = rotaBase + 'cadastro-exterior';
   static const rotaPaisesV1 = rotaBase + 'paises-v1';
+  static const rotaOnboardingV1 = rotaBase + 'onboarding-v1/1';
   static const rotaCidadesV1 = rotaBase + 'cidades-v1';
   static const rotaEstadosV1 = rotaBase + 'estados-v1';
   static const rotaEnderecosV1 = rotaBase + 'enderecos-v1';

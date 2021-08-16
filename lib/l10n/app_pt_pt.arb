@@ -1,0 +1,14 @@
+{
+    "language": "Portuguese (Portugal)",
+    "@language": {
+        "description": "Portugal default"
+    },
+    "Endereço": "Morada",
+    "Número": "Número da porta,
+    "Complemento": "Andar",
+    "Bairro": "",
+    "@Bairro": {
+        "description": "Not used in Portugal"
+    },
+    "CEP": "Código Postal"
+}

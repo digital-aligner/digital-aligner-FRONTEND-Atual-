@@ -145,11 +145,13 @@ class MyApp extends StatelessWidget {
                 borderSide: BorderSide(color: Colors.black12),
               ),
             ),
-
             primarySwatch: DefaultColors.digitalAlignBlue,
             accentColor: Colors.white,
             //Custom textheme for use anywhere in app
             textTheme: const TextTheme(
+              button: const TextStyle(
+                color: Colors.white,
+              ),
               //Para titulos nas telas
               headline1: const TextStyle(
                 color: Color.fromRGBO(83, 86, 90, 1),
