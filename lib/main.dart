@@ -2,6 +2,7 @@ import 'package:digital_aligner_app/default_colors.dart';
 import 'package:digital_aligner_app/page_transition_web.dart';
 import 'package:digital_aligner_app/providers/pacientes_list_provider.dart';
 import 'package:digital_aligner_app/providers/relatorio_provider.dart';
+import 'package:digital_aligner_app/screens/administrativo/gerenciar_onboarding.dart';
 
 import 'package:digital_aligner_app/screens/gerenciar_relatorio_v1.dart';
 import 'package:digital_aligner_app/screens/midia_screen/mentoria_brasil.dart';
@@ -185,6 +186,7 @@ class MyApp extends StatelessWidget {
             MentoriaPortugal.routeName: (ctx) => MentoriaPortugal(),
             PedidoV1Screen.routeName: (ctx) => PedidoV1Screen(),
             GerenciarRelatorioV1.routeName: (ctx) => GerenciarRelatorioV1(),
+            GerenciarOnboarding.routeName: (ctx) => GerenciarOnboarding(),
           },
         ),
       ),

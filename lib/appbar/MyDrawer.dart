@@ -1,4 +1,5 @@
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
+import 'package:digital_aligner_app/screens/administrativo/gerenciar_onboarding.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pacientes_v1.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_permissoes.dart';
 import 'package:digital_aligner_app/screens/midia_screen/mentoria_brasil.dart';
@@ -117,20 +118,35 @@ class _MyDrawerState extends State<MyDrawer> {
                                   ),
                                 );
                               }
-                            } else if (selectedValue == 'Meus Setups') {
+                            } else if (selectedValue ==
+                                'Gerenciar Onboarding') {
                               ModalRoute<Object?>? route =
                                   ModalRoute.of(context);
                               final routeName = route!.settings.name;
 
                               if (routeName != null &&
-                                  routeName != '/meus-setups') {}
-                            } else if (selectedValue == 'Minhas Revisões') {
-                              ModalRoute<Object?>? route =
-                                  ModalRoute.of(context);
-                              final routeName = route!.settings.name;
+                                  routeName != '/gerenciar-onboarding') {
+                                //Remove any messages (if any) on changing routes
+                                ScaffoldMessenger.of(context)
+                                    .removeCurrentSnackBar();
 
-                              if (routeName != null &&
-                                  routeName != '/minhas-revisoes') {}
+                                Navigator.of(context).pushReplacementNamed(
+                                    GerenciarOnboarding.routeName);
+                              } else if (selectedValue == 'Meus Setups') {
+                                ModalRoute<Object?>? route =
+                                    ModalRoute.of(context);
+                                final routeName = route!.settings.name;
+
+                                if (routeName != null &&
+                                    routeName != '/meus-setups') {}
+                              } else if (selectedValue == 'Minhas Revisões') {
+                                ModalRoute<Object?>? route =
+                                    ModalRoute.of(context);
+                                final routeName = route!.settings.name;
+
+                                if (routeName != null &&
+                                    routeName != '/minhas-revisoes') {}
+                              }
                             }
                           },
                           itemBuilder: (_) => [
@@ -161,6 +177,15 @@ class _MyDrawerState extends State<MyDrawer> {
                                 ),
                               ),
                               value: 'Gerenciar Pacientes',
+                            ),
+                            PopupMenuItem(
+                              child: const Text(
+                                'Gerenciar Onboarding',
+                                style: TextStyle(
+                                  fontFamily: 'Houschka',
+                                ),
+                              ),
+                              value: 'Gerenciar Onboarding',
                             ),
                           ],
                         ),

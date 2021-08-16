@@ -1,4 +1,5 @@
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
+import 'package:digital_aligner_app/screens/administrativo/gerenciar_onboarding.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pacientes_v1.dart';
 import 'package:digital_aligner_app/screens/midia_screen/mentoria_brasil.dart';
 import 'package:digital_aligner_app/screens/midia_screen/mentoria_portugal.dart';
@@ -188,14 +189,26 @@ class _MyAppBarState extends State<MyAppBar> {
                       ),
                     );
                   }
-                } else if (selectedValue == 'Meus Setups') {
-                  //Remove any messages (if any) on changing routes
-                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                } else if (selectedValue == 'Gerenciar Onboarding') {
                   ModalRoute<Object?>? route = ModalRoute.of(context);
                   final routeName = route!.settings.name;
 
-                  if (routeName != null && routeName != '/meus-setups') {}
-                } else if (selectedValue == 'Minhas Revisões') {}
+                  if (routeName != null &&
+                      routeName != '/gerenciar-onboarding') {
+                    //Remove any messages (if any) on changing routes
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+
+                    Navigator.of(context)
+                        .pushReplacementNamed(GerenciarOnboarding.routeName);
+                  } else if (selectedValue == 'Meus Setups') {
+                    //Remove any messages (if any) on changing routes
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                    ModalRoute<Object?>? route = ModalRoute.of(context);
+                    final routeName = route!.settings.name;
+
+                    if (routeName != null && routeName != '/meus-setups') {}
+                  } else if (selectedValue == 'Minhas Revisões') {}
+                }
               },
               itemBuilder: (_) => [
                 PopupMenuItem(
@@ -225,6 +238,15 @@ class _MyAppBarState extends State<MyAppBar> {
                     ),
                   ),
                   value: 'Gerenciar Pacientes',
+                ),
+                PopupMenuItem(
+                  child: const Text(
+                    'Gerenciar Onboarding',
+                    style: TextStyle(
+                      fontFamily: 'Houschka',
+                    ),
+                  ),
+                  value: 'Gerenciar Onboarding',
                 ),
               ],
             ),
