@@ -30,7 +30,7 @@ class Endereco extends StatefulWidget {
 class _EnderecoState extends State<Endereco> {
   AuthProvider? _authStore;
   CadastroProvider? _cadastroStore;
-
+  late Locale _currentLocal;
   //The types allowed
   final String _type1 = 'criar endereco';
   final String _type2 = 'gerenciar endereco';
@@ -724,7 +724,7 @@ class _EnderecoState extends State<Endereco> {
           const SizedBox(height: 25),
           _enderecoField(),
           _numeroEComplementoField(),
-          _bairroField(),
+          if (_currentLocal.countryCode != 'PT') _bairroField(),
           _cepField(),
           _paisField(),
           _ufCidadeField(),
@@ -740,7 +740,7 @@ class _EnderecoState extends State<Endereco> {
       children: <Widget>[
         _enderecoField(),
         _numeroEComplementoField(),
-        _bairroField(),
+        if (_currentLocal.countryCode != 'PT') _bairroField(),
         _cepField(),
         _paisField(),
         _ufCidadeField(),
@@ -818,6 +818,7 @@ class _EnderecoState extends State<Endereco> {
     sWidth = MediaQuery.of(context).size.width;
     _cadastroStore = Provider.of<CadastroProvider>(context);
     _authStore = Provider.of<AuthProvider>(context, listen: false);
+    _currentLocal = Localizations.localeOf(context);
     super.didChangeDependencies();
   }
 

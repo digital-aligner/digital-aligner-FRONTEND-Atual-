@@ -477,14 +477,14 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     var dateString = format.format(dateTime);
 
     return [
-      if (p.novaAtualizacao != null && p.novaAtualizacao == true)
+      if (p.novaAtualizacao != null && p.novaAtualizacao == true && !_ref)
         DataCell(
           const Icon(
             Icons.circle,
             color: Colors.green,
           ),
         )
-      else
+      else if (!_ref)
         DataCell(SizedBox()),
       if (_screenSize!.width > _mqMd) DataCell(Text(dateString)),
       DataCell(Text(p.codigoPedido)),
@@ -625,25 +625,28 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
       child: DataTable(
         showCheckboxColumn: false,
         columns: [
-          DataColumn(
-            label: Tooltip(
-              message: 'Refinamento solicitado',
-              child: Row(
-                children: [
-                  const Text('Ref'),
-                  const Icon(
-                    Icons.circle,
-                    color: Colors.green,
-                  ),
-                ],
+          if (!_ref)
+            DataColumn(
+              label: Tooltip(
+                message: 'Refinamento solicitado',
+                child: Row(
+                  children: [
+                    const Text('Ref'),
+                    const Icon(
+                      Icons.circle,
+                      color: Colors.green,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
           if (!_pedidosAtualizados && _screenSize!.width > _mqMd)
             DataColumn(label: const Text('Data'))
           else if (_screenSize!.width > _mqMd)
             DataColumn(label: const Text('Atualizado')),
-          DataColumn(label: const Text('Pedido')),
+          DataColumn(
+            label: !_ref ? const Text('Pedido') : const Text('Refinamento'),
+          ),
           if (_screenSize!.width > _mqLg)
             DataColumn(label: const Text('Paciente')),
           if (_screenSize!.width > _mqSm)
@@ -771,9 +774,9 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     else if (!_ref && _pedidosAtualizados)
       return 'Filtro da pesquisa: PACIENTES: DATA ATUALIZADO';
     else if (_ref && !_pedidosAtualizados)
-      return 'Filtro da pesquisa: PACIENTES QUE SOLICITARAM REFINAMENTOS: DATA CRIADO';
+      return 'Filtro da pesquisa: REFINAMENTOS: DATA CRIADO';
     if (_ref && _pedidosAtualizados)
-      return 'Filtro da pesquisa: PACIENTES QUE SOLICITARAM REFINAMENTOS: DATA ATUALIZADO';
+      return 'Filtro da pesquisa: REFINAMENTOS: DATA ATUALIZADO';
     else if (_pedidosAlteracoes)
       return 'Filtro da pesquisa: PACIENTES COM ALTERAÇÕES SOLICITADAS PARA PEDIDO';
     else

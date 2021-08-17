@@ -283,9 +283,9 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
   }
 
   Widget _pacienteDados() {
-    //bool refinamento =
-    //    _pedidoStore!.getPedido(position: _args.messageInt).pedidoRefinamento;
-    if (/*!refinamento*/ true)
+    bool refinamento =
+        _pedidoStore!.getPedido(position: _args.messageInt).pedidoRefinamento;
+    if (!refinamento)
       return Card(
         elevation: 10,
         child: SizedBox(
@@ -397,6 +397,33 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     );
   }
 
+  void _showMsg({required String text}) async {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 8),
+        content: Text(
+          text,
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+
+  void _checkIfUserUploadedSTL(String msg) {
+    if (!_pedidoView.modeloGesso &&
+        _pedidoView.modeloSuperior.isEmpty &&
+        _pedidoView.modeloInferior.isEmpty) {
+      _showMsg(text: msg);
+    }
+  }
+
+  void _checkIfPedidoIsGesso(String msg) {
+    if (_pedidoView.modeloGesso) {
+      _showMsg(text: msg);
+    }
+  }
+
   String _dateFormat(String date) {
     try {
       var format = DateFormat.yMd('pt');
@@ -414,6 +441,9 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
         _pedidoView = _historicoList[position].pedido ?? PedidoV1Model();
         _selectedView = 1;
       });
+      _checkIfUserUploadedSTL(
+          'OBSERVAÇÃO: Usuário não forneceu STL Superior e Inferior para pedido ${_pedidoView.codigoPedido}.');
+      _checkIfPedidoIsGesso('OBSERVAÇÃO: Usuário escolheu MODELO EM GESSO');
     }
     if (_historicoList[position].status!.codigoStatus == 'cs_ref') {
       setState(() {
@@ -422,6 +452,9 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
         //will use the same model for now
         _selectedView = 1;
       });
+      _checkIfUserUploadedSTL(
+          'OBSERVAÇÃO: Usuário não forneceu STL Superior e Inferior para refinamento ${_pedidoView.codigoPedido}');
+      _checkIfPedidoIsGesso('OBSERVAÇÃO: Usuário escolheu MODELO EM GESSO');
     } else if (_historicoList[position].status!.codigoStatus == 'cs_rel') {
       setState(() {
         _relatorioView =
