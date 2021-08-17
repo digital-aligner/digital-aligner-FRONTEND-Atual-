@@ -1,6 +1,14 @@
 {
     "language": "Portuguese (Brazil)",
     "@language": {
-        "description": "Default language"
-    }
+        "description": "Idioma padrão"
+    },
+    "endereco": "Endereço",
+    "numero": "Número",
+    "complemento": "Complemento",
+    "bairro": "Bairro",
+    "cep": "CEP",
+    "uf": "UF",
+    "pais": "País",
+    "cidade": "Cidade"
 }

@@ -1,4 +1,5 @@
 import 'package:digital_aligner_app/default_colors.dart';
+import 'package:digital_aligner_app/l10n/l10n.dart';
 import 'package:digital_aligner_app/page_transition_web.dart';
 import 'package:digital_aligner_app/providers/pacientes_list_provider.dart';
 import 'package:digital_aligner_app/providers/relatorio_provider.dart';
@@ -28,6 +29,8 @@ import 'providers/login_form_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/pedido_provider.dart';
 import 'providers/cadastro_provider.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'dart:js' as js;
 
@@ -84,12 +87,13 @@ class MyApp extends StatelessWidget {
       child: Consumer<AuthProvider>(
         builder: (ctx, auth, _) => MaterialApp(
           localizationsDelegates: [
-            GlobalWidgetsLocalizations.delegate,
+            AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
           ],
-          supportedLocales: [
-            Locale('pt', 'BR'),
-          ],
+          //supportedLocales: [
+          //  Locale('pt', 'BR'),
+          //],
+          supportedLocales: L10n.all,
           debugShowCheckedModeBanner: false,
           title: 'Digital Aligner',
           theme: ThemeData(

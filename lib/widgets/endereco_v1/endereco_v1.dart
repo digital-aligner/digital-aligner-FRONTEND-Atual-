@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'package:http/http.dart' as http;
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../rotas_url.dart';
 
 class Endereco extends StatefulWidget {
@@ -427,10 +427,10 @@ class _EnderecoState extends State<Endereco> {
         validator: (String? value) {
           return value!.isEmpty ? 'Campo vazio' : null;
         },
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           counterText: '',
-          hintText: 'Endereço',
-          labelText: 'Endereço',
+          hintText: AppLocalizations.of(context)!.endereco,
+          labelText: AppLocalizations.of(context)!.endereco,
           border: const OutlineInputBorder(),
         ),
       ),
@@ -466,8 +466,8 @@ class _EnderecoState extends State<Endereco> {
                 ],
                 decoration: InputDecoration(
                   counterText: '',
-                  labelText: 'Número',
-                  hintText: 'Número',
+                  labelText: AppLocalizations.of(context)!.numero,
+                  hintText: AppLocalizations.of(context)!.numero,
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -492,8 +492,8 @@ class _EnderecoState extends State<Endereco> {
                 },
                 decoration: InputDecoration(
                   counterText: '',
-                  labelText: 'Complemento',
-                  hintText: 'Complemento',
+                  labelText: AppLocalizations.of(context)!.complemento,
+                  hintText: AppLocalizations.of(context)!.complemento,
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -522,8 +522,8 @@ class _EnderecoState extends State<Endereco> {
         },
         decoration: InputDecoration(
           counterText: '',
-          labelText: 'Bairro',
-          hintText: 'Bairro',
+          labelText: AppLocalizations.of(context)!.bairro,
+          hintText: AppLocalizations.of(context)!.bairro,
           border: OutlineInputBorder(),
         ),
       ),
@@ -553,8 +553,8 @@ class _EnderecoState extends State<Endereco> {
         decoration: InputDecoration(
           //To hide cep length num
           counterText: '',
-          labelText: 'CEP',
-          hintText: 'CEP',
+          labelText: AppLocalizations.of(context)!.cep,
+          hintText: AppLocalizations.of(context)!.cep,
           border: OutlineInputBorder(),
         ),
       ),
@@ -597,8 +597,8 @@ class _EnderecoState extends State<Endereco> {
         mode: Mode.MENU,
         showSearchBox: true,
         showSelectedItem: true,
-        label: 'País',
-        hint: 'País',
+        label: AppLocalizations.of(context)!.pais,
+        hint: AppLocalizations.of(context)!.pais,
         onChanged: (value) {
           //clear to force user select new uf and city
           _ufController.text = '';
@@ -653,7 +653,7 @@ class _EnderecoState extends State<Endereco> {
                 mode: Mode.MENU,
                 showSearchBox: true,
                 showSelectedItem: true,
-                label: 'UF',
+                label: AppLocalizations.of(context)!.uf,
                 onChanged: (String? value) async {
                   //clear to force user select new uf and city
                   _cidadeController.text = '';
@@ -700,7 +700,7 @@ class _EnderecoState extends State<Endereco> {
                 mode: Mode.MENU,
                 showSearchBox: true,
                 showSelectedItem: true,
-                label: 'Cidade',
+                label: AppLocalizations.of(context)!.cidade,
                 onChanged: (value) {
                   _cidadeController.text = value ?? '';
                 },

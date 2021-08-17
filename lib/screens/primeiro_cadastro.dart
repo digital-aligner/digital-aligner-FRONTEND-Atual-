@@ -13,7 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../rotas_url.dart';
 
 class PrimeiroCadastro extends StatefulWidget {
@@ -222,7 +222,6 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                   return showDatePicker(
                                       initialEntryMode:
                                           DatePickerEntryMode.input,
-                                      locale: Localizations.localeOf(context),
                                       errorFormatText: 'Escolha data válida',
                                       errorInvalidText: 'Data invalida',
                                       context: context,
