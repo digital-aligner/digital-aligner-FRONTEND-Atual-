@@ -50,6 +50,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
   ValueKey key1 = ValueKey('1');
   ValueKey key2 = ValueKey('2');
   bool _modeloVisivel = false;
+  int _selectedHistoryPos = 0;
 
   int _mediaQueryMd = 768;
 
@@ -194,7 +195,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
 
   Widget _manageHeaderText() {
     var pedido = _pedidoStore!.getPedido(position: _args.messageInt);
-    if (/*pedido.pedidoRefinamento*/ false) {
+    if (pedido.pedidoRefinamento) {
       GestureDetector(
         onTap: () {
           Clipboard.setData(
@@ -359,6 +360,22 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     return Container();
   }
 
+  Widget _viewPedidoMsg() {
+    return Column(
+      children: [
+        Text(
+          'Parabéns!',
+          style: Theme.of(context).textTheme.headline1,
+        ),
+        const SizedBox(height: 20),
+        Text(
+          'O seu pedido de número ${_historicoList[_selectedHistoryPos].pedido?.codigoPedido} para o paciente ${_historicoList[_selectedHistoryPos].pedido?.nomePaciente} foi aprovado. Após faturado junto à sua representante comercial, iniciaremos a produção dos alinhadores, previstos para serem enviados em até 15 dias úteis.\n\nAgradecemos a preferência, qualquer dúvida, estamos à disposição.\n\nAtenciosamente,\n\nEquipe da Digital Aligner',
+          style: TextStyle(fontStyle: FontStyle.italic),
+        ),
+      ],
+    );
+  }
+
   Widget _helperBuilder() {
     if (_selectedView == 0)
       return Container(
@@ -367,6 +384,9 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
         child: Center(child: Text('Selecione um histórico para visualizar')),
       );
     else if (_selectedView == 1) {
+      if (_historicoList[_selectedHistoryPos].status?.id == 3 ||
+          _historicoList[_selectedHistoryPos].status?.id == 6)
+        return _viewPedidoMsg();
       return _viewPedido();
     } else if (_selectedView == 3) {
       return _viewRelatorio();
@@ -401,7 +421,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        duration: const Duration(seconds: 8),
+        duration: const Duration(seconds: 5),
         content: Text(
           text,
           textAlign: TextAlign.center,
@@ -520,6 +540,7 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                           ),
                           onTap: () {
                             setState(() {
+                              _selectedHistoryPos = i;
                               _modeloVisivel = false;
                               _selectedTilePos = i;
                             });

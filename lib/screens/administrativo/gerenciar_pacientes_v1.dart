@@ -548,6 +548,23 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
       return _dataCells(position: position);
   }
 
+  void _showHoverDetails(PedidoV1Model p, Color c) {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        //behavior: SnackBarBehavior.floating,
+        //elevation: 20,
+        backgroundColor: c,
+        duration: const Duration(seconds: 5),
+        content: Text(
+          'Onboarding#: ${p.usuario?.onboardingNum}',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.black),
+        ),
+      ),
+    );
+  }
+
   List<DataRow> _dataRows() {
     List<PedidoV1Model> p = _pedidoStore!.getPedidosInList();
     List<DataRow> dr = [];
@@ -561,8 +578,22 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
         DataRow(
           color: i.isOdd
               ? MaterialStateColor.resolveWith(
-                  (states) => Color.fromRGBO(128, 128, 128, 0.2))
-              : MaterialStateColor.resolveWith((states) => Colors.white),
+                  (states) {
+                    if (states.contains(MaterialState.hovered)) {
+                      _showHoverDetails(p[i], Colors.grey.shade300);
+                    }
+
+                    return Color.fromRGBO(128, 128, 128, 0.2);
+                  },
+                )
+              : MaterialStateColor.resolveWith(
+                  (states) {
+                    if (states.contains(MaterialState.hovered)) {
+                      _showHoverDetails(p[i], Colors.white);
+                    }
+                    return Colors.white;
+                  },
+                ),
           onSelectChanged: (selected) async {
             //check if pedido was created by admin user
             bool pedidoCreatedWhenCred = _checkForPermissionChange(p, i);
