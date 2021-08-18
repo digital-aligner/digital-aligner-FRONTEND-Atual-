@@ -223,7 +223,6 @@ class PedidoProvider with ChangeNotifier {
       );
 
       List<dynamic> _pedidos = json.decode(response.body);
-
       if (_pedidos[0].containsKey('id')) {
         _pedidos.forEach((p) {
           _pedidosV1List.add(PedidoV1Model.fromJson(p));

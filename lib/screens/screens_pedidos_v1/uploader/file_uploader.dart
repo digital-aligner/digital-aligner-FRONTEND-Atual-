@@ -459,6 +459,7 @@ class _FileUploaderState extends State<FileUploader> {
 
   Future<void> _getFilesForPedidoEdit() async {
     var p = _pedidoStore.getPedido(position: widget.isEditarPedidoPos);
+    print(p.toJson().toString());
     //map files based on arguments passed to this widget
     //fotografias
     if (widget.uploaderType == widget.uploaderTypes[0]) {

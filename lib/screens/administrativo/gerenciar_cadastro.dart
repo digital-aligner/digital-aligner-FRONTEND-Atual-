@@ -32,8 +32,8 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
   bool _blockPageBtns = true;
   bool _blockForwardBtn = true;
 
-  int mediaQuerySm = 576;
-  int mediaQueryMd = 768;
+  final int mediaQuerySm = 576;
+  final int mediaQueryMd = 768;
 
   bool _cadastrosExterior = false;
 
@@ -213,7 +213,7 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
         isAlwaysShown: true,
         child: SingleChildScrollView(
           child: Container(
-            height: 1100,
+            height: 1400,
             padding: const EdgeInsets.symmetric(
               horizontal: 50,
             ),
@@ -225,27 +225,6 @@ class _GerenciarCadastrosState extends State<GerenciarCadastros> {
                         'Gerenciar Cadastros',
                         style: Theme.of(context).textTheme.headline1,
                       ),
-
-                      /*
-                      ElevatedButton.icon(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                            Colors.blueGrey,
-                          ),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25.0),
-                            ),
-                          ),
-                        ),
-                        onPressed: () {
-                          refreshPageFetchNewList();
-                        },
-                        label: const Text('Atualizar'),
-                        icon: Icon(Icons.refresh),
-                      ),
-*/
                       const SizedBox(height: 20),
                       _searchBox(sWidth),
                       _searchSwitchPedidoRef(),

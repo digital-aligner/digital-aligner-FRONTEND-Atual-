@@ -33,8 +33,9 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
   bool _blockPageBtns = true;
   bool _blockForwardBtn = true;
 
-  int mediaQuerySm = 576;
-  int mediaQueryMd = 768;
+  final int mediaQuerySm = 576;
+  final int mediaQueryMd = 768;
+  final int mediaQueryLg = 1000;
 
   bool _cadastrosExterior = false;
 
@@ -214,7 +215,7 @@ class _GerenciarPermissoesState extends State<GerenciarPermissoes> {
         isAlwaysShown: true,
         child: SingleChildScrollView(
           child: Container(
-            height: 1100,
+            height: 1400,
             padding: const EdgeInsets.symmetric(
               horizontal: 50,
             ),

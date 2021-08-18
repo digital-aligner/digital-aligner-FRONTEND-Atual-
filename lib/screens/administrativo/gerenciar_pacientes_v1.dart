@@ -36,7 +36,8 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   List<bool> selectedListItem = [];
 
   //manage pages
-  double pageHeight = 900;
+  final double _defaultPgHeight = 980;
+  late double pageHeight;
   bool buscandoMaisPedidos = false;
   int pageQuant = 10;
 
@@ -56,9 +57,10 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   bool _showAlteracao = false;
   String _showAlteracaoText = '';
   //media queries
-  int _mqLg = 960;
-  int _mqMd = 678;
-  int _mqSm = 486;
+  final int _mqXlg = 1200;
+  final int _mqLg = 960;
+  final int _mqMd = 678;
+  final int _mqSm = 486;
 
   Widget _header() {
     return SizedBox(
@@ -69,201 +71,6 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
           style: Theme.of(context).textTheme.headline1,
         ),
       ),
-    );
-  }
-
-  Widget _relatorioTextBtn(int position) {
-    return TextButton(onPressed: () {}, child: Text(' visualizar relatório'));
-  }
-
-  Widget _optionsTextBtns2(int position) {
-    return Wrap(
-      runSpacing: -13,
-      children: [
-        TextButton(
-          onPressed: () async {
-            ScaffoldMessenger.of(context).removeCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                duration: const Duration(milliseconds: 200),
-                content: Text(
-                  'Aguarde...',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            );
-            await Future.delayed(Duration(milliseconds: 200));
-            Navigator.of(context)
-                .pushNamed(
-              PedidoV1Screen.routeName,
-              arguments: ScreenArguments(
-                title: 'Editar paciente',
-                messageMap: {'isEditarPaciente': true},
-                messageInt: position,
-              ),
-            )
-                .then((_) {
-              fetchMostRecente();
-            });
-          },
-          child: const Text(
-            'editar',
-            style: const TextStyle(
-              fontSize: 12,
-            ),
-          ),
-        ),
-        if (_authStore!.role == 'Administrador' ||
-            _authStore!.role == 'Gerente')
-          TextButton(
-            onPressed: () {
-              Navigator.of(context)
-                  .pushNamed(
-                GerenciarRelatorioV1.routeName,
-                arguments: ScreenArguments(
-                  title: 'Criar relatório',
-                  messageInt: position,
-                ),
-              )
-                  .then((value) async {
-                if (value != null) {
-                  fetchMostRecente();
-
-                  // -------------------
-                  if (value == true) {
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 2),
-                        content: Text(
-                          'Relatório criado',
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    );
-                  }
-                }
-              });
-            },
-            child: const Text(
-              'Criar relatório',
-              style: const TextStyle(
-                fontSize: 12,
-              ),
-            ),
-          ),
-        if (_authStore!.role == 'Administrador' ||
-            _authStore!.role == 'Gerente')
-          TextButton(
-            onPressed: () async {
-              bool result = await maisOpcoesPopup(position: position);
-              if (result) {
-                fetchMostRecente();
-              }
-            },
-            child: const Text(
-              'mais',
-              style: const TextStyle(
-                fontSize: 12,
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _optionsTextBtns(int position) {
-    return Column(
-      children: [
-        TextButton(
-          onPressed: () async {
-            ScaffoldMessenger.of(context).removeCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                duration: const Duration(milliseconds: 200),
-                content: Text(
-                  'Aguarde...',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            );
-            await Future.delayed(Duration(milliseconds: 200));
-            Navigator.of(context)
-                .pushNamed(
-              PedidoV1Screen.routeName,
-              arguments: ScreenArguments(
-                title: 'Editar paciente',
-                messageMap: {'isEditarPaciente': true},
-                messageInt: position,
-              ),
-            )
-                .then((_) {
-              fetchMostRecente();
-            });
-          },
-          child: const Text(
-            'editar',
-            style: const TextStyle(
-              fontSize: 12,
-            ),
-          ),
-        ),
-        if (_authStore!.role == 'Administrador' ||
-            _authStore!.role == 'Gerente')
-          TextButton(
-            onPressed: () {
-              Navigator.of(context)
-                  .pushNamed(
-                GerenciarRelatorioV1.routeName,
-                arguments: ScreenArguments(
-                  title: 'Criar relatório',
-                  messageInt: position,
-                ),
-              )
-                  .then((value) async {
-                if (value != null) {
-                  fetchMostRecente();
-
-                  // -------------------
-                  if (value == true) {
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 2),
-                        content: Text(
-                          'Relatório criado',
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    );
-                  }
-                }
-              });
-            },
-            child: const Text(
-              'Criar relatório',
-              style: const TextStyle(
-                fontSize: 12,
-              ),
-            ),
-          ),
-        if (_authStore!.role == 'Administrador' ||
-            _authStore!.role == 'Gerente')
-          TextButton(
-            onPressed: () async {
-              bool result = await maisOpcoesPopup(position: position);
-              if (result) {
-                fetchMostRecente();
-              }
-            },
-            child: const Text(
-              'mais',
-              style: const TextStyle(
-                fontSize: 12,
-              ),
-            ),
-          ),
-      ],
     );
   }
 
@@ -288,12 +95,14 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
         messageInt: position,
       ),
     )
-        .then((_) {
+        .then((_) async {
+      await Future.delayed(Duration(milliseconds: 400));
       fetchMostRecente();
     });
   }
 
   void _opcCriarRel(int position) {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
     Navigator.of(context)
         .pushNamed(
       GerenciarRelatorioV1.routeName,
@@ -304,6 +113,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     )
         .then((value) async {
       if (value != null) {
+        await Future.delayed(Duration(milliseconds: 400));
         fetchMostRecente();
 
         // -------------------
@@ -493,6 +303,14 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
         DataCell(Text(p.statusPedido?.status ?? '')),
       if (_screenSize!.width > _mqLg)
         DataCell(Text(p.usuario!.nome + ' ' + p.usuario!.sobrenome)),
+      if (_screenSize!.width > _mqXlg)
+        DataCell(
+          Center(
+            child: Text(p.usuario?.onboardingNum.toString() ?? ''),
+          ),
+        ),
+      if (_screenSize!.width > _mqXlg)
+        DataCell(Text(p.usuario?.representante?.nome ?? '')),
       DataCell(_popupMenuButton(position)),
     ];
   }
@@ -537,6 +355,14 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
             },
           ),
         ),
+      if (_screenSize!.width > _mqXlg)
+        DataCell(
+          Center(
+            child: Text(p.usuario?.onboardingNum.toString() ?? ''),
+          ),
+        ),
+      if (_screenSize!.width > _mqXlg)
+        DataCell(Text(p.usuario?.representante?.nome ?? '')),
       DataCell(_popupMenuButton(position)),
     ];
   }
@@ -549,15 +375,30 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   }
 
   void _showHoverDetails(PedidoV1Model p, Color c) {
+    String onboardingText() {
+      if (p.usuario?.onboardingNum != null && p.usuario!.onboardingNum > 0) {
+        return p.usuario!.onboardingNum.toString();
+      }
+      return '-';
+    }
+
+    String representanteText() {
+      if (p.usuario?.representante?.nome != null &&
+          p.usuario!.representante!.nome.isNotEmpty) {
+        return p.usuario!.representante!.nome;
+      }
+      return '-';
+    }
+
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         //behavior: SnackBarBehavior.floating,
         //elevation: 20,
         backgroundColor: c,
-        duration: const Duration(seconds: 5),
+        duration: const Duration(seconds: 2),
         content: Text(
-          'Onboarding#: ${p.usuario?.onboardingNum}',
+          'Onboarding#: ${onboardingText()}     Representante: ${representanteText()}',
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.black),
         ),
@@ -580,7 +421,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
               ? MaterialStateColor.resolveWith(
                   (states) {
                     if (states.contains(MaterialState.hovered)) {
-                      _showHoverDetails(p[i], Colors.grey.shade300);
+                      //_showHoverDetails(p[i], Colors.grey.shade300);
                     }
 
                     return Color.fromRGBO(128, 128, 128, 0.2);
@@ -589,7 +430,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
               : MaterialStateColor.resolveWith(
                   (states) {
                     if (states.contains(MaterialState.hovered)) {
-                      _showHoverDetails(p[i], Colors.white);
+                      // _showHoverDetails(p[i], Colors.white);
                     }
                     return Colors.white;
                   },
@@ -631,6 +472,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                   .then((value) async {
                 selectedListItem[i] = false;
                 _clearAlteracaoUi();
+                await Future.delayed(Duration(milliseconds: 400));
                 fetchMostRecente();
               });
             }
@@ -654,6 +496,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     return SizedBox(
       width: _screenSize!.width,
       child: DataTable(
+        dataRowHeight: 80,
         showCheckboxColumn: false,
         columns: [
           if (!_ref)
@@ -684,6 +527,10 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
             DataColumn(label: const Text('Status')),
           if (_screenSize!.width > _mqLg)
             DataColumn(label: const Text('Responsável')),
+          if (_screenSize!.width > _mqXlg)
+            DataColumn(label: const Text('Onboarding')),
+          if (_screenSize!.width > _mqXlg)
+            DataColumn(label: const Text('Representante')),
           DataColumn(label: const Text('Opções')),
         ],
         rows: _dataRows(),
@@ -695,6 +542,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     return SizedBox(
       width: _screenSize!.width,
       child: DataTable(
+        dataRowHeight: 80,
         showCheckboxColumn: false,
         columns: [
           DataColumn(label: const Text('')),
@@ -709,6 +557,10 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
             DataColumn(label: const Text('Responsável')),
           if (_screenSize!.width > _mqSm)
             DataColumn(label: const Text('alteração')),
+          if (_screenSize!.width > _mqXlg)
+            DataColumn(label: const Text('Onboarding')),
+          if (_screenSize!.width > _mqXlg)
+            DataColumn(label: const Text('Representante')),
           DataColumn(label: const Text('Opções')),
         ],
         rows: _dataRows(),
@@ -823,7 +675,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
           labelText: _mapSearchValueToLable(),
         ),
         onChanged: (value) async {
-          pageHeight = 900;
+          pageHeight = _defaultPgHeight;
           buscandoMaisPedidos = true;
           pageQuant = 10;
           const duration = Duration(milliseconds: 500);
@@ -837,35 +689,36 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
             () {
               searchOnStoppedTyping = new Timer(
                 duration,
-                () {
+                () async {
                   setState(() {
                     _query = value;
                     buscandoMaisPedidos = true;
-                    _pedidoStore!
-                        .fetchAllPedidos(
-                      token: _authStore!.token,
-                      roleId: _authStore!.roleId,
-                      query: _query,
-                      queryStrings: '&ref=' +
-                          _ref.toString() +
-                          '&sortAtualizados=' +
-                          _pedidosAtualizados.toString() +
-                          '&sortAlteracoes=' +
-                          _pedidosAlteracoes.toString() +
-                          '&sortExecucao=' +
-                          _pedidosExecucao.toString(),
-                    )
-                        .then((bool fetchSuccessful) {
-                      if (fetchSuccessful)
-                        setState(() {
-                          isfetchPedidos = false;
-                        });
-                      else
-                        setState(() {
-                          isfetchPedidos = true;
-                        });
-                    });
-
+                  });
+                  await _pedidoStore!
+                      .fetchAllPedidos(
+                    token: _authStore!.token,
+                    roleId: _authStore!.roleId,
+                    query: _query,
+                    queryStrings: '&ref=' +
+                        _ref.toString() +
+                        '&sortAtualizados=' +
+                        _pedidosAtualizados.toString() +
+                        '&sortAlteracoes=' +
+                        _pedidosAlteracoes.toString() +
+                        '&sortExecucao=' +
+                        _pedidosExecucao.toString(),
+                  )
+                      .then((bool fetchSuccessful) {
+                    if (fetchSuccessful)
+                      setState(() {
+                        isfetchPedidos = false;
+                      });
+                    else
+                      setState(() {
+                        isfetchPedidos = true;
+                      });
+                  });
+                  setState(() {
                     buscandoMaisPedidos = false;
                   });
                 },
@@ -875,6 +728,12 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
         },
       ),
     );
+  }
+
+  @override
+  void initState() {
+    pageHeight = _defaultPgHeight;
+    super.initState();
   }
 
   @override
@@ -914,7 +773,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   Future<void> fetchMostRecente() async {
     setState(() {
       isfetchPedidos = true;
-      pageHeight = 900;
+      pageHeight = _defaultPgHeight;
       pageQuant = 10;
     });
     //_pedidoStore!.clearDataAllProviderData();

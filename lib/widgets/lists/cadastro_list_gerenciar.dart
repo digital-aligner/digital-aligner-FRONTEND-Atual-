@@ -25,8 +25,10 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
   bool _dialogOpen = false;
   bool _sendingCadastro = false;
   List<bool> selectedListItem = [];
-  int mediaQuerySm = 576;
-  int mediaQueryMd = 768;
+
+  final int mediaQuerySm = 576;
+  final int mediaQueryMd = 768;
+  final int mediaQueryLg = 1000;
 
   Size? _screenSize;
 
@@ -683,6 +685,7 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
     return SizedBox(
       width: _screenSize!.width,
       child: DataTable(
+        dataRowHeight: 80,
         showCheckboxColumn: false,
         columns: [
           if (_screenSize!.width > mediaQuerySm)
@@ -690,6 +693,10 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
           DataColumn(label: const Text('Nome')),
           if (_screenSize!.width > mediaQueryMd)
             DataColumn(label: const Text('Cpf / Id')),
+          if (_screenSize!.width > mediaQueryLg)
+            DataColumn(label: const Text('Onboarding')),
+          if (_screenSize!.width > mediaQueryLg)
+            DataColumn(label: const Text('Representante')),
           DataColumn(label: const Text('Status')),
         ],
         rows: _dataRows(),
@@ -739,6 +746,17 @@ class _CadastroListGerenciarState extends State<CadastroListGerenciar> {
       ),
       if (_screenSize!.width > mediaQueryMd)
         DataCell(Text(_formatCpf(cadList[position]['username']))),
+      if (_screenSize!.width > mediaQueryLg)
+        DataCell(
+          Center(
+            child: Text(
+                cadList[position]?['onboarding_num'].toString() == 'null'
+                    ? ''
+                    : cadList[position]['onboarding_num'].toString()),
+          ),
+        ),
+      if (_screenSize!.width > mediaQueryLg)
+        DataCell(Text(cadList[position]['representante']?['nome'] ?? '')),
       DataCell(Text(cadList[position]['aprovacao_usuario']['status'])),
     ];
   }

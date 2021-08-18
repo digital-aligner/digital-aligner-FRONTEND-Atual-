@@ -27,25 +27,10 @@ class UsuarioV1Model {
       nome: data['nome'] ?? '',
       sobrenome: data['sobrenome'] ?? '',
       email: data['email'] ?? '',
-      representante: RepresentanteModel.fromJson(
-        data['representante'] ??
-            {
-              'id': -1,
-              'username': '',
-              'email': '',
-              'blocked': false,
-              'role': {'id': -1, 'name': ''},
-              'nome': '',
-              'sobrenome': '',
-              'cro_uf': '',
-              'cro_num': '',
-              'data_nasc': '',
-              'telefone': '',
-              'celular': '',
-              'aprovacao_usuario': {'id': -1, 'status': ''},
-            },
-      ),
       onboardingNum: data['onboarding_num'] ?? 0,
+      representante: data['representante'] != null
+          ? RepresentanteModel.fromJson(data['representante'])
+          : null,
     );
   }
 

@@ -1755,7 +1755,12 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                   _modeloVisivel = !_modeloVisivel;
                 });
               },
-              child: const Text('Visualizar modelos'),
+              child: const Text(
+                'Visualizar modelos',
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
             ),
           )
         else
