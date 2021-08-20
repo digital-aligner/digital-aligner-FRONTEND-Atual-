@@ -36,7 +36,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   List<bool> selectedListItem = [];
 
   //manage pages
-  final double _defaultPgHeight = 980;
+  final double _defaultPgHeight = 1320;
   late double pageHeight;
   bool buscandoMaisPedidos = false;
   int pageQuant = 10;
@@ -44,6 +44,9 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   Timer? searchOnStoppedTyping;
 
   String _query = '';
+  bool _filterByCountry = false;
+  String _selectedCountryFilter = 'Brasil';
+  final _filterByCountryValues = {'Brasil': 'Brasil', 'Portugal': 'Portugal'};
 
   //route arguments
   ScreenArguments _args = ScreenArguments();
@@ -706,7 +709,9 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                         '&sortAlteracoes=' +
                         _pedidosAlteracoes.toString() +
                         '&sortExecucao=' +
-                        _pedidosExecucao.toString(),
+                        _pedidosExecucao.toString() +
+                        '&filterByCountry=' +
+                        _selectedCountryFilter,
                   )
                       .then((bool fetchSuccessful) {
                     if (fetchSuccessful)
@@ -776,7 +781,6 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
       pageHeight = _defaultPgHeight;
       pageQuant = 10;
     });
-    //_pedidoStore!.clearDataAllProviderData();
     await _pedidoStore!.fetchAllPedidos(
       token: _authStore?.token ?? '',
       roleId: _authStore?.roleId ?? 0,
@@ -788,12 +792,45 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
           '&sortAlteracoes=' +
           _pedidosAlteracoes.toString() +
           '&sortExecucao=' +
-          _pedidosExecucao.toString(),
+          _pedidosExecucao.toString() +
+          '&filterByCountry=' +
+          _selectedCountryFilter,
     );
 
     setState(() {
       isfetchPedidos = false;
     });
+  }
+
+  Widget _searchSwitchChangeCountry() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text('pedidos Brasil'),
+        Switch(
+          activeColor: Colors.blue,
+          value: _filterByCountry,
+          onChanged: (value) {
+            if (value) {
+              setState(() {
+                _selectedCountryFilter =
+                    _filterByCountryValues['Brasil'].toString();
+                _filterByCountry = value;
+              });
+            } else {
+              setState(() {
+                _selectedCountryFilter =
+                    _filterByCountryValues['Portugal'].toString();
+                _filterByCountry = value;
+              });
+            }
+
+            fetchMostRecente();
+          },
+        ),
+        const Text('pedidos Portugal'),
+      ],
+    );
   }
 
   Widget _searchSwitchPedidoRef() {
@@ -1009,6 +1046,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                         if (_authStore!.roleId != 1) _popupMenuButton(),
                       ],
                     ),
+                    _searchSwitchChangeCountry(),
                     if (isfetchPedidos)
                       _loadingSpinder()
                     else
