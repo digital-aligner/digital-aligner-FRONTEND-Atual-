@@ -812,17 +812,13 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
           value: _filterByCountry,
           onChanged: (value) {
             if (value) {
-              setState(() {
-                _selectedCountryFilter =
-                    _filterByCountryValues['Brasil'].toString();
-                _filterByCountry = value;
-              });
+              _selectedCountryFilter =
+                  _filterByCountryValues['Portugal'].toString();
+              _filterByCountry = value;
             } else {
-              setState(() {
-                _selectedCountryFilter =
-                    _filterByCountryValues['Portugal'].toString();
-                _filterByCountry = value;
-              });
+              _selectedCountryFilter =
+                  _filterByCountryValues['Brasil'].toString();
+              _filterByCountry = value;
             }
 
             fetchMostRecente();
