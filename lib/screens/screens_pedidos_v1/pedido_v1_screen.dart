@@ -1531,6 +1531,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             spacing: 10,
             onSelected: (index, isSelected) {
               if (isSelected && index == 1) {
+                _modeloGessoAlert();
                 setState(() {
                   modeloEmGesso = true;
                 });
@@ -1691,13 +1692,33 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   Widget _modeloEmGessoTexto() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 40),
-      child: Text(
-        '• AVISO PARA MODELOS EM GESSO: \n• Os modelos de gesso enviados devem ser feitos com Gesso pedra tipo IV, sempre superior e inferior.Deve ser enviado o registro de oclusão do paciente juntamente com os modelos em gesso. Devem estar bem embalados, para evitar a quebra.Se possível, a base do modelo deve vir recortada. Enviar com as informações referentes ao paciente (nome, data de nascimento e dentista responsável pelo caso). *Os casos que não seguirem essas recomendações não serão *O prazo para planejamento só será contado a partir do recebimento da documentação completa (fotos, radiografia e a prescrição do pedido devem ser enviados via plataforma Digital Aligner \n• Favor enviar os modelos em gesso para o escaneamento no endereço abaixo: UPDENTALL TECNOLOGIA EM ODONTOLOGIA LTDA. Rua das Pernambucanas, 407, sala 1305 Graças 52011 010 Recife, PE',
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 16,
-        ),
+      child: Column(
+        children: [
+          const Text('• AVISO PARA MODELOS EM GESSO: \n'),
+          const Text(
+            '• Os modelos de gesso enviados devem ser feitos com Gesso pedra tipo IV, sempre superior e inferior.Deve ser enviado o registro de oclusão do paciente juntamente com os modelos em gesso. Devem estar bem embalados, para evitar a quebra.Se possível, a base do modelo deve vir recortada. Enviar com as informações referentes ao paciente (nome, data de nascimento e dentista responsável pelo caso).\n\n*Os casos que não seguirem essas recomendações não serão escaneados.\n*O prazo para planejamento só será contado a partir do recebimento da documentação completa (fotos, radiografia e a prescrição do pedido devem ser enviados via plataforma Digital Aligner).\n\n• Favor enviar os modelos em gesso para o escaneamento no endereço abaixo:\n\nUPDENTALL TECNOLOGIA EM ODONTOLOGIA LTDA.\nRua das Pernambucanas, 407, sala 1305 Graças 52011 010 Recife, PE',
+          ),
+        ],
       ),
+    );
+  }
+
+  Future<dynamic> _modeloGessoAlert() {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('ATENÇÃO!'),
+          content: const Text(
+              'ATENÇÃO, SÓ CLIQUE NESSA OPÇÃO SE FOR DE FATO ENVIAR MODELO DE GESSO.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Fechar'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -2845,9 +2866,9 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   }
 
   double _calculateScreenHeight() {
-    if (_screenSize!.width > 1300) return 5000;
-    if (_screenSize!.width > 900) return 6000;
-    return 7000;
+    if (_screenSize!.width > 1300) return 5050;
+    if (_screenSize!.width > 900) return 6050;
+    return 7050;
   }
 
   @override
