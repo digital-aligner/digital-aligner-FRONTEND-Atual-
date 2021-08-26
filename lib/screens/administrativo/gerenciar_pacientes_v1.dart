@@ -681,7 +681,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
           pageHeight = _defaultPgHeight;
           buscandoMaisPedidos = true;
           pageQuant = 10;
-          const duration = Duration(milliseconds: 500);
+          const duration = Duration(seconds: 1);
           if (searchOnStoppedTyping != null) {
             _clearAlteracaoUi();
             setState(() {
@@ -718,10 +718,18 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                       setState(() {
                         isfetchPedidos = false;
                       });
-                    else
-                      setState(() {
-                        isfetchPedidos = true;
-                      });
+                    else {
+                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: const Duration(seconds: 1),
+                          content: Text(
+                            'Sem resultados',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      );
+                    }
                   });
                   setState(() {
                     buscandoMaisPedidos = false;
@@ -1042,7 +1050,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                         if (_authStore!.roleId != 1) _popupMenuButton(),
                       ],
                     ),
-                    _searchSwitchChangeCountry(),
+                    if (_authStore?.roleId != 1) _searchSwitchChangeCountry(),
                     if (isfetchPedidos)
                       _loadingSpinder()
                     else

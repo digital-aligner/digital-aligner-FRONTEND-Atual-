@@ -430,8 +430,10 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
     );
   }
 
-  void _checkIfUserUploadedSTL(String msg) {
+  void _checkIfUserUploadedDocumentation(String msg) {
     if (!_pedidoView.modeloGesso &&
+        _pedidoView.modeloCompactado.isEmpty &&
+        _pedidoView.linkModelos.isEmpty &&
         _pedidoView.modeloSuperior.isEmpty &&
         _pedidoView.modeloInferior.isEmpty) {
       _showMsg(text: msg);
@@ -440,6 +442,28 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
 
   void _checkIfPedidoIsGesso(String msg) {
     if (_pedidoView.modeloGesso) {
+      _showMsg(text: msg);
+    }
+  }
+
+  void _checkIfPedidoIsCompactado(String msg) {
+    if (_pedidoView.modeloCompactado.isNotEmpty) {
+      _showMsg(text: msg);
+    }
+  }
+
+  void _checkIfPedidoIsStl() {
+    if (_pedidoView.modeloSuperior.isNotEmpty &&
+        _pedidoView.modeloInferior.isNotEmpty) {
+      _showMsg(text: 'OBSERVAÇÃO: Usuário forneceu MODELOS STL');
+    } else if (_pedidoView.modeloSuperior.isNotEmpty ||
+        _pedidoView.modeloInferior.isNotEmpty) {
+      _showMsg(text: 'OBSERVAÇÃO: Usuário forneceu apenas 1 modelo STL');
+    }
+  }
+
+  void _checkIfPedidoHasLink(String msg) {
+    if (_pedidoView.linkModelos.isNotEmpty) {
       _showMsg(text: msg);
     }
   }
@@ -461,9 +485,14 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
         _pedidoView = _historicoList[position].pedido ?? PedidoV1Model();
         _selectedView = 1;
       });
-      _checkIfUserUploadedSTL(
-          'OBSERVAÇÃO: Usuário não forneceu STL Superior e Inferior para pedido ${_pedidoView.codigoPedido}.');
+      _checkIfUserUploadedDocumentation(
+          'OBSERVAÇÃO: Usuário não forneceu modelos (link, compactado ou stl) para o pedido ${_pedidoView.codigoPedido}.');
+      _checkIfPedidoIsStl();
       _checkIfPedidoIsGesso('OBSERVAÇÃO: Usuário escolheu MODELO EM GESSO');
+      _checkIfPedidoIsCompactado(
+          'OBSERVAÇÃO: Usuário forneceu MODELO COMPACTADO');
+      _checkIfPedidoHasLink(
+          'OBSERVAÇÃO: Usuário forneceu LINK DA DOCUMENTAÇÃO');
     }
     if (_historicoList[position].status!.codigoStatus == 'cs_ref') {
       setState(() {
@@ -472,9 +501,14 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
         //will use the same model for now
         _selectedView = 1;
       });
-      _checkIfUserUploadedSTL(
-          'OBSERVAÇÃO: Usuário não forneceu STL Superior e Inferior para refinamento ${_pedidoView.codigoPedido}');
+      _checkIfUserUploadedDocumentation(
+          'OBSERVAÇÃO: Usuário não forneceu modelos (link, compactado ou stl) para o refinamento ${_pedidoView.codigoPedido}');
+      _checkIfPedidoIsStl();
       _checkIfPedidoIsGesso('OBSERVAÇÃO: Usuário escolheu MODELO EM GESSO');
+      _checkIfPedidoIsCompactado(
+          'OBSERVAÇÃO: Usuário forneceu MODELO COMPACTADO');
+      _checkIfPedidoHasLink(
+          'OBSERVAÇÃO: Usuário forneceu LINK DA DOCUMENTAÇÃO');
     } else if (_historicoList[position].status!.codigoStatus == 'cs_rel') {
       setState(() {
         _relatorioView =
@@ -751,6 +785,11 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                 child: const Text('Copiar link'),
               ),
             ],
+          ),
+        if (_pedidoView.modeloCompactado.isNotEmpty)
+          _baixarModeloCompactado(
+            link: _pedidoView.modeloCompactado[0].url ?? '',
+            typeName: 'Baixar modelo compactado',
           ),
         if (_pedidoView.pedidoRefinamento)
           TextButton(
@@ -2221,6 +2260,19 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
   }
 
   Widget _baixarModelosLinks({String link = '', required String typeName}) {
+    return Link(
+      target: LinkTarget.defaultTarget,
+      uri: Uri.parse(link),
+      builder: (BuildContext context, FollowLink? followLink) => TextButton(
+        onPressed: followLink,
+        child: Center(
+          child: Text(typeName),
+        ),
+      ),
+    );
+  }
+
+  Widget _baixarModeloCompactado({String link = '', required String typeName}) {
     return Link(
       target: LinkTarget.defaultTarget,
       uri: Uri.parse(link),

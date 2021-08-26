@@ -27,6 +27,9 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _blockUi = false;
   bool _cadastroScreenOpen = false;
 
+  //VERSION UI TEXT
+  String _version = 'V1.84';
+
   Future<void> _submit(_loginStore, context) async {
     setState(() => _isLoading = true);
 
@@ -337,8 +340,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                         const SizedBox(height: 20),
-                        const Text(
-                          'V1.81',
+                        Text(
+                          _version,
                           style: TextStyle(
                             color: Color.fromRGBO(83, 86, 90, 1),
                           ),
@@ -482,8 +485,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                         const SizedBox(height: 20),
-                        const Text(
-                          'V1.81',
+                        Text(
+                          _version,
                           style: TextStyle(
                             color: Color.fromRGBO(83, 86, 90, 1),
                           ),

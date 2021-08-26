@@ -18,20 +18,51 @@ class MentoriaPortugal extends StatefulWidget {
 class _MentoriaPortugalState extends State<MentoriaPortugal> {
   bool _blockVideos = false;
 
+  Future<void> _showMyDialog(String link) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Vídeo'),
+          content: SingleChildScrollView(
+            child: YoutubeVideos(
+              videosId: link,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Fechar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildVideos() {
     return Column(
       children: [
         const SizedBox(
           height: 50,
         ),
-        YoutubeVideos(
-          videosId: 'FqKKvi5TKwo',
+        TextButton(
+          onPressed: () => _showMyDialog('FqKKvi5TKwo'),
+          child: const Text(
+            'Três habilidades fundamentais para trabalhar com alinhadores',
+          ),
         ),
         const SizedBox(
           height: 50,
         ),
-        YoutubeVideos(
-          videosId: '3X0sN8A5KzM',
+        TextButton(
+          onPressed: () => _showMyDialog('3X0sN8A5KzM'),
+          child: const Text(
+            'Alternativas de precificação para tratamentos lucrativos com alinhadores',
+          ),
         ),
       ],
     );
