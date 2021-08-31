@@ -124,7 +124,8 @@ class AuthProvider with ChangeNotifier {
       );
       final responseData = json.decode(response.body);
 
-      if (responseData.containsKey('error')) {
+      if (responseData.containsKey('error') || response.statusCode == 400) {
+        print(responseData);
         if (responseData['message'][0]['messages'][0]['id'] ==
             'Auth.form.error.blocked') {
           return {

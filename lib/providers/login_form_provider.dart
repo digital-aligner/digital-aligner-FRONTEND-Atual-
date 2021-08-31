@@ -31,9 +31,11 @@ class LoginFormProvider with ChangeNotifier {
   }
 
   bool validateInput() {
-    if (_email != null && _senha != null) {
+    if (_email == null || _senha == null)
+      return false;
+    else if (_email!.isEmpty || _senha!.isEmpty)
+      return false;
+    else
       return true;
-    }
-    return false;
   }
 }

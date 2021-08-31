@@ -5,13 +5,16 @@ import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
 import 'package:digital_aligner_app/functions/system_functions.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/providers/cadastro_provider.dart';
+import 'package:digital_aligner_app/widgets/custom_password_validation.dart';
 import 'package:digital_aligner_app/widgets/endereco_v1/endereco_v1.dart';
 import 'package:cpf_cnpj_validator/cpf_validator.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../rotas_url.dart';
@@ -34,7 +37,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
   bool _sendingForm = false;
 
   String _emailConfirm = '';
-  String _passwordConfirm = '';
+  final _password = TextEditingController();
 
   String _selectedCroUf = '';
 
@@ -218,17 +221,22 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                   border: const OutlineInputBorder(),
                                 ),
                                 format: format,
+                                /*
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[0-9]')),
+                                ],*/
                                 onShowPicker: (context, currentValue) {
                                   return showDatePicker(
-                                      initialEntryMode:
-                                          DatePickerEntryMode.input,
-                                      errorFormatText: 'Escolha data válida',
-                                      errorInvalidText: 'Data invalida',
-                                      context: context,
-                                      firstDate: DateTime(1900),
-                                      initialDate:
-                                          currentValue ?? DateTime.now(),
-                                      lastDate: DateTime(2100));
+                                    fieldHintText: 'formato: xx/xx/xxxx',
+                                    //initialEntryMode: DatePickerEntryMode.input,
+                                    errorFormatText: 'Escolha data válida',
+                                    errorInvalidText: 'Data invalida',
+                                    context: context,
+                                    firstDate: DateTime(1980),
+                                    initialDate: currentValue ?? DateTime.now(),
+                                    lastDate: DateTime(2100),
+                                  );
                                 },
                               ),
                             ),
@@ -473,19 +481,18 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                               margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
                               height: 80,
                               child: TextFormField(
-                                maxLength: 200,
+                                onChanged: (value) {
+                                  _emailConfirm = value;
+                                },
+                                maxLength: 320,
                                 onSaved: (String? value) {
                                   _cadastroStore.novoCad.email = value ?? '';
                                 },
                                 validator: (value) {
-                                  if (value!.length == 0) {
-                                    return 'Por favor insira seu email';
-                                  }
-                                  if (value.contains(' ')) {
-                                    return 'Existem espaços em seu email';
-                                  }
-                                  if (value != _emailConfirm) {
-                                    return 'Emails não correspondem';
+                                  bool isValid =
+                                      EmailValidator.validate(value ?? '');
+                                  if (!isValid) {
+                                    return 'Email invalido. Por favor verifique';
                                   }
                                   return null;
                                 },
@@ -505,11 +512,11 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                               margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
                               height: 80,
                               child: TextFormField(
-                                maxLength: 200,
-                                onChanged: (String value) {
-                                  _emailConfirm = value;
-                                },
+                                maxLength: 320,
                                 validator: (value) {
+                                  if (value != _emailConfirm) {
+                                    return 'Emails não correspondem';
+                                  }
                                   if (value!.length == 0) {
                                     return 'Por favor confirme seu email';
                                   }
@@ -531,12 +538,13 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                     //password
                     Container(
                       width: width,
-                      height: width > 600 ? 80 : 180,
+                      height: width > 600 ? 300 : 520,
                       child: Flex(
                         direction:
                             width > 600 ? Axis.horizontal : Axis.vertical,
                         children: [
                           //password
+                          /*
                           Expanded(
                             child: Container(
                               height: 80,
@@ -569,31 +577,47 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                                 ),
                               ),
                             ),
+                          ),*/
+                          Expanded(
+                            child: CustomPasswordValidatedFields(
+                              textEditingController: _password,
+                              onSaved: (value) {
+                                _cadastroStore.novoCad.password = value ?? '';
+                              },
+                              inputDecoration: InputDecoration(
+                                labelText: 'Senha',
+                              ),
+                            ),
                           ),
                           const SizedBox(width: 20),
                           //password confirm
                           Expanded(
-                            child: Container(
-                              height: 80,
-                              child: TextFormField(
-                                maxLength: 30,
-                                obscureText: true,
-                                onChanged: (String value) {
-                                  _passwordConfirm = value;
-                                },
-                                validator: (value) {
-                                  if (value!.length == 0) {
-                                    return 'Por favor confirme sua senha';
-                                  }
-                                  return null;
-                                },
-                                initialValue: null,
-                                decoration: InputDecoration(
-                                  counterText: '',
-                                  labelText: 'Confirme sua senha',
-                                  border: OutlineInputBorder(),
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 42),
+                                Container(
+                                  height: 80,
+                                  child: TextFormField(
+                                    maxLength: 30,
+                                    obscureText: true,
+                                    validator: (value) {
+                                      if (value != _password.text) {
+                                        return 'Senhas não correspondem';
+                                      }
+                                      if (value!.length == 0) {
+                                        return 'Por favor confirme sua senha';
+                                      }
+                                      return null;
+                                    },
+                                    initialValue: null,
+                                    decoration: InputDecoration(
+                                      counterText: '',
+                                      labelText: 'Confirme sua senha',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
                           ),
                         ],
@@ -686,19 +710,18 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                               margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
                               height: 80,
                               child: TextFormField(
-                                maxLength: 200,
+                                onChanged: (value) {
+                                  _emailConfirm = value;
+                                },
+                                maxLength: 320,
                                 onSaved: (String? value) {
                                   _cadastroStore.novoCad.email = value ?? '';
                                 },
                                 validator: (value) {
-                                  if (value!.length == 0) {
-                                    return 'Por favor insira seu email';
-                                  }
-                                  if (value.contains(' ')) {
-                                    return 'Existem espaços em seu email';
-                                  }
-                                  if (value != _emailConfirm) {
-                                    return 'Emails não correspondem';
+                                  bool isValid =
+                                      EmailValidator.validate(value ?? '');
+                                  if (!isValid) {
+                                    return 'Email invalido. Por favor verifique';
                                   }
                                   return null;
                                 },
@@ -718,11 +741,11 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                               margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
                               height: 80,
                               child: TextFormField(
-                                maxLength: 200,
-                                onChanged: (String value) {
-                                  _emailConfirm = value;
-                                },
+                                maxLength: 320,
                                 validator: (value) {
+                                  if (value != _emailConfirm) {
+                                    return 'Emails não correspondem';
+                                  }
                                   if (value!.length == 0) {
                                     return 'Por favor confirme seu email';
                                   }
@@ -744,69 +767,52 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                     //password
                     Container(
                       width: width,
-                      height: width > 600 ? 80 : 180,
+                      height: width > 600 ? 300 : 600,
                       child: Flex(
                         direction:
                             width > 600 ? Axis.horizontal : Axis.vertical,
                         children: [
                           //password
                           Expanded(
-                            child: Container(
-                              height: 80,
-                              child: TextFormField(
-                                maxLength: 30,
-                                obscureText: true,
-                                onSaved: (String? value) {
-                                  _cadastroStore.novoCad.password = value ?? '';
-                                },
-                                validator: (value) {
-                                  if (value!.length == 0) {
-                                    return 'Por favor insira sua senha';
-                                  }
-                                  if (value.contains(' ')) {
-                                    return 'Existem espaços em sua senha';
-                                  }
-                                  if (value.length < 6) {
-                                    return 'A senha deve ter no mínimo 6 caracteres';
-                                  }
-                                  if (value != _passwordConfirm) {
-                                    return 'Senhas não correspondem';
-                                  }
-                                  return null;
-                                },
-                                initialValue: null,
-                                decoration: InputDecoration(
-                                  counterText: '',
-                                  labelText: 'Senha',
-                                  border: OutlineInputBorder(),
-                                ),
+                            child: CustomPasswordValidatedFields(
+                              textEditingController: _password,
+                              onSaved: (value) {
+                                _cadastroStore.novoCad.password = value ?? '';
+                              },
+                              inputDecoration: InputDecoration(
+                                labelText: 'Senha',
                               ),
                             ),
                           ),
                           const SizedBox(width: 20),
                           //password confirm
                           Expanded(
-                            child: Container(
-                              height: 80,
-                              child: TextFormField(
-                                maxLength: 30,
-                                obscureText: true,
-                                onChanged: (String value) {
-                                  _passwordConfirm = value;
-                                },
-                                validator: (value) {
-                                  if (value!.length == 0) {
-                                    return 'Por favor confirme sua senha';
-                                  }
-                                  return null;
-                                },
-                                initialValue: null,
-                                decoration: InputDecoration(
-                                  counterText: '',
-                                  labelText: 'Confirme sua senha',
-                                  border: OutlineInputBorder(),
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 42),
+                                Container(
+                                  height: 80,
+                                  child: TextFormField(
+                                    maxLength: 30,
+                                    obscureText: true,
+                                    validator: (value) {
+                                      if (value != _password.text) {
+                                        return 'Senhas não correspondem';
+                                      }
+                                      if (value!.length == 0) {
+                                        return 'Por favor confirme sua senha';
+                                      }
+                                      return null;
+                                    },
+                                    initialValue: null,
+                                    decoration: InputDecoration(
+                                      counterText: '',
+                                      labelText: 'Confirme sua senha',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
                           ),
                         ],
@@ -934,6 +940,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
     _controllerCPF.dispose();
     _controllerTEL.dispose();
     _controllerCEL.dispose();
+    _password.dispose();
     super.dispose();
   }
 

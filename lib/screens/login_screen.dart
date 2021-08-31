@@ -28,9 +28,9 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _cadastroScreenOpen = false;
 
   //VERSION UI TEXT
-  String _version = 'V1.84';
+  String _version = 'V1.85';
 
-  Future<void> _submit(_loginStore, context) async {
+  Future<void> _submit(LoginFormProvider _loginStore, context) async {
     setState(() => _isLoading = true);
 
     if (_loginStore.validateInput()) {
@@ -58,6 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
         },
       );
     } else {
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         duration: const Duration(seconds: 4),
         content: Text(

@@ -4,6 +4,7 @@ import 'package:digital_aligner_app/dados/models/cadastro/aprovacao_usuario_mode
 import 'package:digital_aligner_app/dados/models/cadastro/onboarding_model.dart';
 import 'package:digital_aligner_app/dados/models/cadastro/representante_model.dart';
 import 'package:digital_aligner_app/dados/models/cadastro/role_model.dart';
+import 'package:email_validator/email_validator.dart';
 
 import '../rotas_url.dart';
 
@@ -489,31 +490,30 @@ class _EditarCadastroState extends State<EditarCadastro> {
                                     ),
                                   ),
                                   Container(
+                                    margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
                                     height: 80,
                                     child: TextFormField(
-                                      maxLength: 320,
                                       initialValue: sc!.email,
+                                      maxLength: 320,
                                       onSaved: (String? value) {
                                         sc!.email = value ?? '';
                                       },
                                       validator: (value) {
-                                        if (value!.isEmpty) {
-                                          return 'Por favor insira seu email.';
+                                        bool isValid = EmailValidator.validate(
+                                            value ?? '');
+                                        if (!isValid) {
+                                          return 'Email invalido. Por favor verifique';
                                         }
                                         return null;
                                       },
-                                      inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.allow(
-                                            RegExp(
-                                                r'[a-z0-9!@#$&()\\-`.+,/\"-]')),
-                                      ],
-                                      decoration: const InputDecoration(
-                                        labelText: 'Email: *',
+                                      decoration: InputDecoration(
                                         counterText: '',
-                                        border: const OutlineInputBorder(),
+                                        labelText: 'Email',
+                                        border: OutlineInputBorder(),
                                       ),
                                     ),
                                   ),
+
                                   const SizedBox(height: 10),
                                   //nome
                                   Container(

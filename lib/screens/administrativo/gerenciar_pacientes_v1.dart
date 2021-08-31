@@ -584,66 +584,70 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
       child: Column(
         children: [
           if (buscandoMaisPedidos) _loadingSpinder(),
-          ElevatedButton.icon(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(
-                DefaultColors.digitalAlignBlue,
-              ),
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25.0),
+          Container(
+            width: 150,
+            child: ElevatedButton.icon(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(
+                  DefaultColors.digitalAlignBlue,
+                ),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25.0),
+                  ),
                 ),
               ),
-            ),
-            onPressed: buscandoMaisPedidos
-                ? null
-                : () {
-                    setState(() {
-                      buscandoMaisPedidos = true;
-                    });
-                    _pedidoStore!
-                        .fetchAddMorePedidos(
-                      token: _authStore!.token,
-                      roleId: _authStore!.roleId,
-                      pageQuant: pageQuant,
-                      query: _query,
-                      queryStrings: '&ref=' + _ref.toString(),
-                    )
-                        .then(
-                      (bool fetchSuccessful) {
-                        if (fetchSuccessful) {
-                          setState(() {
-                            buscandoMaisPedidos = false;
-                            pageQuant = pageQuant + 10;
-                            pageHeight = pageHeight + 350;
-                          });
-                        } else {
-                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              duration: const Duration(seconds: 1),
-                              content: Text(
-                                'Sem resultados',
-                                textAlign: TextAlign.center,
+              onPressed: buscandoMaisPedidos
+                  ? null
+                  : () {
+                      setState(() {
+                        buscandoMaisPedidos = true;
+                      });
+                      _pedidoStore!
+                          .fetchAddMorePedidos(
+                        token: _authStore!.token,
+                        roleId: _authStore!.roleId,
+                        pageQuant: pageQuant,
+                        query: _query,
+                        queryStrings: '&ref=' + _ref.toString(),
+                      )
+                          .then(
+                        (bool fetchSuccessful) {
+                          if (fetchSuccessful) {
+                            setState(() {
+                              buscandoMaisPedidos = false;
+                              pageQuant = pageQuant + 10;
+                              pageHeight = pageHeight + 350;
+                            });
+                          } else {
+                            ScaffoldMessenger.of(context)
+                                .removeCurrentSnackBar();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 1),
+                                content: Text(
+                                  'Sem resultados',
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
-                            ),
-                          );
-                          setState(() {
-                            buscandoMaisPedidos = false;
-                          });
-                        }
-                      },
-                    );
+                            );
+                            setState(() {
+                              buscandoMaisPedidos = false;
+                            });
+                          }
+                        },
+                      );
 
-                    //refreshPageFetchNewList();
-                  },
-            label: const Text(
-              'Carregar',
-              style: TextStyle(color: Colors.white),
-            ),
-            icon: Icon(
-              Icons.arrow_drop_down,
-              color: Colors.white,
+                      //refreshPageFetchNewList();
+                    },
+              label: const Text(
+                'Carregar',
+                style: TextStyle(color: Colors.white),
+              ),
+              icon: Icon(
+                Icons.arrow_drop_down,
+                color: Colors.white,
+              ),
             ),
           ),
         ],
@@ -984,7 +988,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   Widget build(BuildContext context) {
     if (!_authStore!.isAuth) {
       return LoginScreen(
-        showLoginMessage: true,
+        showLoginMessage: false,
       );
     }
 
