@@ -71,573 +71,474 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
     return states;
   }
 
+  Widget _form1() {
+    return Form(
+      key: _formKey,
+      child: Padding(
+        padding: const EdgeInsets.all(60.0),
+        child: Column(
+          children: <Widget>[
+            GridView.count(
+              crossAxisCount: 2,
+              children: [
+                //nome
+                Expanded(
+                  child: TextFormField(
+                    maxLength: 29,
+                    onSaved: (String? value) {
+                      _cadastroStore.novoCad.nome = value ?? '';
+                    },
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Por favor insira seu nome.';
+                      }
+                      return null;
+                    },
+                    decoration: const InputDecoration(
+                      labelText: 'Nome',
+                      counterText: '',
+                      //hintText: 'Insira seu nome',
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                //sobrenome
+                Expanded(
+                  child: TextFormField(
+                    maxLength: 29,
+                    onSaved: (String? value) {
+                      _cadastroStore.novoCad.sobrenome = value ?? '';
+                    },
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Por favor insira seu sobrenome.';
+                      }
+                      return null;
+                    },
+                    decoration: const InputDecoration(
+                      labelText: 'Sobrenome',
+                      //hintText: 'Insira seu nome',
+                      counterText: '',
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const Divider(thickness: 1),
+            Endereco(
+              enderecoType: 'criar endereco',
+              formKey: _formKey,
+            ),
+            const Divider(thickness: 1),
+            //email
+            TextFormField(
+              onChanged: (value) {
+                _emailConfirm = value;
+              },
+              maxLength: 320,
+              onSaved: (String? value) {
+                _cadastroStore.novoCad.email = value ?? '';
+              },
+              validator: (value) {
+                bool isValid = EmailValidator.validate(value ?? '');
+                if (!isValid) {
+                  return 'Email invalido. Por favor verifique';
+                }
+                return null;
+              },
+              initialValue: null,
+              decoration: InputDecoration(
+                counterText: '',
+                labelText: 'Email',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            //confirm email
+            TextFormField(
+              maxLength: 320,
+              validator: (value) {
+                if (value != _emailConfirm) {
+                  return 'Emails não correspondem';
+                }
+                if (value!.length == 0) {
+                  return 'Por favor confirme seu email';
+                }
+                return null;
+              },
+              initialValue: null,
+              decoration: InputDecoration(
+                counterText: '',
+                labelText: 'Confirme seu email',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            //password
+            CustomPasswordValidatedFields(
+              textEditingController: _password,
+              onSaved: (value) {
+                _cadastroStore.novoCad.password = value ?? '';
+              },
+              inputDecoration: InputDecoration(
+                labelText: 'Senha',
+              ),
+            ),
+            //password confirm
+            TextFormField(
+              maxLength: 30,
+              obscureText: true,
+              validator: (value) {
+                if (value != _password.text) {
+                  return 'Senhas não correspondem';
+                }
+                if (value!.length == 0) {
+                  return 'Por favor confirme sua senha';
+                }
+                return null;
+              },
+              initialValue: null,
+              decoration: InputDecoration(
+                counterText: '',
+                labelText: 'Confirme sua senha',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _dadosPessoas() {
+    return Container(
+      width: double.infinity,
+      height: 350,
+      child: GridView.count(
+        padding: const EdgeInsets.symmetric(
+          vertical: 10,
+        ),
+        mainAxisSpacing: 20,
+        crossAxisSpacing: 20,
+        childAspectRatio: 10,
+        crossAxisCount: width > 600 ? 2 : 1,
+        children: [
+          //nome
+          TextFormField(
+            maxLength: 29,
+            onSaved: (String? value) {
+              _cadastroStore.novoCad.nome = value ?? '';
+            },
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Por favor insira seu nome.';
+              }
+              return null;
+            },
+            decoration: const InputDecoration(
+              labelText: 'Nome',
+              counterText: '',
+              //hintText: 'Insira seu nome',
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          //sobrenome
+          TextFormField(
+            maxLength: 29,
+            onSaved: (String? value) {
+              _cadastroStore.novoCad.sobrenome = value ?? '';
+            },
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Por favor insira seu sobrenome.';
+              }
+              return null;
+            },
+            decoration: const InputDecoration(
+              labelText: 'Sobrenome',
+              //hintText: 'Insira seu nome',
+              counterText: '',
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          //cpf
+          TextFormField(
+            onSaved: (String? value) {
+              _cadastroStore.novoCad.username =
+                  SystemFunctions.formatCpfRemoveFormating(
+                cpf: value ?? '',
+              );
+            },
+            validator: (value) {
+              if (value!.length < 11) {
+                return 'Por favor insira seu cpf';
+              } else if (!CPFValidator.isValid(value)) {
+                return 'CPF invalido! Por favor verifique.';
+              }
+              return null;
+            },
+            onChanged: (value) async {
+              const duration = Duration(milliseconds: 500);
+              if (searchOnStoppedTyping != null) {
+                setState(() => searchOnStoppedTyping!.cancel());
+              }
+              setState(
+                () => searchOnStoppedTyping = new Timer(
+                  duration,
+                  () {
+                    if (value.length == 11) {
+                      String fCpf = SystemFunctions.formatCpf(
+                        cpf: value,
+                      );
+                      _controllerCPF.text = fCpf;
+                    }
+                  },
+                ),
+              );
+            },
+            maxLength: 11,
+            controller: _controllerCPF,
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+            ],
+            initialValue: null,
+            decoration: InputDecoration(
+              errorText: !CPFValidator.isValid(_controllerCPF.text) &&
+                      _controllerCPF.text.isNotEmpty
+                  ? 'CPF invalido! Por favor verifique.'
+                  : null,
+              //To hide cpf length num
+              counterText: '',
+              labelText: 'CPF',
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          //data de nascimento
+          DateTimeField(
+            onSaved: (value) {
+              _cadastroStore.novoCad.data_nasc = value.toString();
+            },
+            validator: (value) {
+              if (value == null) {
+                return 'Por favor insira sua data de nascimento';
+              }
+              return null;
+            },
+            controller: _controllerDataNasc,
+            decoration: const InputDecoration(
+              labelText: 'Data de Nascimento',
+              border: const OutlineInputBorder(),
+            ),
+            format: format,
+            /*
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9]')),
+                            ],*/
+            onShowPicker: (context, currentValue) {
+              return showDatePicker(
+                fieldHintText: 'formato: xx/xx/xxxx',
+                //initialEntryMode: DatePickerEntryMode.input,
+                errorFormatText: 'Escolha data válida',
+                errorInvalidText: 'Data invalida',
+                context: context,
+                firstDate: DateTime(1980),
+                initialDate: currentValue ?? DateTime.now(),
+                lastDate: DateTime(2100),
+              );
+            },
+          ),
+          //cro uf
+          DropdownSearch<String>(
+            searchBoxDecoration: InputDecoration(
+              isDense: true,
+              contentPadding: EdgeInsets.symmetric(
+                vertical: 14,
+                horizontal: 14,
+              ),
+            ),
+            dropdownSearchDecoration: InputDecoration(
+              contentPadding: EdgeInsets.symmetric(
+                vertical: 4,
+              ),
+              isDense: true,
+            ),
+            dropdownBuilder: (buildContext, string, string2) {
+              return Text(_selectedCroUf);
+            },
+            emptyBuilder: (buildContext, string) {
+              return Center(child: Text('Sem dados'));
+            },
+            loadingBuilder: (buildContext, string) {
+              return Center(child: Text('Carregando...'));
+            },
+            errorBuilder: (buildContext, string, dynamic) {
+              return Center(child: Text('Erro'));
+            },
+            onFind: (string) {
+              return _fetchStates();
+            },
+            onSaved: (value) {
+              _cadastroStore.novoCad.cro_uf = value ?? '';
+            },
+            validator: (value) {
+              return value == null || value.isEmpty
+                  ? 'Por favor selecione CRO (UF)'
+                  : null;
+            },
+            mode: Mode.MENU,
+            showSearchBox: true,
+            showSelectedItem: true,
+            items: [],
+            label: 'CRO (UF)',
+            onChanged: (value) {
+              _selectedCroUf = value ?? '';
+            },
+            selectedItem: _selectedCroUf,
+          ),
+          //cro número
+          TextFormField(
+            maxLength: 30,
+            onSaved: (String? value) {
+              _cadastroStore.novoCad.cro_num = value ?? '';
+            },
+            validator: (value) {
+              if (value!.length == 0) {
+                return 'Por favor escolha CRO';
+              }
+              return null;
+            },
+            controller: _controllerCRO,
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+            ],
+            initialValue: null,
+            decoration: InputDecoration(
+              counterText: '',
+              labelText: 'CRO (Número)',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          //cellphone
+          TextFormField(
+            onSaved: (String? value) {
+              _cadastroStore.novoCad.telefone =
+                  SystemFunctions.formatTelefoneRemoveFormating(
+                telefone: value ?? '',
+              );
+            },
+            validator: (value) {
+              if (value!.length == 0) {
+                return 'Por favor insira seu número de telefone';
+              }
+              return null;
+            },
+            onChanged: (value) async {
+              const duration = Duration(milliseconds: 500);
+              if (searchOnStoppedTyping != null) {
+                setState(() => searchOnStoppedTyping!.cancel());
+              }
+              setState(
+                () => searchOnStoppedTyping = new Timer(
+                  duration,
+                  () {
+                    if (value.length == 10) {
+                      String fTel = SystemFunctions.formatTelefone(
+                        telefone: value,
+                      );
+                      _controllerTEL.text = fTel;
+                    }
+                  },
+                ),
+              );
+            },
+            maxLength: 10,
+            controller: _controllerTEL,
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+            ],
+            initialValue: null,
+            decoration: InputDecoration(
+              //To hide cep length num
+              counterText: '',
+              labelText: 'Telefone Fixo (Comercial)',
+              //hintText: 'Insira seu nome',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          //telephone
+          TextFormField(
+            onSaved: (String? value) {
+              _cadastroStore.novoCad.celular =
+                  SystemFunctions.formatCellphoneRemoveFormating(
+                cellphone: value ?? '',
+              );
+            },
+            validator: (value) {
+              if (value!.length == 0) {
+                return 'Por favor insira seu número de celular';
+              }
+              return null;
+            },
+            onChanged: (value) async {
+              const duration = Duration(milliseconds: 500);
+              if (searchOnStoppedTyping != null) {
+                setState(() => searchOnStoppedTyping!.cancel());
+              }
+              setState(
+                () => searchOnStoppedTyping = new Timer(
+                  duration,
+                  () {
+                    if (value.length == 11) {
+                      String fCel = SystemFunctions.formatCellphone(
+                        cellphone: value,
+                      );
+                      _controllerCEL.text = fCel;
+                    }
+                  },
+                ),
+              );
+            },
+            maxLength: 11,
+            controller: _controllerCEL,
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+            ],
+            initialValue: null,
+            decoration: InputDecoration(
+              //To hide cep length num
+              counterText: '',
+              labelText: 'Celular (Whatsapp)',
+              //hintText: 'Insira seu nome',
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _form() {
     return Form(
       key: _formKey,
-      child: Column(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Container(),
-              ),
-              Expanded(
-                flex: 9,
-                child: Column(
-                  children: [
-                    //nome
-                    Container(
-                      height: 80,
-                      child: TextFormField(
-                        maxLength: 29,
-                        onSaved: (String? value) {
-                          _cadastroStore.novoCad.nome = value ?? '';
-                        },
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Por favor insira seu nome.';
-                          }
-                          return null;
-                        },
-                        decoration: const InputDecoration(
-                          labelText: 'Nome',
-                          counterText: '',
-                          //hintText: 'Insira seu nome',
-                          border: const OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    //sobrenome
-                    Container(
-                      height: 80,
-                      child: TextFormField(
-                        maxLength: 29,
-                        onSaved: (String? value) {
-                          _cadastroStore.novoCad.sobrenome = value ?? '';
-                        },
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Por favor insira seu sobrenome.';
-                          }
-                          return null;
-                        },
-                        decoration: const InputDecoration(
-                          labelText: 'Sobrenome',
-                          //hintText: 'Insira seu nome',
-                          counterText: '',
-                          border: const OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    //cpf/data de nascimento
-                    Container(
-                      width: width,
-                      height: width > 600 ? 80 : 180,
-                      child: Flex(
-                        direction:
-                            width > 600 ? Axis.horizontal : Axis.vertical,
-                        children: [
-                          Expanded(
-                            child: Container(
-                              height: 80,
-                              child: TextFormField(
-                                onSaved: (String? value) {
-                                  _cadastroStore.novoCad.username =
-                                      SystemFunctions.formatCpfRemoveFormating(
-                                    cpf: value ?? '',
-                                  );
-                                },
-                                validator: (value) {
-                                  if (value!.length < 11) {
-                                    return 'Por favor insira seu cpf';
-                                  } else if (!CPFValidator.isValid(value)) {
-                                    return 'CPF invalido! Por favor verifique.';
-                                  }
-                                  return null;
-                                },
-                                onChanged: (value) async {
-                                  const duration = Duration(milliseconds: 500);
-                                  if (searchOnStoppedTyping != null) {
-                                    setState(
-                                        () => searchOnStoppedTyping!.cancel());
-                                  }
-                                  setState(
-                                    () => searchOnStoppedTyping = new Timer(
-                                      duration,
-                                      () {
-                                        if (value.length == 11) {
-                                          String fCpf =
-                                              SystemFunctions.formatCpf(
-                                            cpf: value,
-                                          );
-                                          _controllerCPF.text = fCpf;
-                                        }
-                                      },
-                                    ),
-                                  );
-                                },
-                                maxLength: 11,
-                                controller: _controllerCPF,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.allow(
-                                      RegExp(r'[0-9]')),
-                                ],
-                                initialValue: null,
-                                decoration: InputDecoration(
-                                  errorText: !CPFValidator.isValid(
-                                              _controllerCPF.text) &&
-                                          _controllerCPF.text.isNotEmpty
-                                      ? 'CPF invalido! Por favor verifique.'
-                                      : null,
-                                  //To hide cpf length num
-                                  counterText: '',
-                                  labelText: 'CPF',
-                                  border: const OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            child: Container(
-                              height: 80,
-                              child: DateTimeField(
-                                onSaved: (value) {
-                                  _cadastroStore.novoCad.data_nasc =
-                                      value.toString();
-                                },
-                                validator: (value) {
-                                  if (value == null) {
-                                    return 'Por favor insira sua data de nascimento';
-                                  }
-                                  return null;
-                                },
-                                controller: _controllerDataNasc,
-                                decoration: const InputDecoration(
-                                  labelText: 'Data de Nascimento',
-                                  border: const OutlineInputBorder(),
-                                ),
-                                format: format,
-                                /*
-                                inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.allow(
-                                      RegExp(r'[0-9]')),
-                                ],*/
-                                onShowPicker: (context, currentValue) {
-                                  return showDatePicker(
-                                    fieldHintText: 'formato: xx/xx/xxxx',
-                                    //initialEntryMode: DatePickerEntryMode.input,
-                                    errorFormatText: 'Escolha data válida',
-                                    errorInvalidText: 'Data invalida',
-                                    context: context,
-                                    firstDate: DateTime(1980),
-                                    initialDate: currentValue ?? DateTime.now(),
-                                    lastDate: DateTime(2100),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    //cro uf/cro número
-                    Container(
-                      width: width,
-                      height: width > 600 ? 50 : 180,
-                      child: Flex(
-                        direction:
-                            width > 600 ? Axis.horizontal : Axis.vertical,
-                        children: [
-                          //fix cro uf
-                          Expanded(
-                            child: Container(
-                              height: 40,
-                              child: DropdownSearch<String>(
-                                searchBoxDecoration: InputDecoration(
-                                  isDense: true,
-                                  contentPadding: EdgeInsets.symmetric(
-                                    vertical: 14,
-                                    horizontal: 14,
-                                  ),
-                                ),
-                                dropdownBuilder:
-                                    (buildContext, string, string2) {
-                                  return Text(_selectedCroUf);
-                                },
-                                emptyBuilder: (buildContext, string) {
-                                  return Center(child: Text('Sem dados'));
-                                },
-                                loadingBuilder: (buildContext, string) {
-                                  return Center(child: Text('Carregando...'));
-                                },
-                                errorBuilder: (buildContext, string, dynamic) {
-                                  return Center(child: Text('Erro'));
-                                },
-                                onFind: (string) {
-                                  return _fetchStates();
-                                },
-                                onSaved: (value) {
-                                  _cadastroStore.novoCad.cro_uf = value ?? '';
-                                },
-                                validator: (value) {
-                                  return value == null || value.isEmpty
-                                      ? 'Por favor selecione CRO (UF)'
-                                      : null;
-                                },
-                                dropdownSearchDecoration: InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  contentPadding:
-                                      EdgeInsets.fromLTRB(10, 10, 10, 10),
-                                ),
-                                mode: Mode.MENU,
-                                showSearchBox: true,
-                                showSelectedItem: true,
-                                items: [],
-                                label: 'CRO (UF)',
-                                onChanged: (value) {
-                                  _selectedCroUf = value ?? '';
-                                },
-                                selectedItem: _selectedCroUf,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            child: Container(
-                              child: TextFormField(
-                                maxLength: 30,
-                                onSaved: (String? value) {
-                                  _cadastroStore.novoCad.cro_num = value ?? '';
-                                },
-                                validator: (value) {
-                                  if (value!.length == 0) {
-                                    return 'Por favor escolha CRO';
-                                  }
-                                  return null;
-                                },
-                                controller: _controllerCRO,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.allow(
-                                      RegExp(r'[0-9]')),
-                                ],
-                                initialValue: null,
-                                decoration: InputDecoration(
-                                  counterText: '',
-                                  labelText: 'CRO (Número)',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    //cellphone/telephone
-                    Container(
-                      width: width,
-                      height: width > 600 ? 80 : 180,
-                      child: Flex(
-                        direction:
-                            width > 600 ? Axis.horizontal : Axis.vertical,
-                        children: [
-                          Expanded(
-                            child: Container(
-                              margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
-                              height: 80,
-                              child: TextFormField(
-                                onSaved: (String? value) {
-                                  _cadastroStore.novoCad.telefone =
-                                      SystemFunctions
-                                          .formatTelefoneRemoveFormating(
-                                    telefone: value ?? '',
-                                  );
-                                },
-                                validator: (value) {
-                                  if (value!.length == 0) {
-                                    return 'Por favor insira seu número de telefone';
-                                  }
-                                  return null;
-                                },
-                                onChanged: (value) async {
-                                  const duration = Duration(milliseconds: 500);
-                                  if (searchOnStoppedTyping != null) {
-                                    setState(
-                                        () => searchOnStoppedTyping!.cancel());
-                                  }
-                                  setState(
-                                    () => searchOnStoppedTyping = new Timer(
-                                      duration,
-                                      () {
-                                        if (value.length == 10) {
-                                          String fTel =
-                                              SystemFunctions.formatTelefone(
-                                            telefone: value,
-                                          );
-                                          _controllerTEL.text = fTel;
-                                        }
-                                      },
-                                    ),
-                                  );
-                                },
-                                maxLength: 10,
-                                controller: _controllerTEL,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.allow(
-                                      RegExp(r'[0-9]')),
-                                ],
-                                initialValue: null,
-                                decoration: InputDecoration(
-                                  //To hide cep length num
-                                  counterText: '',
-                                  labelText: 'Telefone Fixo (Comercial)',
-                                  //hintText: 'Insira seu nome',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            child: Container(
-                              margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
-                              height: 80,
-                              child: TextFormField(
-                                onSaved: (String? value) {
-                                  _cadastroStore.novoCad.celular =
-                                      SystemFunctions
-                                          .formatCellphoneRemoveFormating(
-                                    cellphone: value ?? '',
-                                  );
-                                },
-                                validator: (value) {
-                                  if (value!.length == 0) {
-                                    return 'Por favor insira seu número de celular';
-                                  }
-                                  return null;
-                                },
-                                onChanged: (value) async {
-                                  const duration = Duration(milliseconds: 500);
-                                  if (searchOnStoppedTyping != null) {
-                                    setState(
-                                        () => searchOnStoppedTyping!.cancel());
-                                  }
-                                  setState(
-                                    () => searchOnStoppedTyping = new Timer(
-                                      duration,
-                                      () {
-                                        if (value.length == 11) {
-                                          String fCel =
-                                              SystemFunctions.formatCellphone(
-                                            cellphone: value,
-                                          );
-                                          _controllerCEL.text = fCel;
-                                        }
-                                      },
-                                    ),
-                                  );
-                                },
-                                maxLength: 11,
-                                controller: _controllerCEL,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.allow(
-                                      RegExp(r'[0-9]')),
-                                ],
-                                initialValue: null,
-                                decoration: InputDecoration(
-                                  //To hide cep length num
-                                  counterText: '',
-                                  labelText: 'Celular (Whatsapp)',
-                                  //hintText: 'Insira seu nome',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Divider(thickness: 1),
-                    const SizedBox(height: 20),
-                    Endereco(
-                      enderecoType: 'criar endereco',
-                      formKey: _formKey,
-                    ),
-                    const SizedBox(width: 20),
-                    const Divider(thickness: 1),
-                    //email
-                    Container(
-                      width: width,
-                      height: width > 600 ? 80 : 180,
-                      child: Flex(
-                        direction:
-                            width > 600 ? Axis.horizontal : Axis.vertical,
-                        children: [
-                          //Email
-                          Expanded(
-                            child: Container(
-                              margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
-                              height: 80,
-                              child: TextFormField(
-                                onChanged: (value) {
-                                  _emailConfirm = value;
-                                },
-                                maxLength: 320,
-                                onSaved: (String? value) {
-                                  _cadastroStore.novoCad.email = value ?? '';
-                                },
-                                validator: (value) {
-                                  bool isValid =
-                                      EmailValidator.validate(value ?? '');
-                                  if (!isValid) {
-                                    return 'Email invalido. Por favor verifique';
-                                  }
-                                  return null;
-                                },
-                                initialValue: null,
-                                decoration: InputDecoration(
-                                  counterText: '',
-                                  labelText: 'Email',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          //Confirm email
-                          Expanded(
-                            child: Container(
-                              margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
-                              height: 80,
-                              child: TextFormField(
-                                maxLength: 320,
-                                validator: (value) {
-                                  if (value != _emailConfirm) {
-                                    return 'Emails não correspondem';
-                                  }
-                                  if (value!.length == 0) {
-                                    return 'Por favor confirme seu email';
-                                  }
-                                  return null;
-                                },
-                                initialValue: null,
-                                decoration: InputDecoration(
-                                  counterText: '',
-                                  labelText: 'Confirme seu email',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                    //password
-                    Container(
-                      width: width,
-                      height: width > 600 ? 300 : 520,
-                      child: Flex(
-                        direction:
-                            width > 600 ? Axis.horizontal : Axis.vertical,
-                        children: [
-                          //password
-                          /*
-                          Expanded(
-                            child: Container(
-                              height: 80,
-                              child: TextFormField(
-                                maxLength: 30,
-                                obscureText: true,
-                                onSaved: (String? value) {
-                                  _cadastroStore.novoCad.password = value ?? '';
-                                },
-                                validator: (value) {
-                                  if (value!.length == 0) {
-                                    return 'Por favor insira sua senha';
-                                  }
-                                  if (value.contains(' ')) {
-                                    return 'Existem espaços em sua senha';
-                                  }
-                                  if (value.length < 6) {
-                                    return 'A senha deve ter no mínimo 6 caracteres';
-                                  }
-                                  if (value != _passwordConfirm) {
-                                    return 'Senhas não correspondem';
-                                  }
-                                  return null;
-                                },
-                                initialValue: null,
-                                decoration: InputDecoration(
-                                  counterText: '',
-                                  labelText: 'Senha',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                          ),*/
-                          Expanded(
-                            child: CustomPasswordValidatedFields(
-                              textEditingController: _password,
-                              onSaved: (value) {
-                                _cadastroStore.novoCad.password = value ?? '';
-                              },
-                              inputDecoration: InputDecoration(
-                                labelText: 'Senha',
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          //password confirm
-                          Expanded(
-                            child: Column(
-                              children: [
-                                const SizedBox(height: 42),
-                                Container(
-                                  height: 80,
-                                  child: TextFormField(
-                                    maxLength: 30,
-                                    obscureText: true,
-                                    validator: (value) {
-                                      if (value != _password.text) {
-                                        return 'Senhas não correspondem';
-                                      }
-                                      if (value!.length == 0) {
-                                        return 'Por favor confirme sua senha';
-                                      }
-                                      return null;
-                                    },
-                                    initialValue: null,
-                                    decoration: InputDecoration(
-                                      counterText: '',
-                                      labelText: 'Confirme sua senha',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Container(),
-              ),
-            ],
-          ),
-        ],
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 60),
+        child: Column(
+          children: [
+            _dadosPessoas(),
+            const Divider(thickness: 1),
+            const SizedBox(height: 50),
+            Endereco(
+              enderecoType: 'criar endereco',
+              formKey: _formKey,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -974,7 +875,6 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                 _headline(),
                 const SizedBox(height: 50),
                 if (widget.isPortugal) _formPortugal() else _form(),
-                const SizedBox(height: 50),
                 _buttons(),
                 const SizedBox(height: 50),
               ],
