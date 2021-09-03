@@ -71,149 +71,17 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
     return states;
   }
 
-  Widget _form1() {
-    return Form(
-      key: _formKey,
-      child: Padding(
-        padding: const EdgeInsets.all(60.0),
-        child: Column(
-          children: <Widget>[
-            GridView.count(
-              crossAxisCount: 2,
-              children: [
-                //nome
-                Expanded(
-                  child: TextFormField(
-                    maxLength: 29,
-                    onSaved: (String? value) {
-                      _cadastroStore.novoCad.nome = value ?? '';
-                    },
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Por favor insira seu nome.';
-                      }
-                      return null;
-                    },
-                    decoration: const InputDecoration(
-                      labelText: 'Nome',
-                      counterText: '',
-                      //hintText: 'Insira seu nome',
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                //sobrenome
-                Expanded(
-                  child: TextFormField(
-                    maxLength: 29,
-                    onSaved: (String? value) {
-                      _cadastroStore.novoCad.sobrenome = value ?? '';
-                    },
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Por favor insira seu sobrenome.';
-                      }
-                      return null;
-                    },
-                    decoration: const InputDecoration(
-                      labelText: 'Sobrenome',
-                      //hintText: 'Insira seu nome',
-                      counterText: '',
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const Divider(thickness: 1),
-            Endereco(
-              enderecoType: 'criar endereco',
-              formKey: _formKey,
-            ),
-            const Divider(thickness: 1),
-            //email
-            TextFormField(
-              onChanged: (value) {
-                _emailConfirm = value;
-              },
-              maxLength: 320,
-              onSaved: (String? value) {
-                _cadastroStore.novoCad.email = value ?? '';
-              },
-              validator: (value) {
-                bool isValid = EmailValidator.validate(value ?? '');
-                if (!isValid) {
-                  return 'Email invalido. Por favor verifique';
-                }
-                return null;
-              },
-              initialValue: null,
-              decoration: InputDecoration(
-                counterText: '',
-                labelText: 'Email',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            //confirm email
-            TextFormField(
-              maxLength: 320,
-              validator: (value) {
-                if (value != _emailConfirm) {
-                  return 'Emails não correspondem';
-                }
-                if (value!.length == 0) {
-                  return 'Por favor confirme seu email';
-                }
-                return null;
-              },
-              initialValue: null,
-              decoration: InputDecoration(
-                counterText: '',
-                labelText: 'Confirme seu email',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 20),
-            //password
-            CustomPasswordValidatedFields(
-              textEditingController: _password,
-              onSaved: (value) {
-                _cadastroStore.novoCad.password = value ?? '';
-              },
-              inputDecoration: InputDecoration(
-                labelText: 'Senha',
-              ),
-            ),
-            //password confirm
-            TextFormField(
-              maxLength: 30,
-              obscureText: true,
-              validator: (value) {
-                if (value != _password.text) {
-                  return 'Senhas não correspondem';
-                }
-                if (value!.length == 0) {
-                  return 'Por favor confirme sua senha';
-                }
-                return null;
-              },
-              initialValue: null,
-              decoration: InputDecoration(
-                counterText: '',
-                labelText: 'Confirme sua senha',
-                border: OutlineInputBorder(),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget _authFieldsGrid() {
+    double gridHeight = 350;
+    if (width > 800)
+      gridHeight = 350;
+    else if (width > 650 && width <= 800)
+      gridHeight = 450;
+    else if (width > 350 && width <= 650) gridHeight = 500;
 
-  Widget _dadosPessoas() {
     return Container(
       width: double.infinity,
-      height: 350,
+      height: gridHeight,
       child: GridView.count(
         padding: const EdgeInsets.symmetric(
           vertical: 10,
@@ -221,46 +89,149 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
         mainAxisSpacing: 20,
         crossAxisSpacing: 20,
         childAspectRatio: 10,
-        crossAxisCount: width > 600 ? 2 : 1,
+        crossAxisCount: width > 800 ? 2 : 1,
         children: [
-          //nome
+          //email
           TextFormField(
-            maxLength: 29,
+            onChanged: (value) {
+              _emailConfirm = value;
+            },
+            maxLength: 320,
             onSaved: (String? value) {
-              _cadastroStore.novoCad.nome = value ?? '';
+              _cadastroStore.novoCad.email = value ?? '';
             },
             validator: (value) {
-              if (value!.isEmpty) {
-                return 'Por favor insira seu nome.';
+              bool isValid = EmailValidator.validate(value ?? '');
+              if (!isValid) {
+                return 'Email invalido. Por favor verifique';
               }
               return null;
             },
-            decoration: const InputDecoration(
-              labelText: 'Nome',
+            initialValue: null,
+            decoration: InputDecoration(
               counterText: '',
-              //hintText: 'Insira seu nome',
-              border: const OutlineInputBorder(),
+              labelText: 'Email',
+              border: OutlineInputBorder(),
             ),
           ),
-          //sobrenome
+          //confirm email
           TextFormField(
-            maxLength: 29,
-            onSaved: (String? value) {
-              _cadastroStore.novoCad.sobrenome = value ?? '';
-            },
+            maxLength: 320,
             validator: (value) {
-              if (value!.isEmpty) {
-                return 'Por favor insira seu sobrenome.';
+              if (value != _emailConfirm) {
+                return 'Emails não correspondem';
+              }
+              if (value!.length == 0) {
+                return 'Por favor confirme seu email';
               }
               return null;
             },
-            decoration: const InputDecoration(
-              labelText: 'Sobrenome',
-              //hintText: 'Insira seu nome',
+            initialValue: null,
+            decoration: InputDecoration(
               counterText: '',
-              border: const OutlineInputBorder(),
+              labelText: 'Confirme seu email',
+              border: OutlineInputBorder(),
             ),
           ),
+          //password
+          CustomPasswordValidatedFields(
+            textEditingController: _password,
+            onSaved: (value) {
+              _cadastroStore.novoCad.password = value ?? '';
+            },
+            inputDecoration: InputDecoration(
+              labelText: 'Senha',
+            ),
+            fieldAndValidationSpacing: width > 800 ? 10 : 70,
+          ),
+          //password confirm
+          TextFormField(
+            maxLength: 30,
+            obscureText: true,
+            validator: (value) {
+              if (value != _password.text) {
+                return 'Senhas não correspondem';
+              }
+              if (value!.length == 0) {
+                return 'Por favor confirme sua senha';
+              }
+              return null;
+            },
+            initialValue: null,
+            decoration: InputDecoration(
+              counterText: '',
+              labelText: 'Confirme sua senha',
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _nomeField() {
+    return TextFormField(
+      maxLength: 29,
+      onSaved: (String? value) {
+        _cadastroStore.novoCad.nome = value ?? '';
+      },
+      validator: (value) {
+        if (value!.isEmpty) {
+          return 'Por favor insira seu nome.';
+        }
+        return null;
+      },
+      decoration: const InputDecoration(
+        labelText: 'Nome',
+        counterText: '',
+        //hintText: 'Insira seu nome',
+        border: const OutlineInputBorder(),
+      ),
+    );
+  }
+
+  Widget _sobrenomeField() {
+    return TextFormField(
+      maxLength: 29,
+      onSaved: (String? value) {
+        _cadastroStore.novoCad.sobrenome = value ?? '';
+      },
+      validator: (value) {
+        if (value!.isEmpty) {
+          return 'Por favor insira seu sobrenome.';
+        }
+        return null;
+      },
+      decoration: const InputDecoration(
+        labelText: 'Sobrenome',
+        //hintText: 'Insira seu nome',
+        counterText: '',
+        border: const OutlineInputBorder(),
+      ),
+    );
+  }
+
+  Widget _dadosPessoasGrid() {
+    double gridHeight = 350;
+    if (width > 800)
+      gridHeight = 350;
+    else if (width > 650 && width <= 800)
+      gridHeight = 720;
+    else if (width > 350 && width <= 650) gridHeight = 600;
+    return Container(
+      width: double.infinity,
+      height: gridHeight,
+      child: GridView.count(
+        padding: const EdgeInsets.symmetric(
+          vertical: 10,
+        ),
+        mainAxisSpacing: 20,
+        crossAxisSpacing: 20,
+        childAspectRatio: 10,
+        crossAxisCount: width > 800 ? 2 : 1,
+        children: [
+          _nomeField(),
+          _sobrenomeField(),
           //cpf
           TextFormField(
             onSaved: (String? value) {
@@ -361,6 +332,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
             dropdownSearchDecoration: InputDecoration(
               contentPadding: EdgeInsets.symmetric(
                 vertical: 4,
+                horizontal: 16,
               ),
               isDense: true,
             ),
@@ -530,13 +502,16 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
         padding: const EdgeInsets.symmetric(horizontal: 60),
         child: Column(
           children: [
-            _dadosPessoas(),
+            _dadosPessoasGrid(),
             const Divider(thickness: 1),
             const SizedBox(height: 50),
             Endereco(
               enderecoType: 'criar endereco',
               formKey: _formKey,
             ),
+            const Divider(thickness: 1),
+            const SizedBox(height: 50),
+            _authFieldsGrid(),
           ],
         ),
       ),
@@ -544,6 +519,25 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
   }
 
   Widget _formPortugal() {
+    return Form(
+      key: _formKey,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 60),
+        child: Column(
+          children: [
+            _nomeField(),
+            const SizedBox(height: 20),
+            _sobrenomeField(),
+            const Divider(height: 100, thickness: 1),
+            _authFieldsGrid(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _formPortugal1() {
     return Form(
       key: _formKey,
       child: Column(
@@ -742,7 +736,7 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
     return Flex(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
-      direction: width > 600 ? Axis.horizontal : Axis.vertical,
+      direction: width > 800 ? Axis.horizontal : Axis.vertical,
       children: <Widget>[
         Container(
           width: 300,

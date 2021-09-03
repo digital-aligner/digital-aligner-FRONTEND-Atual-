@@ -8,6 +8,8 @@ class CustomPasswordValidatedFields extends StatefulWidget {
   /// on saved callback
   void Function(String?)? onSaved;
 
+  final double fieldAndValidationSpacing;
+
   /// Input decoration of Text field by default it is OutlineInputBorder
   final InputDecoration? inputDecoration;
 
@@ -49,6 +51,7 @@ class CustomPasswordValidatedFields extends StatefulWidget {
   CustomPasswordValidatedFields({
     Key? key,
     this.onSaved,
+    this.fieldAndValidationSpacing = 10,
 
     /// [default inputDecoration]
     this.inputDecoration = const InputDecoration(
@@ -91,13 +94,13 @@ class _CustomPasswordValidatedFieldsState
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(10.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           /// [Password TextFormField]
           /// Use `Form` to validate the field easily
+
           TextFormField(
             onSaved: widget.onSaved,
             textInputAction: widget.textInputAction,
@@ -118,7 +121,7 @@ class _CustomPasswordValidatedFieldsState
             },
             validator: passwordValidation,
           ),
-          SizedBox(height: 10.0),
+          SizedBox(height: widget.fieldAndValidationSpacing),
 
           /// [default requirements]
           /// `1 Upper case` requirement

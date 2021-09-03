@@ -1713,62 +1713,74 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             isRadio: true,
             spacing: 10,
             onSelected: (index, isSelected) async {
-              if (isSelected && index == 1) {
-                _modeloGessoAlert();
-                bool result = await _atualizarModelosTipo(modeloGesso: true);
-                if (result) {
-                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(seconds: 3),
-                      content: Text(
-                        'Atualizado com sucesso',
-                        textAlign: TextAlign.center,
+              if (_isEditarPedido) {
+                if (isSelected && index == 1) {
+                  _modeloGessoAlert();
+                  bool result = await _atualizarModelosTipo(modeloGesso: true);
+                  if (result) {
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: const Duration(seconds: 3),
+                        content: Text(
+                          'Atualizado com sucesso',
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                    setState(() {
+                      modeloEmGesso = true;
+                    });
+                  } else {
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: const Duration(seconds: 3),
+                        content: Text(
+                          'Não foi possível alterar',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
+                  }
+                } else {
+                  bool result = await _atualizarModelosTipo(modeloGesso: false);
+                  if (result) {
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: const Duration(seconds: 3),
+                        content: Text(
+                          'Atualizado com sucesso',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
+                    setState(() {
+                      modeloEmGesso = false;
+                    });
+                  } else {
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: const Duration(seconds: 3),
+                        content: Text(
+                          'Não foi possível alterar',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
+                  }
+                }
+              } else {
+                if (isSelected && index == 1) {
                   setState(() {
                     modeloEmGesso = true;
                   });
                 } else {
-                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(seconds: 3),
-                      content: Text(
-                        'Não foi possível alterar',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  );
-                }
-              } else {
-                bool result = await _atualizarModelosTipo(modeloGesso: false);
-                if (result) {
-                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(seconds: 3),
-                      content: Text(
-                        'Atualizado com sucesso',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  );
                   setState(() {
                     modeloEmGesso = false;
                   });
-                } else {
-                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(seconds: 3),
-                      content: Text(
-                        'Não foi possível alterar',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  );
                 }
               }
             },

@@ -28,6 +28,7 @@ class Endereco extends StatefulWidget {
 }
 
 class _EnderecoState extends State<Endereco> {
+  double width = 300;
   AuthProvider? _authStore;
   CadastroProvider? _cadastroStore;
   late Locale _currentLocal;
@@ -411,328 +412,288 @@ class _EnderecoState extends State<Endereco> {
   }
 
   Widget _enderecoField() {
-    return Container(
-      margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-      height: 80,
-      child: TextFormField(
-        controller: _enderecoController,
-        maxLength: 60,
-        onSaved: (String? value) {
-          if (widget.enderecoType == _type1) {
-            _cadastroStore!.novoCad.endereco = value ?? '';
-          } else {
-            _enderecoController.text = value ?? '';
-          }
-        },
-        validator: (String? value) {
-          return value!.isEmpty ? 'Campo vazio' : null;
-        },
-        decoration: InputDecoration(
-          counterText: '',
-          hintText: AppLocalizations.of(context)!.endereco,
-          labelText: AppLocalizations.of(context)!.endereco,
-          border: const OutlineInputBorder(),
-        ),
+    return TextFormField(
+      controller: _enderecoController,
+      maxLength: 60,
+      onSaved: (String? value) {
+        if (widget.enderecoType == _type1) {
+          _cadastroStore!.novoCad.endereco = value ?? '';
+        } else {
+          _enderecoController.text = value ?? '';
+        }
+      },
+      validator: (String? value) {
+        return value!.isEmpty ? 'Campo vazio' : null;
+      },
+      decoration: InputDecoration(
+        counterText: '',
+        hintText: AppLocalizations.of(context)!.endereco,
+        labelText: AppLocalizations.of(context)!.endereco,
+        border: const OutlineInputBorder(),
       ),
     );
   }
 
-  Widget _numeroEComplementoField() {
-    return Container(
-      width: sWidth,
-      height: sWidth > 600 ? 80 : 180,
-      child: Flex(
-        direction: sWidth > 600 ? Axis.horizontal : Axis.vertical,
-        children: <Widget>[
-          Expanded(
-            child: Container(
-              height: 80,
-              child: TextFormField(
-                controller: _numeroController,
-                maxLength: 10,
-                onSaved: (String? value) {
-                  if (widget.enderecoType == _type1) {
-                    _cadastroStore!.novoCad.numero = value ?? '';
-                  } else {
-                    _numeroController.text = value ?? '';
-                  }
-                },
-                validator: (String? value) {
-                  return value == null || value.isEmpty ? 'Campo vazio' : null;
-                },
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                ],
-                decoration: InputDecoration(
-                  counterText: '',
-                  labelText: AppLocalizations.of(context)!.numero,
-                  hintText: AppLocalizations.of(context)!.numero,
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 20),
-          Expanded(
-            child: Container(
-              height: 80,
-              child: TextFormField(
-                controller: _complementoController,
-                maxLength: 40,
-                onSaved: (String? value) {
-                  if (widget.enderecoType == _type1) {
-                    _cadastroStore!.novoCad.complemento = value ?? '';
-                  } else {
-                    _complementoController.text = value ?? '';
-                  }
-                },
-                validator: (String? value) {
-                  return value == null || value.isEmpty ? 'Campo vazio' : null;
-                },
-                decoration: InputDecoration(
-                  counterText: '',
-                  labelText: AppLocalizations.of(context)!.complemento,
-                  hintText: AppLocalizations.of(context)!.complemento,
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ),
-          ),
-        ],
+  Widget _numeroField() {
+    return TextFormField(
+      controller: _numeroController,
+      maxLength: 10,
+      onSaved: (String? value) {
+        if (widget.enderecoType == _type1) {
+          _cadastroStore!.novoCad.numero = value ?? '';
+        } else {
+          _numeroController.text = value ?? '';
+        }
+      },
+      validator: (String? value) {
+        return value == null || value.isEmpty ? 'Campo vazio' : null;
+      },
+      keyboardType: TextInputType.number,
+      inputFormatters: <TextInputFormatter>[
+        FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+      ],
+      decoration: InputDecoration(
+        counterText: '',
+        labelText: AppLocalizations.of(context)!.numero,
+        hintText: AppLocalizations.of(context)!.numero,
+        border: OutlineInputBorder(),
+      ),
+    );
+  }
+
+  Widget _complementoField() {
+    return TextFormField(
+      controller: _complementoController,
+      maxLength: 40,
+      onSaved: (String? value) {
+        if (widget.enderecoType == _type1) {
+          _cadastroStore!.novoCad.complemento = value ?? '';
+        } else {
+          _complementoController.text = value ?? '';
+        }
+      },
+      validator: (String? value) {
+        return value == null || value.isEmpty ? 'Campo vazio' : null;
+      },
+      decoration: InputDecoration(
+        counterText: '',
+        labelText: AppLocalizations.of(context)!.complemento,
+        hintText: AppLocalizations.of(context)!.complemento,
+        border: OutlineInputBorder(),
       ),
     );
   }
 
   Widget _bairroField() {
-    return Container(
-      height: 80,
-      child: TextFormField(
-        controller: _bairroController,
-        maxLength: 60,
-        onSaved: (String? value) {
-          if (widget.enderecoType == _type1) {
-            _cadastroStore!.novoCad.bairro = value ?? '';
-          } else {
-            _bairroController.text = value ?? '';
-          }
-        },
-        validator: (String? value) {
-          return value!.isEmpty ? 'Campo vazio' : null;
-        },
-        decoration: InputDecoration(
-          counterText: '',
-          labelText: AppLocalizations.of(context)!.bairro,
-          hintText: AppLocalizations.of(context)!.bairro,
-          border: OutlineInputBorder(),
-        ),
+    return TextFormField(
+      controller: _bairroController,
+      maxLength: 60,
+      onSaved: (String? value) {
+        if (widget.enderecoType == _type1) {
+          _cadastroStore!.novoCad.bairro = value ?? '';
+        } else {
+          _bairroController.text = value ?? '';
+        }
+      },
+      validator: (String? value) {
+        return value!.isEmpty ? 'Campo vazio' : null;
+      },
+      decoration: InputDecoration(
+        counterText: '',
+        labelText: AppLocalizations.of(context)!.bairro,
+        hintText: AppLocalizations.of(context)!.bairro,
+        border: OutlineInputBorder(),
       ),
     );
   }
 
   Widget _cepField() {
-    return Container(
-      height: 80,
-      child: TextFormField(
-        controller: _cepController,
-        onSaved: (String? value) {
-          if (widget.enderecoType == _type1) {
-            _cadastroStore!.novoCad.cep = value ?? '';
-          } else {
-            _cepController.text = value ?? '';
-          }
-        },
-        validator: (String? value) {
-          return value!.isEmpty ? 'Campo vazio' : null;
-        },
-        maxLength: 8,
-        keyboardType: TextInputType.number,
-        inputFormatters: <TextInputFormatter>[
-          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-        ],
-        decoration: InputDecoration(
-          //To hide cep length num
-          counterText: '',
-          labelText: AppLocalizations.of(context)!.cep,
-          hintText: AppLocalizations.of(context)!.cep,
-          border: OutlineInputBorder(),
-        ),
+    return TextFormField(
+      controller: _cepController,
+      onSaved: (String? value) {
+        if (widget.enderecoType == _type1) {
+          _cadastroStore!.novoCad.cep = value ?? '';
+        } else {
+          _cepController.text = value ?? '';
+        }
+      },
+      validator: (String? value) {
+        return value!.isEmpty ? 'Campo vazio' : null;
+      },
+      maxLength: 8,
+      keyboardType: TextInputType.number,
+      inputFormatters: <TextInputFormatter>[
+        FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+      ],
+      decoration: InputDecoration(
+        //To hide cep length num
+        counterText: '',
+        labelText: AppLocalizations.of(context)!.cep,
+        hintText: AppLocalizations.of(context)!.cep,
+        border: OutlineInputBorder(),
       ),
     );
   }
 
   Widget _paisField() {
-    return Container(
-      height: 40,
-      child: DropdownSearch<String>(
-        searchBoxDecoration: InputDecoration(
-          isDense: true,
-          contentPadding: EdgeInsets.symmetric(
-            vertical: 14,
-            horizontal: 14,
-          ),
+    return DropdownSearch<String>(
+      searchBoxDecoration: InputDecoration(
+        isDense: true,
+        contentPadding: EdgeInsets.symmetric(
+          vertical: 14,
+          horizontal: 14,
         ),
-        dropdownBuilder: (buildContext, string, string2) {
-          return Text(_paisController.text);
-        },
-        emptyBuilder: (buildContext, string) {
-          return Center(child: Text('Sem dados'));
-        },
-        loadingBuilder: (buildContext, string) {
-          return Center(child: Text('Carregando...'));
-        },
-        errorBuilder: (buildContext, string, dynamic) {
-          return Center(child: Text('Erro'));
-        },
-        onFind: (string) {
-          return _fetchCountries();
-        },
-        onSaved: (String? value) {
-          if (widget.enderecoType == _type1) {
-            _cadastroStore!.novoCad.pais = value ?? '';
-          } else {
-            _paisController.text = value ?? '';
-          }
-        },
-        validator: (String? value) {
-          return value == null || value.isEmpty ? 'Campo vazio' : null;
-        },
-        dropdownSearchDecoration: InputDecoration(
-          border: OutlineInputBorder(),
-          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-        ),
-        mode: Mode.MENU,
-        showSearchBox: true,
-        showSelectedItem: true,
-        label: AppLocalizations.of(context)!.pais,
-        hint: AppLocalizations.of(context)!.pais,
-        onChanged: (value) {
-          //clear to force user select new uf and city
-          _ufController.text = '';
-          _cidadeController.text = '';
-          _paisController.text = value ?? '';
-        },
-        selectedItem: _paisController.text,
       ),
+      dropdownSearchDecoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(
+          vertical: 4,
+          horizontal: 16,
+        ),
+        isDense: true,
+      ),
+      dropdownBuilder: (buildContext, string, string2) {
+        return Text(_paisController.text);
+      },
+      emptyBuilder: (buildContext, string) {
+        return Center(child: Text('Sem dados'));
+      },
+      loadingBuilder: (buildContext, string) {
+        return Center(child: Text('Carregando...'));
+      },
+      errorBuilder: (buildContext, string, dynamic) {
+        return Center(child: Text('Erro'));
+      },
+      onFind: (string) {
+        return _fetchCountries();
+      },
+      onSaved: (String? value) {
+        if (widget.enderecoType == _type1) {
+          _cadastroStore!.novoCad.pais = value ?? '';
+        } else {
+          _paisController.text = value ?? '';
+        }
+      },
+      validator: (String? value) {
+        return value == null || value.isEmpty ? 'Campo vazio' : null;
+      },
+      mode: Mode.MENU,
+      showSearchBox: true,
+      showSelectedItem: true,
+      label: AppLocalizations.of(context)!.pais,
+      hint: AppLocalizations.of(context)!.pais,
+      onChanged: (value) {
+        //clear to force user select new uf and city
+        _ufController.text = '';
+        _cidadeController.text = '';
+        _paisController.text = value ?? '';
+      },
+      selectedItem: _paisController.text,
     );
   }
 
-  Widget _ufCidadeField() {
-    return Container(
-      width: sWidth,
-      height: sWidth > 600 ? 80 : 180,
-      child: Flex(
-        direction: sWidth > 600 ? Axis.horizontal : Axis.vertical,
-        children: [
-          //Uf
-          Expanded(
-            child: Container(
-              height: 40,
-              child: DropdownSearch<String>(
-                searchBoxDecoration: InputDecoration(
-                  isDense: true,
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 14,
-                    horizontal: 14,
-                  ),
-                ),
-                dropdownBuilder: (buildContext, string, string2) {
-                  return Text(_ufController.text);
-                },
-                emptyBuilder: (buildContext, string) {
-                  return Center(child: Text('Sem dados'));
-                },
-                loadingBuilder: (buildContext, string) {
-                  return Center(child: Text('Carregando...'));
-                },
-                errorBuilder: (buildContext, string, dynamic) {
-                  return Center(child: Text('Erro'));
-                },
-                onFind: (string) {
-                  return _fetchStates();
-                },
-                onSaved: (String? value) {
-                  if (widget.enderecoType == _type1) {
-                    _cadastroStore!.novoCad.uf = value ?? '';
-                  } else {
-                    _ufController.text = value ?? '';
-                  }
-                },
-                validator: (String? value) {
-                  return value == null || value.isEmpty ? 'Campo vazio' : null;
-                },
-                dropdownSearchDecoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                ),
-                mode: Mode.MENU,
-                showSearchBox: true,
-                showSelectedItem: true,
-                label: AppLocalizations.of(context)!.uf,
-                onChanged: (String? value) async {
-                  //clear to force user select new uf and city
-                  _cidadeController.text = '';
-                  _ufController.text = value ?? '';
-                },
-                selectedItem: _ufController.text,
-              ),
-            ),
-          ),
-          const SizedBox(width: 20),
-          //cidade
-          Expanded(
-            child: Container(
-              height: 40,
-              child: DropdownSearch<String>(
-                searchBoxDecoration: InputDecoration(
-                  isDense: true,
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 14,
-                    horizontal: 14,
-                  ),
-                ),
-                dropdownBuilder: (buildContext, string, string2) {
-                  return Text(_cidadeController.text);
-                },
-                emptyBuilder: (buildContext, string) {
-                  return Center(child: Text('Sem dados'));
-                },
-                loadingBuilder: (buildContext, string) {
-                  return Center(child: Text('Carregando...'));
-                },
-                errorBuilder: (buildContext, string, dynamic) {
-                  return Center(child: Text('Erro'));
-                },
-                onFind: (string) {
-                  return _fetchCities();
-                },
-                onSaved: (String? value) {
-                  if (widget.enderecoType == _type1) {
-                    _cadastroStore!.novoCad.cidade = value ?? '';
-                  } else {
-                    _cidadeController.text = value ?? '';
-                  }
-                },
-                validator: (String? value) {
-                  return value == null || value.isEmpty ? 'Campo vazio' : null;
-                },
-                dropdownSearchDecoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                ),
-                mode: Mode.MENU,
-                showSearchBox: true,
-                showSelectedItem: true,
-                label: AppLocalizations.of(context)!.cidade,
-                onChanged: (value) {
-                  _cidadeController.text = value ?? '';
-                },
-                selectedItem: _cidadeController.text,
-              ),
-            ),
-          ),
-        ],
+  Widget _ufField() {
+    return DropdownSearch<String>(
+      searchBoxDecoration: InputDecoration(
+        isDense: true,
+        contentPadding: EdgeInsets.symmetric(
+          vertical: 14,
+          horizontal: 14,
+        ),
       ),
+      dropdownSearchDecoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(
+          vertical: 4,
+          horizontal: 16,
+        ),
+        isDense: true,
+      ),
+      dropdownBuilder: (buildContext, string, string2) {
+        return Text(_ufController.text);
+      },
+      emptyBuilder: (buildContext, string) {
+        return Center(child: Text('Sem dados'));
+      },
+      loadingBuilder: (buildContext, string) {
+        return Center(child: Text('Carregando...'));
+      },
+      errorBuilder: (buildContext, string, dynamic) {
+        return Center(child: Text('Erro'));
+      },
+      onFind: (string) {
+        return _fetchStates();
+      },
+      onSaved: (String? value) {
+        if (widget.enderecoType == _type1) {
+          _cadastroStore!.novoCad.uf = value ?? '';
+        } else {
+          _ufController.text = value ?? '';
+        }
+      },
+      validator: (String? value) {
+        return value == null || value.isEmpty ? 'Campo vazio' : null;
+      },
+      mode: Mode.MENU,
+      showSearchBox: true,
+      showSelectedItem: true,
+      label: AppLocalizations.of(context)!.uf,
+      onChanged: (String? value) async {
+        //clear to force user select new uf and city
+        _cidadeController.text = '';
+        _ufController.text = value ?? '';
+      },
+      selectedItem: _ufController.text,
+    );
+  }
+
+  Widget _cidadeField() {
+    return DropdownSearch<String>(
+      searchBoxDecoration: InputDecoration(
+        isDense: true,
+        contentPadding: EdgeInsets.symmetric(
+          vertical: 14,
+          horizontal: 14,
+        ),
+      ),
+      dropdownSearchDecoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(
+          vertical: 4,
+          horizontal: 16,
+        ),
+        isDense: true,
+      ),
+      dropdownBuilder: (buildContext, string, string2) {
+        return Text(_cidadeController.text);
+      },
+      emptyBuilder: (buildContext, string) {
+        return Center(child: Text('Sem dados'));
+      },
+      loadingBuilder: (buildContext, string) {
+        return Center(child: Text('Carregando...'));
+      },
+      errorBuilder: (buildContext, string, dynamic) {
+        return Center(child: Text('Erro'));
+      },
+      onFind: (string) {
+        return _fetchCities();
+      },
+      onSaved: (String? value) {
+        if (widget.enderecoType == _type1) {
+          _cadastroStore!.novoCad.cidade = value ?? '';
+        } else {
+          _cidadeController.text = value ?? '';
+        }
+      },
+      validator: (String? value) {
+        return value == null || value.isEmpty ? 'Campo vazio' : null;
+      },
+      mode: Mode.MENU,
+      showSearchBox: true,
+      showSelectedItem: true,
+      label: AppLocalizations.of(context)!.cidade,
+      onChanged: (value) {
+        _cidadeController.text = value ?? '';
+      },
+      selectedItem: _cidadeController.text,
     );
   }
 
@@ -745,12 +706,13 @@ class _EnderecoState extends State<Endereco> {
         children: <Widget>[
           _selecioneEnderecoField(),
           const SizedBox(height: 25),
-          _enderecoField(),
-          _numeroEComplementoField(),
+          _numeroField(),
+          _complementoField(),
           if (_currentLocal.countryCode != 'PT') _bairroField(),
           _cepField(),
           _paisField(),
-          _ufCidadeField(),
+          _ufField(),
+          _cidadeField(),
           _manageEndBtns(),
         ],
       ),
@@ -758,21 +720,42 @@ class _EnderecoState extends State<Endereco> {
   }
 
   Widget _type1Form() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget>[
-        _enderecoField(),
-        _numeroEComplementoField(),
-        if (_currentLocal.countryCode != 'PT') _bairroField(),
-        _cepField(),
-        _paisField(),
-        _ufCidadeField(),
-      ],
+    return enderecoGrid();
+  }
+
+  Widget enderecoGrid() {
+    double gridHeight = 350;
+    if (width > 800)
+      gridHeight = 350;
+    else if (width > 650 && width <= 800)
+      gridHeight = 700;
+    else if (width > 350 && width <= 650) gridHeight = 600;
+    return Container(
+      width: double.infinity,
+      height: gridHeight,
+      child: GridView.count(
+        padding: const EdgeInsets.symmetric(
+          vertical: 10,
+        ),
+        mainAxisSpacing: 20,
+        crossAxisSpacing: 20,
+        childAspectRatio: 10,
+        crossAxisCount: width > 800 ? 2 : 1,
+        children: [
+          _enderecoField(),
+          _numeroField(),
+          _complementoField(),
+          if (_currentLocal.countryCode != 'PT') _bairroField(),
+          _cepField(),
+          _paisField(),
+          _ufField(),
+          _cidadeField(),
+        ],
+      ),
     );
   }
 
   //Manage async localization data (city, state and country)
-
   Future<List<String>> _fetchCountries() async {
     final response = await http.get(Uri.parse(RotasUrl.rotaPaisesV1));
     List<String> countries = [];
@@ -846,8 +829,10 @@ class _EnderecoState extends State<Endereco> {
   }
 
   Widget build(BuildContext context) {
+    width = MediaQuery.of(context).size.width;
+
     return Container(
-      width: MediaQuery.of(context).size.width,
+      width: width,
       child: widget.formKey != null || widget.userId <= 0
           ? _type1Form()
           : _type2Form(),
