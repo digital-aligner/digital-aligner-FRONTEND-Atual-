@@ -184,23 +184,4 @@ class AuthProvider with ChangeNotifier {
       };
     }
   }
-
-  Future<dynamic> getCountryAndStateData() async {
-    var _response =
-        await http.get(Uri.parse(RotasUrl.rotaGetPaisesAndState), headers: {
-      'Content-Type': 'application/json',
-    });
-
-    List<dynamic> localData = json.decode(_response.body);
-    //for now, return only brasil
-    return [localData[0]];
-  }
-
-  List<String> mapCountriesDataToUiList(List<dynamic> local) {
-    List<String> countries = [];
-    for (int i = 0; i < local.length; i++) {
-      countries.add(local[i]['pais']);
-    }
-    return countries;
-  }
 }

@@ -23,14 +23,14 @@ class UsuarioV1Model {
     if (data == null || data.isEmpty) return UsuarioV1Model();
     return UsuarioV1Model(
       id: data['id'] ?? 0,
-      username: data['username'],
+      username: data['username'] ?? '',
       nome: data['nome'] ?? '',
       sobrenome: data['sobrenome'] ?? '',
       email: data['email'] ?? '',
       onboardingNum: data['onboarding_num'] ?? 0,
       representante: data['representante'] != null
           ? RepresentanteModel.fromJson(data['representante'])
-          : null,
+          : RepresentanteModel.fromJson(Map()),
     );
   }
 

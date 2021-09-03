@@ -222,7 +222,7 @@ class _FileUploaderState extends State<FileUploader> {
 
   Future<bool> _newFiledelete(int id) async {
     var _response = await http.delete(
-      Uri.parse(RotasUrl.rotaDeletePhoto + id.toString()),
+      Uri.parse(RotasUrl.rotaDelete + id.toString()),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

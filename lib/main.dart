@@ -1,7 +1,6 @@
 import 'package:digital_aligner_app/default_colors.dart';
 import 'package:digital_aligner_app/l10n/l10n.dart';
 import 'package:digital_aligner_app/page_transition_web.dart';
-import 'package:digital_aligner_app/providers/pacientes_list_provider.dart';
 import 'package:digital_aligner_app/providers/relatorio_provider.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_onboarding.dart';
 
@@ -10,8 +9,6 @@ import 'package:digital_aligner_app/screens/midia_screen/mentoria_brasil.dart';
 import 'package:digital_aligner_app/screens/midia_screen/mentoria_portugal.dart';
 import 'package:digital_aligner_app/screens/perfil.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/pedido_v1_screen.dart';
-
-import './providers/pedidos_list_provider.dart';
 
 import './screens/administrativo/gerenciar_permissoes.dart';
 import 'package:flutter/material.dart';
@@ -73,12 +70,6 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (ctx) => CadastroProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (ctx) => PedidosListProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (ctx) => PacientesListProvider(),
         ),
         ChangeNotifierProvider(
           create: (ctx) => RelatorioProvider(),

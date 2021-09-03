@@ -89,81 +89,125 @@ class PedidoV1Model {
 
   factory PedidoV1Model.fromJson(Map<String, dynamic>? data) {
     if (data == null || data.isEmpty) return PedidoV1Model();
-    List<FileModel> f = [];
-    List<FileModel> r = [];
-    List<FileModel> ms = [];
-    List<FileModel> mi = [];
-    List<FileModel> mc = [];
-    //fotografias list to objects list
-    if (data['fotografias'] != null) {
-      data['fotografias'].forEach((fotografia) {
-        f.add(FileModel.fromJson(fotografia));
-      });
-    }
-    //radiografias list to objects list
-    if (data['radiografias'] != null) {
-      data['radiografias'].forEach((radiografia) {
-        r.add(FileModel.fromJson(radiografia));
-      });
-    } //modelo superior list to objects list
-    if (data['modelo_superior'] != null) {
-      data['modelo_superior'].forEach((modeloSup) {
-        ms.add(FileModel.fromJson(modeloSup));
-      });
-    } //modelo inferior list to objects list
-    if (data['modelo_inferior'] != null) {
-      data['modelo_inferior'].forEach((modeloInf) {
-        mi.add(FileModel.fromJson(modeloInf));
-      });
-    }
-    //modelo compactado list to objects list
-    if (data['modelo_compactado'] != null) {
-      data['modelo_compactado'].forEach((modeloComp) {
-        mc.add(FileModel.fromJson(modeloComp));
-      });
-    }
 
-    return PedidoV1Model(
-      id: data['id'] ?? 0,
-      codigoPedido: data['codigo_pedido'] ?? '',
-      nomePaciente: data['nome_paciente'] ?? '',
-      dataNascimento: data['data_nascimento'] ?? '',
-      tratar: data['tratar'] ?? '',
-      queixaPrincipal: data['queixa_principal'] ?? '',
-      objetivosTratamento: data['objetivos_tratamento'] ?? '',
-      linhaMediaSuperior: data['linha_media_superior'] ?? '',
-      linhaMediaInferior: data['linha_media_inferior'] ?? '',
-      overjet: data['overjet'] ?? '',
-      overbite: data['overbite'] ?? '',
-      dentesExtVirtual: data['dentes_ext_virtual'] ?? '',
-      dentesNaoMov: data['dentes_nao_mov'] ?? '',
-      dentesSemAttach: data['dentes_sem_attach'] ?? '',
-      opcAceitoDesg: data['opc_aceito_desg'] ?? '',
-      opcRecorteElas: data['opc_recorte_elas'] ?? '',
-      opcRecorteAlin: data['opc_recorte_alin'] ?? '',
-      opcAlivioAlin: data['opc_alivio_alin'] ?? '',
-      linkModelos: data['link_modelos'] ?? '',
-      resApinSup: data['res_apin_sup'] ?? '',
-      resApinInf: data['res_apin_inf'] ?? '',
-      modeloGesso: data['modelo_gesso'] ?? false,
-      pedidoRefinamento: data['pedido_refinamento'] ?? false,
-      fotografias: f,
-      radiografias: r,
-      modeloSuperior: ms,
-      modeloInferior: mi,
-      modeloCompactado: mc,
-      usuario: UsuarioV1Model.fromJson(data['usuario'] ?? Map()),
-      enderecoEntrega:
-          EnderecoModel.fromJson(data['endereco_entrega'] ?? Map()),
-      statusPedido:
-          StatusPedidoV1Model.fromJson(data['status_pedido'] ?? Map()),
-      createdAt: data['created_at'],
-      updatedAt: data['updated_at'],
-      idPedOriginal: data['id_ped_original'] ?? 0,
-      alteracaoTexto: data['alteracao_texto'] ?? '',
-      alteracaoData: data['alteracao_data'] ?? '',
-      novaAtualizacao: data['nova_atualizacao'] ?? false,
-    );
+    try {
+      List<FileModel> f = [];
+      List<FileModel> r = [];
+      List<FileModel> ms = [];
+      List<FileModel> mi = [];
+      List<FileModel> mc = [];
+      //fotografias list to objects list
+      if (data['fotografias'] != null) {
+        data['fotografias'].forEach((fotografia) {
+          f.add(FileModel.fromJson(fotografia));
+        });
+      }
+      //radiografias list to objects list
+      if (data['radiografias'] != null) {
+        data['radiografias'].forEach((radiografia) {
+          r.add(FileModel.fromJson(radiografia));
+        });
+      } //modelo superior list to objects list
+      if (data['modelo_superior'] != null) {
+        data['modelo_superior'].forEach((modeloSup) {
+          ms.add(FileModel.fromJson(modeloSup));
+        });
+      } //modelo inferior list to objects list
+      if (data['modelo_inferior'] != null) {
+        data['modelo_inferior'].forEach((modeloInf) {
+          mi.add(FileModel.fromJson(modeloInf));
+        });
+      }
+      //modelo compactado list to objects list
+      if (data['modelo_compactado'] != null) {
+        data['modelo_compactado'].forEach((modeloComp) {
+          mc.add(FileModel.fromJson(modeloComp));
+        });
+      }
+
+      return PedidoV1Model(
+        id: data['id'] ?? 0,
+        codigoPedido: data['codigo_pedido'] ?? '',
+        nomePaciente: data['nome_paciente'] ?? '',
+        dataNascimento: data['data_nascimento'] ?? '',
+        tratar: data['tratar'] ?? '',
+        queixaPrincipal: data['queixa_principal'] ?? '',
+        objetivosTratamento: data['objetivos_tratamento'] ?? '',
+        linhaMediaSuperior: data['linha_media_superior'] ?? '',
+        linhaMediaInferior: data['linha_media_inferior'] ?? '',
+        overjet: data['overjet'] ?? '',
+        overbite: data['overbite'] ?? '',
+        dentesExtVirtual: data['dentes_ext_virtual'] ?? '',
+        dentesNaoMov: data['dentes_nao_mov'] ?? '',
+        dentesSemAttach: data['dentes_sem_attach'] ?? '',
+        opcAceitoDesg: data['opc_aceito_desg'] ?? '',
+        opcRecorteElas: data['opc_recorte_elas'] ?? '',
+        opcRecorteAlin: data['opc_recorte_alin'] ?? '',
+        opcAlivioAlin: data['opc_alivio_alin'] ?? '',
+        linkModelos: data['link_modelos'] ?? '',
+        resApinSup: data['res_apin_sup'] ?? '',
+        resApinInf: data['res_apin_inf'] ?? '',
+        modeloGesso: data['modelo_gesso'] ?? false,
+        pedidoRefinamento: data['pedido_refinamento'] ?? false,
+        fotografias: f,
+        radiografias: r,
+        modeloSuperior: ms,
+        modeloInferior: mi,
+        modeloCompactado: mc,
+        usuario: UsuarioV1Model.fromJson(data['usuario'] ?? Map()),
+        enderecoEntrega:
+            EnderecoModel.fromJson(data['endereco_entrega'] ?? Map()),
+        statusPedido:
+            StatusPedidoV1Model.fromJson(data['status_pedido'] ?? Map()),
+        createdAt: data['created_at'],
+        updatedAt: data['updated_at'],
+        idPedOriginal: data['id_ped_original'] ?? 0,
+        alteracaoTexto: data['alteracao_texto'] ?? '',
+        alteracaoData: data['alteracao_data'] ?? '',
+        novaAtualizacao: data['nova_atualizacao'] ?? false,
+      );
+    } catch (e) {
+      print(e);
+      return PedidoV1Model(
+        id: -1,
+        codigoPedido: 'Erro:' + data['codigo_pedido'],
+        nomePaciente: '',
+        dataNascimento: '',
+        tratar: '',
+        queixaPrincipal: '',
+        objetivosTratamento: '',
+        linhaMediaSuperior: '',
+        linhaMediaInferior: '',
+        overjet: '',
+        overbite: '',
+        dentesExtVirtual: '',
+        dentesNaoMov: '',
+        dentesSemAttach: '',
+        opcAceitoDesg: '',
+        opcRecorteElas: '',
+        opcRecorteAlin: '',
+        opcAlivioAlin: '',
+        linkModelos: '',
+        resApinSup: '',
+        resApinInf: '',
+        modeloGesso: false,
+        pedidoRefinamento: false,
+        fotografias: [],
+        radiografias: [],
+        modeloSuperior: [],
+        modeloInferior: [],
+        modeloCompactado: [],
+        usuario: UsuarioV1Model.fromJson(Map()),
+        enderecoEntrega: EnderecoModel.fromJson(Map()),
+        statusPedido: StatusPedidoV1Model.fromJson(Map()),
+        createdAt: '',
+        updatedAt: '',
+        idPedOriginal: 0,
+        alteracaoTexto: '',
+        alteracaoData: '',
+        novaAtualizacao: false,
+      );
+    }
   }
 
   Map<String, dynamic> toJson() {

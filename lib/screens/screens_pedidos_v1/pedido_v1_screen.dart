@@ -1509,19 +1509,19 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   }
 
   Widget _formatoDeModelos() {
-    bool block = true;
+    //bool block = true;
     double opac = 1;
     if (_args.messageMap!.containsKey('isEditarPaciente')) {
       if (_args.messageMap!['isEditarPaciente']) {
-        block = false;
-        opac = 0.4;
+        //block = false;
+        //opac = 0.4;
       }
     }
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: AbsorbPointer(
-        absorbing: !block,
+        absorbing: /*!block*/ false,
         child: Opacity(
           opacity: opac,
           child: GroupButton(
@@ -1529,16 +1529,64 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             selectedButton: modeloEmGesso ? 1 : 0,
             isRadio: true,
             spacing: 10,
-            onSelected: (index, isSelected) {
+            onSelected: (index, isSelected) async {
               if (isSelected && index == 1) {
                 _modeloGessoAlert();
-                setState(() {
-                  modeloEmGesso = true;
-                });
+                bool result = await _atualizarModelosTipo(modeloGesso: true);
+                if (result) {
+                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      duration: const Duration(seconds: 3),
+                      content: Text(
+                        'Atualizado com sucesso',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                  setState(() {
+                    modeloEmGesso = true;
+                  });
+                } else {
+                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      duration: const Duration(seconds: 3),
+                      content: Text(
+                        'Não foi possível alterar',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                }
               } else {
-                setState(() {
-                  modeloEmGesso = false;
-                });
+                bool result = await _atualizarModelosTipo(modeloGesso: false);
+                if (result) {
+                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      duration: const Duration(seconds: 3),
+                      content: Text(
+                        'Atualizado com sucesso',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                  setState(() {
+                    modeloEmGesso = false;
+                  });
+                } else {
+                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      duration: const Duration(seconds: 3),
+                      content: Text(
+                        'Não foi possível alterar',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                }
               }
             },
             buttons: [
@@ -1581,7 +1629,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             isEditarPedidoPos: _isEditarPedidoPos,
             updatePedidoId: updatePedidoId,
           ),
-          _linkDoc(),
+          if (!_isEditarPedido) _linkDoc(),
         ],
       ),
     );
@@ -1737,7 +1785,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         children: [
           TextFormField(
             maxLength: 255,
-            enabled: !_isEditarPedidoCheck(),
+            enabled: /*!_isEditarPedidoCheck()*/ true,
             validator: (String? value) {},
             initialValue: _linkDocumentacao.text,
             onChanged: (value) {
@@ -2106,6 +2154,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           _opcionais(),
           _selecioneEnderecoTexto(),
           _enderecoSelection(),
+          _linkDoc(),
           const SizedBox(
             height: 40,
           ),
@@ -2320,6 +2369,34 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       try {
         var data = json.decode(_response.body);
         if (data.containsKey('id')) {
+          return true;
+        }
+      } catch (e) {
+        print(e);
+        return false;
+      }
+
+      return false;
+    } catch (e) {
+      print('atualizarStatusPedido ->' + e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> _atualizarModelosTipo({bool modeloGesso = false}) async {
+    var p = _pedidoStore!.getPedido(position: _args.messageInt);
+    try {
+      var _response = await http.put(
+        Uri.parse(RotasUrl.rotaPedidosV1SimpleUpdate + p.id.toString()),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${_authStore!.token}',
+        },
+        body: json.encode({'modelo_gesso': modeloGesso}),
+      );
+      try {
+        if (_response.statusCode == 200) {
           return true;
         }
       } catch (e) {

@@ -281,13 +281,17 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     PedidoV1Model p = _pedidoStore!.getPedido(position: position);
     //var format = DateFormat.yMd('pt');
     var format = DateFormat('dd/MM/yyyy HH:mm');
-    var dateTime;
-    if (!_pedidosAtualizados && !_pedidosExecucao)
-      dateTime = DateTime.parse(p.createdAt).toLocal();
-    else
-      dateTime = DateTime.parse(p.updatedAt ?? '').toLocal();
+    DateTime? dateTime;
+    String dateString = '';
 
-    var dateString = format.format(dateTime);
+    if (!_pedidosAtualizados && !_pedidosExecucao)
+      dateTime = DateTime.tryParse(p.createdAt)?.toLocal();
+    else
+      dateTime = DateTime.tryParse(p.updatedAt ?? '')?.toLocal();
+
+    if (dateTime != null) {
+      dateString = format.format(dateTime);
+    }
 
     return [
       if (p.novaAtualizacao != null && p.novaAtualizacao == true && !_ref)
@@ -314,7 +318,11 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
         ),
       if (_screenSize!.width > _mqXlg)
         DataCell(Text(p.usuario?.representante?.nome ?? '')),
-      DataCell(_popupMenuButton(position)),
+      //if error on pedido
+      if (p.id == -1)
+        DataCell(Text('-'))
+      else
+        DataCell(_popupMenuButton(position)),
     ];
   }
 
@@ -366,7 +374,10 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
         ),
       if (_screenSize!.width > _mqXlg)
         DataCell(Text(p.usuario?.representante?.nome ?? '')),
-      DataCell(_popupMenuButton(position)),
+      if (p.id == -1)
+        DataCell(Text('-'))
+      else
+        DataCell(_popupMenuButton(position)),
     ];
   }
 
@@ -411,9 +422,11 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
 
   List<DataRow> _dataRows() {
     List<PedidoV1Model> p = _pedidoStore!.getPedidosInList();
+
     List<DataRow> dr = [];
 
     if (p.isEmpty) return [];
+
     if (selectedListItem.length != p.length) selectedListItem = [];
 
     for (int i = 0; i < p.length; i++) {
@@ -463,7 +476,8 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
             setState(() {
               selectedListItem[i] = !selectedListItem[i];
             });
-            if (selectedListItem[i]) {
+
+            if (selectedListItem[i] && p[i].id != -1) {
               Navigator.of(context)
                   .pushNamed(
                 VisualizarPacienteV1.routeName,
@@ -478,6 +492,17 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                 await Future.delayed(Duration(milliseconds: 400));
                 fetchMostRecente();
               });
+            } else {
+              ScaffoldMessenger.of(context).removeCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  duration: const Duration(seconds: 5),
+                  content: Text(
+                    'Erro com o pedido, verifique com o suporte',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              );
             }
           },
           selected: selectedListItem[i],
@@ -609,7 +634,16 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                         roleId: _authStore!.roleId,
                         pageQuant: pageQuant,
                         query: _query,
-                        queryStrings: '&ref=' + _ref.toString(),
+                        queryStrings: '&ref=' +
+                            _ref.toString() +
+                            '&sortAtualizados=' +
+                            _pedidosAtualizados.toString() +
+                            '&sortAlteracoes=' +
+                            _pedidosAlteracoes.toString() +
+                            '&sortExecucao=' +
+                            _pedidosExecucao.toString() +
+                            '&filterByCountry=' +
+                            _selectedCountryFilter,
                       )
                           .then(
                         (bool fetchSuccessful) {
