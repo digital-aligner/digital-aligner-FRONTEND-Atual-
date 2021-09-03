@@ -340,7 +340,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         format: DateFormat('dd/MM/yyyy'),
         onShowPicker: (context, currentValue) {
           return showDatePicker(
-              initialEntryMode: DatePickerEntryMode.input,
+              //initialEntryMode: DatePickerEntryMode.input,
+              fieldHintText: 'formato: xx/xx/xxxx',
               locale: Localizations.localeOf(context),
               errorFormatText: 'Escolha data válida',
               errorInvalidText: 'Data invalida',
@@ -1309,7 +1310,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     );
   }
 
-  Widget _opcionais() {
+  Widget _opcionais1() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
@@ -1489,6 +1490,188 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _opcionais() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Wrap(children: [
+            GroupButton(
+              selectedButtons: [_opcAceitoDipSelected],
+              selectedColor: DefaultColors.digitalAlignBlue,
+              buttonWidth: 520,
+              isRadio: false,
+              spacing: 10,
+              onSelected: (index, isSelected) {
+                if (isSelected) {
+                  _opcAceitoDip.text = 'Aceito desgastes interproximais (DIP)';
+                } else {
+                  _opcAceitoDip.text = '';
+                }
+              },
+              buttons: [
+                'Aceito desgastes interproximais (DIP)',
+              ],
+            ),
+          ]),
+          const SizedBox(height: 20),
+          Wrap(
+            children: [
+              GroupButton(
+                selectedButtons: [_opcRecorteElasticoSelected],
+                selectedColor: DefaultColors.digitalAlignBlue,
+                isRadio: false,
+                buttonWidth: 390,
+                spacing: 10,
+                onSelected: (index, isSelected) {
+                  setState(() {
+                    _opcRecorteElasticoMm = !_opcRecorteElasticoMm;
+                    _opcRecorteElastico.text = '';
+                  });
+                },
+                buttons: [
+                  'Recorte para elástico no alinhador (especificar dente)',
+                ],
+              ),
+              const SizedBox(height: 10, width: 10),
+              SizedBox(
+                height: 40,
+                width: 120,
+                child: TextFormField(
+                  maxLength: 11,
+                  enabled: _opcRecorteElasticoMm,
+                  validator: (String? value) {
+                    /*
+                  return value == null || value.isEmpty
+                      ? 'Campo vazio'
+                      : null;*/
+                  },
+                  //initialValue: _nomePacContr.text,
+                  onSaved: (value) {
+                    _opcRecorteElastico.text = value ?? '';
+                  },
+                  controller: _opcRecorteElastico,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
+                  ],
+                  decoration: const InputDecoration(
+                    hintText: '18,17,16,15',
+                    border: const OutlineInputBorder(),
+                    counterText: '',
+                    labelText: 'Dentes',
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Wrap(
+            children: [
+              GroupButton(
+                selectedButtons: [_opcRecorteBotaoSelected],
+                selectedColor: DefaultColors.digitalAlignBlue,
+                buttonWidth: 390,
+                isRadio: false,
+                spacing: 10,
+                onSelected: (index, isSelected) {
+                  setState(() {
+                    _opcRecorteBotaoMm = !_opcRecorteBotaoMm;
+                    _opcRecorteBotao.text = '';
+                  });
+                },
+                buttons: [
+                  'Recorte no alinhador para botão (especificar dente)',
+                ],
+              ),
+              const SizedBox(height: 10, width: 10),
+              SizedBox(
+                height: 40,
+                width: 120,
+                child: TextFormField(
+                  maxLength: 11,
+                  enabled: _opcRecorteBotaoMm,
+                  validator: (String? value) {
+                    /*
+              return value == null || value.isEmpty
+                  ? 'Campo vazio'
+                  : null;*/
+                  },
+                  //initialValue: _nomePacContr.text,
+                  onSaved: (value) {
+                    //_nomePacContr.text = value ?? '';
+                  },
+                  controller: _opcRecorteBotao,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
+                  ],
+                  decoration: const InputDecoration(
+                    hintText: '18,17,16,15',
+                    border: const OutlineInputBorder(),
+                    counterText: '',
+                    labelText: 'Dentes',
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Wrap(
+            children: [
+              GroupButton(
+                selectedButtons: [_opcBracoForcaSelected],
+                selectedColor: DefaultColors.digitalAlignBlue,
+                isRadio: false,
+                spacing: 10,
+                onSelected: (index, isSelected) {
+                  setState(() {
+                    _opcBracoForcaMm = !_opcBracoForcaMm;
+                    _opcBracoForca.text = '';
+                  });
+                },
+                buttons: [
+                  'Alívio no alinhador para braço de força (especificar dente)',
+                ],
+              ),
+              const SizedBox(height: 10, width: 10),
+              SizedBox(
+                height: 40,
+                width: 120,
+                child: TextFormField(
+                  maxLength: 11,
+                  enabled: _opcBracoForcaMm,
+                  validator: (String? value) {
+                    /*
+                    return value == null || value.isEmpty
+                  ? 'Campo vazio'
+                  : null;*/
+                  },
+                  //initialValue: _nomePacContr.text,
+                  onSaved: (value) {
+                    _opcBracoForca.text = value ?? '';
+                  },
+                  controller: _opcBracoForca,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp(r'[,0-9]')),
+                  ],
+                  decoration: const InputDecoration(
+                    hintText: '18,17,16,15',
+                    border: const OutlineInputBorder(),
+                    counterText: '',
+                    labelText: 'Dentes',
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

@@ -100,11 +100,16 @@ class MyApp extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
-                  vertical: 20,
+                  vertical: 18,
                 ),
               ),
             ),
             inputDecorationTheme: InputDecorationTheme(
+              isDense: true, // Added this
+              contentPadding: EdgeInsets.symmetric(
+                vertical: 14,
+                horizontal: 14,
+              ),
               focusedErrorBorder: OutlineInputBorder(
                 //borderRadius: BorderRadius.circular(30),
                 borderSide: BorderSide(

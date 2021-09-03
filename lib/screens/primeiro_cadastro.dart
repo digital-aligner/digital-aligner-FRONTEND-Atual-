@@ -256,8 +256,15 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                           //fix cro uf
                           Expanded(
                             child: Container(
-                              height: 80,
+                              height: 40,
                               child: DropdownSearch<String>(
+                                searchBoxDecoration: InputDecoration(
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.symmetric(
+                                    vertical: 14,
+                                    horizontal: 14,
+                                  ),
+                                ),
                                 dropdownBuilder:
                                     (buildContext, string, string2) {
                                   return Text(_selectedCroUf);
@@ -302,7 +309,6 @@ class _PrimeiroCadastroState extends State<PrimeiroCadastro> {
                           const SizedBox(width: 20),
                           Expanded(
                             child: Container(
-                              height: 80,
                               child: TextFormField(
                                 maxLength: 30,
                                 onSaved: (String? value) {

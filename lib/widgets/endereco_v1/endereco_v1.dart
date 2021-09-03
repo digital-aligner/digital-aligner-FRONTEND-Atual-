@@ -563,8 +563,15 @@ class _EnderecoState extends State<Endereco> {
 
   Widget _paisField() {
     return Container(
-      height: 80,
+      height: 40,
       child: DropdownSearch<String>(
+        searchBoxDecoration: InputDecoration(
+          isDense: true,
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 14,
+            horizontal: 14,
+          ),
+        ),
         dropdownBuilder: (buildContext, string, string2) {
           return Text(_paisController.text);
         },
@@ -620,7 +627,15 @@ class _EnderecoState extends State<Endereco> {
           //Uf
           Expanded(
             child: Container(
+              height: 40,
               child: DropdownSearch<String>(
+                searchBoxDecoration: InputDecoration(
+                  isDense: true,
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 14,
+                  ),
+                ),
                 dropdownBuilder: (buildContext, string, string2) {
                   return Text(_ufController.text);
                 },
@@ -667,7 +682,15 @@ class _EnderecoState extends State<Endereco> {
           //cidade
           Expanded(
             child: Container(
+              height: 40,
               child: DropdownSearch<String>(
+                searchBoxDecoration: InputDecoration(
+                  isDense: true,
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 14,
+                  ),
+                ),
                 dropdownBuilder: (buildContext, string, string2) {
                   return Text(_cidadeController.text);
                 },
