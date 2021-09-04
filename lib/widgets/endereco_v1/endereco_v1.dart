@@ -373,13 +373,23 @@ class _EnderecoState extends State<Endereco> {
 
   Widget _selecioneEnderecoField() {
     return DropdownSearch<EnderecoModel>(
+      searchBoxDecoration: InputDecoration(
+        isDense: true,
+        contentPadding: EdgeInsets.symmetric(
+          vertical: 14,
+          horizontal: 14,
+        ),
+      ),
+      dropdownSearchDecoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(
+          vertical: 4,
+          horizontal: 16,
+        ),
+        isDense: true,
+      ),
       dropdownBuilder: (buildContext, string, string2) {
         return Text(_endSelecionadoController.text);
       },
-      dropdownSearchDecoration: InputDecoration(
-        border: OutlineInputBorder(),
-        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-      ),
       emptyBuilder: (buildContext, string) {
         return Center(child: Text('Sem dados'));
       },
@@ -698,7 +708,7 @@ class _EnderecoState extends State<Endereco> {
   }
 
   //if no formkey passed from parent, then create a form as will be for editing
-  Widget _type2Form() {
+  Widget _type2Form2() {
     return Form(
       key: _formKey,
       child: Column(
@@ -721,6 +731,18 @@ class _EnderecoState extends State<Endereco> {
 
   Widget _type1Form() {
     return enderecoGrid();
+  }
+
+  Widget _type2Form() {
+    return Column(
+      children: [
+        _selecioneEnderecoField(),
+        const SizedBox(height: 20),
+        enderecoGrid(),
+        const SizedBox(height: 20),
+        _manageEndBtns(),
+      ],
+    );
   }
 
   Widget enderecoGrid() {

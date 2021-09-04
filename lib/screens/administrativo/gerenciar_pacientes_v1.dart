@@ -822,30 +822,32 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   }
 
   Future<void> fetchMostRecente() async {
-    setState(() {
-      isfetchPedidos = true;
-      pageHeight = _defaultPgHeight;
-      pageQuant = 10;
-    });
-    await _pedidoStore!.fetchAllPedidos(
-      token: _authStore?.token ?? '',
-      roleId: _authStore?.roleId ?? 0,
-      query: _query,
-      queryStrings: '&ref=' +
-          _ref.toString() +
-          '&sortAtualizados=' +
-          _pedidosAtualizados.toString() +
-          '&sortAlteracoes=' +
-          _pedidosAlteracoes.toString() +
-          '&sortExecucao=' +
-          _pedidosExecucao.toString() +
-          '&filterByCountry=' +
-          _selectedCountryFilter,
-    );
+    if (this.mounted) {
+      setState(() {
+        isfetchPedidos = true;
+        pageHeight = _defaultPgHeight;
+        pageQuant = 10;
+      });
+      await _pedidoStore!.fetchAllPedidos(
+        token: _authStore?.token ?? '',
+        roleId: _authStore?.roleId ?? 0,
+        query: _query,
+        queryStrings: '&ref=' +
+            _ref.toString() +
+            '&sortAtualizados=' +
+            _pedidosAtualizados.toString() +
+            '&sortAlteracoes=' +
+            _pedidosAlteracoes.toString() +
+            '&sortExecucao=' +
+            _pedidosExecucao.toString() +
+            '&filterByCountry=' +
+            _selectedCountryFilter,
+      );
 
-    setState(() {
-      isfetchPedidos = false;
-    });
+      setState(() {
+        isfetchPedidos = false;
+      });
+    }
   }
 
   Widget _searchSwitchChangeCountry() {

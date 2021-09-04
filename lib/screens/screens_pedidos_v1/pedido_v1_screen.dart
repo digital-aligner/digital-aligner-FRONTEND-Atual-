@@ -15,6 +15,7 @@ import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/status_ped
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/usuario_v1_model.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/termos_txt.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/uploader/file_uploader.dart';
+import 'package:digital_aligner_app/widgets/custom%20buttons/custom_elevated_button_1.dart';
 import 'package:digital_aligner_app/widgets/endereco_v1/endereco_model_.dart';
 import 'package:digital_aligner_app/widgets/screen%20argument/screen_argument.dart';
 import 'package:dropdown_search/dropdown_search.dart';
@@ -1806,7 +1807,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           FileUploader(
             filesQt: 1,
             acceptedFileExt: ['stl'],
-            sendButtonText: 'CARREGAR MODELO SUPERIOR',
+            sendButtonText: 'Carregar modelo superior',
             firstPedidoSaveToProvider: true,
             uploaderType: 'modelo superior',
             isEditarPedido: _isEditarPedido,
@@ -1817,7 +1818,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           FileUploader(
             filesQt: 1,
             acceptedFileExt: ['stl'],
-            sendButtonText: 'CARREGAR MODELO INFERIOR',
+            sendButtonText: 'Carregar modelo inferior',
             firstPedidoSaveToProvider: true,
             uploaderType: 'modelo inferior',
             isEditarPedido: _isEditarPedido,
@@ -1844,7 +1845,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           FileUploader(
             filesQt: 1,
             acceptedFileExt: ['zip', 'rar'],
-            sendButtonText: 'CARREGAR COMPACTADO',
+            sendButtonText: 'Carregar modelos compatados (zip/rar)',
             uploaderType: 'modelo compactado',
             firstPedidoSaveToProvider: _firstPedidoSaveToProvider,
             isEditarPedido: _isEditarPedido,
@@ -1889,7 +1890,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       child: FileUploader(
         filesQt: 16,
         acceptedFileExt: ['jpg', 'jpeg', 'png'],
-        sendButtonText: 'CARREGAR FOTOGRAFIAS',
+        sendButtonText: 'Carregar fotografias',
         firstPedidoSaveToProvider: _firstPedidoSaveToProvider,
         uploaderType: 'fotografias',
         isEditarPedido: _isEditarPedido,
@@ -1922,7 +1923,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       child: FileUploader(
         filesQt: 16,
         acceptedFileExt: ['jpg', 'jpeg', 'png'],
-        sendButtonText: 'CARREGAR RADIOGRAFIAS',
+        sendButtonText: 'Carregar radiografias',
         uploaderType: 'radiografias',
         firstPedidoSaveToProvider: _firstPedidoSaveToProvider,
         isEditarPedido: _isEditarPedido,
@@ -2807,7 +2808,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   }
 
   Widget _sendButton() {
-    return ElevatedButton(
+    return CustomElevatedButton1(
       onPressed: isSending
           ? null
           : () async {
