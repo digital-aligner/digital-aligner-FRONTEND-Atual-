@@ -28,7 +28,8 @@ class UsuarioV1Model {
       sobrenome: data['sobrenome'] ?? '',
       email: data['email'] ?? '',
       onboardingNum: data['onboarding_num'] ?? 0,
-      representante: data['representante'] != null
+      representante: data['representante'] != null &&
+              double.tryParse(data['representante'].toString()) == null
           ? RepresentanteModel.fromJson(data['representante'])
           : RepresentanteModel.fromJson(Map()),
     );

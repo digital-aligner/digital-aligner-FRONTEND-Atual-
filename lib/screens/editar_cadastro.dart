@@ -42,6 +42,13 @@ class _EditarCadastroState extends State<EditarCadastro> {
   bool _firstFetch = true;
   bool _sendingCadastro = false;
 
+  late AuthProvider authStore;
+  late CadastroProvider cadastroStore;
+  CadastroModel? sc;
+
+  //Representantes data list
+  List<dynamic> _representantes = [];
+
   final _formKey = GlobalKey<FormState>();
 
   final _controllerDataNasc = TextEditingController();
@@ -60,17 +67,6 @@ class _EditarCadastroState extends State<EditarCadastro> {
   //Formating date to iso standard. Manditory to store date in db.
   DateFormat format = DateFormat("dd/MM/yyyy");
 
-  String _formatCpf(String cpf) {
-    String _formatedCpf = cpf.substring(0, 3) +
-        '.' +
-        cpf.substring(3, 6) +
-        '.' +
-        cpf.substring(6, 9) +
-        '-' +
-        cpf.substring(9, 11);
-    return _formatedCpf;
-  }
-
   String _getCpfFromSelectedValue(String value) {
     String onlyCpf = value.substring(value.indexOf('|') + 1, value.length);
     String removeCpfSpace = onlyCpf.replaceAll(' ', '');
@@ -88,13 +84,6 @@ class _EditarCadastroState extends State<EditarCadastro> {
     _controllerCEL.dispose();
     super.dispose();
   }
-
-  late AuthProvider authStore;
-  late CadastroProvider cadastroStore;
-  CadastroModel? sc;
-
-  //Representantes data list
-  List<dynamic> _representantes = [];
 
   Future<List<String>> _fetchStates() async {
     final response = await http.get(
@@ -133,31 +122,9 @@ class _EditarCadastroState extends State<EditarCadastro> {
     }
     return _representantes;
   }
-/*
-  Future<List<dynamic>> fetchOnboarding() async {
-    
-    Map<String, String> requestHeaders = {
-      'Content-type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer ${authStore.token}',
-    };
-
-    try {
-      final response = await http.get(
-        Uri.parse(RotasUrl.rotaOnboardings),
-        headers: requestHeaders,
-      );
-
-      _onboardings = json.decode(response.body);
-    } catch (error) {
-      print(error.toString());
-    }
-    
-    return _onboardings;
-  }*/
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
     cadastroStore = Provider.of<CadastroProvider>(context);
     authStore = Provider.of<AuthProvider>(context);
 
@@ -189,6 +156,11 @@ class _EditarCadastroState extends State<EditarCadastro> {
       }
     }
 
+    super.didChangeDependencies();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     Widget _onboardingAndRepresentante() {
       return Column(
         children: [
@@ -415,10 +387,6 @@ class _EditarCadastroState extends State<EditarCadastro> {
     final double sWidth = MediaQuery.of(context).size.width;
     final double sHeight = MediaQuery.of(context).size.height;
 
-    //Some verification of the current country of the user
-
-    //_mapCountryToStateValues(sc.pais);
-
     return Scaffold(
       appBar: SecondaryAppbar(),
       body: GestureDetector(
@@ -432,493 +400,484 @@ class _EditarCadastroState extends State<EditarCadastro> {
           width: sWidth,
           height: sHeight,
           child: RawScrollbar(
-              radius: Radius.circular(10),
-              thumbColor: Colors.grey,
-              thickness: 15,
-              isAlwaysShown: true,
-              child: SingleChildScrollView(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(),
-                    ),
-                    Expanded(
-                      flex: 9,
-                      child: Column(
-                        children: <Widget>[
-                          const SizedBox(height: 60),
-                          Center(
-                            child: Text(
-                              'Cadastro',
-                              style: Theme.of(context).textTheme.headline1,
+            radius: Radius.circular(10),
+            thumbColor: Colors.grey,
+            thickness: 15,
+            isAlwaysShown: true,
+            child: SingleChildScrollView(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(),
+                  ),
+                  Expanded(
+                    flex: 9,
+                    child: Column(
+                      children: <Widget>[
+                        const SizedBox(height: 60),
+                        Center(
+                          child: Text(
+                            'Cadastro',
+                            style: Theme.of(context).textTheme.headline1,
+                          ),
+                        ),
+                        if (sc!.id != authStore.id) const SizedBox(height: 60),
+                        Container(
+                          width: sWidth,
+                          //height: 2040,
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              children: <Widget>[
+                                _statusCadastro(),
+                                const SizedBox(height: 10),
+                                _onboardingAndRepresentante(),
+                                if (sc!.id != authStore.id)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 40,
+                                    ),
+                                    child: const Divider(
+                                      height: 20,
+                                      thickness: 2,
+                                      indent: 20,
+                                      endIndent: 20,
+                                    ),
+                                  ),
+                                //email
+                                Container(
+                                  padding: const EdgeInsets.only(bottom: 5),
+                                  width: double.infinity,
+                                  child: const Text(
+                                    'Obs: ao atualizar email será necessário realizar login novamente',
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
+                                  height: 80,
+                                  child: TextFormField(
+                                    initialValue: sc!.email,
+                                    maxLength: 320,
+                                    onSaved: (String? value) {
+                                      sc!.email = value ?? '';
+                                    },
+                                    validator: (value) {
+                                      bool isValid =
+                                          EmailValidator.validate(value ?? '');
+                                      if (!isValid) {
+                                        return 'Email invalido. Por favor verifique';
+                                      }
+                                      return null;
+                                    },
+                                    decoration: InputDecoration(
+                                      counterText: '',
+                                      labelText: 'Email',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(height: 10),
+                                //nome
+                                Container(
+                                  height: 80,
+                                  child: TextFormField(
+                                    maxLength: 29,
+                                    initialValue: sc!.nome,
+                                    onSaved: (String? value) {
+                                      sc!.nome = value ?? '';
+                                    },
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return 'Por favor insira seu nome.';
+                                      }
+                                      return null;
+                                    },
+                                    decoration: const InputDecoration(
+                                      labelText: 'Nome: *',
+                                      counterText: '',
+                                      //hintText: 'Insira seu nome',
+                                      border: const OutlineInputBorder(),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                //sobrenome
+                                Container(
+                                  height: 80,
+                                  child: TextFormField(
+                                    maxLength: 29,
+                                    initialValue: sc!.sobrenome,
+                                    onSaved: (String? value) {
+                                      sc!.sobrenome = value ?? '';
+                                    },
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return 'Por favor insira seu sobrenome.';
+                                      }
+                                      return null;
+                                    },
+                                    decoration: const InputDecoration(
+                                      counterText: '',
+                                      labelText: 'Sobrenome: *',
+                                      //hintText: 'Insira seu nome',
+                                      border: const OutlineInputBorder(),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Container(
+                                  width: sWidth,
+                                  height: sWidth > 600 ? 80 : 180,
+                                  child: Flex(
+                                    direction: sWidth > 600
+                                        ? Axis.horizontal
+                                        : Axis.vertical,
+                                    children: [
+                                      Expanded(
+                                        child: Container(
+                                          height: 80,
+                                          child: TextFormField(
+                                            onSaved: (String? value) {
+                                              sc!.usernameCpf = value ?? '';
+                                            },
+                                            enabled: false,
+                                            validator: (value) {
+                                              if (value!.length < 11) {
+                                                return 'Por favor insira seu cpf';
+                                              }
+                                              return null;
+                                            },
+                                            maxLength: 100,
+                                            controller: _controllerCPF,
+                                            keyboardType: TextInputType.number,
+                                            inputFormatters: <
+                                                TextInputFormatter>[
+                                              FilteringTextInputFormatter.allow(
+                                                  RegExp(r'[0-9]')),
+                                            ],
+                                            decoration: const InputDecoration(
+                                              //To hide cpf length num
+                                              counterText: '',
+                                              labelText: 'CPF/id: *',
+                                              border:
+                                                  const OutlineInputBorder(),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 20),
+                                      Expanded(
+                                        child: Container(
+                                          height: 80,
+                                          child: DateTimeField(
+                                            onSaved: (DateTime? value) {
+                                              //If doesnt change date value, its null.
+                                              //Send date loaded in controller
+                                              if (value != null) {
+                                                sc!.data_nasc =
+                                                    value.toIso8601String();
+                                              }
+                                            },
+                                            controller: _controllerDataNasc,
+                                            decoration: const InputDecoration(
+                                              labelText:
+                                                  'Data de Nascimento: *',
+                                              border:
+                                                  const OutlineInputBorder(),
+                                            ),
+                                            format: format,
+                                            onShowPicker:
+                                                (context, currentValue) {
+                                              return showDatePicker(
+                                                fieldHintText:
+                                                    'formato: xx/xx/xxxx',
+                                                locale: Localizations.localeOf(
+                                                    context),
+                                                errorFormatText:
+                                                    'Escolha data válida',
+                                                errorInvalidText:
+                                                    'Data invalida',
+                                                context: context,
+                                                firstDate: DateTime(1900),
+                                                initialDate: currentValue ??
+                                                    DateTime.now(),
+                                                lastDate: DateTime(2100),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                //cro uf
+                                Container(
+                                  height: 80,
+                                  child: DropdownSearch<String>(
+                                    dropdownBuilder:
+                                        (buildContext, string, string2) {
+                                      return Text(sc!.cro_uf);
+                                    },
+                                    emptyBuilder: (buildContext, string) {
+                                      return Center(child: Text('Sem dados'));
+                                    },
+                                    loadingBuilder: (buildContext, string) {
+                                      return Center(
+                                          child: Text('Carregando...'));
+                                    },
+                                    errorBuilder:
+                                        (buildContext, string, dynamic) {
+                                      return Center(child: Text('Erro'));
+                                    },
+                                    onFind: (string) async {
+                                      if (!authStore.isAuth) {
+                                        await Navigator.pushAndRemoveUntil<
+                                            void>(
+                                          context,
+                                          MaterialPageRoute<void>(
+                                            builder: (BuildContext context) =>
+                                                LoginScreen(
+                                              showLoginMessage: true,
+                                            ),
+                                          ),
+                                          ModalRoute.withName('/'),
+                                        );
+                                      }
+                                      return _fetchStates();
+                                    },
+                                    onSaved: (String? value) {
+                                      sc!.cro_uf = value ?? '';
+                                    },
+                                    onChanged: (String? value) {
+                                      sc!.cro_uf = value ?? '';
+                                    },
+                                    validator: (String? value) {
+                                      return null;
+                                    },
+                                    dropdownSearchDecoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      contentPadding:
+                                          EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                    ),
+                                    mode: Mode.MENU,
+                                    showSearchBox: true,
+                                    showSelectedItem: true,
+                                    label: 'CRO (UF): *',
+                                    selectedItem: sc!.cro_uf,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                //cro número
+                                Container(
+                                  height: 80,
+                                  child: TextFormField(
+                                    maxLength: 30,
+                                    onSaved: (String? value) {
+                                      sc!.cro_num = value ?? '';
+                                    },
+                                    controller: _controllerCRO,
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: <TextInputFormatter>[
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp(r'[0-9]')),
+                                    ],
+                                    initialValue: null,
+                                    decoration: InputDecoration(
+                                      counterText: '',
+                                      labelText: 'CRO (Número): *',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
+                                ),
+                                const Divider(
+                                  height: 75,
+                                  thickness: 1,
+                                ),
+                                Container(
+                                  width: sWidth,
+                                  height: sWidth > 600 ? 80 : 180,
+                                  child: Flex(
+                                    direction: sWidth > 600
+                                        ? Axis.horizontal
+                                        : Axis.vertical,
+                                    children: [
+                                      Expanded(
+                                        child: Container(
+                                          margin:
+                                              EdgeInsets.fromLTRB(0, 25, 0, 0),
+                                          height: 80,
+                                          child: TextFormField(
+                                            onSaved: (String? value) {
+                                              sc!.telefone = value ?? '';
+                                            },
+                                            maxLength: 10,
+                                            controller: _controllerTEL,
+                                            keyboardType: TextInputType.number,
+                                            inputFormatters: <
+                                                TextInputFormatter>[
+                                              FilteringTextInputFormatter.allow(
+                                                  RegExp(r'[0-9]')),
+                                            ],
+                                            initialValue: null,
+                                            onChanged: (value) {
+                                              //_loginStore.setEmail(value);
+                                            },
+                                            decoration: InputDecoration(
+                                              //To hide cep length num
+                                              counterText: '',
+                                              labelText:
+                                                  'Telefone Fixo (Comercial): *',
+                                              //hintText: 'Insira seu nome',
+                                              border: OutlineInputBorder(),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 20),
+                                      Expanded(
+                                        child: Container(
+                                          margin:
+                                              EdgeInsets.fromLTRB(0, 25, 0, 0),
+                                          height: 80,
+                                          child: TextFormField(
+                                            onSaved: (String? value) {
+                                              sc!.celular = value ?? '';
+                                            },
+                                            maxLength: 11,
+                                            controller: _controllerCEL,
+                                            keyboardType: TextInputType.number,
+                                            inputFormatters: <
+                                                TextInputFormatter>[
+                                              FilteringTextInputFormatter.allow(
+                                                  RegExp(r'[0-9]')),
+                                            ],
+                                            initialValue: null,
+                                            onChanged: (value) {
+                                              //_loginStore.setEmail(value);
+                                            },
+                                            decoration: InputDecoration(
+                                              //To hide cep length num
+                                              counterText: '',
+                                              labelText:
+                                                  'Celular (Whatsapp): *',
+                                              //hintText: 'Insira seu nome',
+                                              border: OutlineInputBorder(),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Divider(
+                                  height: 75,
+                                  thickness: 1,
+                                ),
+                                const Text(
+                                  'Gerenciar endereços',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                Endereco(
+                                  enderecoType: 'gerenciar endereco',
+                                  userId: sc!.id,
+                                ),
+                                const SizedBox(height: 40),
+                              ],
                             ),
                           ),
-                          if (sc!.id != authStore.id)
-                            const SizedBox(height: 60),
-                          Container(
-                            width: sWidth,
-                            //height: 2040,
-                            child: Form(
-                              key: _formKey,
-                              child: Column(
-                                children: <Widget>[
-                                  _statusCadastro(),
-                                  const SizedBox(height: 10),
-                                  _onboardingAndRepresentante(),
-                                  if (sc!.id != authStore.id)
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 40,
+                        ),
+                        const SizedBox(height: 60),
+                        Center(
+                          child: Builder(
+                            builder: (ctx) => Container(
+                              width: 300,
+                              child: ElevatedButton(
+                                child: !_sendingCadastro
+                                    ? const Text(
+                                        'Atualizar',
+                                        style: TextStyle(color: Colors.white),
+                                      )
+                                    : CircularProgressIndicator(
+                                        valueColor:
+                                            new AlwaysStoppedAnimation<Color>(
+                                          Colors.blue,
+                                        ),
                                       ),
-                                      child: const Divider(
-                                        height: 20,
-                                        thickness: 2,
-                                        indent: 20,
-                                        endIndent: 20,
-                                      ),
-                                    ),
-                                  //email
-                                  Container(
-                                    padding: const EdgeInsets.only(bottom: 5),
-                                    width: double.infinity,
-                                    child: const Text(
-                                      'Obs: ao atualizar email será necessário realizar login novamente',
-                                      textAlign: TextAlign.left,
-                                      style: TextStyle(
-                                        color: Colors.black54,
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
-                                    height: 80,
-                                    child: TextFormField(
-                                      initialValue: sc!.email,
-                                      maxLength: 320,
-                                      onSaved: (String? value) {
-                                        sc!.email = value ?? '';
-                                      },
-                                      validator: (value) {
-                                        bool isValid = EmailValidator.validate(
-                                            value ?? '');
-                                        if (!isValid) {
-                                          return 'Email invalido. Por favor verifique';
-                                        }
-                                        return null;
-                                      },
-                                      decoration: InputDecoration(
-                                        counterText: '',
-                                        labelText: 'Email',
-                                        border: OutlineInputBorder(),
-                                      ),
-                                    ),
-                                  ),
+                                onPressed: !_sendingCadastro
+                                    ? () {
+                                        if (_formKey.currentState!.validate()) {
+                                          _formKey.currentState!.save();
+                                          setState(() {
+                                            _sendingCadastro = true;
+                                          });
+                                          cadastroStore.enviarCadastro().then(
+                                            (data) {
+                                              if (data.containsKey('error')) {
+                                                ScaffoldMessenger.of(context)
+                                                    .removeCurrentSnackBar();
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    duration: const Duration(
+                                                        seconds: 3),
+                                                    content: Text(
+                                                        'Erro ao atualizar cadastro'),
+                                                  ),
+                                                );
+                                              } else {
+                                                //usuario alterou email
+                                                if (sc?.email !=
+                                                    _originalEmail) {
+                                                  authStore.logout();
 
-                                  const SizedBox(height: 10),
-                                  //nome
-                                  Container(
-                                    height: 80,
-                                    child: TextFormField(
-                                      maxLength: 29,
-                                      initialValue: sc!.nome,
-                                      onSaved: (String? value) {
-                                        sc!.nome = value ?? '';
-                                      },
-                                      validator: (value) {
-                                        if (value!.isEmpty) {
-                                          return 'Por favor insira seu nome.';
-                                        }
-                                        return null;
-                                      },
-                                      decoration: const InputDecoration(
-                                        labelText: 'Nome: *',
-                                        counterText: '',
-                                        //hintText: 'Insira seu nome',
-                                        border: const OutlineInputBorder(),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  //sobrenome
-                                  Container(
-                                    height: 80,
-                                    child: TextFormField(
-                                      maxLength: 29,
-                                      initialValue: sc!.sobrenome,
-                                      onSaved: (String? value) {
-                                        sc!.sobrenome = value ?? '';
-                                      },
-                                      validator: (value) {
-                                        if (value!.isEmpty) {
-                                          return 'Por favor insira seu sobrenome.';
-                                        }
-                                        return null;
-                                      },
-                                      decoration: const InputDecoration(
-                                        counterText: '',
-                                        labelText: 'Sobrenome: *',
-                                        //hintText: 'Insira seu nome',
-                                        border: const OutlineInputBorder(),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Container(
-                                    width: sWidth,
-                                    height: sWidth > 600 ? 80 : 180,
-                                    child: Flex(
-                                      direction: sWidth > 600
-                                          ? Axis.horizontal
-                                          : Axis.vertical,
-                                      children: [
-                                        Expanded(
-                                          child: Container(
-                                            height: 80,
-                                            child: TextFormField(
-                                              onSaved: (String? value) {
-                                                sc!.usernameCpf = value ?? '';
-                                              },
-                                              enabled: false,
-                                              validator: (value) {
-                                                if (value!.length < 11) {
-                                                  return 'Por favor insira seu cpf';
+                                                  html.window.location.reload();
+                                                  return;
                                                 }
-                                                return null;
-                                              },
-                                              maxLength: 100,
-                                              controller: _controllerCPF,
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              inputFormatters: <
-                                                  TextInputFormatter>[
-                                                FilteringTextInputFormatter
-                                                    .allow(RegExp(r'[0-9]')),
-                                              ],
-                                              decoration: const InputDecoration(
-                                                //To hide cpf length num
-                                                counterText: '',
-                                                labelText: 'CPF/id: *',
-                                                border:
-                                                    const OutlineInputBorder(),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 20),
-                                        Expanded(
-                                          child: Container(
-                                            height: 80,
-                                            child: DateTimeField(
-                                              onSaved: (DateTime? value) {
-                                                //If doesnt change date value, its null.
-                                                //Send date loaded in controller
-                                                if (value != null) {
-                                                  sc!.data_nasc =
-                                                      value.toIso8601String();
-                                                }
-                                              },
-                                              controller: _controllerDataNasc,
-                                              decoration: const InputDecoration(
-                                                labelText:
-                                                    'Data de Nascimento: *',
-                                                border:
-                                                    const OutlineInputBorder(),
-                                              ),
-                                              format: format,
-                                              onShowPicker:
-                                                  (context, currentValue) {
-                                                return showDatePicker(
-                                                    initialEntryMode:
-                                                        DatePickerEntryMode
-                                                            .input,
-                                                    locale:
-                                                        Localizations.localeOf(
-                                                            context),
-                                                    errorFormatText:
-                                                        'Escolha data válida',
-                                                    errorInvalidText:
-                                                        'Data invalida',
-                                                    context: context,
-                                                    firstDate: DateTime(1900),
-                                                    initialDate: currentValue ??
-                                                        DateTime.now(),
-                                                    lastDate: DateTime(2100));
-                                              },
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  //cro uf
-                                  Container(
-                                    height: 80,
-                                    child: DropdownSearch<String>(
-                                      dropdownBuilder:
-                                          (buildContext, string, string2) {
-                                        return Text(sc!.cro_uf);
-                                      },
-                                      emptyBuilder: (buildContext, string) {
-                                        return Center(child: Text('Sem dados'));
-                                      },
-                                      loadingBuilder: (buildContext, string) {
-                                        return Center(
-                                            child: Text('Carregando...'));
-                                      },
-                                      errorBuilder:
-                                          (buildContext, string, dynamic) {
-                                        return Center(child: Text('Erro'));
-                                      },
-                                      onFind: (string) async {
-                                        if (!authStore.isAuth) {
-                                          await Navigator.pushAndRemoveUntil<
-                                              void>(
-                                            context,
-                                            MaterialPageRoute<void>(
-                                              builder: (BuildContext context) =>
-                                                  LoginScreen(
-                                                showLoginMessage: true,
-                                              ),
-                                            ),
-                                            ModalRoute.withName('/'),
+                                                Navigator.pop(context, true);
+                                                ScaffoldMessenger.of(context)
+                                                    .removeCurrentSnackBar();
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    duration: const Duration(
+                                                        seconds: 3),
+                                                    content: Text(
+                                                        'Cadastro atualizado!'),
+                                                  ),
+                                                );
+                                              }
+                                              setState(() {
+                                                _sendingCadastro = false;
+                                              });
+                                            },
                                           );
                                         }
-                                        return _fetchStates();
-                                      },
-                                      onSaved: (String? value) {
-                                        sc!.cro_uf = value ?? '';
-                                      },
-                                      onChanged: (String? value) {
-                                        sc!.cro_uf = value ?? '';
-                                      },
-                                      validator: (String? value) {
-                                        return null;
-                                        return value == null || value.isEmpty
-                                            ? 'Campo vazio'
-                                            : null;
-                                      },
-                                      dropdownSearchDecoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        contentPadding:
-                                            EdgeInsets.fromLTRB(10, 10, 10, 10),
-                                      ),
-                                      mode: Mode.MENU,
-                                      showSearchBox: true,
-                                      showSelectedItem: true,
-                                      label: 'CRO (UF): *',
-                                      selectedItem: sc!.cro_uf,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  //cro número
-                                  Container(
-                                    height: 80,
-                                    child: TextFormField(
-                                      maxLength: 30,
-                                      onSaved: (String? value) {
-                                        sc!.cro_num = value ?? '';
-                                      },
-                                      controller: _controllerCRO,
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.allow(
-                                            RegExp(r'[0-9]')),
-                                      ],
-                                      initialValue: null,
-                                      decoration: InputDecoration(
-                                        counterText: '',
-                                        labelText: 'CRO (Número): *',
-                                        border: OutlineInputBorder(),
-                                      ),
-                                    ),
-                                  ),
-                                  const Divider(
-                                    height: 75,
-                                    thickness: 1,
-                                  ),
-                                  Container(
-                                    width: sWidth,
-                                    height: sWidth > 600 ? 80 : 180,
-                                    child: Flex(
-                                      direction: sWidth > 600
-                                          ? Axis.horizontal
-                                          : Axis.vertical,
-                                      children: [
-                                        Expanded(
-                                          child: Container(
-                                            margin: EdgeInsets.fromLTRB(
-                                                0, 25, 0, 0),
-                                            height: 80,
-                                            child: TextFormField(
-                                              onSaved: (String? value) {
-                                                sc!.telefone = value ?? '';
-                                              },
-                                              maxLength: 10,
-                                              controller: _controllerTEL,
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              inputFormatters: <
-                                                  TextInputFormatter>[
-                                                FilteringTextInputFormatter
-                                                    .allow(RegExp(r'[0-9]')),
-                                              ],
-                                              initialValue: null,
-                                              onChanged: (value) {
-                                                //_loginStore.setEmail(value);
-                                              },
-                                              decoration: InputDecoration(
-                                                //To hide cep length num
-                                                counterText: '',
-                                                labelText:
-                                                    'Telefone Fixo (Comercial): *',
-                                                //hintText: 'Insira seu nome',
-                                                border: OutlineInputBorder(),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 20),
-                                        Expanded(
-                                          child: Container(
-                                            margin: EdgeInsets.fromLTRB(
-                                                0, 25, 0, 0),
-                                            height: 80,
-                                            child: TextFormField(
-                                              onSaved: (String? value) {
-                                                sc!.celular = value ?? '';
-                                              },
-                                              maxLength: 11,
-                                              controller: _controllerCEL,
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              inputFormatters: <
-                                                  TextInputFormatter>[
-                                                FilteringTextInputFormatter
-                                                    .allow(RegExp(r'[0-9]')),
-                                              ],
-                                              initialValue: null,
-                                              onChanged: (value) {
-                                                //_loginStore.setEmail(value);
-                                              },
-                                              decoration: InputDecoration(
-                                                //To hide cep length num
-                                                counterText: '',
-                                                labelText:
-                                                    'Celular (Whatsapp): *',
-                                                //hintText: 'Insira seu nome',
-                                                border: OutlineInputBorder(),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const Divider(
-                                    height: 75,
-                                    thickness: 1,
-                                  ),
-                                  const Text(
-                                    'Gerenciar endereços',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  Endereco(
-                                    enderecoType: 'gerenciar endereco',
-                                    userId: sc!.id,
-                                  ),
-                                  const SizedBox(height: 40),
-                                ],
+                                      }
+                                    : null,
                               ),
                             ),
                           ),
-                          const SizedBox(height: 60),
-                          Center(
-                            child: Builder(
-                              builder: (ctx) => Container(
-                                width: 300,
-                                child: ElevatedButton(
-                                  child: !_sendingCadastro
-                                      ? const Text(
-                                          'Atualizar',
-                                          style: TextStyle(color: Colors.white),
-                                        )
-                                      : CircularProgressIndicator(
-                                          valueColor:
-                                              new AlwaysStoppedAnimation<Color>(
-                                            Colors.blue,
-                                          ),
-                                        ),
-                                  onPressed: !_sendingCadastro
-                                      ? () {
-                                          if (_formKey.currentState!
-                                              .validate()) {
-                                            _formKey.currentState!.save();
-                                            setState(() {
-                                              _sendingCadastro = true;
-                                            });
-                                            cadastroStore.enviarCadastro().then(
-                                              (data) {
-                                                if (data.containsKey('error')) {
-                                                  ScaffoldMessenger.of(context)
-                                                      .removeCurrentSnackBar();
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    SnackBar(
-                                                      duration: const Duration(
-                                                          seconds: 3),
-                                                      content: Text(
-                                                          'Erro ao atualizar cadastro'),
-                                                    ),
-                                                  );
-                                                } else {
-                                                  //usuario alterou email
-                                                  if (sc?.email !=
-                                                      _originalEmail) {
-                                                    authStore.logout();
-
-                                                    html.window.location
-                                                        .reload();
-                                                    return;
-                                                  }
-                                                  Navigator.pop(context, true);
-                                                  ScaffoldMessenger.of(context)
-                                                      .removeCurrentSnackBar();
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    SnackBar(
-                                                      duration: const Duration(
-                                                          seconds: 3),
-                                                      content: Text(
-                                                          'Cadastro atualizado!'),
-                                                    ),
-                                                  );
-                                                }
-                                                setState(() {
-                                                  _sendingCadastro = false;
-                                                });
-                                              },
-                                            );
-                                          }
-                                        }
-                                      : null,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 60),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 60),
+                      ],
                     ),
-                    Expanded(
-                      child: Container(),
-                    ),
-                  ],
-                ),
-              )),
+                  ),
+                  Expanded(
+                    child: Container(),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

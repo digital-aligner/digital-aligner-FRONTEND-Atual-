@@ -17,7 +17,10 @@ class RepresentanteModel {
   });
 
   factory RepresentanteModel.fromJson(Map<String, dynamic> data) {
-    if (data.isEmpty) return RepresentanteModel();
+    if (data.isEmpty) {
+      return RepresentanteModel();
+    }
+
     return RepresentanteModel(
       id: data['id'] ?? 0,
       usernameCpf: data['username'] ?? '',
