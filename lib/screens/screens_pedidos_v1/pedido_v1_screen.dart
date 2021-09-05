@@ -42,6 +42,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   AuthProvider? _authStore;
   Size? _screenSize;
 
+  bool _modeloGessoAlertMsg = true;
+
   bool _termosValue = false;
 
   // pedido type (for post request)
@@ -173,6 +175,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   bool mmOverbiteVis3 = false;
   bool mmOverbiteVis4 = false;
   bool modeloEmGesso = false;
+
+  bool _taxaPlanejValue = false;
 
   String mmLinhaMediaGPOvalue = '';
 
@@ -1061,10 +1065,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       padding: const EdgeInsets.symmetric(vertical: 60),
       child: Text(
         'Resolução de apinhamento (múltipla escolha)',
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: textSize,
-        ),
+        style: Theme.of(context).textTheme.headline2,
       ),
     );
   }
@@ -1162,10 +1163,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       padding: const EdgeInsets.symmetric(vertical: 40),
       child: Text(
         'Realizar extração virtual dos seguintes dentes',
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: textSize,
-        ),
+        style: Theme.of(context).textTheme.headline2,
       ),
     );
   }
@@ -1209,10 +1207,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       padding: const EdgeInsets.symmetric(vertical: 40),
       child: Text(
         'Não movimentar os seguintes elementos',
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: textSize,
-        ),
+        style: Theme.of(context).textTheme.headline2,
       ),
     );
   }
@@ -1256,10 +1251,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       padding: const EdgeInsets.symmetric(vertical: 40),
       child: Text(
         'Não colocar attachments nos seguintes elementos (coroas, implantes, etc)',
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: textSize,
-        ),
+        style: Theme.of(context).textTheme.headline2,
       ),
     );
   }
@@ -1303,10 +1295,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       padding: const EdgeInsets.symmetric(vertical: 40),
       child: Text(
         'Opcionais',
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: textSize,
-        ),
+        style: Theme.of(context).textTheme.headline2,
       ),
     );
   }
@@ -1684,30 +1673,24 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       padding: const EdgeInsets.symmetric(vertical: 40),
       child: Text(
         'Modelos digitais',
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: textSize,
-        ),
+        style: Theme.of(context).textTheme.headline2,
       ),
     );
   }
 
   Widget _formatoDeModelos() {
-    //bool block = true;
-    double opac = 1;
-    if (_args.messageMap!.containsKey('isEditarPaciente')) {
-      if (_args.messageMap!['isEditarPaciente']) {
-        //block = false;
-        //opac = 0.4;
-      }
-    }
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: AbsorbPointer(
-        absorbing: /*!block*/ false,
+        absorbing: _pedidoStore!.checkIfModelosEmpty() &&
+                _pedidoStore!.getQntUploading() == 0
+            ? false
+            : true,
         child: Opacity(
-          opacity: opac,
+          opacity: _pedidoStore!.checkIfModelosEmpty() &&
+                  _pedidoStore!.getQntUploading() == 0
+              ? 1
+              : 0.4,
           child: GroupButton(
             selectedColor: DefaultColors.digitalAlignBlue,
             selectedButton: modeloEmGesso ? 1 : 0,
@@ -1716,7 +1699,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             onSelected: (index, isSelected) async {
               if (_isEditarPedido) {
                 if (isSelected && index == 1) {
-                  _modeloGessoAlert();
                   bool result = await _atualizarModelosTipo(modeloGesso: true);
                   if (result) {
                     ScaffoldMessenger.of(context).removeCurrentSnackBar();
@@ -1775,6 +1757,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                 }
               } else {
                 if (isSelected && index == 1) {
+                  if (_modeloGessoAlertMsg) _modeloGessoAlert();
+                  _modeloGessoAlertMsg = false;
                   setState(() {
                     modeloEmGesso = true;
                   });
@@ -1795,6 +1779,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     );
   }
 
+  void _updatePedidoUi() {
+    setState(() {});
+  }
+
   Widget _modelosDigitais() {
     int updatePedidoId = -1;
     if (_isEditarPedido) {
@@ -1805,9 +1793,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       child: Column(
         children: [
           FileUploader(
+            updatePedidoUi: _updatePedidoUi,
             filesQt: 1,
             acceptedFileExt: ['stl'],
-            sendButtonText: 'Carregar modelo superior',
+            sendButtonText: 'Carregar modelo superior (stl)',
             firstPedidoSaveToProvider: true,
             uploaderType: 'modelo superior',
             isEditarPedido: _isEditarPedido,
@@ -1816,9 +1805,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           ),
           const SizedBox(height: 20),
           FileUploader(
+            updatePedidoUi: _updatePedidoUi,
             filesQt: 1,
             acceptedFileExt: ['stl'],
-            sendButtonText: 'Carregar modelo inferior',
+            sendButtonText: 'Carregar modelo inferior (stl)',
             firstPedidoSaveToProvider: true,
             uploaderType: 'modelo inferior',
             isEditarPedido: _isEditarPedido,
@@ -1845,7 +1835,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           FileUploader(
             filesQt: 1,
             acceptedFileExt: ['zip', 'rar'],
-            sendButtonText: 'Carregar modelos compatados (zip/rar)',
+            sendButtonText: 'Carregar modelos compatados',
             uploaderType: 'modelo compactado',
             firstPedidoSaveToProvider: _firstPedidoSaveToProvider,
             isEditarPedido: _isEditarPedido,
@@ -1872,10 +1862,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       padding: const EdgeInsets.symmetric(vertical: 40),
       child: Text(
         'Fotografias',
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: textSize,
-        ),
+        style: Theme.of(context).textTheme.headline2,
       ),
     );
   }
@@ -1890,7 +1877,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       child: FileUploader(
         filesQt: 16,
         acceptedFileExt: ['jpg', 'jpeg', 'png'],
-        sendButtonText: 'Carregar fotografias',
+        sendButtonText: 'Carregar fotografias (jpg, jpeg, png)',
         firstPedidoSaveToProvider: _firstPedidoSaveToProvider,
         uploaderType: 'fotografias',
         isEditarPedido: _isEditarPedido,
@@ -1905,10 +1892,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       padding: const EdgeInsets.symmetric(vertical: 40),
       child: Text(
         'Radiografias',
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: textSize,
-        ),
+        style: Theme.of(context).textTheme.headline2,
       ),
     );
   }
@@ -1923,7 +1907,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       child: FileUploader(
         filesQt: 16,
         acceptedFileExt: ['jpg', 'jpeg', 'png'],
-        sendButtonText: 'Carregar radiografias',
+        sendButtonText: 'Carregar radiografias (jpg, jpeg, png)',
         uploaderType: 'radiografias',
         firstPedidoSaveToProvider: _firstPedidoSaveToProvider,
         isEditarPedido: _isEditarPedido,
@@ -1939,8 +1923,11 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       child: Column(
         children: [
           const Text('• AVISO PARA MODELOS EM GESSO: \n'),
-          const Text(
-            '• Os modelos de gesso enviados devem ser feitos com Gesso pedra tipo IV, sempre superior e inferior.Deve ser enviado o registro de oclusão do paciente juntamente com os modelos em gesso. Devem estar bem embalados, para evitar a quebra.Se possível, a base do modelo deve vir recortada. Enviar com as informações referentes ao paciente (nome, data de nascimento e dentista responsável pelo caso).\n\n*Os casos que não seguirem essas recomendações não serão escaneados.\n*O prazo para planejamento só será contado a partir do recebimento da documentação completa (fotos, radiografia e a prescrição do pedido devem ser enviados via plataforma Digital Aligner).\n\n• Favor enviar os modelos em gesso para o escaneamento no endereço abaixo:\n\nUPDENTALL TECNOLOGIA EM ODONTOLOGIA LTDA.\nRua das Pernambucanas, 407, sala 1305 Graças 52011 010 Recife, PE',
+          SizedBox(
+            width: 400,
+            child: const Text(
+              '• Os modelos de gesso enviados devem ser feitos com Gesso pedra tipo IV, sempre superior e inferior.Deve ser enviado o registro de oclusão do paciente juntamente com os modelos em gesso. Devem estar bem embalados, para evitar a quebra.Se possível, a base do modelo deve vir recortada. Enviar com as informações referentes ao paciente (nome, data de nascimento e dentista responsável pelo caso).\n\n*Os casos que não seguirem essas recomendações não serão escaneados.\n*O prazo para planejamento só será contado a partir do recebimento da documentação completa (fotos, radiografia e a prescrição do pedido devem ser enviados via plataforma Digital Aligner).\n\n• Favor enviar os modelos em gesso para o escaneamento no endereço abaixo:\n\nUPDENTALL TECNOLOGIA EM ODONTOLOGIA LTDA.\nRua das Pernambucanas, 407, sala 1305 Graças 52011 010 Recife, PE',
+            ),
           ),
         ],
       ),
@@ -1979,28 +1966,27 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
         children: [
-          TextFormField(
-            maxLength: 255,
-            enabled: /*!_isEditarPedidoCheck()*/ true,
-            validator: (String? value) {},
-            initialValue: _linkDocumentacao.text,
-            onChanged: (value) {
-              _linkDocumentacao.text = value;
-            },
-            onSaved: (value) {
-              _linkDocumentacao.text = value ?? '';
-            },
-            decoration: const InputDecoration(
-              helperStyle: TextStyle(
-                fontSize: 16,
+          SizedBox(
+            width: 350,
+            child: TextFormField(
+              maxLength: 255,
+              enabled: /*!_isEditarPedidoCheck()*/ true,
+              validator: (String? value) {},
+              initialValue: _linkDocumentacao.text,
+              onChanged: (value) {
+                _linkDocumentacao.text = value;
+              },
+              onSaved: (value) {
+                _linkDocumentacao.text = value ?? '';
+              },
+              decoration: const InputDecoration(
+                helperStyle: TextStyle(
+                  fontSize: 16,
+                ),
+                border: const OutlineInputBorder(),
+                counterText: '',
+                labelText: 'Link *',
               ),
-              helperText:
-                  'Caso tenha problema em carregar os arquivos, compartilhe no We Transfer , One Drive, Google Drive, copie e cole o link aqui',
-              hintText:
-                  'Caso tenha problema em carregar os arquivos, compartilhe no We Transfer , One Drive, Google Drive, copie e cole o link aqui',
-              border: const OutlineInputBorder(),
-              counterText: '',
-              labelText: 'Link *',
             ),
           ),
           if (_isEditarPedido)
@@ -2022,6 +2008,13 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               },
               child: const Text('Copiar link'),
             ),
+          const SizedBox(height: 20),
+          const SizedBox(
+            width: 300,
+            child: Text(
+              'Caso tenha problema em carregar os arquivos, compartilhe no We Transfer, One Drive, Google Drive, copie e cole o link aqui.',
+            ),
+          ),
         ],
       ),
     );
@@ -2031,11 +2024,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 40),
       child: Text(
-        'Arquivos compactado',
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: textSize,
-        ),
+        'Modelos Compactados (zip/rar)',
+        style: Theme.of(context).textTheme.headline2,
       ),
     );
   }
@@ -2044,11 +2034,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 40),
       child: Text(
-        ' Selecione endereço de entrega\n\n( gerencie endereços no seu perfil )',
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: textSize,
-        ),
+        '     Selecione endereço de entrega\n\nobs: gerencie endereços no seu perfil',
+        style: Theme.of(context).textTheme.headline2,
       ),
     );
   }
@@ -2193,15 +2180,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             indent: 20,
             endIndent: 20,
           ),
-          _carregarFotografiasTexto(),
-          _carregarFotografias(),
-          _carregarRadiografiasTexto(),
-          _carregarRadiografias(),
-          _carregarModelosDigitaisTexto(),
-          _formatoDeModelos(),
-          _manageModelType(),
-          _arquivosCompactadoTexto(),
-          _modeloCompactado(),
+          _fotoRadioWrap(),
+          _modelosWrap(),
           const SizedBox(
             height: 60,
           ),
@@ -2226,10 +2206,82 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             height: 20,
           ),
           _taxaPlanejamento(),
+          const SizedBox(
+            height: 20,
+          ),
           _termos(),
-          _sendButton()
+          const SizedBox(
+            height: 20,
+          ),
+          _sendButton(),
+          const SizedBox(
+            height: 100,
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _fotografiasBuilder() {
+    return Column(
+      children: [
+        _carregarFotografiasTexto(),
+        _carregarFotografias(),
+      ],
+    );
+  }
+
+  Widget _radiografiasBuilder() {
+    return Column(
+      children: [
+        _carregarRadiografiasTexto(),
+        _carregarRadiografias(),
+      ],
+    );
+  }
+
+  Widget _modelosTypeBuilder() {
+    return Column(
+      children: [
+        _carregarModelosDigitaisTexto(),
+        _formatoDeModelos(),
+        _manageModelType(),
+      ],
+    );
+  }
+
+  Widget _modelosCompBuilder() {
+    return Column(
+      children: [
+        _arquivosCompactadoTexto(),
+        _modeloCompactado(),
+      ],
+    );
+  }
+
+  Widget _fotoRadioWrap() {
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      alignment: WrapAlignment.center,
+      spacing: 40,
+      runSpacing: 40,
+      children: [
+        _fotografiasBuilder(),
+        _radiografiasBuilder(),
+      ],
+    );
+  }
+
+  Widget _modelosWrap() {
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      alignment: WrapAlignment.center,
+      spacing: 40,
+      runSpacing: 40,
+      children: [
+        _modelosTypeBuilder(),
+        _modelosCompBuilder(),
+      ],
     );
   }
 
@@ -2479,61 +2531,74 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   Widget _enderecoSelection() {
     return Column(
       children: [
-        DropdownSearch<EnderecoModel>(
-          scrollbarProps: ScrollbarProps(isAlwaysShown: true),
-          validator: (value) {
-            if (_isEditarPedidoCheck()) {
+        SizedBox(
+          width: 400,
+          child: DropdownSearch<EnderecoModel>(
+            searchBoxDecoration: InputDecoration(
+              isDense: true,
+              contentPadding: EdgeInsets.symmetric(
+                vertical: 14,
+                horizontal: 14,
+              ),
+            ),
+            dropdownSearchDecoration: InputDecoration(
+              contentPadding: EdgeInsets.symmetric(
+                vertical: 4,
+                horizontal: 16,
+              ),
+              isDense: true,
+            ),
+            scrollbarProps: ScrollbarProps(isAlwaysShown: true),
+            validator: (value) {
+              if (_isEditarPedidoCheck()) {
+                return null;
+              }
+              if (value == null) {
+                return 'Por favor escolha endereco';
+              }
               return null;
-            }
-            if (value == null) {
-              return 'Por favor escolha endereco';
-            }
-            return null;
-          },
-          dropdownBuilder: (buildContext, string, string2) {
-            if (_isEditarPedidoCheck()) {
-              return Text(enderecoSelecionado.endereco);
-            }
-            if (eModel.length == 0) {
-              return Text('sem endereços');
-            }
-            return Text(eModel[0].endereco);
-          },
-          dropdownSearchDecoration: InputDecoration(
-            border: OutlineInputBorder(),
-            contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-          ),
-          emptyBuilder: (buildContext, string) {
-            return Center(child: Text('Sem dados'));
-          },
-          loadingBuilder: (buildContext, string) {
-            return Center(child: Text('Carregando...'));
-          },
-          errorBuilder: (buildContext, string, dynamic) {
-            return Center(child: Text('Erro'));
-          },
-          onFind: (string) async {
-            if (!_authStore!.isAuth) {
-              await Navigator.pushAndRemoveUntil<void>(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (BuildContext context) => LoginScreen(
-                    showLoginMessage: true,
+            },
+            dropdownBuilder: (buildContext, string, string2) {
+              if (_isEditarPedidoCheck()) {
+                return Text(enderecoSelecionado.endereco);
+              }
+              if (eModel.length == 0) {
+                return Text('sem endereços');
+              }
+              return Text(eModel[0].endereco);
+            },
+            emptyBuilder: (buildContext, string) {
+              return Center(child: Text('Sem dados'));
+            },
+            loadingBuilder: (buildContext, string) {
+              return Center(child: Text('Carregando...'));
+            },
+            errorBuilder: (buildContext, string, dynamic) {
+              return Center(child: Text('Erro'));
+            },
+            onFind: (string) async {
+              if (!_authStore!.isAuth) {
+                await Navigator.pushAndRemoveUntil<void>(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (BuildContext context) => LoginScreen(
+                      showLoginMessage: true,
+                    ),
                   ),
-                ),
-                ModalRoute.withName('/'),
-              );
-            }
-            return _fetchUserEndereco();
-          },
-          itemAsString: (EnderecoModel e) => e.endereco,
-          mode: Mode.MENU,
-          label: 'Selecione endereço: *',
-          onChanged: (EnderecoModel? selectedEnd) {
-            setState(() {
-              enderecoSelecionado = selectedEnd ?? EnderecoModel();
-            });
-          },
+                  ModalRoute.withName('/'),
+                );
+              }
+              return _fetchUserEndereco();
+            },
+            itemAsString: (EnderecoModel e) => e.endereco,
+            mode: Mode.MENU,
+            label: 'Selecione endereço: *',
+            onChanged: (EnderecoModel? selectedEnd) {
+              setState(() {
+                enderecoSelecionado = selectedEnd ?? EnderecoModel();
+              });
+            },
+          ),
         ),
         const SizedBox(
           height: 20,
@@ -2704,7 +2769,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     );
   }
 
-  Widget _termos() {
+  Widget _termos1() {
     Future<dynamic> getAlert() {
       return showDialog(
         context: context,
@@ -2750,16 +2815,59 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   }
 
   Widget _taxaPlanejamento() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Icon(
-          Icons.check_circle,
-          color: DefaultColors.digitalAlignBlue,
-        ),
-        const Text(
-            ' Taxa de Planejamento: Estou ciente que caso o planejamento não seja aprovado em até 60 dias, será cobrado o valor de R\$ 350,00'),
-      ],
+    return CheckboxListTile(
+      checkColor: Colors.blue,
+      controlAffinity: ListTileControlAffinity.leading,
+      title: Text(
+        ' Taxa de Planejamento: Estou ciente que caso o planejamento não seja aprovado em até 60 dias, será cobrado o valor de R\$ 350,00',
+      ),
+      value: _taxaPlanejValue,
+      onChanged: (value) => setState(() => _taxaPlanejValue = value ?? false),
+    );
+  }
+
+  Widget _termos() {
+    Future<dynamic> getAlert() {
+      return showDialog(
+        context: context,
+        builder: (context) {
+          return SizedBox(
+            child: AlertDialog(
+              title: Text('Termos'),
+              content: RawScrollbar(
+                  radius: Radius.circular(10),
+                  thumbColor: Colors.grey,
+                  thickness: 15,
+                  isAlwaysShown: true,
+                  child: SingleChildScrollView(child: Text(termos))),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('fechar'),
+                )
+              ],
+            ),
+          );
+        },
+      );
+    }
+
+    return CheckboxListTile(
+      checkColor: Colors.blue,
+      controlAffinity: ListTileControlAffinity.leading,
+      title: const Text(
+        'Li e estou de acordo com os termos',
+      ),
+      secondary: TextButton(
+        onPressed: () => getAlert(),
+        child: const Text('Visualizar'),
+      ),
+      value: _termosValue,
+      onChanged: (value) {
+        setState(() {
+          _termosValue = value ?? false;
+        });
+      },
     );
   }
 
@@ -3166,7 +3274,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           isAlwaysShown: true,
           child: SingleChildScrollView(
             child: Container(
-              height: _calculateScreenHeight(),
               padding: _screenSize!.width <= _mediaQueryMd
                   ? const EdgeInsets.symmetric(horizontal: 8)
                   : const EdgeInsets.symmetric(horizontal: 100),

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/uploader/model/FileModel.dart';
+import 'package:digital_aligner_app/widgets/custom%20buttons/custom_elevated_button_1.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:digital_aligner_app/providers/auth_provider.dart';
@@ -22,6 +23,7 @@ class FileUploader extends StatefulWidget {
   final bool isEditarPedido;
   final int isEditarPedidoPos;
   final int updatePedidoId;
+  final VoidCallback? updatePedidoUi;
   final List<String> uploaderTypes = const [
     'fotografias',
     'radiografias',
@@ -34,6 +36,7 @@ class FileUploader extends StatefulWidget {
     @required this.filesQt,
     @required this.acceptedFileExt,
     @required this.sendButtonText,
+    this.updatePedidoUi,
     this.firstPedidoSaveToProvider = false,
     this.uploaderType = '',
     this.isEditarPedido = false,
@@ -167,8 +170,18 @@ class _FileUploaderState extends State<FileUploader> {
     }
   }
 
+  void _updatePedidoViewStl() {
+    if (widget.acceptedFileExt?[0] == 'stl') {
+      if (widget.updatePedidoUi != null) {
+        widget.updatePedidoUi!();
+      }
+    }
+  }
+
   Future<void> _sendFile(PlatformFile currentFile) async {
     try {
+      _updatePedidoViewStl();
+
       _pedidoStore.incrementQntUploading();
       //create file model and insert in list
       setState(() {
@@ -387,6 +400,7 @@ class _FileUploaderState extends State<FileUploader> {
                                 }
                                 isDeleting = false;
                               });
+                              _updatePedidoViewStl();
                               return;
                             }
                             setState(() {
@@ -411,7 +425,7 @@ class _FileUploaderState extends State<FileUploader> {
   }
 
   Widget _uploadBtn() {
-    return ElevatedButton(
+    return CustomElevatedButton1(
       onPressed: isUploading || isDeleting
           ? null
           : () async {

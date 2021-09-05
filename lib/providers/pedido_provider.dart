@@ -33,6 +33,14 @@ class PedidoProvider with ChangeNotifier {
   int _qntUploading = 0;
   int _qntErrors = 0;
 
+  //check if modelo sup or inf is empty before switch to gesso button on pedido creation
+  bool checkIfModelosEmpty() {
+    if (_modeloSuperior.isEmpty && _modeloInferior.isEmpty)
+      return true;
+    else
+      return false;
+  }
+
   clearUploadAndErrors() {
     _qntUploading = 0;
     _qntErrors = 0;

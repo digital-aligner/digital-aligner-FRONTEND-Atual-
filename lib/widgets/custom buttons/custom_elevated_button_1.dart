@@ -5,7 +5,7 @@ class CustomElevatedButton1 extends StatelessWidget {
     Key? key,
     @required this.child,
     this.color,
-    this.minimumSize = const Size(400, 80),
+    this.minimumSize = const Size(350, 50),
     this.onPressed,
   }) : super(key: key);
 

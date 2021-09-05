@@ -610,7 +610,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
         children: [
           if (buscandoMaisPedidos) _loadingSpinder(),
           Container(
-            width: 150,
+            width: 200,
             child: ElevatedButton.icon(
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(
@@ -675,7 +675,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                       //refreshPageFetchNewList();
                     },
               label: const Text(
-                'Carregar',
+                'Mais resultados',
                 style: TextStyle(color: Colors.white),
               ),
               icon: Icon(
