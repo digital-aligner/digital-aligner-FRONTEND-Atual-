@@ -257,6 +257,17 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                 onPressed: () async {
                   bool result = await _deletarPedido(position);
                   if (result) {
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: const Duration(seconds: 2),
+                        content: Text(
+                          'Pedido deletado',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    );
                     Navigator.pop(context, true);
                   } else {
                     Navigator.pop(context, false);
@@ -651,7 +662,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                             setState(() {
                               buscandoMaisPedidos = false;
                               pageQuant = pageQuant + 10;
-                              pageHeight = pageHeight + 350;
+                              pageHeight = pageHeight + 600;
                             });
                           } else {
                             ScaffoldMessenger.of(context)
