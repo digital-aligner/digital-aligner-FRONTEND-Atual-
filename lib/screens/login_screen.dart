@@ -28,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _cadastroScreenOpen = false;
 
   //VERSION UI TEXT
-  String _version = 'V1.91';
+  String _version = 'V1.92';
 
   Future<void> _submit(LoginFormProvider _loginStore, context) async {
     setState(() => _isLoading = true);
