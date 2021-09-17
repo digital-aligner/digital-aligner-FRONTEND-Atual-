@@ -2,7 +2,6 @@ import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_onboarding.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_pacientes_v1.dart';
 import 'package:digital_aligner_app/screens/administrativo/gerenciar_permissoes.dart';
-import 'package:digital_aligner_app/screens/midia_screen/mentoria_brasil.dart';
 import 'package:digital_aligner_app/screens/midia_screen/mentoria_portugal.dart';
 
 import 'package:digital_aligner_app/screens/perfil.dart';
@@ -236,7 +235,7 @@ class _MyDrawerState extends State<MyDrawer> {
                 },
               ),
             Divider(),
-            ListTile(
+            /*ListTile(
               leading: const Icon(Icons.play_circle_fill),
               title: const Text(
                 'Mentoria Brasil',
@@ -250,7 +249,7 @@ class _MyDrawerState extends State<MyDrawer> {
                 );
               },
             ),
-            Divider(),
+            Divider(),*/
             ListTile(
               leading: const Icon(Icons.play_circle_fill),
               title: const Text(

@@ -34,7 +34,6 @@ class PedidoV1Model {
   List<FileModel> modeloInferior;
   List<FileModel> modeloCompactado;
   UsuarioV1Model? usuario;
-  EnderecoModel? enderecoEntrega;
   StatusPedidoV1Model? statusPedido;
   String createdAt;
   String? updatedAt;
@@ -44,6 +43,14 @@ class PedidoV1Model {
   String? alteracaoTexto;
   String? alteracaoData;
   bool? novaAtualizacao;
+  String bairro;
+  String cidade;
+  String complemento;
+  String endereco;
+  String uf;
+  String pais;
+  String numero;
+  String cep;
 
   PedidoV1Model({
     this.id = 0,
@@ -76,7 +83,6 @@ class PedidoV1Model {
     this.modeloInferior = const <FileModel>[],
     this.modeloCompactado = const <FileModel>[],
     this.usuario,
-    this.enderecoEntrega,
     this.statusPedido,
     this.createdAt = '',
     this.updatedAt = '',
@@ -85,6 +91,14 @@ class PedidoV1Model {
     this.alteracaoTexto,
     this.alteracaoData,
     this.novaAtualizacao,
+    this.bairro = '',
+    this.cidade = '',
+    this.complemento = '',
+    this.endereco = '',
+    this.uf = '',
+    this.pais = '',
+    this.numero = '',
+    this.cep = '',
   });
 
   factory PedidoV1Model.fromJson(Map<String, dynamic>? data) {
@@ -155,8 +169,6 @@ class PedidoV1Model {
         modeloInferior: mi,
         modeloCompactado: mc,
         usuario: UsuarioV1Model.fromJson(data['usuario'] ?? Map()),
-        enderecoEntrega:
-            EnderecoModel.fromJson(data['endereco_entrega'] ?? Map()),
         statusPedido:
             StatusPedidoV1Model.fromJson(data['status_pedido'] ?? Map()),
         createdAt: data['created_at'],
@@ -165,6 +177,14 @@ class PedidoV1Model {
         alteracaoTexto: data['alteracao_texto'] ?? '',
         alteracaoData: data['alteracao_data'] ?? '',
         novaAtualizacao: data['nova_atualizacao'] ?? false,
+        bairro: data['bairro'] ?? '',
+        cidade: data['cidade'] ?? '',
+        complemento: data['complemento'] ?? '',
+        endereco: data['endereco'] ?? '',
+        uf: data['uf'] ?? '',
+        pais: data['pais'] ?? '',
+        numero: data['numero'] ?? '',
+        cep: data['cep'] ?? '',
       );
     } catch (e) {
       print(e);
@@ -198,7 +218,6 @@ class PedidoV1Model {
         modeloInferior: [],
         modeloCompactado: [],
         usuario: UsuarioV1Model.fromJson(Map()),
-        enderecoEntrega: EnderecoModel.fromJson(Map()),
         statusPedido: StatusPedidoV1Model.fromJson(Map()),
         createdAt: '',
         updatedAt: '',
@@ -206,6 +225,14 @@ class PedidoV1Model {
         alteracaoTexto: '',
         alteracaoData: '',
         novaAtualizacao: false,
+        bairro: '',
+        cidade: '',
+        complemento: '',
+        endereco: '',
+        uf: '',
+        pais: '',
+        numero: '',
+        cep: '',
       );
     }
   }
@@ -263,12 +290,19 @@ class PedidoV1Model {
       'modelo_inferior': mi,
       'modelo_compactado': mc,
       'usuario': usuario?.toJson() ?? '',
-      'endereco_entrega': enderecoEntrega?.toJson() ?? '',
       'status_pedido': statusPedido?.toJson() ?? '',
       'created_at': createdAt,
       'updated_at': updatedAt,
       'payload': payload,
       'id_ped_original': idPedOriginal,
+      'bairro': bairro,
+      'cidade': cidade,
+      'complemento': complemento,
+      'endereco': endereco,
+      'estado': uf,
+      'pais': pais,
+      'numero': numero,
+      'cep': cep,
     };
   }
 }

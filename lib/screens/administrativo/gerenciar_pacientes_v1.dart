@@ -844,9 +844,11 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
             _selectedCountryFilter,
       );
 
-      setState(() {
-        isfetchPedidos = false;
-      });
+      if (this.mounted) {
+        setState(() {
+          isfetchPedidos = false;
+        });
+      }
     }
   }
 

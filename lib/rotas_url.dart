@@ -4,7 +4,7 @@ class RotasUrl {
   //static const rotaBase = 'http://localhost:1337/';
 
   // ------------------- BASE ROUTE -----------------------
-  static const rotaBase = 'http://localhost:1337/';
+  static const rotaBase = 'https://digital-aligner-strapi.herokuapp.com/';
   //LOGIN ROUTE
   static const rotaLogin = rotaBase + 'auth/local/';
 

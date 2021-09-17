@@ -182,6 +182,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
 
   bool firstRun = true;
 
+  bool _fetchingEnderecos = true;
+
   ScreenArguments _args = ScreenArguments();
 
   // OBS: FOR UPDATE PEDIDO, FILE UPLOAD WIDGET
@@ -215,7 +217,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         opcAlivioAlin: _opcBracoForca.text,
         modeloGesso: modeloEmGesso,
         linkModelos: _linkDocumentacao.text,
-        enderecoEntrega: enderecoSelecionado,
         usuario: UsuarioV1Model(
           id: _authStore!.id,
           nome: _authStore!.name,
@@ -225,6 +226,14 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         statusPedido: StatusPedidoV1Model(id: statusPedido),
         pedidoRefinamento: _isPedidoRefinamento,
         payload: _payload,
+        endereco: enderecoSelecionado.endereco,
+        bairro: enderecoSelecionado.bairro,
+        cidade: enderecoSelecionado.cidade,
+        complemento: enderecoSelecionado.complemento,
+        uf: enderecoSelecionado.uf,
+        pais: enderecoSelecionado.pais,
+        numero: enderecoSelecionado.numero,
+        cep: enderecoSelecionado.cep,
       );
 
       return p;
@@ -293,68 +302,112 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     super.dispose();
   }
 
+  int score = 0;
+
+  bool _checkFieldsBeforeSend() {
+    if (_nomePacContr.text.isEmpty) return false;
+    if (_dataNascContr.text.isEmpty) return false;
+    if (_tratarContr.text.isEmpty) return false;
+    if (_queixaPrincipal.text.isEmpty) return false;
+    if (_objContr.text.isEmpty) return false;
+    if (_linhaMediaSupContr.text.isEmpty) return false;
+    if (_linhaMediaInfContr.text.isEmpty) return false;
+    if (_overbiteContr.text.isEmpty) return false;
+    if (_overJetContr.text.isEmpty) return false;
+    return true;
+  }
+
   Widget _nomePaciente() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      child: TextFormField(
-        maxLength: 60,
-        enabled: _nomePacienteEnabled,
-        validator: (String? value) {
-          return value == null || value.isEmpty ? 'Campo vazio' : null;
-        },
-        initialValue: _nomePacContr.text,
-        onSaved: (value) {
-          _nomePacContr.text = value ?? '';
-        },
-        onChanged: (value) {
-          _nomePacContr.text = value;
-        },
-        decoration: const InputDecoration(
-          border: const OutlineInputBorder(),
-          counterText: '',
-          labelText: 'Nome do Paciente *',
-        ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          TextFormField(
+            maxLength: 60,
+            enabled: _nomePacienteEnabled,
+            validator: (String? value) {
+              return value == null || value.isEmpty ? 'Campo vazio' : null;
+            },
+            initialValue: _nomePacContr.text,
+            onSaved: (value) {
+              _nomePacContr.text = value ?? '';
+            },
+            onChanged: (value) {
+              setState(() {
+                _nomePacContr.text = value;
+              });
+            },
+            decoration: const InputDecoration(
+              border: const OutlineInputBorder(),
+              counterText: '',
+              labelText: 'Nome do paciente',
+            ),
+          ),
+          Positioned(
+            left: -15,
+            child: _checkValueReturnIcon(_nomePacContr.text.isNotEmpty),
+          ),
+        ],
       ),
     );
+  }
+
+  Widget _checkValueReturnIcon(bool value) {
+    if (!value)
+      return Icon(Icons.error, color: Colors.yellow[800]);
+    else
+      return Icon(Icons.check_circle, color: Colors.blue);
   }
 
   Widget _dataNascimento() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      child: DateTimeField(
-        enabled: _dataNascimentoEnabled,
-        initialValue: DateTime.tryParse(_dataNascContr.text),
-        onSaved: (DateTime? value) {
-          _dataNascContr.text = value.toString();
-        },
-        onChanged: (value) {
-          if (value != null) {
-            _dataNascContr.text = value.toString();
-          }
-        },
-        validator: (value) {
-          if (value == null) {
-            return 'Por favor insira sua data de nascimento';
-          }
-          return null;
-        },
-        decoration: const InputDecoration(
-          labelText: 'Data de Nascimento: *',
-          border: const OutlineInputBorder(),
-        ),
-        format: DateFormat('dd/MM/yyyy'),
-        onShowPicker: (context, currentValue) {
-          return showDatePicker(
-              //initialEntryMode: DatePickerEntryMode.input,
-              fieldHintText: 'formato: xx/xx/xxxx',
-              locale: Localizations.localeOf(context),
-              errorFormatText: 'Escolha data válida',
-              errorInvalidText: 'Data invalida',
-              context: context,
-              firstDate: DateTime(1900),
-              initialDate: currentValue ?? DateTime.now(),
-              lastDate: DateTime(2100));
-        },
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          DateTimeField(
+            enabled: _dataNascimentoEnabled,
+            initialValue: DateTime.tryParse(_dataNascContr.text),
+            onSaved: (DateTime? value) {
+              _dataNascContr.text = value.toString();
+            },
+            onChanged: (value) {
+              if (value != null) {
+                setState(() {
+                  _dataNascContr.text = value.toString();
+                });
+              }
+            },
+            validator: (value) {
+              if (value == null) {
+                return 'Por favor insira sua data de nascimento';
+              }
+              return null;
+            },
+            decoration: const InputDecoration(
+              labelText: 'Data de nascimento',
+              border: const OutlineInputBorder(),
+            ),
+            format: DateFormat('dd/MM/yyyy'),
+            onShowPicker: (context, currentValue) {
+              return showDatePicker(
+                  //initialEntryMode: DatePickerEntryMode.input,
+                  fieldHintText: 'formato: xx/xx/xxxx',
+                  locale: Localizations.localeOf(context),
+                  errorFormatText: 'Escolha data válida',
+                  errorInvalidText: 'Data invalida',
+                  context: context,
+                  firstDate: DateTime(1900),
+                  initialDate: currentValue ?? DateTime.now(),
+                  lastDate: DateTime(2100));
+            },
+          ),
+          Positioned(
+            left: -15,
+            child: _checkValueReturnIcon(_dataNascContr.text.isNotEmpty),
+          ),
+        ],
       ),
     );
   }
@@ -364,11 +417,20 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Column(
         children: <Widget>[
-          Text(
-            'Tratar:*',
-            style: TextStyle(
-              fontSize: textSize,
-            ),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Text(
+                'Tratar',
+                style: TextStyle(
+                  fontSize: textSize,
+                ),
+              ),
+              Positioned(
+                left: -25,
+                child: _checkValueReturnIcon(_tratarContr.text.isNotEmpty),
+              ),
+            ],
           ),
           Flexible(
             fit: FlexFit.loose,
@@ -420,27 +482,38 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   Widget _queixaPrinc() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      child: TextFormField(
-        initialValue: _queixaPrincipal.text,
-        maxLines: 7,
-        maxLength: 755,
-        enabled: true,
-        validator: (String? value) {
-          return value == null || value.isEmpty ? 'Campo vazio' : null;
-        },
-        //initialValue: _nomePacContr.text,
-        onSaved: (value) {
-          _queixaPrincipal.text = value ?? '';
-        },
-        onChanged: (value) {
-          _queixaPrincipal.text = value;
-        },
-        decoration: const InputDecoration(
-          hintText: 'Por favor descreva a queixa principal do paciente',
-          border: const OutlineInputBorder(),
-          counterText: '',
-          labelText: 'Queixa principal: *',
-        ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          TextFormField(
+            initialValue: _queixaPrincipal.text,
+            maxLines: 7,
+            maxLength: 755,
+            enabled: true,
+            validator: (String? value) {
+              return value == null || value.isEmpty ? 'Campo vazio' : null;
+            },
+            //initialValue: _nomePacContr.text,
+            onSaved: (value) {
+              _queixaPrincipal.text = value ?? '';
+            },
+            onChanged: (value) {
+              setState(() {
+                _queixaPrincipal.text = value;
+              });
+            },
+            decoration: const InputDecoration(
+              hintText: 'Por favor descreva a queixa principal do paciente',
+              border: const OutlineInputBorder(),
+              counterText: '',
+              labelText: 'Queixa principal',
+            ),
+          ),
+          Positioned(
+            left: -15,
+            child: _checkValueReturnIcon(_queixaPrincipal.text.isNotEmpty),
+          ),
+        ],
       ),
     );
   }
@@ -461,28 +534,39 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   Widget _objetivosTratamento() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      child: TextFormField(
-        initialValue: _objContr.text,
-        maxLines: 7,
-        maxLength: 755,
-        enabled: true,
-        validator: (String? value) {
-          return value == null || value.isEmpty ? 'Campo vazio' : null;
-        },
-        //initialValue: _nomePacContr.text,
-        onSaved: (value) {
-          _objContr.text = value ?? '';
-        },
-        onChanged: (value) {
-          _objContr.text = value;
-        },
-        decoration: const InputDecoration(
-          hintText:
-              'Por favor descreva os seus objetivos de tratamento em cada uma das seguintes dimensões: \n\n• SAGITAL \n• TRANSVERSAL \n• VERTICAL \n• DENTES',
-          border: const OutlineInputBorder(),
-          counterText: '',
-          labelText: 'Objetivos do tratamento: *',
-        ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          TextFormField(
+            initialValue: _objContr.text,
+            maxLines: 7,
+            maxLength: 755,
+            enabled: true,
+            validator: (String? value) {
+              return value == null || value.isEmpty ? 'Campo vazio' : null;
+            },
+            //initialValue: _nomePacContr.text,
+            onSaved: (value) {
+              _objContr.text = value ?? '';
+            },
+            onChanged: (value) {
+              setState(() {
+                _objContr.text = value;
+              });
+            },
+            decoration: const InputDecoration(
+              hintText:
+                  'Por favor descreva os seus objetivos de tratamento em cada uma das seguintes dimensões: \n\n• SAGITAL \n• TRANSVERSAL \n• VERTICAL \n• DENTES',
+              border: const OutlineInputBorder(),
+              counterText: '',
+              labelText: 'Objetivos do tratamento',
+            ),
+          ),
+          Positioned(
+            left: -15,
+            child: _checkValueReturnIcon(_objContr.text.isNotEmpty),
+          ),
+        ],
       ),
     );
   }
@@ -492,11 +576,21 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
         children: <Widget>[
-          Text(
-            'Linha média superior: *',
-            style: TextStyle(
-              fontSize: textSize,
-            ),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Text(
+                'Linha média superior',
+                style: TextStyle(
+                  fontSize: textSize,
+                ),
+              ),
+              Positioned(
+                left: -25,
+                child:
+                    _checkValueReturnIcon(_linhaMediaSupContr.text.isNotEmpty),
+              ),
+            ],
           ),
           RadioListTile<String>(
             activeColor: DefaultColors.digitalAlignBlue,
@@ -632,11 +726,21 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
         children: <Widget>[
-          Text(
-            'Linha média inferior: *',
-            style: TextStyle(
-              fontSize: textSize,
-            ),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Text(
+                'Linha média inferior',
+                style: TextStyle(
+                  fontSize: textSize,
+                ),
+              ),
+              Positioned(
+                left: -25,
+                child:
+                    _checkValueReturnIcon(_linhaMediaInfContr.text.isNotEmpty),
+              ),
+            ],
           ),
           RadioListTile<String>(
             activeColor: DefaultColors.digitalAlignBlue,
@@ -767,11 +871,20 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
         children: <Widget>[
-          Text(
-            'Overjet: *',
-            style: TextStyle(
-              fontSize: textSize,
-            ),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Text(
+                'Overjet',
+                style: TextStyle(
+                  fontSize: textSize,
+                ),
+              ),
+              Positioned(
+                left: -25,
+                child: _checkValueReturnIcon(_overJetContr.text.isNotEmpty),
+              ),
+            ],
           ),
           RadioListTile<String>(
             activeColor: DefaultColors.digitalAlignBlue,
@@ -816,11 +929,20 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
         children: <Widget>[
-          Text(
-            'Overbite: *',
-            style: TextStyle(
-              fontSize: textSize,
-            ),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Text(
+                'Overbite',
+                style: TextStyle(
+                  fontSize: textSize,
+                ),
+              ),
+              Positioned(
+                left: -25,
+                child: _checkValueReturnIcon(_overbiteContr.text.isNotEmpty),
+              ),
+            ],
           ),
           RadioListTile<String>(
             activeColor: DefaultColors.digitalAlignBlue,
@@ -1081,7 +1203,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           SizedBox(
             width: 390,
             child: Text(
-              'Superior: *',
+              'Superior',
               style: TextStyle(
                 fontSize: textSize,
               ),
@@ -1125,7 +1247,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           SizedBox(
             width: 390,
             child: Text(
-              'Inferior: *',
+              'Inferior',
               style: TextStyle(
                 fontSize: textSize,
               ),
@@ -1985,7 +2107,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                 ),
                 border: const OutlineInputBorder(),
                 counterText: '',
-                labelText: 'Link *',
+                labelText: 'Link',
               ),
             ),
           ),
@@ -2192,7 +2314,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             endIndent: 20,
           ),
           _selecioneEnderecoTexto(),
-          _enderecoSelection(),
+          _buildEndereco(),
           const SizedBox(
             height: 60,
           ),
@@ -2214,6 +2336,199 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             height: 20,
           ),
           _sendButton(),
+          const SizedBox(
+            height: 100,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _form2() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: <Widget>[
+          if (_authStore!.roleId != 1) _statusSelection(),
+          Wrap(
+            direction: Axis.horizontal,
+            spacing: 10,
+            children: [
+              Card(
+                elevation: 10,
+                margin: EdgeInsets.all(10),
+                child: SizedBox(
+                  width: 500,
+                  height: 200,
+                  child: Column(
+                    children: [
+                      _nomePaciente(),
+                      _dataNascimento(),
+                    ],
+                  ),
+                ),
+              ),
+              Card(
+                elevation: 10,
+                child: SizedBox(
+                  width: 500,
+                  height: 200,
+                  child: _tratar(),
+                ),
+              ),
+            ],
+          ),
+          Wrap(
+            direction: Axis.horizontal,
+            spacing: 10,
+            children: [
+              Card(
+                elevation: 10,
+                child: SizedBox(
+                  width: 500,
+                  height: 200,
+                  child: _queixaPrinc(),
+                ),
+              ),
+              Card(
+                elevation: 10,
+                child: SizedBox(
+                  width: 500,
+                  height: 200,
+                  child: _objetivosTratamento(),
+                ),
+              ),
+            ],
+          ),
+          Wrap(
+            direction: Axis.horizontal,
+            spacing: 10,
+            children: [
+              Card(
+                elevation: 10,
+                child: SizedBox(
+                  width: 500,
+                  height: 210,
+                  child: _linhaMediSuperior(),
+                ),
+              ),
+              Card(
+                elevation: 10,
+                child: SizedBox(
+                  width: 500,
+                  height: 210,
+                  child: _linhaMediInferior(),
+                ),
+              ),
+              Card(
+                elevation: 10,
+                child: SizedBox(
+                  width: 500,
+                  height: 340,
+                  child: _overBite(),
+                ),
+              ),
+              Card(
+                elevation: 10,
+                child: SizedBox(
+                  width: 500,
+                  height: 210,
+                  child: _overJet(),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 60,
+          ),
+          const Divider(
+            height: 20,
+            thickness: 2,
+            indent: 20,
+            endIndent: 20,
+          ),
+          _textoResApin(),
+          _resApinhSup(),
+          _resApinhInf(),
+          const SizedBox(
+            height: 60,
+          ),
+          const Divider(
+            height: 20,
+            thickness: 2,
+            indent: 20,
+            endIndent: 20,
+          ),
+          _extraVirtDentesTexto(),
+          _extraVirtDentes(),
+          _naoMovElemTexto(),
+          _naoMovElem(),
+          _naoColocarAttachTexto(),
+          _naoColocarAttach(),
+          const SizedBox(
+            height: 60,
+          ),
+          const Divider(
+            height: 20,
+            thickness: 2,
+            indent: 20,
+            endIndent: 20,
+          ),
+          _opcionaisTexto(),
+          _opcionais(),
+          const SizedBox(
+            height: 60,
+          ),
+          const Divider(
+            height: 20,
+            thickness: 2,
+            indent: 20,
+            endIndent: 20,
+          ),
+          _selecioneEnderecoTexto(),
+          _buildEndereco(),
+          const SizedBox(
+            height: 60,
+          ),
+          const Divider(
+            height: 20,
+            thickness: 2,
+            indent: 20,
+            endIndent: 20,
+          ),
+          const SizedBox(
+            height: 50,
+          ),
+          _linkDoc(),
+          const SizedBox(
+            height: 50,
+          ),
+          _atualizarPedidoButton(),
+          const SizedBox(
+            height: 60,
+          ),
+          const Divider(
+            height: 20,
+            thickness: 2,
+            indent: 20,
+            endIndent: 20,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Text(
+              'Gerenciar arquivos',
+              style: Theme.of(context).textTheme.headline2,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Text(
+              'Atualize seus arquivos abaixo. Obs: Ao deletar, será necessário confirmação.',
+              style: Theme.of(context).textTheme.headline2,
+            ),
+          ),
+          _fotoRadioWrap(),
+          _modelosWrap(),
           const SizedBox(
             height: 100,
           ),
@@ -2261,7 +2576,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
 
   Widget _fotoRadioWrap() {
     return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
       alignment: WrapAlignment.center,
       spacing: 40,
       runSpacing: 40,
@@ -2274,7 +2588,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
 
   Widget _modelosWrap() {
     return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
       alignment: WrapAlignment.center,
       spacing: 40,
       runSpacing: 40,
@@ -2286,7 +2599,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   }
 
   //for editing pedido
-  Widget _form2() {
+  Widget _form21() {
     return Form(
       key: _formKey,
       child: Column(
@@ -2401,7 +2714,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
           _opcionaisTexto(),
           _opcionais(),
           _selecioneEnderecoTexto(),
-          _enderecoSelection(),
+          _buildEndereco(),
           _linkDoc(),
           const SizedBox(
             height: 40,
@@ -2474,6 +2787,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     );
     try {
       List<dynamic> _enderecos = json.decode(response.body);
+
       if (_enderecos[0].containsKey('endereco')) {
         eModel = [];
         _enderecos.forEach((e) {
@@ -2491,9 +2805,28 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             ),
           );
         });
+        if (_fetchingEnderecos) {
+          enderecoSelecionado = EnderecoModel(
+            id: eModel[0].id,
+            bairro: eModel[0].bairro,
+            cep: eModel[0].bairro,
+            cidade: eModel[0].cidade,
+            complemento: eModel[0].complemento,
+            endereco: eModel[0].endereco,
+            numero: eModel[0].numero,
+            pais: eModel[0].pais,
+            uf: eModel[0].uf,
+          );
+        }
+        setState(() {
+          _fetchingEnderecos = false;
+        });
         return eModel;
       }
     } catch (e) {
+      setState(() {
+        _fetchingEnderecos = false;
+      });
       print(e);
       return [];
     }
@@ -2526,6 +2859,15 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       return [];
     }
     return [];
+  }
+
+  //TODO: refactor previous Dropdown get enderecos methods in widget.
+  Widget _buildEndereco() {
+    if (_fetchingEnderecos) {
+      return CircularProgressIndicator();
+    } else {
+      return _enderecoSelection();
+    }
   }
 
   Widget _enderecoSelection() {
@@ -2675,96 +3017,110 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   Widget _statusSelection() {
     return Column(
       children: [
-        DropdownSearch<StatusPedidoV1Model>(
-          scrollbarProps: ScrollbarProps(isAlwaysShown: true),
-          /*
-          validator: (value) {
-            if (value == null) {
-              return 'Por favor escolha status';
-            }
-            return null;
-          },*/
-
-          dropdownBuilder: (buildContext, string, string2) {
-            if (_isEditarPedidoCheck()) {
-              return Text(_selectedStatus.status);
-            }
-            if (sModel.length == 0) {
-              return Text('Sem status');
-            }
-            return Text(_selectedStatus.status);
-          },
-          dropdownSearchDecoration: InputDecoration(
-            border: OutlineInputBorder(),
-            contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-          ),
-          emptyBuilder: (buildContext, string) {
-            return Center(child: Text('Sem dados'));
-          },
-          loadingBuilder: (buildContext, string) {
-            return Center(child: Text('Carregando...'));
-          },
-          errorBuilder: (buildContext, string, dynamic) {
-            return Center(child: Text('Erro'));
-          },
-          onFind: (string) async {
-            if (!_authStore!.isAuth) {
-              await Navigator.pushAndRemoveUntil<void>(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (BuildContext context) => LoginScreen(
-                    showLoginMessage: true,
-                  ),
-                ),
-                ModalRoute.withName('/'),
-              );
-            }
-            return _fetchStatus();
-          },
-          itemAsString: (StatusPedidoV1Model s) => s.status,
-          mode: Mode.MENU,
-          label: 'Selecione status: *',
-          onChanged: (StatusPedidoV1Model? selSt) async {
-            ScaffoldMessenger.of(context).removeCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                duration: const Duration(seconds: 2),
-                content: Text(
-                  'Atualizando status do pedido...',
-                  textAlign: TextAlign.center,
-                ),
+        SizedBox(
+          width: 400,
+          child: DropdownSearch<StatusPedidoV1Model>(
+            searchBoxDecoration: InputDecoration(
+              isDense: true,
+              contentPadding: EdgeInsets.symmetric(
+                vertical: 14,
+                horizontal: 14,
               ),
-            );
-            bool result =
-                await _atualizarStatusPedido(selSt ?? StatusPedidoV1Model());
-            if (result) {
+            ),
+            dropdownSearchDecoration: InputDecoration(
+              contentPadding: EdgeInsets.symmetric(
+                vertical: 4,
+                horizontal: 16,
+              ),
+              isDense: true,
+            ),
+            scrollbarProps: ScrollbarProps(isAlwaysShown: true),
+            /*
+            validator: (value) {
+              if (value == null) {
+                return 'Por favor escolha status';
+              }
+              return null;
+            },*/
+
+            dropdownBuilder: (buildContext, string, string2) {
+              if (_isEditarPedidoCheck()) {
+                return Text(_selectedStatus.status);
+              }
+              if (sModel.length == 0) {
+                return Text('Sem status');
+              }
+              return Text(_selectedStatus.status);
+            },
+            emptyBuilder: (buildContext, string) {
+              return Center(child: Text('Sem dados'));
+            },
+            loadingBuilder: (buildContext, string) {
+              return Center(child: Text('Carregando...'));
+            },
+            errorBuilder: (buildContext, string, dynamic) {
+              return Center(child: Text('Erro'));
+            },
+            onFind: (string) async {
+              if (!_authStore!.isAuth) {
+                await Navigator.pushAndRemoveUntil<void>(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (BuildContext context) => LoginScreen(
+                      showLoginMessage: true,
+                    ),
+                  ),
+                  ModalRoute.withName('/'),
+                );
+              }
+              return _fetchStatus();
+            },
+            itemAsString: (StatusPedidoV1Model s) => s.status,
+            mode: Mode.MENU,
+            label: 'Selecione status: *',
+            onChanged: (StatusPedidoV1Model? selSt) async {
               ScaffoldMessenger.of(context).removeCurrentSnackBar();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   duration: const Duration(seconds: 2),
                   content: Text(
-                    'Status do pedido atualizado!',
+                    'Atualizando status do pedido...',
                     textAlign: TextAlign.center,
                   ),
                 ),
               );
-              setState(() {
-                _selectedStatus = selSt ?? StatusPedidoV1Model();
-              });
-            } else {
-              ScaffoldMessenger.of(context).removeCurrentSnackBar();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  duration: const Duration(seconds: 2),
-                  content: Text(
-                    'Não foi possível atualizar.',
-                    textAlign: TextAlign.center,
+              bool result =
+                  await _atualizarStatusPedido(selSt ?? StatusPedidoV1Model());
+              if (result) {
+                ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    duration: const Duration(seconds: 2),
+                    content: Text(
+                      'Status do pedido atualizado!',
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                ),
-              );
-            }
-          },
+                );
+                setState(() {
+                  _selectedStatus = selSt ?? StatusPedidoV1Model();
+                });
+              } else {
+                ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    duration: const Duration(seconds: 2),
+                    content: Text(
+                      'Não foi possível atualizar.',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
         ),
+        const SizedBox(height: 50),
       ],
     );
   }
@@ -2915,24 +3271,72 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     );
   }
 
+  bool _validationBeforeSend() {
+    if (_termosValidationAndTaxa()) return true;
+
+    return false;
+  }
+
+  bool _termosValidationAndTaxa() {
+    if (!_termosValue && !_taxaPlanejValue) {
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 5),
+          content: Text(
+            'Por favor aceite os termos e taxa de planejamento.',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+      return false;
+    } else if (_termosValue && !_taxaPlanejValue) {
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 5),
+          content: Text(
+            'Por favor aceite a taxa de planejamento.',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+      return false;
+    } else if (!_termosValue && _taxaPlanejValue) {
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 5),
+          content: Text(
+            'Por favor aceite os termos.',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+      return false;
+    }
+    return true;
+  }
+
   Widget _sendButton() {
     return CustomElevatedButton1(
       onPressed: isSending
           ? null
           : () async {
-              if (!_termosValue) {
+              if (!_checkFieldsBeforeSend()) {
                 ScaffoldMessenger.of(context).removeCurrentSnackBar();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     duration: const Duration(seconds: 5),
                     content: Text(
-                      'Por favor aceite os termos.',
+                      'Verifique os campos obrigatorios',
                       textAlign: TextAlign.center,
                     ),
                   ),
                 );
                 return;
               }
+              if (!_validationBeforeSend()) return;
 
               bool canSend = _canSendPedido();
               if (!canSend) return;
@@ -3001,7 +3405,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   }
 
   Widget _atualizarPedidoButton() {
-    return ElevatedButton(
+    return CustomElevatedButton1(
       onPressed: isSending
           ? null
           : () async {
@@ -3059,9 +3463,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
       } catch (e) {
         print(e);
       }
-      //if is new paciente, and not refinamento clear data
+
       if (_args.messageMap != null) {
         if (_args.messageMap!.containsKey('isRefinamento')) {
+          //if is new paciente, and not refinamento clear data
           if (_args.messageMap!['isRefinamento'] == false) {
             _pedidoStore!.clearDataAllProviderData();
             tipoPedido = 'pedido';
@@ -3075,12 +3480,16 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             tipoPedido = 'refinamento';
           }
         }
+
+        //TODO:refactor up to isRefinamento if statement
         if (_args.messageMap!.containsKey('nomePaciente')) {
           _nomePacContr.text = _args.messageMap!['nomePaciente'];
           _dataNascContr.text = _args.messageMap!['dataNascimento'];
         }
+
         if (_args.messageMap!.containsKey('isEditarPaciente')) {
           if (_args.messageMap!['isEditarPaciente']) {
+            _fetchingEnderecos = false;
             try {
               var p = _pedidoStore!.getPedido(position: _args.messageInt);
               _id = p.id;
@@ -3199,7 +3608,17 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                 _opcBracoForcaMm = true;
               }
               //endereco
-              enderecoSelecionado = p.enderecoEntrega ?? EnderecoModel();
+              enderecoSelecionado = EnderecoModel(
+                endereco: p.endereco,
+                bairro: p.bairro,
+                cep: p.cep,
+                cidade: p.cidade,
+                complemento: p.complemento,
+                numero: p.numero,
+                pais: p.pais,
+                uf: p.uf,
+              );
+
               //modelo tipo selecionado
               modeloEmGesso = p.modeloGesso;
               //link documentação
@@ -3211,6 +3630,8 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             //---
             _isEditarPedido = true;
             _isEditarPedidoPos = _args.messageInt;
+          } else {
+            _fetchUserEndereco();
           }
         }
       }

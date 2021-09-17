@@ -1091,7 +1091,7 @@ class _EditarCadastroState extends State<EditarCadastro> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 duration: const Duration(seconds: 3),
-                                content: Text('Erro ao atualizar cadastro'),
+                                content: Text('Email já cadastrado'),
                               ),
                             );
                           } else {

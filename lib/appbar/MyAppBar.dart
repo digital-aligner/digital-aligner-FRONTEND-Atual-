@@ -67,8 +67,8 @@ class _MyAppBarState extends State<MyAppBar> {
               if (authStore!.role == 'Credenciado') const SizedBox(width: 30),
               if (authStore!.role == 'Credenciado') _navNovoPaciente(context),
               const SizedBox(width: 30),
-              _mentoriaBrasil(context),
-              const SizedBox(width: 30),
+              //_mentoriaBrasil(context),
+              //const SizedBox(width: 30),
               _mentoriaPortugal(context),
               const SizedBox(width: 30),
               _sair(context, authStore!),
@@ -435,7 +435,11 @@ class _MyAppBarState extends State<MyAppBar> {
 
   Widget _whatsapp(context) {
     return TextButton.icon(
-      onPressed: () {},
+      onPressed: () {
+        html.window.open(
+            'https://api.whatsapp.com/send?phone=5581992777557&text=Ol%C3%A1,%20preciso%20de%20ajuda%20com%20o%20site%20do%20Digital%20Aligner...',
+            "_blank");
+      },
       icon: const Icon(Icons.send_to_mobile),
       label: const Text(''),
       style: ButtonStyle(
@@ -455,7 +459,9 @@ class _MyAppBarState extends State<MyAppBar> {
 
   Widget _phone(context) {
     return TextButton.icon(
-      onPressed: () {},
+      onPressed: () {
+        html.window.open('tel:+5581992777557', "_blank");
+      },
       icon: const Icon(Icons.phone),
       label: const Text(''),
       style: ButtonStyle(
@@ -475,7 +481,9 @@ class _MyAppBarState extends State<MyAppBar> {
 
   Widget _mail(context) {
     return TextButton.icon(
-      onPressed: () {},
+      onPressed: () {
+        html.window.open('mailto:contato@digitalaligner.com.br', "_blank");
+      },
       icon: const Icon(Icons.mail),
       label: const Text(''),
       style: ButtonStyle(

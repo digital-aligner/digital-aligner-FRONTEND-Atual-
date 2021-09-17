@@ -179,7 +179,7 @@ class _EnderecoState extends State<Endereco> {
   }
 
   Future<bool> _sendEndereco() async {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState?.validate() ?? false) {
       _formKey.currentState!.save();
 
       //create model and convert to map
@@ -236,7 +236,7 @@ class _EnderecoState extends State<Endereco> {
   }
 
   Future<bool> _atualizarEndereco() async {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState?.validate() ?? false) {
       _formKey.currentState!.save();
 
       //create model and convert to map
@@ -372,52 +372,55 @@ class _EnderecoState extends State<Endereco> {
   }
 
   Widget _selecioneEnderecoField() {
-    return DropdownSearch<EnderecoModel>(
-      searchBoxDecoration: InputDecoration(
-        isDense: true,
-        contentPadding: EdgeInsets.symmetric(
-          vertical: 14,
-          horizontal: 14,
+    return SizedBox(
+      width: 400,
+      child: DropdownSearch<EnderecoModel>(
+        searchBoxDecoration: InputDecoration(
+          isDense: true,
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 14,
+            horizontal: 14,
+          ),
         ),
-      ),
-      dropdownSearchDecoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(
-          vertical: 4,
-          horizontal: 16,
+        dropdownSearchDecoration: InputDecoration(
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 4,
+            horizontal: 16,
+          ),
+          isDense: true,
         ),
-        isDense: true,
+        dropdownBuilder: (buildContext, string, string2) {
+          return Text(_endSelecionadoController.text);
+        },
+        emptyBuilder: (buildContext, string) {
+          return Center(child: Text('Sem dados'));
+        },
+        loadingBuilder: (buildContext, string) {
+          return Center(child: Text('Carregando...'));
+        },
+        errorBuilder: (buildContext, string, dynamic) {
+          return Center(child: Text('Erro'));
+        },
+        onFind: (string) => _fetchUserEndereco(),
+        itemAsString: (EnderecoModel e) => e.endereco,
+        mode: Mode.MENU,
+        label: 'Selecione endereço',
+        onChanged: (EnderecoModel? selectedEnd) {
+          _endSelecionadoController.text = selectedEnd!.endereco;
+          setState(() {
+            _endId = selectedEnd.id;
+            _novoEndereco = false;
+          });
+          _bairroController.text = selectedEnd.bairro;
+          _cidadeController.text = selectedEnd.cidade;
+          _complementoController.text = selectedEnd.complemento;
+          _enderecoController.text = selectedEnd.endereco;
+          _ufController.text = selectedEnd.uf;
+          _paisController.text = selectedEnd.pais;
+          _numeroController.text = selectedEnd.numero;
+          _cepController.text = selectedEnd.cep;
+        },
       ),
-      dropdownBuilder: (buildContext, string, string2) {
-        return Text(_endSelecionadoController.text);
-      },
-      emptyBuilder: (buildContext, string) {
-        return Center(child: Text('Sem dados'));
-      },
-      loadingBuilder: (buildContext, string) {
-        return Center(child: Text('Carregando...'));
-      },
-      errorBuilder: (buildContext, string, dynamic) {
-        return Center(child: Text('Erro'));
-      },
-      onFind: (string) => _fetchUserEndereco(),
-      itemAsString: (EnderecoModel e) => e.endereco,
-      mode: Mode.MENU,
-      label: 'Selecione endereço',
-      onChanged: (EnderecoModel? selectedEnd) {
-        _endSelecionadoController.text = selectedEnd!.endereco;
-        setState(() {
-          _endId = selectedEnd.id;
-          _novoEndereco = false;
-        });
-        _bairroController.text = selectedEnd.bairro;
-        _cidadeController.text = selectedEnd.cidade;
-        _complementoController.text = selectedEnd.complemento;
-        _enderecoController.text = selectedEnd.endereco;
-        _ufController.text = selectedEnd.uf;
-        _paisController.text = selectedEnd.pais;
-        _numeroController.text = selectedEnd.numero;
-        _cepController.text = selectedEnd.cep;
-      },
     );
   }
 
@@ -730,18 +733,24 @@ class _EnderecoState extends State<Endereco> {
   }
 
   Widget _type1Form() {
-    return enderecoGrid();
+    return Form(
+      key: _formKey,
+      child: enderecoGrid(),
+    );
   }
 
   Widget _type2Form() {
-    return Column(
-      children: [
-        _selecioneEnderecoField(),
-        const SizedBox(height: 20),
-        enderecoGrid(),
-        const SizedBox(height: 20),
-        _manageEndBtns(),
-      ],
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          _selecioneEnderecoField(),
+          const SizedBox(height: 20),
+          enderecoGrid(),
+          const SizedBox(height: 20),
+          _manageEndBtns(),
+        ],
+      ),
     );
   }
 

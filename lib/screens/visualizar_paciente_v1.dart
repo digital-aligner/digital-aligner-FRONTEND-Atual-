@@ -309,10 +309,10 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TextButton(
+                    /*TextButton(
                       onPressed: () {},
                       child: Text('editar paciente'),
-                    ),
+                    ),*/
                     TextButton(
                       onPressed: _checkIfUserIsSame()
                           ? () {
@@ -1785,7 +1785,9 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
               typeName: 'Baixar inferior',
             ),
           ),
-        if (_screenSize!.width > 1115)
+        if (_screenSize!.width > 1115 &&
+            (_pedidoView.modeloSuperior.isNotEmpty ||
+                _pedidoView.modeloInferior.isNotEmpty))
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20),
             child: ElevatedButton(
@@ -1807,35 +1809,37 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
             padding: const EdgeInsets.symmetric(vertical: 20),
             child: Column(
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => VisualizarModeloSupV1(
-                          key1: key1,
+                if (_pedidoView.modeloSuperior.isNotEmpty)
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VisualizarModeloSupV1(
+                            key1: key1,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  child: const Text('Modelo Superior'),
-                ),
+                      );
+                    },
+                    child: const Text('Modelo Superior'),
+                  ),
                 const SizedBox(
                   height: 20,
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => VisualizarModeloInfV1(
-                          key1: key2,
+                if (_pedidoView.modeloInferior.isNotEmpty)
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VisualizarModeloInfV1(
+                            key1: key2,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  child: const Text('Modelo Inferior'),
-                ),
+                      );
+                    },
+                    child: const Text('Modelo Inferior'),
+                  ),
               ],
             ),
           ),
