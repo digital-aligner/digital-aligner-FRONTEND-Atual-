@@ -236,6 +236,7 @@ class PedidoProvider with ChangeNotifier {
         if (_pedidos[0].containsKey('id')) {
           _pedidos.forEach((p) {
             _pedidosV1List.add(PedidoV1Model.fromJson(p));
+            print(_pedidosV1List.last.id);
           });
           return true;
         } else {

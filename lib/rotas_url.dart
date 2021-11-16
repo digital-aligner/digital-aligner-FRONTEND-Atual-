@@ -1,10 +1,10 @@
 class RotasUrl {
   // --------------- ROUTES DEV AND PRODUCTION --------------
-  //static const rotaHeroku = 'https://digital-aligner-strapi.herokuapp.com/';
-  //static const rotaBase = 'http://localhost:1337/';
+  static const rotaHeroku = 'https://digital-aligner-strapi.herokuapp.com/';
+  static const rotaLocalHost = 'http://localhost:1337/';
 
   // ------------------- BASE ROUTE -----------------------
-  static const rotaBase = 'https://digital-aligner-strapi.herokuapp.com/';
+  static const rotaBase = rotaHeroku;
   //LOGIN ROUTE
   static const rotaLogin = rotaBase + 'auth/local/';
 

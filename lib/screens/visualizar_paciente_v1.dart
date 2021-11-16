@@ -99,8 +99,10 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
       if (_historicos[0].containsKey('id')) {
         _historicoList = [];
         _historicos.forEach((h) {
+          print(h);
           _historicoList.add(HistoricoPacV1.fromJson(h));
         });
+
         return _historicoList;
       }
     } catch (e) {

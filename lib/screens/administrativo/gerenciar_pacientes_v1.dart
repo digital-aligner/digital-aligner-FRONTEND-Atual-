@@ -177,7 +177,8 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
           if (_authStore!.role == 'Administrador' ||
               _authStore!.role == 'Gerente')
             PopupMenuItem<String>(
-              enabled: _pedidoStore
+              enabled:
+                  /*_pedidoStore
                               ?.getPedido(position: position)
                               .statusPedido
                               ?.id ==
@@ -188,7 +189,8 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                               ?.id ==
                           7
                   ? false
-                  : true,
+                  :*/
+                  true,
               value: 'Criar relatório',
               child: const Text('Criar relatório'),
             ),
@@ -662,7 +664,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                             setState(() {
                               buscandoMaisPedidos = false;
                               pageQuant = pageQuant + 10;
-                              pageHeight = pageHeight + 600;
+                              pageHeight = pageHeight + 650;
                             });
                           } else {
                             ScaffoldMessenger.of(context)
