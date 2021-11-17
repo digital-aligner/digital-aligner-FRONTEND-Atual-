@@ -127,6 +127,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(
                     height: 10,
                   ),
+
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 20),
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _submit(_loginStore, context);
+                      },
+                      child: const Text(
+                        'Entrar',
+                        style: const TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -148,21 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                   ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 10),
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _submit(_loginStore, context);
-                      },
-                      child: const Text(
-                        'Entrar',
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
+
                   if (constraints.maxWidth > 768)
                     Expanded(
                       child: Container(),
