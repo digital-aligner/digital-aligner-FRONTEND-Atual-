@@ -571,7 +571,7 @@ packages:
       name: syncfusion_flutter_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "19.1.69"
+    version: "19.3.54"
   syncfusion_flutter_pdf:
     dependency: transitive
     description:
@@ -600,6 +600,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "19.1.69-beta"
+  syncfusion_flutter_xlsio:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_xlsio
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "19.3.54-beta"
+  syncfusion_officecore:
+    dependency: transitive
+    description:
+      name: syncfusion_officecore
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "19.3.54-beta"
   synchronized:
     dependency: transitive
     description:

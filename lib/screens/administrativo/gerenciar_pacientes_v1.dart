@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:digital_aligner_app/appbar/MyAppBar.dart';
 import 'package:digital_aligner_app/appbar/MyDrawer.dart';
 import 'package:digital_aligner_app/default_colors.dart';
@@ -17,6 +16,7 @@ import 'package:http/http.dart' as http;
 import '../../rotas_url.dart';
 import '../login_screen.dart';
 import '../visualizar_paciente_v1.dart';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xlsio;
 
 class GerenciarPacientesV1 extends StatefulWidget {
   static const routeName = '/gerenciar-pacientes-v1';
@@ -888,8 +888,29 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
           },
         ),
         const Text('pedidos Portugal'),
+        Container(
+          margin: EdgeInsets.only(left: 15),
+          child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+              ),
+              onPressed: exportaXls,
+              child: Container(
+                  margin: EdgeInsets.only(left: 10, right: 10),
+                  child: Text(
+                    "exportar arquivo Xls",
+                    style: TextStyle(color: Colors.white),
+                  ))),
+        ),
       ],
     );
+  }
+
+  Future<void> exportaXls() async {
+    final xlsio.Workbook xlsFile = xlsio.Workbook();
+    final List<int> file = xlsFile.saveAsStream();
+    xlsFile.dispose();
   }
 
   Widget _searchSwitchPedidoRef() {
