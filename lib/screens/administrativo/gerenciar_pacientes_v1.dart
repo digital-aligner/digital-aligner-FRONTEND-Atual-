@@ -146,7 +146,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   bool _isEnabledEdit(int position) {
     try {
       if (_pedidoStore!.getPedido(position: position).statusPedido!.id == 6)
-        return false;
+        return true;
 
       return true;
     } catch (e) {
