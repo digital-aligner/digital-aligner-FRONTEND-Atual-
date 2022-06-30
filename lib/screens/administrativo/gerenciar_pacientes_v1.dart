@@ -44,8 +44,12 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
 
   String _query = '';
   bool _filterByCountry = false;
-  String _selectedCountryFilter = 'Brasil';
-  final _filterByCountryValues = {'Brasil': 'Brasil', 'Portugal': 'Portugal'};
+  String _selectedCountryFilter = 'Todos';
+  final _filterByCountryValues = {
+    'Brasil': 'Brasil',
+    'Portugal': 'Portugal',
+    'Todos': 'Todos'
+  };
 
   //route arguments
   ScreenArguments _args = ScreenArguments();
@@ -449,6 +453,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
 
     for (int i = 0; i < p.length; i++) {
       if (selectedListItem.length != p.length) selectedListItem.add(false);
+      PedidoV1Model s = _pedidoStore!.getPedido(position: i);
       dr.add(
         DataRow(
           color: i.isOdd
@@ -458,6 +463,16 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                       //_showHoverDetails(p[i], Colors.grey.shade300);
                     }
 
+                    if (s.statusPedido?.id == 4) {
+                      return Color.fromRGBO(255, 245, 157, 1);
+                    } else if (s.statusPedido?.id == 1) {
+                      return Color.fromRGBO(207, 207, 207, 1);
+                    } else if (s.statusPedido?.id == 5) {
+                      return Color.fromRGBO(255, 255, 255, 1);
+                    } else if (s.statusPedido?.id == 6) {
+                      return Color.fromRGBO(165, 214, 167, 1);
+                    }
+
                     return Color.fromRGBO(128, 128, 128, 0.2);
                   },
                 )
@@ -465,6 +480,16 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                   (states) {
                     if (states.contains(MaterialState.hovered)) {
                       // _showHoverDetails(p[i], Colors.white);
+                    }
+
+                    if (s.statusPedido?.id == 4) {
+                      return Color.fromRGBO(255, 245, 157, 1);
+                    } else if (s.statusPedido?.id == 1) {
+                      return Color.fromRGBO(207, 207, 207, 1);
+                    } else if (s.statusPedido?.id == 5) {
+                      return Color.fromRGBO(255, 255, 255, 1);
+                    } else if (s.statusPedido?.id == 6) {
+                      return Color.fromRGBO(165, 214, 167, 1);
                     }
                     return Colors.white;
                   },
@@ -870,6 +895,46 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     }
   }
 
+// filtro de busca
+  Widget _dropDown() {
+    return DropdownButton<String>(
+      value: _selectedCountryFilter,
+      icon: const Icon(Icons.location_on),
+      elevation: 16,
+      style: const TextStyle(color: Colors.black),
+      underline: Container(
+        height: 2,
+        color: Colors.lightBlueAccent,
+      ),
+      onChanged: (
+        String? newValue,
+      ) {
+        setState(() {
+          _selectedCountryFilter = newValue!;
+        });
+      },
+      items: <String>['Todos', 'Brasil', 'Portugal']
+          .map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+          onTap: () {
+            setState(() {
+              if (value == 'Brasil') {
+                _selectedCountryFilter = 'Brasil';
+                _filterByCountry = false;
+              } else if (value == 'Portugal') {
+                _selectedCountryFilter = 'Portugal';
+                _filterByCountry = true;
+              }
+              fetchMostRecente();
+            });
+          },
+        );
+      }).toList(),
+    );
+  }
+
   Widget _searchSwitchChangeCountry() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -1131,7 +1196,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                         if (_authStore!.roleId != 1) _popupMenuButton(),
                       ],
                     ),
-                    if (_authStore?.roleId != 1) _searchSwitchChangeCountry(),
+                    if (_authStore?.roleId != 1) _dropDown(),
                     if (isfetchPedidos)
                       _loadingSpinder()
                     else
