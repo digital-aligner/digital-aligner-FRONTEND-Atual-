@@ -1098,7 +1098,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'Pedidos em Execução',
+          'Pedidos Aprovados',
           style: TextStyle(
             fontSize: fontSize,
           ),
