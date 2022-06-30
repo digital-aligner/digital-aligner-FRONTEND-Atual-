@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:digital_aligner_app/appbar/SecondaryAppbar.dart';
 import 'package:digital_aligner_app/default_colors.dart';
+import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/Comentario.dart';
 import 'package:digital_aligner_app/providers/auth_provider.dart';
 import 'package:digital_aligner_app/providers/pedido_provider.dart';
 import 'package:digital_aligner_app/screens/screens_pedidos_v1/models/historico_v1_model.dart';
@@ -51,8 +52,21 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
   ValueKey key2 = ValueKey('2');
   bool _modeloVisivel = false;
   int _selectedHistoryPos = 0;
-
+  TextEditingController _messageController = TextEditingController();
   int _mediaQueryMd = 768;
+  List<Comentario> _commentList = [
+    Comentario(
+        idPedido: 247,
+        conteudo: 'Olá, teste teste',
+        data: DateTime.now(),
+        idAutor: 38),
+    Comentario(
+        idPedido: 247,
+        conteudo: 'Resposta teste',
+        data: DateTime.now(),
+        idAutor: 35)
+  ];
+  int? idUsuario;
 
   //route arguments
   ScreenArguments _args = ScreenArguments();
@@ -99,7 +113,6 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
       if (_historicos[0].containsKey('id')) {
         _historicoList = [];
         _historicos.forEach((h) {
-          print(h);
           _historicoList.add(HistoricoPacV1.fromJson(h));
         });
 
@@ -569,11 +582,40 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
                         return ListTile(
                           leading: _iconForRelatorioApprovado(i),
                           selected: _selectedTilePos == i ? true : false,
-                          title: Text(
-                            _dateFormat(_historicoList[i].createdAt) +
-                                ' ' +
-                                _historicoList[i].status!.status,
-                          ),
+                          title: _historicoList[i].status!.status ==
+                                  'Pedido criado'
+                              ? Row(
+                                    mainAxisAlignment:MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.only(right: 4),
+                                      child: Text(
+                                        _dateFormat(
+                                                _historicoList[i].createdAt) +
+                                            ' ' +
+                                            _historicoList[i].status!.status,
+                                      ),
+                                    ),
+                                    Flexible(
+                                      child: Container(
+                                        padding: EdgeInsets.only(top: 2, left: 4),
+                                        child: Container(
+                                          width: 10,
+                                          height: 10,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.red,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                )
+                              : Text(
+                                  _dateFormat(_historicoList[i].createdAt) +
+                                      ' ' +
+                                      _historicoList[i].status!.status,
+                                ),
                           onTap: () {
                             setState(() {
                               _selectedHistoryPos = i;
@@ -2329,7 +2371,148 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
   }
 
   Widget _viewAlteracao() {
-    return Text(_alteracaoView);
+    return Column(
+      children: [
+        Text(_alteracaoView),
+        Container(margin: EdgeInsets.only(top: 16), child: Divider(height: 8)),
+        _commentsArea(),
+      ],
+    );
+  }
+
+  Widget _commentsArea() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.only(top: 32),
+            height: MediaQuery.of(context).size.height / 18,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'Comentários',
+              style: Theme.of(context).textTheme.headline1,
+            ),
+          ),
+          _listOfMessages(),
+          _bottomMessage()
+        ],
+      ),
+    );
+  }
+
+  Widget _listOfMessages() {
+    if (_commentList.isEmpty) {
+      return Container(
+          height: MediaQuery.of(context).size.height * 0.4,
+          alignment: Alignment.center,
+          child: Text(
+            'Não há comentários',
+            style: TextStyle(
+              color: Colors.grey,
+            ),
+          ));
+    } else {
+      return Container(
+          height: MediaQuery.of(context).size.height * 0.4,
+          margin: EdgeInsets.only(top: 32, bottom: 4, left: 16, right: 16),
+          child: ListView.builder(
+              scrollDirection: Axis.vertical,
+              itemCount: _commentList.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  child: Row(
+                    //alinhar as mensagens por aqui
+                    mainAxisAlignment: _commentList[index].idAutor == idUsuario
+                        ? MainAxisAlignment.end
+                        : MainAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: _commentList[index].idAutor == idUsuario
+                                ? Theme.of(context).primaryColor
+                                : Colors.grey[600],
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          alignment: Alignment.centerLeft,
+                          margin: EdgeInsets.only(top: 4, bottom: 4),
+                          width: _screenSize!.width <= _mediaQueryMd
+                              ? MediaQuery.of(context).size.width * 0.3
+                              : MediaQuery.of(context).size.width * 0.1,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(8),
+                                child: Text(
+                                  "${_commentList[index].conteudo}",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                              Container(
+                                  alignment: Alignment.centerRight,
+                                  padding: EdgeInsets.only(right: 8, bottom: 8),
+                                  child: Text(
+                                      "${DateFormat('HH:mm').format(_commentList[index].data!)}",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                      )))
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }));
+    }
+  }
+
+  Widget _bottomMessage() {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.1,
+      margin: EdgeInsets.only(bottom: 8, left: 8, right: 8),
+      child: Row(
+        children: [
+          Flexible(
+              flex: 5,
+              child: new Container(
+                padding: EdgeInsets.only(left: 16),
+                margin: EdgeInsets.only(right: 8, left: 16),
+                width: MediaQuery.of(context).size.width,
+                child: new TextField(
+                  maxLines: null,
+                  controller: _messageController,
+                  textAlign: TextAlign.start,
+                  decoration: new InputDecoration(
+                    hintText: 'Digite sua mensagem...',
+                    alignLabelWithHint: true,
+                    border: InputBorder.none,
+                  ),
+                ),
+              )),
+          Expanded(
+            child: Container(
+              height: 40,
+              decoration: new BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Theme.of(context).primaryColor),
+              child: IconButton(
+                onPressed: () {
+                  //colocar service de envio aqui
+                  _messageController.clear();
+                },
+                icon: Icon(
+                  Icons.send,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   Future<dynamic> solicitarAltPopup() {
@@ -2447,6 +2630,10 @@ class _VisualizarPacienteV1State extends State<VisualizarPacienteV1> {
         showLoginMessage: true,
       );
     }
+    //busca o id usuario
+    _historicoList.forEach((element) {
+      idUsuario = element.pedido?.usuario?.id;
+    });
 
     return Scaffold(
       appBar: SecondaryAppbar(),

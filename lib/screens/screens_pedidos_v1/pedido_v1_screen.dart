@@ -41,6 +41,12 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   PedidoProvider? _pedidoStore;
   AuthProvider? _authStore;
   Size? _screenSize;
+  List<String> listaOpcoesRefinamento = [
+    'novo tratamento',
+    'refinamento',
+    'interno'
+  ];
+  String selectedItemOpcaoTratamento = 'novo tratamento';
 
   bool _modeloGessoAlertMsg = true;
 
@@ -3701,10 +3707,67 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               child: Column(
                 children: <Widget>[
                   _header(),
-                  _isEditarPedidoCheck() ? _form2() : _form(),
+                  _isEditarPedidoCheck()
+                      ? _form2()
+                      : Column(
+                          children: [
+                            _tipoDeTratamento(),
+                            _form(),
+                          ],
+                        ),
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _tipoDeTratamento() {
+    return Container(
+      child: Card(
+        elevation: 10,
+        margin: EdgeInsets.all(10),
+        child: SizedBox(
+          width: 400,
+          height: MediaQuery.of(context).size.height / 15,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                margin: EdgeInsets.only(left: 31),
+                padding: EdgeInsets.only( left: 15),
+                child: Text(
+                  'Tipo de tratamento: ',
+                  style: TextStyle(
+                      fontFamily: 'Houschka',
+                      color: Color.fromRGBO(83, 86, 90, 1)),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(right: 32),
+                child: DropdownButton<String>(
+
+                  style: TextStyle(
+                      fontFamily: 'Houschka',
+                      color: Color.fromRGBO(83, 86, 90, 1)),
+                  underline: Container(),
+                  value: selectedItemOpcaoTratamento,
+                  items: listaOpcoesRefinamento
+                      .map((item) => DropdownMenuItem<String>(
+                          value: item,
+                          child: Text(
+                            item,
+                          )))
+                      .toList(),
+                  onChanged: (item) => setState(() {
+                    selectedItemOpcaoTratamento = item!;
+                  }),
+                ),
+              )
+            ],
           ),
         ),
       ),

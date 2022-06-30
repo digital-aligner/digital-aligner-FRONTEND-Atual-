@@ -40,7 +40,6 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   late double pageHeight;
   bool buscandoMaisPedidos = false;
   int pageQuant = 10;
-
   Timer? searchOnStoppedTyping;
 
   String _query = '';
@@ -145,8 +144,14 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
 
   bool _isEnabledEdit(int position) {
     try {
-      if (_pedidoStore!.getPedido(position: position).statusPedido!.id == 6)
-        return true;
+      // if (_pedidoStore!.getPedido(position: position).statusPedido!.id == 6 && _authStore!.roleId <4){
+
+      //   return false;
+      // }
+      if (_pedidoStore!.getPedido(position: position).statusPedido!.id >= 4 &&
+          _authStore!.roleId < 4) {
+        return false;
+      }
 
       return true;
     } catch (e) {
@@ -1130,8 +1135,138 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                     if (isfetchPedidos)
                       _loadingSpinder()
                     else
-                      _mapDataTableToUi(),
-                    _buscarMaisPedidosBtn()
+                      Flexible(child: _mapDataTableToUi()),
+                    Container(
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                                    setState(() {
+                                      buscandoMaisPedidos = true;
+                                    });
+                                    _pedidoStore!
+                                        .backPagesPedidos(
+                                      token: _authStore!.token,
+                                      roleId: _authStore!.roleId,
+                                      pageQuant: pageQuant,
+                                      query: _query,
+                                      queryStrings: '&ref=' +
+                                          _ref.toString() +
+                                          '&sortAtualizados=' +
+                                          _pedidosAtualizados.toString() +
+                                          '&sortAlteracoes=' +
+                                          _pedidosAlteracoes.toString() +
+                                          '&sortExecucao=' +
+                                          _pedidosExecucao.toString() +
+                                          '&filterByCountry=' +
+                                          _selectedCountryFilter,
+                                    )
+                                        .then(
+                                      (bool fetchSuccessful) {
+                                        if (fetchSuccessful) {
+                                          setState(() {
+                                            buscandoMaisPedidos = false;
+                                            pageQuant = pageQuant - 10;
+                                            pageHeight = pageHeight + 650;
+                                          });
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .removeCurrentSnackBar();
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              duration:
+                                                  const Duration(seconds: 1),
+                                              content: Text(
+                                                'Sem resultados',
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                          );
+                                          setState(() {
+                                            buscandoMaisPedidos = false;
+                                          });
+                                        }
+                                      },
+                                    );
+
+                                    //refreshPageFetchNewList();
+                                  },
+                            child: Row(
+                              children: [
+                                Icon(Icons.arrow_back),
+                                Text('Anterior'),
+                              ],
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                                    setState(() {
+                                      buscandoMaisPedidos = true;
+                                    });
+                                    _pedidoStore!
+                                        .fetchAddMorePedidos(
+                                      token: _authStore!.token,
+                                      roleId: _authStore!.roleId,
+                                      pageQuant: pageQuant,
+                                      query: _query,
+                                      queryStrings: '&ref=' +
+                                          _ref.toString() +
+                                          '&sortAtualizados=' +
+                                          _pedidosAtualizados.toString() +
+                                          '&sortAlteracoes=' +
+                                          _pedidosAlteracoes.toString() +
+                                          '&sortExecucao=' +
+                                          _pedidosExecucao.toString() +
+                                          '&filterByCountry=' +
+                                          _selectedCountryFilter,
+                                    )
+                                        .then(
+                                      (bool fetchSuccessful) {
+                                        if (fetchSuccessful) {
+                                          setState(() {
+                                            buscandoMaisPedidos = false;
+                                            pageQuant = pageQuant + 10;
+                                            pageHeight = pageHeight + 650;
+                                          });
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .removeCurrentSnackBar();
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              duration:
+                                                  const Duration(seconds: 1),
+                                              content: Text(
+                                                'Sem resultados',
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                          );
+                                          setState(() {
+                                            buscandoMaisPedidos = false;
+                                          });
+                                        }
+                                      },
+                                    );
+
+                                    //refreshPageFetchNewList();
+                                  },
+                            child: Row(
+                              children: [
+                                Text('próximo'),
+                                Icon(Icons.arrow_forward),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                    // _buscarMaisPedidosBtn()
                   ],
                 ),
               ),

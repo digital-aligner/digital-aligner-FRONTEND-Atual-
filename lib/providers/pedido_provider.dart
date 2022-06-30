@@ -213,6 +213,7 @@ class PedidoProvider with ChangeNotifier {
     String query = '',
     String queryStrings = '',
   }) async {
+  
     clearDataAllProviderData();
     try {
       final response = await http.get(
@@ -220,6 +221,7 @@ class PedidoProvider with ChangeNotifier {
           RotasUrl.rotaPedidosV1 +
               '?roleId=' +
               roleId.toString() +
+              '&pageQuant=0' +         
               '&queryString=' +
               query +
               queryStrings,
@@ -257,6 +259,14 @@ class PedidoProvider with ChangeNotifier {
     String query = '',
     String queryStrings = '',
   }) async {
+    _pedidosV1List.clear();
+    print(   RotasUrl.rotaPedidosV1 +
+            '?roleId=' +
+            roleId.toString() +
+            '&pageQuant=' +
+            pageQuant.toString() +
+            query +
+            queryStrings,);
     final response = await http.get(
       Uri.parse(
         RotasUrl.rotaPedidosV1 +
@@ -273,6 +283,52 @@ class PedidoProvider with ChangeNotifier {
       },
     );
     try {
+      List<dynamic> _pedidos = json.decode(response.body);
+      if (_pedidos[0].containsKey('id')) {
+        _pedidos.forEach((p) {
+          _pedidosV1List.add(PedidoV1Model.fromJson(p));
+        });
+
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
+    Future<bool> backPagesPedidos({
+    String token = '',
+    int roleId = 0,
+    int pageQuant = 0,
+    String query = '',
+    String queryStrings = '',
+  }) async {
+    _pedidosV1List.clear();
+    final response = await http.get(
+      Uri.parse(
+        RotasUrl.rotaPedidosV1 +
+            '?roleId=' +
+            roleId.toString() +
+            '&pageQuant=' +
+            pageQuant.toString() +
+            query +
+            queryStrings,
+      ),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    try {
+      print(   RotasUrl.rotaPedidosV1 +
+            '?roleId=' +
+            roleId.toString() +
+            '&pageQuant=' +
+            pageQuant.toString() +
+            query +
+            queryStrings,);
       List<dynamic> _pedidos = json.decode(response.body);
       if (_pedidos[0].containsKey('id')) {
         _pedidos.forEach((p) {
