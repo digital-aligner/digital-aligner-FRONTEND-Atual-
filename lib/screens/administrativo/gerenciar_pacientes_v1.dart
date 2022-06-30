@@ -27,11 +27,15 @@ class GerenciarPacientesV1 extends StatefulWidget {
 }
 
 class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
+  @override
   PedidoProvider? _pedidoStore;
   AuthProvider? _authStore;
   Size? _screenSize;
   bool firstRun = true;
+
   bool isfetchPedidos = true;
+  ScrollController _scrollBarController =
+      ScrollController(initialScrollOffset: 0);
 
   List<bool> selectedListItem = [];
 
@@ -39,7 +43,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
   final double _defaultPgHeight = 1320;
   late double pageHeight;
   bool buscandoMaisPedidos = false;
-  int pageQuant = 10;
+  int pageQuant = 0;
   Timer? searchOnStoppedTyping;
 
   String _query = '';
@@ -450,7 +454,6 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
     if (p.isEmpty) return [];
 
     if (selectedListItem.length != p.length) selectedListItem = [];
-
     for (int i = 0; i < p.length; i++) {
       if (selectedListItem.length != p.length) selectedListItem.add(false);
       PedidoV1Model s = _pedidoStore!.getPedido(position: i);
@@ -553,6 +556,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
         ),
       );
     }
+
     return dr;
   }
 
@@ -694,7 +698,6 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                             setState(() {
                               buscandoMaisPedidos = false;
                               pageQuant = pageQuant + 10;
-                              pageHeight = pageHeight + 650;
                             });
                           } else {
                             ScaffoldMessenger.of(context)
@@ -869,7 +872,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
       setState(() {
         isfetchPedidos = true;
         pageHeight = _defaultPgHeight;
-        pageQuant = 10;
+        pageQuant = 0;
       });
       await _pedidoStore!.fetchAllPedidos(
         token: _authStore?.token ?? '',
@@ -1182,6 +1185,7 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
         thickness: 15,
         isAlwaysShown: true,
         child: SingleChildScrollView(
+          controller: _scrollBarController,
           child: Stack(
             children: [
               Container(
@@ -1200,137 +1204,8 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
                     if (isfetchPedidos)
                       _loadingSpinder()
                     else
-                      Flexible(child: _mapDataTableToUi()),
-                    Container(
-                      alignment: Alignment.center,
-                      width: MediaQuery.of(context).size.width,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                                    setState(() {
-                                      buscandoMaisPedidos = true;
-                                    });
-                                    _pedidoStore!
-                                        .backPagesPedidos(
-                                      token: _authStore!.token,
-                                      roleId: _authStore!.roleId,
-                                      pageQuant: pageQuant,
-                                      query: _query,
-                                      queryStrings: '&ref=' +
-                                          _ref.toString() +
-                                          '&sortAtualizados=' +
-                                          _pedidosAtualizados.toString() +
-                                          '&sortAlteracoes=' +
-                                          _pedidosAlteracoes.toString() +
-                                          '&sortExecucao=' +
-                                          _pedidosExecucao.toString() +
-                                          '&filterByCountry=' +
-                                          _selectedCountryFilter,
-                                    )
-                                        .then(
-                                      (bool fetchSuccessful) {
-                                        if (fetchSuccessful) {
-                                          setState(() {
-                                            buscandoMaisPedidos = false;
-                                            pageQuant = pageQuant - 10;
-                                            pageHeight = pageHeight + 650;
-                                          });
-                                        } else {
-                                          ScaffoldMessenger.of(context)
-                                              .removeCurrentSnackBar();
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              duration:
-                                                  const Duration(seconds: 1),
-                                              content: Text(
-                                                'Sem resultados',
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ),
-                                          );
-                                          setState(() {
-                                            buscandoMaisPedidos = false;
-                                          });
-                                        }
-                                      },
-                                    );
-
-                                    //refreshPageFetchNewList();
-                                  },
-                            child: Row(
-                              children: [
-                                Icon(Icons.arrow_back),
-                                Text('Anterior'),
-                              ],
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                                    setState(() {
-                                      buscandoMaisPedidos = true;
-                                    });
-                                    _pedidoStore!
-                                        .fetchAddMorePedidos(
-                                      token: _authStore!.token,
-                                      roleId: _authStore!.roleId,
-                                      pageQuant: pageQuant,
-                                      query: _query,
-                                      queryStrings: '&ref=' +
-                                          _ref.toString() +
-                                          '&sortAtualizados=' +
-                                          _pedidosAtualizados.toString() +
-                                          '&sortAlteracoes=' +
-                                          _pedidosAlteracoes.toString() +
-                                          '&sortExecucao=' +
-                                          _pedidosExecucao.toString() +
-                                          '&filterByCountry=' +
-                                          _selectedCountryFilter,
-                                    )
-                                        .then(
-                                      (bool fetchSuccessful) {
-                                        if (fetchSuccessful) {
-                                          setState(() {
-                                            buscandoMaisPedidos = false;
-                                            pageQuant = pageQuant + 10;
-                                            pageHeight = pageHeight + 650;
-                                          });
-                                        } else {
-                                          ScaffoldMessenger.of(context)
-                                              .removeCurrentSnackBar();
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              duration:
-                                                  const Duration(seconds: 1),
-                                              content: Text(
-                                                'Sem resultados',
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ),
-                                          );
-                                          setState(() {
-                                            buscandoMaisPedidos = false;
-                                          });
-                                        }
-                                      },
-                                    );
-
-                                    //refreshPageFetchNewList();
-                                  },
-                            child: Row(
-                              children: [
-                                Text('próximo'),
-                                Icon(Icons.arrow_forward),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    )
+                      _mapDataTableToUi(),
+                    footerButtons()
                     // _buscarMaisPedidosBtn()
                   ],
                 ),
@@ -1361,5 +1236,159 @@ class _GerenciarPacientesV1State extends State<GerenciarPacientesV1> {
         ),
       ),
     );
+  }
+
+  Widget footerButtons() {
+    return Container(
+      margin: EdgeInsets.only(top: 16),
+      alignment: Alignment.center,
+      width: MediaQuery.of(context).size.width,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            margin: EdgeInsets.only(right: 8),
+            child: ElevatedButton(
+              onPressed: pageQuant != 0 ? onPressedBack : null,
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ),
+                  Text(
+                    'Anterior',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.only(left: 8),
+            child: ElevatedButton(
+              onPressed: () async {
+                setState(() {
+                  buscandoMaisPedidos = true;
+                  pageQuant = pageQuant + 10;
+                  
+                });
+                await _pedidoStore!
+                    .fetchAddMorePedidos(
+                  token: _authStore!.token,
+                  roleId: _authStore!.roleId,
+                  pageQuant: pageQuant,
+                  query: _query,
+                  queryStrings: '&ref=' +
+                      _ref.toString() +
+                      '&sortAtualizados=' +
+                      _pedidosAtualizados.toString() +
+                      '&sortAlteracoes=' +
+                      _pedidosAlteracoes.toString() +
+                      '&sortExecucao=' +
+                      _pedidosExecucao.toString() +
+                      '&filterByCountry=' +
+                      _selectedCountryFilter,
+                )
+                    .then(
+                  (bool fetchSuccessful) {
+                    if (fetchSuccessful) {
+                      setState(() {
+                        buscandoMaisPedidos = false;
+                        _scrollBarController.animateTo(0,
+                            duration: Duration(seconds: 1),
+                            curve: Curves.decelerate);
+                      });
+                    } else {
+                      pageQuant = pageQuant - 10;
+                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: const Duration(seconds: 1),
+                          content: Text(
+                            'Sem resultados',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      );
+                      setState(() {
+                        buscandoMaisPedidos = false;
+                      });
+                    }
+                  },
+                );
+
+                //refreshPageFetchNewList();
+              },
+              child: Row(
+                children: [
+                  Text(
+                    'Próximo',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  Icon(
+                    Icons.arrow_forward,
+                    color: Colors.white,
+                  ),
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Future<Function?> onPressedBack() async {
+    setState(() {
+      buscandoMaisPedidos = true;
+      pageQuant = pageQuant - 10;
+   
+    });
+    await _pedidoStore!
+        .backPagesPedidos(
+      token: _authStore!.token,
+      roleId: _authStore!.roleId,
+      pageQuant: pageQuant,
+      query: _query,
+      queryStrings: '&ref=' +
+          _ref.toString() +
+          '&sortAtualizados=' +
+          _pedidosAtualizados.toString() +
+          '&sortAlteracoes=' +
+          _pedidosAlteracoes.toString() +
+          '&sortExecucao=' +
+          _pedidosExecucao.toString() +
+          '&filterByCountry=' +
+          _selectedCountryFilter,
+    )
+        .then(
+      (bool fetchSuccessful) {
+        if (fetchSuccessful) {
+          setState(() {
+            buscandoMaisPedidos = false;
+            _scrollBarController.animateTo(0,
+                duration: Duration(seconds: 1), curve: Curves.decelerate);
+          });
+        } else {
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              duration: const Duration(seconds: 1),
+              content: Text(
+                'Sem resultados',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+          setState(() {
+            buscandoMaisPedidos = false;
+          });
+        }
+      },
+    );
+
+    //refreshPageFetchNewList();
   }
 }
