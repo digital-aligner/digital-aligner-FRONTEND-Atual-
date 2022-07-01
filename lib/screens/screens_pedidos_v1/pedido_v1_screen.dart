@@ -90,6 +90,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
     'Distalização sequencial',
     'Expansão (posterior)',
     'Inclinação anteriores',
+    'Rounding tripping'
   ];
   List<int> resApinSupUiSelectedPos = [];
   List<int> resApinInfUiSelectedPos = [];
@@ -142,6 +143,10 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
   //opcionais
   final _opcAceitoDip = TextEditingController();
   int _opcAceitoDipSelected = -1;
+  final _opcAceitoDesgaste = TextEditingController();
+  int _opcAceitoDesgateSelected = -1;
+  final _opcAceitoBit = TextEditingController();
+  int _opcAceitoBitSelected = -1;
   final _opcRecorteElastico = TextEditingController();
   int _opcRecorteElasticoSelected = -1;
   bool _opcRecorteElasticoMm = false;
@@ -1606,6 +1611,52 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
                     ),
                   ),
                 ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Wrap(children: [
+                  GroupButton(
+                    selectedButtons: [_opcAceitoDesgateSelected],
+                    selectedColor: DefaultColors.digitalAlignBlue,
+                    buttonWidth: 520,
+                    isRadio: false,
+                    spacing: 10,
+                    onSelected: (index, isSelected) {
+                      if (isSelected) {
+                        _opcAceitoDesgaste.text =
+                            'Esporões virtuais (correção postural da língua em casos de mordida aberta)';
+                      } else {
+                        _opcAceitoDesgaste.text = '';
+                      }
+                    },
+                    buttons: [
+                      'Esporões virtuais (correção postural da língua em casos de mordida aberta)',
+                    ],
+                  ),
+                ]),
+                const SizedBox(
+                  height: 20,
+                ),
+                Wrap(children: [
+                  GroupButton(
+                    selectedButtons: [_opcAceitoBitSelected],
+                    selectedColor: DefaultColors.digitalAlignBlue,
+                    buttonWidth: 520,
+                    isRadio: false,
+                    spacing: 10,
+                    onSelected: (index, isSelected) {
+                      if (isSelected) {
+                        _opcAceitoBit.text =
+                            'Rampa de levante de mordida profunda (Bite ramps)';
+                      } else {
+                        _opcAceitoBit.text = '';
+                      }
+                    },
+                    buttons: [
+                      'Rampa de levante de mordida profunda (Bite ramps)',
+                    ],
+                  ),
+                ]),
               ],
             ),
           ),
@@ -1791,6 +1842,52 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               ),
             ],
           ),
+          const SizedBox(
+            height: 20,
+          ),
+          Wrap(children: [
+            GroupButton(
+              selectedButtons: [_opcAceitoDesgateSelected],
+              selectedColor: DefaultColors.digitalAlignBlue,
+              buttonWidth: 520,
+              isRadio: false,
+              spacing: 10,
+              onSelected: (index, isSelected) {
+                if (isSelected) {
+                  _opcAceitoDesgaste.text =
+                      'Esporões virtuais (correção postural da língua em casos de mordida aberta)';
+                } else {
+                  _opcAceitoDesgaste.text = '';
+                }
+              },
+              buttons: [
+                'Esporões virtuais (correção postural da língua em casos de mordida aberta)',
+              ],
+            ),
+          ]),
+          const SizedBox(
+            height: 20,
+          ),
+          Wrap(children: [
+            GroupButton(
+              selectedButtons: [_opcAceitoBitSelected],
+              selectedColor: DefaultColors.digitalAlignBlue,
+              buttonWidth: 520,
+              isRadio: false,
+              spacing: 10,
+              onSelected: (index, isSelected) {
+                if (isSelected) {
+                  _opcAceitoBit.text =
+                      'Rampa de levante de mordida profunda (Bite ramps)';
+                } else {
+                  _opcAceitoBit.text = '';
+                }
+              },
+              buttons: [
+                'Rampa de levante de mordida profunda (Bite ramps)',
+              ],
+            ),
+          ]),
         ],
       ),
     );
@@ -3738,7 +3835,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
             children: [
               Container(
                 margin: EdgeInsets.only(left: 31),
-                padding: EdgeInsets.only( left: 15),
+                padding: EdgeInsets.only(left: 15),
                 child: Text(
                   'Tipo de tratamento: ',
                   style: TextStyle(
@@ -3749,7 +3846,6 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
               Container(
                 margin: EdgeInsets.only(right: 32),
                 child: DropdownButton<String>(
-
                   style: TextStyle(
                       fontFamily: 'Houschka',
                       color: Color.fromRGBO(83, 86, 90, 1)),
