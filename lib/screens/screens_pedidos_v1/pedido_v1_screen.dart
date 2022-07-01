@@ -232,7 +232,7 @@ class _PedidoV1ScreenState extends State<PedidoV1Screen> {
         statusPedido: StatusPedidoV1Model(id: statusPedido),
         pedidoRefinamento: _isPedidoRefinamento,
         payload: _payload,
-        endereco: "rua teste teste",
+        endereco: enderecoSelecionado.endereco,
         bairro: enderecoSelecionado.bairro,
         cidade: enderecoSelecionado.cidade,
         complemento: enderecoSelecionado.complemento,
